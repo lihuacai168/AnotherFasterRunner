@@ -1,5 +1,6 @@
 import json
 from collections import OrderedDict
+from enum import Enum
 
 from django.test import TestCase
 import os, django
@@ -78,6 +79,16 @@ def read_file_rb(file_path):
 
 
 if __name__ == '__main__':
+    class FileType(Enum):
+        """
+        文件类型枚举
+        """
+        string = 1
+        int = 2
+        float = 3
+        bool = 4
+        list = 5
+        dict = 6
+        file = 7
 
-    pass
 

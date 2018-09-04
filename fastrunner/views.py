@@ -1,3 +1,5 @@
+import json
+
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework.views import APIView
 from rest_framework.viewsets import GenericViewSet, ModelViewSet
@@ -6,9 +8,10 @@ from FasterRunner import pagination
 from rest_framework.response import Response
 from fastrunner.utils import response
 from fastrunner.utils.counter import get_project_detail
-from fastrunner.utils.parser import Format
+from fastrunner.utils.parser import Format, Parse
 from fastrunner.utils.tree import get_tree_max_id
 from django.db import DataError
+
 
 # Create your views here.
 
@@ -18,7 +21,7 @@ class ProjectView(GenericViewSet):
     项目增删改查
     """
 
-    queryset = models.Project.objects.all()
+    queryset = models.Project.objects.all().order_by('-update_time')
     serializer_class = serializers.ProjectSerializer
     pagination_class = pagination.MyCursorPagination
     authentication_classes = ()
@@ -115,7 +118,7 @@ class DataBaseView(ModelViewSet):
     """
     DataBase 增删改查
     """
-    queryset = models.DataBase.objects.all()
+    queryset = models.DataBase.objects.all().order_by('-update_time')
     authentication_classes = ()
     pagination_class = pagination.MyCursorPagination
     serializer_class = serializers.DataBaseSerializer
@@ -146,8 +149,11 @@ class DebugTalkView(GenericViewSet):
         """
         编辑debugtalk.py 代码并保存
         """
+        pk = request.data['id']
         try:
-            models.Debugtalk.objects.update_or_create(defaults=request.data)
+            models.Debugtalk.objects.filter(id=pk). \
+                update(debugtalk=request.data['debugtalk'])
+
         except ObjectDoesNotExist:
             return Response(response.SYSTEM_ERROR)
 
@@ -217,13 +223,16 @@ class APITemplateView(GenericViewSet):
     API操作视图
     """
     authentication_classes = ()
-    queryset = models.API.objects.all()
+    queryset = models.API.objects.all().order_by('-update_time')
     serializer_class = serializers.APISerializer
     """使用默认分页器"""
 
     def list(self, request):
-        pagination_querset = self.paginate_queryset(self.get_queryset())
-        serializer = self.get_serializer(pagination_querset, many=True)
+        """
+        接口列表
+        """
+        pagination_queryset = self.paginate_queryset(self.get_queryset())
+        serializer = self.get_serializer(pagination_queryset, many=True)
         return self.get_paginated_response(serializer.data)
 
     def add(self, request):
@@ -249,3 +258,119 @@ class APITemplateView(GenericViewSet):
             return Response(response.DATA_TO_LONG)
 
         return Response(response.API_ADD_SUCCESS)
+
+    def delete(self, request, **kwargs):
+        """
+        删除一个接口
+        """
+        try:
+            models.API.objects.get(id=kwargs['pk']).delete()
+        except ObjectDoesNotExist:
+            return Response(response.API_NOT_FOUND)
+
+        return Response(response.API_DEL_SUCCESS)
+
+    def get_single(self, request, **kwargs):
+        """
+        查询单个api，返回body信息
+        """
+        try:
+            api = models.API.objects.get(id=kwargs['pk'])
+        except ObjectDoesNotExist:
+            return Response(response.API_NOT_FOUND)
+
+        parse = Parse(eval(api.body))
+        parse.parse_http()
+
+        resp = {
+            'id': api.id,
+            'body': parse.testcase,
+            'success': True,
+        }
+
+        return Response(resp)
+
+
+class SuiteView(GenericViewSet):
+    queryset = models.Suite.objects.all().order_by('-update_time')
+    authentication_classes = ()
+    serializer_class = serializers.SuiteSerializer
+
+    def list(self, request):
+        """
+        response -> [{
+            id: 1,
+            count: 2,
+            name: 'Test Suite 1',
+            desc: 'Test Suite 1 desc',
+            update_time: '2018-09-04 14:58:23.827909',
+        }]
+
+        """
+
+        pagination_queryset = self.paginate_queryset(self.get_queryset())
+        serializer = self.get_serializer(pagination_queryset, many=True)
+        return self.get_paginated_response(serializer.data)
+
+    def add(self, request):
+        """
+        新增一条Suite{
+           "project": int,
+           "name": char
+           "desc": char
+        }
+        """
+        try:
+            pk = request.data['project']
+            project = models.Project.objects.get(id=pk)
+        except KeyError:
+            return Response(response.KEY_MISS)
+        except ObjectDoesNotExist:
+            return Response(response.SYSTEM_ERROR)
+
+        request.data['project'] = project
+
+        models.Suite.objects.create(**request.data)
+
+        return Response(response.SUITE_ADD_SUCCESS)
+
+    def delete(self, request, **kwargs):
+        """
+        删除suite
+        """
+        pk = kwargs['pk']
+        # del suite and suite_step
+        try:
+            models.Suite.objects.filter(id=pk).delete()
+            models.SuiteStep.objects.filter(suite__id=pk).delete()
+
+        except ObjectDoesNotExist:
+            return Response(response.API_NOT_FOUND)
+
+        return Response(response.SUITE_DEL_SUCCESS)
+
+
+
+
+class SuiteStepView(APIView):
+    authentication_classes = ()
+
+    def get(self, request, **kwargs):
+        """
+         sep -> [{
+            id: 1,
+            name: 'api name',
+            url: 'api url',
+            method: 'GET'
+        }, {
+            id: 2,
+            name: 'NAME',
+            url: 'URL',
+            method: 'POST'
+        }]
+        """
+        pk = kwargs['pk']
+        queryset = models.SuiteStep.objects.filter(suite__id=pk).order_by('step')
+        ret = pagination.MyPageNumberPagination().paginate_queryset(queryset, request)
+        serializer = serializers.SuiteStepSerializer(instance=ret, many=True)
+        return Response(serializer.data)

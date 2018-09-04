@@ -82,3 +82,27 @@ DATA_TO_LONG = {
     'msg': '数据信息过长！'
 }
 
+API_NOT_FOUND = {
+    'code': '0102',
+    'success': False,
+    'msg': '未查询到该API'
+}
+
+API_DEL_SUCCESS = {
+    'code': '0003',
+    'success': True,
+    'msg': 'API删除成功'
+}
+
+SUITE_ADD_SUCCESS = {
+    'code': '0001',
+    'success': True,
+    'msg': 'Suite添加成功'
+}
+
+SUITE_DEL_SUCCESS = {
+    'code': '0003',
+    'success': True,
+    'msg': 'Suite删除成功'
+}
+

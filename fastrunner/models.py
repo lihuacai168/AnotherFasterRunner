@@ -64,8 +64,8 @@ class Config(BaseTable):
 
     name = models.CharField("环境名称", null=False, max_length=50)
     body = models.TextField("主体信息", null=True)
-    base_url = models.CharField("请求地址", null=False, max_length=50)
-    method = models.CharField('请求方式', null=True, max_length=20)
+    base_url = models.CharField("请求地址", null=False, max_length=100)
+    method = models.CharField('请求方式', null=True, max_length=10)
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
 
 
@@ -78,23 +78,23 @@ class Suite(BaseTable):
         verbose_name = "Test Suite"
         db_table = "Suite"
 
-    name = models.CharField("suite名称", null=False, max_length=50)
+    name = models.CharField("Suite名称", null=False, max_length=50)
     desc = models.CharField("描述", null=False, max_length=50)
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
 
 
 class SuiteStep(BaseTable):
     """
-    Test Suite Step
+    Test Suite Step -> Suite
     """
 
     class Meta:
         verbose_name = "Suite Step"
         db_table = "SuiteStep"
 
-    name = models.CharField("用例名称", null=False, max_length=50)
+    name = models.CharField("API名称", null=False, max_length=50)
     body = models.TextField("主体信息", null=False)
-    url = models.CharField("请求地址", null=False, max_length=50)
+    url = models.CharField("请求地址", null=False, max_length=100)
     method = models.CharField("请求方式", null=False, max_length=10)
     suite = models.ForeignKey(Suite, on_delete=models.CASCADE)
     step = models.IntegerField("顺序", null=False)
@@ -111,7 +111,7 @@ class API(BaseTable):
 
     name = models.CharField("接口名称", null=False, max_length=50)
     body = models.TextField("主体信息", null=False)
-    url = models.CharField("请求地址", null=False, max_length=50)
+    url = models.CharField("请求地址", null=False, max_length=100)
     method = models.CharField("请求方式", null=False, max_length=10)
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
     relation = models.IntegerField("节点id", null=False)
@@ -142,7 +142,7 @@ class CaseStep(BaseTable):
 
     name = models.CharField("用例名称", null=False, max_length=50)
     body = models.TextField("主体信息", null=False)
-    url = models.CharField("请求地址", null=False, max_length=50)
+    url = models.CharField("请求地址", null=False, max_length=100)
     method = models.CharField("请求方式", null=False, max_length=10)
     case = models.ForeignKey(Case, on_delete=models.CASCADE)
     step = models.IntegerField("顺序", null=False)
@@ -166,11 +166,11 @@ class DataBase(BaseTable):
         db_table = "DataBase"
 
     name = models.CharField("数据库名称", null=False, max_length=50)
-    server = models.CharField("服务地址", null=False, max_length=50)
+    server = models.CharField("服务地址", null=False, max_length=100)
     account = models.CharField("登录名", max_length=50, null=False)
     password = models.CharField("登陆密码", max_length=50, null=False)
     type = models.IntegerField('数据库类型', default=2, choices=db_type)
-    desc = models.CharField("描述", max_length=100, null=False)
+    desc = models.CharField("描述", max_length=50, null=False)
 
 
 class FileBinary(models.Model):
@@ -181,9 +181,10 @@ class FileBinary(models.Model):
         verbose_name = "二进制文件"
         db_table = "FileBinary"
 
-    name = models.CharField("文件名称", null=False, max_length=100)
+    name = models.CharField("文件名称", null=False, max_length=50)
     body = models.BinaryField("二进制流", null=False)
     type = models.IntegerField("类型", null=False)
+    size = models.IntegerField("大小", null=False)
     relation = models.IntegerField("关联ID", null=False)
 
 
@@ -203,7 +204,7 @@ class Report(BaseTable):
     failure = models.IntegerField("失败用例")
     skipped = models.IntegerField("跳过用例")
     start_time = models.DateTimeField("开始时间")
-    duration = models.CharField("持续时间", max_length=20)
+    duration = models.CharField("持续时间", max_length=40)
 
 
 class Relation(models.Model):
@@ -217,4 +218,4 @@ class Relation(models.Model):
 
     project = models.OneToOneField(Project, on_delete=models.CASCADE)
     tree = models.TextField("结构主题", null=False, default=[])
-    type = models.IntegerField("数类型", default=1)
+    type = models.IntegerField("树类型", default=1)
