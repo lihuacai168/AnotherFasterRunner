@@ -7,6 +7,8 @@ python:
   - 3.6
 install:
   - pip install -r requirements.txt
+  - pip install coverage
+  - pip install coveralls
 script:
   - coverage run --source=. -m unittest discover
 after_success:
