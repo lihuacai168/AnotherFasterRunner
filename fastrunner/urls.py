@@ -58,16 +58,5 @@ urlpatterns = [
         "get": "get_single"
     })),
 
-    # suite接口地址
-    path('suite/', views.SuiteView.as_view({
-        "post": "add",
-        "get": "list"
-    })),
-
-    path('suite/<int:pk>/', views.SuiteView.as_view({
-        "delete": "delete"
-    })),
-
-    path('suite_step/<int:pk>/', views.SuiteStepView.as_view())
 
 ]

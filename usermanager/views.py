@@ -68,19 +68,19 @@ class LoginView(APIView):
         except KeyError:
             return Response(response.KEY_MISS)
 
-        obj = models.UserInfo.objects.filter(username=username).first()
+        user = models.UserInfo.objects.filter(username=username).first()
 
-        if not obj:
+        if not user:
             return Response(response.LOGIN_FAILED)
 
-        if not check_password(password, obj.password):
+        if not check_password(password, user.password):
             return Response(response.LOGIN_FAILED)
 
         token = generate_token(username)
 
         try:
             models.UserToken.objects.update_or_create(user=obj, defaults={"token": token})
-        except :
+        except ObjectDoesNotExist:
             return Response(response.SYSTEM_ERROR)
         else:
             response.LOGIN_SUCCESS["token"] = token

@@ -1,5 +1,3 @@
-import json
-
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework.views import APIView
 from rest_framework.viewsets import GenericViewSet, ModelViewSet
@@ -7,7 +5,7 @@ from fastrunner import models, serializers
 from FasterRunner import pagination
 from rest_framework.response import Response
 from fastrunner.utils import response
-from fastrunner.utils.counter import get_project_detail
+from fastrunner.utils import prepare
 from fastrunner.utils.parser import Format, Parse
 from fastrunner.utils.tree import get_tree_max_id
 from django.db import DataError
@@ -53,11 +51,8 @@ class ProjectView(GenericViewSet):
 
         if serializer.is_valid():
             serializer.save()
-
             project = models.Project.objects.get(name=name)
-            # 自动生成默认debugtalk.py
-            models.Debugtalk.objects.create(project=project)
-
+            prepare.project_init(project)
             return Response(response.PROJECT_ADD_SUCCESS)
 
         else:
@@ -69,18 +64,18 @@ class ProjectView(GenericViewSet):
         """
 
         try:
-            obj = models.Project.objects.get(id=request.data['id'])
+            project = models.Project.objects.get(id=request.data['id'])
         except (KeyError, ObjectDoesNotExist):
             return Response(response.SYSTEM_ERROR)
 
-        if request.data['name'] != obj.name:
+        if request.data['name'] != project.name:
             if models.Project.objects.filter(name=request.data['name']).first():
                 return Response(response.PROJECT_EXISTS)
 
         # 调用save方法update_time字段才会自动更新
-        obj.name = request.data['name']
-        obj.desc = request.data['desc']
-        obj.save()
+        project.name = request.data['name']
+        project.desc = request.data['desc']
+        project.save()
 
         return Response(response.PROJECT_UPDATE_SUCCESS)
 
@@ -89,9 +84,11 @@ class ProjectView(GenericViewSet):
         删除项目
         """
         try:
-            models.Project.objects.get(id=request.data['id']).delete()
-            # 此处应该删除project表其他数据
-            pass
+            project = models.Project.objects.get(id=request.data['id'])
+
+            project.delete()
+            prepare.project_end(project)
+
             return Response(response.PROJECT_DELETE_SUCCESS)
         except ObjectDoesNotExist:
             return Response(response.SYSTEM_ERROR)
@@ -108,7 +105,7 @@ class ProjectView(GenericViewSet):
 
         serializer = self.get_serializer(queryset, many=False)
 
-        project_info = get_project_detail(pk)
+        project_info = prepare.get_project_detail(pk)
         project_info.update(serializer.data)
 
         return Response(project_info)
@@ -171,8 +168,13 @@ class TreeView(APIView):
         返回树形结构
         当前最带节点ID
         """
+
         try:
-            tree = models.Relation.objects.get(project__id=kwargs['pk'])
+            tree_type = request.query_params['type']
+            tree = models.Relation.objects.get(project__id=kwargs['pk'], type=tree_type)
+        except KeyError:
+            return Response(response.KEY_MISS)
+
         except ObjectDoesNotExist:
             return Response(response.SYSTEM_ERROR)
 
@@ -189,7 +191,12 @@ class TreeView(APIView):
         修改树形结构，ID不能重复
         """
         try:
-            models.Relation.objects.filter(id=kwargs['pk']).update(tree=request.data)
+            body = request.data['body']
+            mode = request.data['mode']
+
+            relation = models.Relation.objects.get(id=kwargs['pk'])
+            relation.tree = body
+            relation.save()
 
         except KeyError:
             return Response(response.KEY_MISS)
@@ -197,8 +204,12 @@ class TreeView(APIView):
         except ObjectDoesNotExist:
             return Response(response.SYSTEM_ERROR)
 
-        response.TREE_UPDATE_SUCCESS['tree'] = request.data
-        response.TREE_UPDATE_SUCCESS['max'] = get_tree_max_id(request.data)
+        #  mode -> True remove node
+        if mode:
+            prepare.tree_end(request.data, relation.project)
+
+        response.TREE_UPDATE_SUCCESS['tree'] = body
+        response.TREE_UPDATE_SUCCESS['max'] = get_tree_max_id(body)
 
         return Response(response.TREE_UPDATE_SUCCESS)
 
@@ -223,15 +234,28 @@ class APITemplateView(GenericViewSet):
     API操作视图
     """
     authentication_classes = ()
-    queryset = models.API.objects.all().order_by('-update_time')
     serializer_class = serializers.APISerializer
     """使用默认分页器"""
 
     def list(self, request):
         """
-        接口列表
+        接口列表 {
+            project: int,
+            node: int
+        }
         """
-        pagination_queryset = self.paginate_queryset(self.get_queryset())
+
+        node = request.query_params["node"]
+        project = request.query_params["project"]
+
+        queryset = models.API.objects.filter(project__id=project)
+
+        if node == '':
+            queryset = queryset.order_by('-update_time')
+        else:
+            queryset = queryset.filter(relation=node).order_by('-update_time')
+
+        pagination_queryset = self.paginate_queryset(queryset)
         serializer = self.get_serializer(pagination_queryset, many=True)
         return self.get_paginated_response(serializer.data)
 
@@ -261,10 +285,18 @@ class APITemplateView(GenericViewSet):
 
     def delete(self, request, **kwargs):
         """
-        删除一个接口
+        删除一个接口 pk
+        [{id:int},[]]
         """
+
         try:
-            models.API.objects.get(id=kwargs['pk']).delete()
+
+            if kwargs.get('pk'):  # 单个删除
+                models.API.objects.get(id=kwargs['pk']).delete()
+            else:
+                for content in request.data:
+                    models.API.objects.get(id=content['id']).delete()
+
         except ObjectDoesNotExist:
             return Response(response.API_NOT_FOUND)
 
@@ -289,88 +321,3 @@ class APITemplateView(GenericViewSet):
         }
 
         return Response(resp)
-
-
-class SuiteView(GenericViewSet):
-    queryset = models.Suite.objects.all().order_by('-update_time')
-    authentication_classes = ()
-    serializer_class = serializers.SuiteSerializer
-
-    def list(self, request):
-        """
-        response -> [{
-            id: 1,
-            count: 2,
-            name: 'Test Suite 1',
-            desc: 'Test Suite 1 desc',
-            update_time: '2018-09-04 14:58:23.827909',
-        }]
-
-        """
-
-        pagination_queryset = self.paginate_queryset(self.get_queryset())
-        serializer = self.get_serializer(pagination_queryset, many=True)
-        return self.get_paginated_response(serializer.data)
-
-    def add(self, request):
-        """
-        新增一条Suite{
-           "project": int,
-           "name": char
-           "desc": char
-        }
-        """
-        try:
-            pk = request.data['project']
-            project = models.Project.objects.get(id=pk)
-        except KeyError:
-            return Response(response.KEY_MISS)
-        except ObjectDoesNotExist:
-            return Response(response.SYSTEM_ERROR)
-
-        request.data['project'] = project
-
-        models.Suite.objects.create(**request.data)
-
-        return Response(response.SUITE_ADD_SUCCESS)
-
-    def delete(self, request, **kwargs):
-        """
-        删除suite
-        """
-        pk = kwargs['pk']
-        # del suite and suite_step
-        try:
-            models.Suite.objects.filter(id=pk).delete()
-            models.SuiteStep.objects.filter(suite__id=pk).delete()
-
-        except ObjectDoesNotExist:
-            return Response(response.API_NOT_FOUND)
-
-        return Response(response.SUITE_DEL_SUCCESS)
-
-
-
-
-class SuiteStepView(APIView):
-    authentication_classes = ()
-
-    def get(self, request, **kwargs):
-        """
-         sep -> [{
-            id: 1,
-            name: 'api name',
-            url: 'api url',
-            method: 'GET'
-        }, {
-            id: 2,
-            name: 'NAME',
-            url: 'URL',
-            method: 'POST'
-        }]
-        """
-        pk = kwargs['pk']
-        queryset = models.SuiteStep.objects.filter(suite__id=pk).order_by('step')
-        ret = pagination.MyPageNumberPagination().paginate_queryset(queryset, request)
-        serializer = serializers.SuiteStepSerializer(instance=ret, many=True)
-        return Response(serializer.data)

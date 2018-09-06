@@ -69,37 +69,6 @@ class Config(BaseTable):
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
 
 
-class Suite(BaseTable):
-    """
-    Test Suite信息表
-    """
-
-    class Meta:
-        verbose_name = "Test Suite"
-        db_table = "Suite"
-
-    name = models.CharField("Suite名称", null=False, max_length=50)
-    desc = models.CharField("描述", null=False, max_length=50)
-    project = models.ForeignKey(Project, on_delete=models.CASCADE)
-
-
-class SuiteStep(BaseTable):
-    """
-    Test Suite Step -> Suite
-    """
-
-    class Meta:
-        verbose_name = "Suite Step"
-        db_table = "SuiteStep"
-
-    name = models.CharField("API名称", null=False, max_length=50)
-    body = models.TextField("主体信息", null=False)
-    url = models.CharField("请求地址", null=False, max_length=100)
-    method = models.CharField("请求方式", null=False, max_length=10)
-    suite = models.ForeignKey(Suite, on_delete=models.CASCADE)
-    step = models.IntegerField("顺序", null=False)
-
-
 class API(BaseTable):
     """
     API信息表
@@ -216,6 +185,6 @@ class Relation(models.Model):
         verbose_name = "树形结构关系"
         db_table = "Relation"
 
-    project = models.OneToOneField(Project, on_delete=models.CASCADE)
+    project = models.ForeignKey(Project, on_delete=models.CASCADE)
     tree = models.TextField("结构主题", null=False, default=[])
     type = models.IntegerField("树类型", default=1)

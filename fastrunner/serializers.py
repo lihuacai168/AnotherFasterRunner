@@ -64,23 +64,3 @@ class APISerializer(serializers.ModelSerializer):
     class Meta:
         model = models.API
         fields = ['id', 'name', 'url', 'method', 'update_time', 'project', 'relation']
-
-
-class SuiteSerializer(serializers.ModelSerializer):
-    """
-    Suite信息序列化
-    """
-
-    class Meta:
-        model = models.Suite
-        fields = '__all__'
-
-
-class SuiteStepSerializer(serializers.ModelSerializer):
-    """
-    Suite Step 步骤序列化
-    """
-
-    class Meta:
-        model = models.SuiteStep
-        fields = '__all__'
