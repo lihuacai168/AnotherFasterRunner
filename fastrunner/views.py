@@ -286,11 +286,13 @@ class APITemplateView(GenericViewSet):
     def delete(self, request, **kwargs):
         """
         删除一个接口 pk
-        [{id:int},[]]
+        删除多个
+        [{
+            id:int
+        }]
         """
 
         try:
-
             if kwargs.get('pk'):  # 单个删除
                 models.API.objects.get(id=kwargs['pk']).delete()
             else:
