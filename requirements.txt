@@ -2,4 +2,3 @@ Django
 django-cors-headers
 djangorestframework
 pytz
-coveralls = "*"
