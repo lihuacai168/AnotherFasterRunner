@@ -94,6 +94,12 @@ API_DEL_SUCCESS = {
     'msg': 'API删除成功'
 }
 
+API_UPDATE_SUCCESS = {
+    'code': '0002',
+    'success': True,
+    'msg': 'API更新成功'
+}
+
 SUITE_ADD_SUCCESS = {
     'code': '0001',
     'success': True,
@@ -104,5 +110,24 @@ SUITE_DEL_SUCCESS = {
     'code': '0003',
     'success': True,
     'msg': 'Suite删除成功'
+}
+
+
+CASE_ADD_SUCCESS = {
+    'code': '0001',
+    'success': True,
+    'msg': '用例添加成功'
+}
+
+CASE_EXISTS = {
+    "code": "0101",
+    "success": False,
+    "msg": "此节点下已存在该用例集,请重新命名"
+}
+
+CASE_DELETE_SUCCESS = {
+    "code": "0003",
+    "success": True,
+    "msg": "用例集删除成功"
 }
 

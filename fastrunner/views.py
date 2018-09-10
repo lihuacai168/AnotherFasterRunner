@@ -182,7 +182,8 @@ class TreeView(APIView):
         tree = {
             "tree": body,
             "id": tree.id,
-            "success": True
+            "success": True,
+            "max": get_tree_max_id(body)
         }
         return Response(tree)
 
@@ -283,6 +284,28 @@ class APITemplateView(GenericViewSet):
 
         return Response(response.API_ADD_SUCCESS)
 
+    def update(self, request, **kwargs):
+        """
+        更新接口
+        """
+        pk = kwargs['pk']
+        api = Format(request.data)
+        api.parse_test()
+
+        api_body = {
+            'name': api.name,
+            'body': api.testcase,
+            'url': api.url,
+            'method': api.method,
+        }
+
+        try:
+            models.API.objects.filter(id=pk).update(**api_body)
+        except ObjectDoesNotExist:
+            return Response(response.API_NOT_FOUND)
+
+        return Response(response.API_UPDATE_SUCCESS)
+
     def delete(self, request, **kwargs):
         """
         删除一个接口 pk
@@ -323,3 +346,122 @@ class APITemplateView(GenericViewSet):
         }
 
         return Response(resp)
+
+
+class TestCaseView(GenericViewSet):
+    authentication_classes = ()
+    """
+    测试用例集操作视图
+    """
+
+    def get(self, request):
+        """
+        查询指定CASE列表，不包含CASE STEP
+        {
+            "project": int,
+            "node": int
+        }
+        """
+        node = request.query_params["node"]
+        project = request.query_params["project"]
+
+        queryset = models.Case.objects.filter(project__id=project)
+
+        # update_time 降序排列
+        if node == '':
+            queryset = queryset.order_by('-update_time')
+        else:
+            queryset = queryset.filter(relation=node).order_by('-update_time')
+
+        pagination_query = pagination.MyPageNumberPagination().paginate_queryset(queryset, request)
+
+        serializer = serializers.CaseSerializer(instance=pagination_query, many=True)
+
+        return Response(serializer.data)
+
+    def copy(self, request, **kwargs):
+        """
+        pk int: test id
+        {
+            name: test name
+            relation: int
+            project: int
+        }
+        """
+        pk = kwargs['pk']
+
+        if models.Case.objects.filter(**request.data).first():
+            return Response(response.CASE_EXISTS)
+
+        case = models.Case.objects.get(id=pk)
+        case.id = None
+        case.name = request.data['name']
+        case.save()
+
+        case_step = models.CaseStep.objects.filter(case__id=pk)
+
+        for step in case_step:
+            step.id = None
+            step.case = models.Case.objects.get(name=request.data['name'])
+            step.save()
+
+        return Response(response.CASE_ADD_SUCCESS)
+
+    def post(self, request):
+        """
+        {
+            name: str
+            project: int,
+            relation: int,
+            body: [{
+                id: int,
+                project: int,
+                name: str,
+                method: str,
+                url: str
+            }]
+        }
+        """
+
+        try:
+            pk = request.data['project']
+            request.data['project'] = models.Project.objects.get(id=pk)
+
+        except KeyError:
+            return Response(response.KEY_MISS)
+
+        except ObjectDoesNotExist:
+            return Response(response.PROJECT_NOT_EXISTS)
+
+        body = request.data.pop('body')
+
+        # 同一项目同一节点下存在相同用例集
+        if models.Case.objects.filter(**request.data).first():
+            return Response(response.CASE_EXISTS)
+
+        models.Case.objects.create(**request.data)
+
+        case = models.Case.objects.filter(**request.data).first()
+
+        prepare.generate_casestep(body, case)
+
+        return Response(response.CASE_ADD_SUCCESS)
+
+    def delete(self, request, **kwargs):
+        """
+        pk: test id delete single
+        [{id:int}] delete batch
+        """
+        pk = kwargs.get('pk')
+
+        try:
+            if pk:
+                prepare.case_end(pk)
+            else:
+                for content in request.data:
+                    prepare.case_end(content['id'])
+
+        except ObjectDoesNotExist:
+            return Response(response.SYSTEM_ERROR)
+
+        return Response(response.CASE_DELETE_SUCCESS)

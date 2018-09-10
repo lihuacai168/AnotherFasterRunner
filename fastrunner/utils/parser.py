@@ -58,9 +58,6 @@ class Format(object):
             self.setup_hooks = body['hooks'].pop('setup_hooks')
             self.teardown_hooks = body['hooks'].pop('teardown_hooks')
 
-            self.relation = body.pop('nodeId')
-            self.project = body.pop('project')
-
             self.desc = {
                 "header": body['header'].pop('desc'),
                 "data": body['request']['form'].pop('desc'),
@@ -70,9 +67,12 @@ class Format(object):
                 "variables": body['variables'].pop('desc'),
             }
 
+            self.relation = body.pop('nodeId')
+            self.project = body.pop('project')
+
             self.testcase = None
         except KeyError:
-            self.msg = 'url or method or name is missed'
+            pass
 
     def parse_test(self):
         """
@@ -151,8 +151,8 @@ class Parse(object):
         self.variables = body.get('variables')
         self.extract = body.get('extract')
         self.validate = body.get('validate')
-        self.setup_hooks = body.get('setup_hooks')
-        self.teardown_hooks = body.get('teardown_hooks')
+        self.setup_hooks = body.get('setup_hooks', [])
+        self.teardown_hooks = body.get('teardown_hooks', [])
         self.desc = body.get('desc')
 
         self.testcase = None

@@ -55,8 +55,20 @@ urlpatterns = [
 
     path('api/<int:pk>/', views.APITemplateView.as_view({
         "delete": "delete",
-        "get": "get_single"
+        "get": "get_single",
+        "patch": "update"
     })),
 
+    # test接口地址
+    path('test/', views.TestCaseView.as_view({
+        "get": "get",
+        "post": "post",
+        "delete": "delete"
+    })),
+
+    path('test/<int:pk>/', views.TestCaseView.as_view({
+        "delete": "delete",
+        "post": "copy"
+    }))
 
 ]

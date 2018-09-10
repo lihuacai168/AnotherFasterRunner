@@ -64,3 +64,13 @@ class APISerializer(serializers.ModelSerializer):
     class Meta:
         model = models.API
         fields = ['id', 'name', 'url', 'method', 'update_time', 'project', 'relation']
+
+
+class CaseSerializer(serializers.ModelSerializer):
+    """
+    用例信息序列化
+    """
+
+    class Meta:
+        model = models.Case
+        fields = '__all__'

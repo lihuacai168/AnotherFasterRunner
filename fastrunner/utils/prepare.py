@@ -74,7 +74,49 @@ def tree_end(params, project):
     # remove node testcase
     elif type == 2:
         case = models.Case.objects. \
-            filter(relation=node, project=project).values_list('id')
+            filter(relation=node, project=project).values('id')
 
         for case_id in case:
-            models.CaseStep.objects.filter(case__id=case_id).delete()
+            models.CaseStep.objects.filter(case__id=case_id['id']).delete()
+
+
+def generate_casestep(body, case):
+    """
+    生成用例集步骤
+    [{
+        id: int,
+        project: int,
+        name: str,
+        method: str,
+        url: str
+    }]
+
+    """
+    #  index也是case step的执行顺序
+    for index in range(len(body)):
+        api = models.API.objects.get(id=body[index]['id'])
+
+        main = eval(api.body)
+        name = body[index]['name']
+
+        if api.name != name:
+            main['name'] = name
+
+        kwargs = {
+            "name": name,
+            "body": main,
+            "url": api.url,
+            "method": api.method,
+            "step": index,
+            "case": case
+        }
+
+        models.CaseStep.objects.create(**kwargs)
+
+
+def case_end(pk):
+    """
+    pk: int case id
+    """
+    models.CaseStep.objects.filter(case__id=pk).delete()
+    models.Case.objects.filter(id=pk).delete()
