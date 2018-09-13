@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from fastrunner import models
+from fastrunner.utils.parser import Parse
 
 
 class ProjectSerializer(serializers.ModelSerializer):
@@ -60,10 +61,16 @@ class APISerializer(serializers.ModelSerializer):
     """
     接口信息序列化
     """
+    body = serializers.SerializerMethodField()
 
     class Meta:
         model = models.API
-        fields = ['id', 'name', 'url', 'method', 'update_time', 'project', 'relation']
+        fields = ['id', 'name', 'url', 'method', 'project', 'relation', 'body']
+
+    def get_body(self, obj):
+        parse = Parse(eval(obj.body))
+        parse.parse_http()
+        return parse.testcase
 
 
 class CaseSerializer(serializers.ModelSerializer):
@@ -74,3 +81,21 @@ class CaseSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Case
         fields = '__all__'
+
+
+class CaseStepSerializer(serializers.ModelSerializer):
+    """
+    用例步骤序列化
+    """
+    body = serializers.SerializerMethodField()
+
+    class Meta:
+        model = models.CaseStep
+        fields = ['id', 'name', 'url', 'method', 'body', 'case']
+        depth = 1
+
+    def get_body(self, obj):
+        parse = Parse(eval(obj.body))
+        parse.parse_http()
+        return parse.testcase
+

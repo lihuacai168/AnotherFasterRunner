@@ -69,6 +69,8 @@ urlpatterns = [
     path('test/<int:pk>/', views.TestCaseView.as_view({
         "delete": "delete",
         "post": "copy"
-    }))
+    })),
+
+    path('teststep/<int:pk>/', views.CaseStepView.as_view())
 
 ]

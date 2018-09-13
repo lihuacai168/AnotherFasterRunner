@@ -111,6 +111,9 @@ class ProjectView(GenericViewSet):
         return Response(project_info)
 
 
+
+
+
 class DataBaseView(ModelViewSet):
     """
     DataBase 增删改查
@@ -350,9 +353,6 @@ class APITemplateView(GenericViewSet):
 
 class TestCaseView(GenericViewSet):
     authentication_classes = ()
-    """
-    测试用例集操作视图
-    """
 
     def get(self, request):
         """
@@ -465,3 +465,23 @@ class TestCaseView(GenericViewSet):
             return Response(response.SYSTEM_ERROR)
 
         return Response(response.CASE_DELETE_SUCCESS)
+
+
+class CaseStepView(APIView):
+
+    """
+    测试用例step操作视图
+    """
+    authentication_classes = ()
+
+    def get(self, request, **kwargs):
+        """
+        返回用例集信息
+        """
+        pk = kwargs['pk']
+
+        queryset = models.CaseStep.objects.filter(case__id=pk).order_by('step')
+
+        serializer = serializers.CaseStepSerializer(instance=queryset, many=True)
+
+        return Response(serializer.data)

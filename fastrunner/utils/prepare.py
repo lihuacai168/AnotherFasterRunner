@@ -1,4 +1,5 @@
 from fastrunner import models
+from fastrunner.utils.parser import Format
 
 
 def get_counter(model, pk=None):
@@ -71,6 +72,7 @@ def tree_end(params, project):
     if type == 1:
         models.API.objects. \
             filter(relation=node, project=project).delete()
+
     # remove node testcase
     elif type == 2:
         case = models.Case.objects. \
@@ -78,6 +80,7 @@ def tree_end(params, project):
 
         for case_id in case:
             models.CaseStep.objects.filter(case__id=case_id['id']).delete()
+            models.Case.objects.filter(id=case_id['id']).delete()
 
 
 def generate_casestep(body, case):
@@ -94,19 +97,32 @@ def generate_casestep(body, case):
     """
     #  index也是case step的执行顺序
     for index in range(len(body)):
-        api = models.API.objects.get(id=body[index]['id'])
 
-        main = eval(api.body)
-        name = body[index]['name']
+        test = body[index]
+        try:
+            format_http = Format(test['newBody'])
+            format_http.parse_test()
+            name = format_http.name
+            new_body = format_http.testcase
+            url = format_http.url
+            method = format_http.method
 
-        if api.name != name:
-            main['name'] = name
+        except KeyError:
+            api = models.API.objects.get(id=test['id'])
+            new_body = eval(api.body)
+            name = test['body']['name']
+
+            if api.name != name:
+                new_body['name'] = name
+
+            url = test['body']['url']
+            method = test['body']['method']
 
         kwargs = {
             "name": name,
-            "body": main,
-            "url": api.url,
-            "method": api.method,
+            "body": new_body,
+            "url": url,
+            "method": method,
             "step": index,
             "case": case
         }
