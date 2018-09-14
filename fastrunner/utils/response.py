@@ -125,9 +125,21 @@ CASE_EXISTS = {
     "msg": "此节点下已存在该用例集,请重新命名"
 }
 
+CASE_NOT_EXISTS = {
+    "code": "0102",
+    "success": False,
+    "msg": "此用例集不存在"
+}
+
 CASE_DELETE_SUCCESS = {
     "code": "0003",
     "success": True,
     "msg": "用例集删除成功"
+}
+
+CASE_UPDATE_SUCCESS = {
+    'code': '0002',
+    'success': True,
+    'msg': '用例集更新成功'
 }
 

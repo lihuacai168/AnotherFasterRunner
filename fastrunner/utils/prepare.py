@@ -83,6 +83,55 @@ def tree_end(params, project):
             models.Case.objects.filter(id=case_id['id']).delete()
 
 
+def update_casestep(body, case):
+
+    step_list = list(models.CaseStep.objects.filter(case=case).values('id'))
+
+    for index in range(len(body)):
+
+        test = body[index]
+        try:
+            format_http = Format(test['newBody'])
+            format_http.parse_test()
+            name = format_http.name
+            new_body = format_http.testcase
+            url = format_http.url
+            method = format_http.method
+
+        except KeyError:
+            if 'case' in test.keys():
+                case_step = models.CaseStep.objects.get(id=test['id'])
+            else:
+                case_step = models.API.objects.get(id=test['id'])
+
+            new_body = eval(case_step.body)
+            name = test['body']['name']
+
+            if case_step.name != name:
+                new_body['name'] = name
+
+            url = test['body']['url']
+            method = test['body']['method']
+
+        kwargs = {
+            "name": name,
+            "body": new_body,
+            "url": url,
+            "method": method,
+            "step": index,
+        }
+        if 'case' in test.keys():
+            models.CaseStep.objects.filter(id=test['id']).update(**kwargs)
+            step_list.remove({"id":test['id']})
+        else:
+            kwargs['case'] = case
+            models.CaseStep.objects.create(**kwargs)
+
+        #  去掉多余的step
+        for content in step_list:
+            models.CaseStep.objects.filter(id=content['id']).delete()
+
+
 def generate_casestep(body, case):
     """
     生成用例集步骤
@@ -96,6 +145,7 @@ def generate_casestep(body, case):
 
     """
     #  index也是case step的执行顺序
+
     for index in range(len(body)):
 
         test = body[index]

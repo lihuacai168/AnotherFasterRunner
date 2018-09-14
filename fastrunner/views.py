@@ -111,9 +111,6 @@ class ProjectView(GenericViewSet):
         return Response(project_info)
 
 
-
-
-
 class DataBaseView(ModelViewSet):
     """
     DataBase 增删改查
@@ -407,8 +404,32 @@ class TestCaseView(GenericViewSet):
 
         return Response(response.CASE_ADD_SUCCESS)
 
+    def patch(self, request, **kwargs):
+        """
+        更新测试用例集
+        {
+            name: str
+            id: int
+            body: []
+        }
+        """
+
+        pk = kwargs['pk']
+
+        if models.Case.objects.exclude(id=pk).filter(name=request.data['name']).first():
+            return Response(response.CASE_EXISTS)
+
+        case = models.Case.objects.get(id=pk)
+
+        prepare.update_casestep(request.data.pop('body'), case)
+
+        models.Case.objects.filter(id=pk).update(**request.data)
+
+        return Response(response.CASE_UPDATE_SUCCESS)
+
     def post(self, request):
         """
+        新增测试用例集
         {
             name: str
             project: int,
