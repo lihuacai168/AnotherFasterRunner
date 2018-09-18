@@ -20,13 +20,13 @@ class Format(object):
     解析标准HttpRunner脚本 前端->后端
     """
 
-    def __init__(self, body):
+    def __init__(self, body, level='test'):
         """
         body => {
                     header: header -> [{key:'', value:'', desc:''},],
                     request: request -> {
                         form: formData - > [{key: '', value: '', type: 1, desc: ''},],
-                        json: jsonData -> {},
+                        json: jsonData -> {},-
                         params: paramsData -> [{key: '', value: '', type: 1, desc: ''},]
                         files: files -> {"fields","binary"}
                     },
@@ -42,10 +42,6 @@ class Format(object):
 
         try:
             self.name = body.pop('name')
-            self.url = body.pop('url')
-            self.method = body.pop('method')
-            self.times = body.pop('times')
-
             self.headers = body['header'].pop('header')
             self.params = body['request']['params'].pop('params')
             self.data = body['request']['form'].pop('data')
@@ -53,8 +49,6 @@ class Format(object):
             self.files = body['request']['files'].pop('files')
 
             self.variables = body['variables'].pop('variables')
-            self.extract = body['extract'].pop('extract')
-            self.validate = body.pop('validate').pop('validate')
             self.setup_hooks = body['hooks'].pop('setup_hooks')
             self.teardown_hooks = body['hooks'].pop('teardown_hooks')
 
@@ -63,30 +57,65 @@ class Format(object):
                 "data": body['request']['form'].pop('desc'),
                 "files": body['request']['files'].pop('desc'),
                 "params": body['request']['params'].pop('desc'),
-                "extract": body['extract'].pop('desc'),
                 "variables": body['variables'].pop('desc'),
             }
 
-            self.relation = body.pop('nodeId')
             self.project = body.pop('project')
 
+            if level is 'test':
+                self.method = body.pop('method')
+                self.times = body.pop('times')
+                self.url = body.pop('url')
+
+                self.extract = body['extract'].pop('extract')
+                self.validate = body.pop('validate').pop('validate')
+                self.desc['extract'] = body['extract'].pop('desc')
+
+                self.relation = body.pop('nodeId')
+
+            elif level is 'config':
+                self.base_url = body.pop('base_url')
+                self.parameters = body['parameters'].pop('parameters')
+                self.desc["parameters"] = body['parameters'].pop('desc')
+
             self.testcase = None
+            self.level = level
+
         except KeyError:
             pass
 
-    def parse_test(self):
+    def parse(self):
         """
         返回标准化HttpRunner "desc" 字段运行需去除
         """
-        test = {
-            "name": self.name,
-            "times": self.times,
-            "request": {
-                "url": self.url,
-                "method": self.method
-            },
-            "desc": self.desc
-        }
+
+        if self.level is 'test':
+            test = {
+                "name": self.name,
+                "times": self.times,
+                "request": {
+                    "url": self.url,
+                    "method": self.method
+                },
+                "desc": self.desc
+            }
+
+            if self.extract:
+                test["extract"] = self.extract
+            if self.validate:
+                test['validate'] = self.validate
+
+        elif self.level is 'config':
+            test = {
+                "name": self.name,
+                "request": {
+                    "base_url": self.base_url,
+                },
+                "desc": self.desc
+            }
+
+            if self.parameters:
+                test['parameters'] = self.parameters
 
         if self.headers:
             test["request"]["headers"] = self.headers
@@ -98,11 +127,6 @@ class Format(object):
             test["request"]["json"] = self.json
         if self.files:
             test["request"]["files"] = self.files
-
-        if self.extract:
-            test["extract"] = self.extract
-        if self.validate:
-            test['validate'] = self.validate
         if self.variables:
             test["variables"] = self.variables
         if self.setup_hooks:

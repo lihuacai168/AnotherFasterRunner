@@ -71,6 +71,12 @@ urlpatterns = [
         "post": "copy"
     })),
 
-    path('teststep/<int:pk>/', views.CaseStepView.as_view())
+    path('teststep/<int:pk>/', views.CaseStepView.as_view()),
+
+    # config接口地址
+    path('config/', views.ConfigView.as_view({
+        "post": "add",
+        "get": "list"
+    }))
 
 ]

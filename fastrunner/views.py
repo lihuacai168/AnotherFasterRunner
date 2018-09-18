@@ -249,15 +249,10 @@ class APITemplateView(GenericViewSet):
         node = request.query_params["node"]
         project = request.query_params["project"]
 
-        queryset = models.API.objects.filter(project__id=project)
-
-        if node == '':
-            queryset = queryset.order_by('-update_time')
-        else:
-            queryset = queryset.filter(relation=node).order_by('-update_time')
-
+        queryset = models.API.objects.filter(project__id=project, relation=node).order_by('-update_time')
         pagination_queryset = self.paginate_queryset(queryset)
         serializer = self.get_serializer(pagination_queryset, many=True)
+
         return self.get_paginated_response(serializer.data)
 
     def add(self, request):
@@ -266,7 +261,7 @@ class APITemplateView(GenericViewSet):
         """
 
         api = Format(request.data)
-        api.parse_test()
+        api.parse()
 
         api_body = {
             'name': api.name,
@@ -290,7 +285,7 @@ class APITemplateView(GenericViewSet):
         """
         pk = kwargs['pk']
         api = Format(request.data)
-        api.parse_test()
+        api.parse()
 
         api_body = {
             'name': api.name,
@@ -362,13 +357,8 @@ class TestCaseView(GenericViewSet):
         node = request.query_params["node"]
         project = request.query_params["project"]
 
-        queryset = models.Case.objects.filter(project__id=project)
-
         # update_time 降序排列
-        if node == '':
-            queryset = queryset.order_by('-update_time')
-        else:
-            queryset = queryset.filter(relation=node).order_by('-update_time')
+        queryset = models.Case.objects.filter(project__id=project, relation=node).order_by('-update_time')
 
         pagination_query = pagination.MyPageNumberPagination().paginate_queryset(queryset, request)
 
@@ -506,3 +496,51 @@ class CaseStepView(APIView):
         serializer = serializers.CaseStepSerializer(instance=queryset, many=True)
 
         return Response(serializer.data)
+    
+
+class ConfigView(GenericViewSet):
+    authentication_classes = ()
+    serializer_class = serializers.ConfigSerializer
+
+    def list(self, request):
+        project = request.query_params['project']
+        queryset = models.Config.objects.filter(project__id=project).order_by('-update_time')
+
+        pagination_queryset = self.paginate_queryset(queryset)
+        serializer = self.get_serializer(pagination_queryset, many=True)
+
+        return self.get_paginated_response(serializer.data)
+
+    def add(self, request):
+        """
+        add new config
+        {
+            name: str
+            project: int
+            body: dict
+        }
+        """
+
+        config = Format(request.data, level='config')
+        config.parse()
+
+        try:
+            config.project = models.Project.objects.get(id=config.project)
+        except ObjectDoesNotExist:
+            return Response(response.PROJECT_NOT_EXISTS)
+
+        if models.Config.objects.filter(name=config.name, project=config.project).first():
+            return Response(response.CONFIG_EXISTS)
+
+        config_body = {
+            "name": config.name,
+            "base_url": config.base_url,
+            "body": config.testcase,
+            "project": config.project
+        }
+
+        models.Config.objects.create(**config_body)
+        return Response(response.CONFIG_ADD_SUCCESS)
+
+
+

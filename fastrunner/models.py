@@ -63,9 +63,8 @@ class Config(BaseTable):
         db_table = "Config"
 
     name = models.CharField("环境名称", null=False, max_length=50)
-    body = models.TextField("主体信息", null=True)
+    body = models.TextField("主体信息", null=False)
     base_url = models.CharField("请求地址", null=False, max_length=100)
-    method = models.CharField('请求方式', null=True, max_length=10)
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
 
 

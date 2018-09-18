@@ -99,3 +99,13 @@ class CaseStepSerializer(serializers.ModelSerializer):
         parse.parse_http()
         return parse.testcase
 
+
+class ConfigSerializer(serializers.ModelSerializer):
+    """
+    配置信息序列化
+    """
+
+    class Meta:
+        model = models.Config
+        fields = '__all__'
+        depth = 1

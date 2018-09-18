@@ -92,7 +92,7 @@ def update_casestep(body, case):
         test = body[index]
         try:
             format_http = Format(test['newBody'])
-            format_http.parse_test()
+            format_http.parse()
             name = format_http.name
             new_body = format_http.testcase
             url = format_http.url
@@ -151,7 +151,7 @@ def generate_casestep(body, case):
         test = body[index]
         try:
             format_http = Format(test['newBody'])
-            format_http.parse_test()
+            format_http.parse()
             name = format_http.name
             new_body = format_http.testcase
             url = format_http.url

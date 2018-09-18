@@ -143,3 +143,15 @@ CASE_UPDATE_SUCCESS = {
     'msg': '用例集更新成功'
 }
 
+CONFIG_EXISTS = {
+    "code": "0101",
+    "success": False,
+    "msg": "此环境已存在，请重新命名"
+}
+
+CONFIG_ADD_SUCCESS = {
+    'code': '0001',
+    'success': True,
+    'msg': '环境添加成功'
+}
+
