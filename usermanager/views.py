@@ -61,6 +61,10 @@ class LoginView(APIView):
     def post(self, request):
         """
         用户名密码一致返回token
+        {
+            username: str
+            password: str
+        }
         """
         try:
             username = request.data["username"]
@@ -79,7 +83,7 @@ class LoginView(APIView):
         token = generate_token(username)
 
         try:
-            models.UserToken.objects.update_or_create(user=obj, defaults={"token": token})
+            models.UserToken.objects.update_or_create(user=user, defaults={"token": token})
         except ObjectDoesNotExist:
             return Response(response.SYSTEM_ERROR)
         else:

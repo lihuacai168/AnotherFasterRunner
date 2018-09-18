@@ -76,7 +76,13 @@ urlpatterns = [
     # config接口地址
     path('config/', views.ConfigView.as_view({
         "post": "add",
-        "get": "list"
+        "get": "list",
+        "delete": "delete"
+    })),
+
+    path('config/<int:pk>/', views.ConfigView.as_view({
+        "post": "copy",
+        "delete": "delete"
     }))
 
 ]

@@ -155,3 +155,9 @@ CONFIG_ADD_SUCCESS = {
     'msg': '环境添加成功'
 }
 
+CONFIG_NOT_EXISTS = {
+    "code": "0102",
+    "success": False,
+    "msg": "指定的环境不存在"
+}
+

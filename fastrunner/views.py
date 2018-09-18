@@ -236,6 +236,7 @@ class APITemplateView(GenericViewSet):
     """
     authentication_classes = ()
     serializer_class = serializers.APISerializer
+    queryset = models.API.objects
     """使用默认分页器"""
 
     def list(self, request):
@@ -249,7 +250,7 @@ class APITemplateView(GenericViewSet):
         node = request.query_params["node"]
         project = request.query_params["project"]
 
-        queryset = models.API.objects.filter(project__id=project, relation=node).order_by('-update_time')
+        queryset = self.get_queryset().filter(project__id=project, relation=node).order_by('-update_time')
         pagination_queryset = self.paginate_queryset(queryset)
         serializer = self.get_serializer(pagination_queryset, many=True)
 
@@ -345,6 +346,8 @@ class APITemplateView(GenericViewSet):
 
 class TestCaseView(GenericViewSet):
     authentication_classes = ()
+    queryset = models.Case.objects
+    serializer_class = serializers.CaseSerializer
 
     def get(self, request):
         """
@@ -358,13 +361,12 @@ class TestCaseView(GenericViewSet):
         project = request.query_params["project"]
 
         # update_time 降序排列
-        queryset = models.Case.objects.filter(project__id=project, relation=node).order_by('-update_time')
+        queryset = self.get_queryset().filter(project__id=project, relation=node).order_by('-update_time')
 
-        pagination_query = pagination.MyPageNumberPagination().paginate_queryset(queryset, request)
+        pagination_query = self.paginate_queryset(queryset)
+        serializer = self.get_serializer(pagination_query, many=True)
 
-        serializer = serializers.CaseSerializer(instance=pagination_query, many=True)
-
-        return Response(serializer.data)
+        return self.get_paginated_response(serializer.data)
 
     def copy(self, request, **kwargs):
         """
@@ -479,7 +481,6 @@ class TestCaseView(GenericViewSet):
 
 
 class CaseStepView(APIView):
-
     """
     测试用例step操作视图
     """
@@ -496,16 +497,16 @@ class CaseStepView(APIView):
         serializer = serializers.CaseStepSerializer(instance=queryset, many=True)
 
         return Response(serializer.data)
-    
+
 
 class ConfigView(GenericViewSet):
     authentication_classes = ()
     serializer_class = serializers.ConfigSerializer
+    queryset = models.Config.objects
 
     def list(self, request):
         project = request.query_params['project']
-        queryset = models.Config.objects.filter(project__id=project).order_by('-update_time')
-
+        queryset = self.get_queryset().filter(project__id=project).order_by('-update_time')
         pagination_queryset = self.paginate_queryset(queryset)
         serializer = self.get_serializer(pagination_queryset, many=True)
 
@@ -513,12 +514,12 @@ class ConfigView(GenericViewSet):
 
     def add(self, request):
         """
-        add new config
-        {
-            name: str
-            project: int
-            body: dict
-        }
+            add new config
+            {
+                name: str
+                project: int
+                body: dict
+            }
         """
 
         config = Format(request.data, level='config')
@@ -542,5 +543,45 @@ class ConfigView(GenericViewSet):
         models.Config.objects.create(**config_body)
         return Response(response.CONFIG_ADD_SUCCESS)
 
+    def copy(self, request, **kwargs):
+        """
+        pk: int
+        {
+            name: str
+        }
+        """
+        pk = kwargs['pk']
+        try:
+            config = models.Config.objects.get(id=pk)
+        except ObjectDoesNotExist:
+            return Response(response.CONFIG_NOT_EXISTS)
 
+        if models.Config.objects.filter(**request.data).first():
+            return Response(response.CONFIG_EXISTS)
 
+        config.id = None
+        config.name = request.data['name']
+        config.save()
+
+        return Response(response.CONFIG_ADD_SUCCESS)
+
+    def delete(self, request, **kwargs):
+        """
+        删除一个接口 pk
+        删除多个
+        [{
+            id:int
+        }]
+        """
+
+        try:
+            if kwargs.get('pk'):  # 单个删除
+                models.Config.objects.get(id=kwargs['pk']).delete()
+            else:
+                for content in request.data:
+                    models.Config.objects.get(id=content['id']).delete()
+
+        except ObjectDoesNotExist:
+            return Response(response.CONFIG_NOT_EXISTS)
+
+        return Response(response.API_DEL_SUCCESS)
