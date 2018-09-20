@@ -44,7 +44,7 @@ class DebugTalkSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.Debugtalk
-        fields = ['id', 'debugtalk']
+        fields = ['id', 'code']
 
 
 class RelationSerializer(serializers.ModelSerializer):
@@ -104,8 +104,14 @@ class ConfigSerializer(serializers.ModelSerializer):
     """
     配置信息序列化
     """
+    body = serializers.SerializerMethodField()
 
     class Meta:
         model = models.Config
-        fields = '__all__'
+        fields = ['id', 'base_url', 'body', 'name', 'update_time']
         depth = 1
+
+    def get_body(self, obj):
+        parse = Parse(eval(obj.body), level='config')
+        parse.parse_http()
+        return parse.testcase

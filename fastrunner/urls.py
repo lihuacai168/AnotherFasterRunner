@@ -25,7 +25,7 @@ urlpatterns = [
         "patch": "update",
         "delete": "delete"
     })),
-    path('project/<int:pk>/', views.ProjectView.as_view({"get": "get_single"})),
+    path('project/<int:pk>/', views.ProjectView.as_view({"get": "single"})),
 
     # 数据库相关接口地址
     path('database/', views.DataBaseView.as_view({
@@ -39,7 +39,10 @@ urlpatterns = [
 
     # debugtalk.py相关接口地址
     path('debugtalk/<int:pk>/', views.DebugTalkView.as_view({"get": "debugtalk"})),
-    path('debugtalk/', views.DebugTalkView.as_view({"patch": "update"})),
+    path('debugtalk/', views.DebugTalkView.as_view({
+        "patch": "update",
+        "post": "run"
+    })),
 
     # 二叉树接口地址
     path('tree/<int:pk>/', views.TreeView.as_view()),
@@ -55,7 +58,7 @@ urlpatterns = [
 
     path('api/<int:pk>/', views.APITemplateView.as_view({
         "delete": "delete",
-        "get": "get_single",
+        "get": "single",
         "patch": "update"
     })),
 
@@ -82,7 +85,8 @@ urlpatterns = [
 
     path('config/<int:pk>/', views.ConfigView.as_view({
         "post": "copy",
-        "delete": "delete"
+        "delete": "delete",
+        "patch": "update"
     }))
 
 ]

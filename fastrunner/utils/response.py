@@ -161,3 +161,9 @@ CONFIG_NOT_EXISTS = {
     "msg": "指定的环境不存在"
 }
 
+CONFIG_UPDATE_SUCCESS = {
+    "code": "0002",
+    "success": True,
+    "msg": "环境更新成功"
+}
+

@@ -7,6 +7,7 @@ from rest_framework.response import Response
 from fastrunner.utils import response
 from fastrunner.utils import prepare
 from fastrunner.utils.parser import Format, Parse
+from fastrunner.utils.runner import DebugCode
 from fastrunner.utils.tree import get_tree_max_id
 from django.db import DataError
 
@@ -93,7 +94,7 @@ class ProjectView(GenericViewSet):
         except ObjectDoesNotExist:
             return Response(response.SYSTEM_ERROR)
 
-    def get_single(self, request, **kwargs):
+    def single(self, request, **kwargs):
         """
         得到单个项目相关统计信息
         """
@@ -149,12 +150,26 @@ class DebugTalkView(GenericViewSet):
         pk = request.data['id']
         try:
             models.Debugtalk.objects.filter(id=pk). \
-                update(debugtalk=request.data['debugtalk'])
+                update(code=request.data['code'])
 
         except ObjectDoesNotExist:
             return Response(response.SYSTEM_ERROR)
 
         return Response(response.DEBUGTALK_UPDATE_SUCCESS)
+
+    def run(self, request):
+        try:
+            code = request.data["code"]
+        except KeyError:
+            return Response(response.KEY_MISS)
+        debug = DebugCode(code)
+        debug.run()
+        resp = {
+            "msg": debug.resp,
+            "success": True,
+            "code": "0001"
+        }
+        return Response(resp)
 
 
 class TreeView(APIView):
@@ -323,7 +338,7 @@ class APITemplateView(GenericViewSet):
 
         return Response(response.API_DEL_SUCCESS)
 
-    def get_single(self, request, **kwargs):
+    def single(self, request, **kwargs):
         """
         查询单个api，返回body信息
         """
@@ -408,12 +423,22 @@ class TestCaseView(GenericViewSet):
 
         pk = kwargs['pk']
 
-        if models.Case.objects.exclude(id=pk).filter(name=request.data['name']).first():
+        body = request.data.pop('body')
+
+        if "case" in body[0].keys():
+            case_info = body[0]["case"]
+        else:
+            case_info = body[0]
+
+        if models.Case.objects.exclude(id=pk). \
+                filter(name=request.data['name'],
+                       project__id=case_info["project"],
+                       relation=case_info["relation"]).first():
             return Response(response.CASE_EXISTS)
 
         case = models.Case.objects.get(id=pk)
 
-        prepare.update_casestep(request.data.pop('body'), case)
+        prepare.update_casestep(body, case)
 
         models.Case.objects.filter(id=pk).update(**request.data)
 
@@ -543,6 +568,39 @@ class ConfigView(GenericViewSet):
         models.Config.objects.create(**config_body)
         return Response(response.CONFIG_ADD_SUCCESS)
 
+    def update(self, request, **kwargs):
+        """
+        pk: int
+        {
+            name: str,
+            base_url: str,
+            variables: []
+            parameters: []
+            request: []
+            }
+        }
+        """
+        pk = kwargs['pk']
+
+        try:
+            config = models.Config.objects.get(id=pk)
+
+        except ObjectDoesNotExist:
+            return Response(response.CONFIG_NOT_EXISTS)
+
+        format = Format(request.data, level="config")
+        format.parse()
+
+        if models.Config.objects.exclude(id=pk).filter(name=format.name).first():
+            return Response(response.CONFIG_EXISTS)
+
+        config.name = format.name
+        config.body = format.testcase
+        config.base_url = format.base_url
+        config.save()
+
+        return Response(response.CONFIG_UPDATE_SUCCESS)
+
     def copy(self, request, **kwargs):
         """
         pk: int
@@ -560,7 +618,13 @@ class ConfigView(GenericViewSet):
             return Response(response.CONFIG_EXISTS)
 
         config.id = None
-        config.name = request.data['name']
+
+        body = eval(config.body)
+        name = request.data['name']
+
+        body['name'] = name
+        config.name = name
+        config.body = body
         config.save()
 
         return Response(response.CONFIG_ADD_SUCCESS)

@@ -49,7 +49,7 @@ class Debugtalk(models.Model):
         verbose_name = "驱动库"
         db_table = "Debugtalk"
 
-    debugtalk = models.TextField("python代码", default="# write you code", null=False)
+    code = models.TextField("python代码", default="# write you code", null=False)
     project = models.OneToOneField(to=Project, on_delete=models.CASCADE)
 
 

@@ -23,7 +23,6 @@ def get_project_detail(pk):
 
     return {
         "api_count": api_count,
-        "suite_count": 0,
         "case_count": case_count,
         "team_count": team_count,
         "config_count": config_count
@@ -34,12 +33,17 @@ def project_init(project):
     """
     新建项目初始化
     """
+    tree = [{
+        "id": 1,
+        "label": "默认分组",
+        "children": []
+    }]
     # 自动生成默认debugtalk.py
     models.Debugtalk.objects.create(project=project)
     # 自动生成API tree
-    models.Relation.objects.create(project=project)
+    models.Relation.objects.create(project=project, tree=tree)
     # 自动生成Test Tree
-    models.Relation.objects.create(project=project, type=2)
+    models.Relation.objects.create(project=project, type=2, tree=tree)
 
 
 def project_end(project):
@@ -122,14 +126,14 @@ def update_casestep(body, case):
         }
         if 'case' in test.keys():
             models.CaseStep.objects.filter(id=test['id']).update(**kwargs)
-            step_list.remove({"id":test['id']})
+            step_list.remove({"id": test['id']})
         else:
             kwargs['case'] = case
             models.CaseStep.objects.create(**kwargs)
 
-        #  去掉多余的step
-        for content in step_list:
-            models.CaseStep.objects.filter(id=content['id']).delete()
+    #  去掉多余的step
+    for content in step_list:
+        models.CaseStep.objects.filter(id=content['id']).delete()
 
 
 def generate_casestep(body, case):
