@@ -144,7 +144,7 @@ class Parse(object):
 
     def __init__(self, body, level='test'):
         """
-        body: =>{
+        body: => {
                 "name": "get token with $user_agent, $os_platform, $app_version",
                 "request": {
                     "url": "/api/get-token",

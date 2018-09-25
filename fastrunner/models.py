@@ -145,13 +145,14 @@ class FileBinary(models.Model):
     """
     二进制文件流
     """
+
     class Meta:
         verbose_name = "二进制文件"
         db_table = "FileBinary"
 
     name = models.CharField("文件名称", null=False, max_length=50)
     body = models.BinaryField("二进制流", null=False)
-    type = models.IntegerField("类型", null=False)
+    type = models.IntegerField("类型", default=1, null=False)
     size = models.IntegerField("大小", null=False)
     relation = models.IntegerField("关联ID", null=False)
 

@@ -1,5 +1,9 @@
+import time
+
 from rest_framework import exceptions
 from rest_framework.authentication import BaseAuthentication
+from rest_framework.response import Response
+
 from usermanager import models
 
 
@@ -9,7 +13,7 @@ class Authenticator(BaseAuthentication):
     """
 
     def authenticate(self, request):
-        token = request.data.get("token", "none")
+        token = request.query_params.get("token", None)
         obj = models.UserToken.objects.filter(token=token).first()
 
         if not obj:
@@ -19,4 +23,17 @@ class Authenticator(BaseAuthentication):
                 "success": False
             })
 
-        return (obj.user, obj)
+        update_time = int(obj.update_time.timestamp())
+        current_time = int(time.time())
+
+        if current_time - update_time >= 20 * 60:
+            raise exceptions.AuthenticationFailed({
+                "code": "9997",
+                "msg": "登陆超时，请重新登陆",
+                "success": False
+            })
+
+        return obj.user, obj
+
+    def authenticate_header(self, request):
+        return 'Auth Failed'

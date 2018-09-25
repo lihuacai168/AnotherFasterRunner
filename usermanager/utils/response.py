@@ -34,6 +34,12 @@ LOGIN_FAILED = {
     "msg": "用户名或密码错误"
 }
 
+USER_NOT_EXISTS = {
+    "code": "0104",
+    "success": False,
+    "msg": "该用户未注册"
+}
+
 LOGIN_SUCCESS = {
     "code": "0001",
     "success": True,

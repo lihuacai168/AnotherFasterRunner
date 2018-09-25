@@ -75,7 +75,7 @@ class LoginView(APIView):
         user = models.UserInfo.objects.filter(username=username).first()
 
         if not user:
-            return Response(response.LOGIN_FAILED)
+            return Response(response.USER_NOT_EXISTS)
 
         if not check_password(password, user.password):
             return Response(response.LOGIN_FAILED)
@@ -88,6 +88,7 @@ class LoginView(APIView):
             return Response(response.SYSTEM_ERROR)
         else:
             response.LOGIN_SUCCESS["token"] = token
+            response.LOGIN_SUCCESS["user"] = username
             return Response(response.LOGIN_SUCCESS)
 
 

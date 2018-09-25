@@ -1,3 +1,6 @@
+import os
+import tempfile
+
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework.views import APIView
 from rest_framework.viewsets import GenericViewSet, ModelViewSet
@@ -23,7 +26,6 @@ class ProjectView(GenericViewSet):
     queryset = models.Project.objects.all().order_by('-update_time')
     serializer_class = serializers.ProjectSerializer
     pagination_class = pagination.MyCursorPagination
-    authentication_classes = ()
 
     def list(self, request):
         """
@@ -117,7 +119,6 @@ class DataBaseView(ModelViewSet):
     DataBase 增删改查
     """
     queryset = models.DataBase.objects.all().order_by('-update_time')
-    authentication_classes = ()
     pagination_class = pagination.MyCursorPagination
     serializer_class = serializers.DataBaseSerializer
 
@@ -126,7 +127,6 @@ class DebugTalkView(GenericViewSet):
     """
     DebugTalk update
     """
-    authentication_classes = ()
     serializer_class = serializers.DebugTalkSerializer
 
     def debugtalk(self, request, **kwargs):
@@ -176,7 +176,6 @@ class TreeView(APIView):
     """
     树形结构操作
     """
-    authentication_classes = ()
 
     def get(self, request, **kwargs):
         """
@@ -231,16 +230,20 @@ class TreeView(APIView):
 
 
 class FileView(APIView):
-    authentication_classes = ()
 
     def post(self, request):
         """
         接收文件并保存
         """
         file = request.FILES['file']
+        body = {
+            "name": file.name,
+            "body": file.file.read(),
+            "size": file.size,
+            "relation": 1
+        }
 
-        # 此处应该插入数据库
-        pass
+        # models.FileBinary.objects.create(**body)
 
         return Response(response.FILE_UPLOAD_SUCCESS)
 
@@ -249,7 +252,6 @@ class APITemplateView(GenericViewSet):
     """
     API操作视图
     """
-    authentication_classes = ()
     serializer_class = serializers.APISerializer
     queryset = models.API.objects
     """使用默认分页器"""
@@ -360,7 +362,6 @@ class APITemplateView(GenericViewSet):
 
 
 class TestCaseView(GenericViewSet):
-    authentication_classes = ()
     queryset = models.Case.objects
     serializer_class = serializers.CaseSerializer
 
@@ -509,7 +510,6 @@ class CaseStepView(APIView):
     """
     测试用例step操作视图
     """
-    authentication_classes = ()
 
     def get(self, request, **kwargs):
         """
@@ -525,7 +525,6 @@ class CaseStepView(APIView):
 
 
 class ConfigView(GenericViewSet):
-    authentication_classes = ()
     serializer_class = serializers.ConfigSerializer
     queryset = models.Config.objects
 

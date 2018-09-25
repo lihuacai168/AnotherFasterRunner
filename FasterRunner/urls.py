@@ -17,7 +17,7 @@ Including another URLconf
 from django.urls import path, include
 
 urlpatterns = [
-    path('api/', include('usermanager.urls')),
+    path('api/user/', include('usermanager.urls')),
     path('api/fastrunner/', include('fastrunner.urls')),
 
 
