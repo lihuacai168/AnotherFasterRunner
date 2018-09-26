@@ -1,7 +1,5 @@
-import os
-import tempfile
-
 from django.core.exceptions import ObjectDoesNotExist
+from rest_framework.decorators import api_view
 from rest_framework.views import APIView
 from rest_framework.viewsets import GenericViewSet, ModelViewSet
 from fastrunner import models, serializers
@@ -12,6 +10,7 @@ from fastrunner.utils import prepare
 from fastrunner.utils.parser import Format, Parse
 from fastrunner.utils.runner import DebugCode
 from fastrunner.utils.tree import get_tree_max_id
+from fastrunner.utils import loader
 from django.db import DataError
 
 
@@ -648,3 +647,21 @@ class ConfigView(GenericViewSet):
             return Response(response.CONFIG_NOT_EXISTS)
 
         return Response(response.API_DEL_SUCCESS)
+
+
+class TestRunView(ModelViewSet):
+    authentication_classes = ()
+
+    def single_api(self, request):
+        summary = loader.debug_api(122)
+        return Response(summary)
+
+
+@api_view(['POST'])
+def run_api(request):
+    api = Format(request.data)
+    api.parse()
+
+    summary = loader.debug_api(api.testcase)
+
+    return Response(summary)

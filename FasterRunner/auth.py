@@ -4,6 +4,7 @@ from rest_framework import exceptions
 from rest_framework.authentication import BaseAuthentication
 from rest_framework.response import Response
 
+from FasterRunner.settings import INVALID_TIME
 from usermanager import models
 
 
@@ -26,7 +27,7 @@ class Authenticator(BaseAuthentication):
         update_time = int(obj.update_time.timestamp())
         current_time = int(time.time())
 
-        if current_time - update_time >= 20 * 60:
+        if current_time - update_time >= INVALID_TIME:
             raise exceptions.AuthenticationFailed({
                 "code": "9997",
                 "msg": "登陆超时，请重新登陆",
