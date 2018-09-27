@@ -1,5 +1,4 @@
 Django
 django-cors-headers
 djangorestframework
-pytz
 HttpRunner
