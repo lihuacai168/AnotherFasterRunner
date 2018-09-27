@@ -1,11 +1,11 @@
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from usermanager.utils import response
+from usermanager.common import response
 from usermanager import models
 from usermanager import serializers
 import logging
 # Create your views here.
-from usermanager.utils.token import generate_token
+from usermanager.common.token import generate_token
 from django.contrib.auth.hashers import make_password, check_password
 from django.core.exceptions import ObjectDoesNotExist
 
