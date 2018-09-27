@@ -86,9 +86,15 @@ urlpatterns = [
     path('config/<int:pk>/', views.ConfigView.as_view({
         "post": "copy",
         "delete": "delete",
-        "patch": "update"
+        "patch": "update",
+        "get": "all"
     })),
 
-    url(r'^run_api/$', views.run_api)
+
+    # run api
+    path('run_api_pk/<int:pk>/', views.run_api_pk),
+    path('run_api_tree/', views.run_api_tree),
+    url(r'^run_api/$', views.run_api),
+
 
 ]

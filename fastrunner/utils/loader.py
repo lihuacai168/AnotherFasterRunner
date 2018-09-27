@@ -105,18 +105,24 @@ def parse_tests(testcases, config=None):
     return testcases
 
 
-def debug_api(api, pk=None):
+def debug_api(api, pk):
     """debug api
         api :dict
         pk: int
     """
-    config_body = None
+    body = None
 
     if pk:
         config = models.Config.objects.get(id=pk)
-        config_body = eval(config.body)
+        body = eval(config.body)
 
-    testcase_list = [parse_tests([api], config=config_body)]
+    if isinstance(api, dict):
+        """
+        httprunner scripts or teststeps
+        """
+        api = [api]
+
+    testcase_list = [parse_tests(api, config=body)]
 
     logger.setup_logger('DEBUG')
 
@@ -127,6 +133,7 @@ def debug_api(api, pk=None):
     runner = HttpRunner(**kwargs)
     runner.run(testcase_list)
     return runner.summary
+
 
 
 if __name__ == "__main__":

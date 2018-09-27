@@ -100,6 +100,7 @@ class ProjectView(GenericViewSet):
         得到单个项目相关统计信息
         """
         pk = kwargs.pop('pk')
+
         try:
             queryset = models.Project.objects.get(id=pk)
         except ObjectDoesNotExist:
@@ -535,6 +536,17 @@ class ConfigView(GenericViewSet):
 
         return self.get_paginated_response(serializer.data)
 
+    def all(self, request, **kwargs):
+        """
+        get all config
+        """
+        pk = kwargs["pk"]
+
+        queryset = self.get_queryset().filter(project__id=pk).\
+            order_by('-update_time').values("id", "name")
+
+        return Response(queryset)
+
     def add(self, request):
         """
             add new config
@@ -649,19 +661,49 @@ class ConfigView(GenericViewSet):
         return Response(response.API_DEL_SUCCESS)
 
 
-class TestRunView(ModelViewSet):
-    authentication_classes = ()
-
-    def single_api(self, request):
-        summary = loader.debug_api(122)
-        return Response(summary)
-
-
 @api_view(['POST'])
 def run_api(request):
+    """ run api by body and config
+    """
+    config = request.data.pop("config")
     api = Format(request.data)
     api.parse()
 
-    summary = loader.debug_api(api.testcase)
+    summary = loader.debug_api(api.testcase, pk=config)
+
+    return Response(summary)
+
+
+@api_view(['GET'])
+def run_api_pk(request, **kwargs):
+    """run api by pk and config
+    """
+    api = models.API.objects.get(id=kwargs['pk'])
+    testcase = eval(api.body)
+
+    summary = loader.debug_api(testcase, request.query_params["config"])
+
+    return Response(summary)
+
+
+@api_view(['POST'])
+def run_api_tree(request):
+    """run api by tree
+    {
+        project: int
+        relation: int
+        config: int
+    }
+    """
+    # order by id default
+    api = models.API.objects. \
+        filter(project__id=request.data['project'], relation=request.data['relation']). \
+        order_by('id').values('body')
+
+    testcase = []
+    for content in api:
+        testcase.append(eval(content['body']))
+
+    summary = loader.debug_api(testcase, request.data["config"])
 
     return Response(summary)

@@ -2,7 +2,6 @@ import time
 
 from rest_framework import exceptions
 from rest_framework.authentication import BaseAuthentication
-from rest_framework.response import Response
 
 from FasterRunner.settings import INVALID_TIME
 from usermanager import models
