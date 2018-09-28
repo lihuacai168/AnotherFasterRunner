@@ -22,9 +22,12 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'e$od9f28jce8q47u3raik$(e%$@lff6r89ux+=f!e1a$e42+#7'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
+
+# Token Settings
+INVALID_TIME = 30 * 60
 
 # Application definition
 
@@ -113,8 +116,6 @@ USE_L10N = True
 
 USE_TZ = False
 
-# Token Settings
-INVALID_TIME = 24 * 60 * 60
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
