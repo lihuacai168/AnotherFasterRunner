@@ -17,6 +17,10 @@ install_requires = [
     "HttpRunner",
 ]
 
+dependency_links = [
+    "git+https://github.com/yinquanwang/FasterRunner.git#egg=FasterRunner-0"
+]
+
 
 setup(
     name=about['__title__'],
