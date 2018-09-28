@@ -45,7 +45,7 @@ setup(
     ],
     entry_points={
         'console_scripts': [
-            'fat=manage:main_manage'
+            'fat=manage'
         ]
     }
 )

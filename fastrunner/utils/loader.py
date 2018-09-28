@@ -4,6 +4,7 @@ import types
 import yaml
 from httprunner import HttpRunner, logger
 from fastrunner import models
+from fastrunner.utils.parser import Format
 
 
 def is_function(tup):
@@ -135,72 +136,26 @@ def debug_api(api, pk):
     return runner.summary
 
 
+def load_test(test):
+    """
+    format testcase
+    """
 
-if __name__ == "__main__":
-    pass
+    try:
+        format_http = Format(test['newBody'])
+        format_http.parse()
+        testcase = format_http.testcase
 
-    # kwargs = {
-    #     "failfast": False
-    # }
-    #
-    # runner = HttpRunner(**kwargs)
-    #
-    # testcase_list = [
-    #     # testcase data structure
-    #     {
-    #         'config': {
-    #             'name': 'testset description',
-    #             'path': 'docs/data/demo-quickstart-2.yml',
-    #             'request': {
-    #                 'base_url': '',
-    #                 'headers': {'User-Agent': 'python-requests/2.18.4'}
-    #             },
-    #             'variables': [],
-    #             'output': ['token']
-    #         },
-    #         'api': {},
-    #         "teststeps": [
-    #             # teststep data structure
-    #             {
-    #                 'name': '/api/get-token',
-    #                 'request': {
-    #                     'url': 'http://127.0.0.1:5000/api/get-token',
-    #                     'method': 'POST',
-    #                     'headers': {'Content-Type': 'application/json', 'app_version': '2.8.6',
-    #                                 'device_sn': 'FwgRiO7CNA50DSU', 'os_platform': 'ios', 'user_agent': 'iOS/10.3'},
-    #                     'json': {'sign': '958a05393efef0ac7c0fb80a7eac45e24fd40c27'}
-    #                 },
-    #                 'extract': [
-    #                     {'token': 'content.token'}
-    #                 ],
-    #                 "setup_hooks": [
-    #                     "${time_sleep(4)}"
-    #                 ],
-    #                 'validate': [
-    #                     {'eq': ['status_code', 200]},
-    #                     {'eq': ['headers.Content-Type', 'application/json']},
-    #                     {'eq': ['content.success', True]}
-    #                 ]
-    #             },
-    #             {
-    #                 'name': '/api/users/1000',
-    #                 'request': {
-    #                     'url': 'http://127.0.0.1:5000/api/users/1000',
-    #                     'method': 'POST',
-    #                     'headers': {'Content-Type': 'application/json', 'device_sn': 'FwgRiO7CNA50DSU',
-    #                                 'token': '$token'}, 'json': {'name': 'user1', 'password': '123456'}
-    #                 },
-    #                 'validate': [
-    #                     {'eq': ['status_code', 201]},
-    #                     {'eq': ['headers.Content-Type', 'application/json']},
-    #                     {'eq': ['content.success', True]},
-    #                     {'eq': ['content.msg', 'user created successfully.']}
-    #                 ]
-    #             }
-    #         ]
-    #     },
-    #
-    # ]
-    # debugtalk = FileLoader.load_python_module(tests)
-    #
-    # runner.run(testcase_list, mapping={"debugtalk": debugtalk})
+    except KeyError:
+        if 'case' in test.keys():
+            case_step = models.CaseStep.objects.get(id=test['id'])
+        else:
+            case_step = models.API.objects.get(id=test['id'])
+
+        testcase = eval(case_step.body)
+        name = test['body']['name']
+
+        if case_step.name != name:
+            testcase['name'] = name
+
+    return testcase

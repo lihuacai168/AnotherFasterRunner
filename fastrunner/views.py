@@ -542,7 +542,7 @@ class ConfigView(GenericViewSet):
         """
         pk = kwargs["pk"]
 
-        queryset = self.get_queryset().filter(project__id=pk).\
+        queryset = self.get_queryset().filter(project__id=pk). \
             order_by('-update_time').values("id", "name")
 
         return Response(queryset)
@@ -705,5 +705,60 @@ def run_api_tree(request):
         testcase.append(eval(content['body']))
 
     summary = loader.debug_api(testcase, request.data["config"])
+
+    return Response(summary)
+
+
+@api_view(["POST"])
+def run_testsuite(request):
+    """debug testsuite
+    {
+        name: str,
+        config: int
+        body: dict
+    }
+    """
+    body = request.data["body"]
+
+    testcase_list = []
+
+    for test in body:
+        testcase_list.append(loader.load_test(test))
+
+    summary = loader.debug_api(testcase_list, request.data['config'])
+    return Response(summary)
+
+
+@api_view(["POST"])
+def run_test(request):
+    """debug single test
+    {
+        config: int
+        body: dict
+    }
+    """
+
+    body = request.data["body"]
+    summary = loader.debug_api(loader.load_test(body), request.data["config"])
+    return Response(summary)
+
+
+@api_view(["GET"])
+def run_testsuite_pk(request, **kwargs):
+    """run testsuite by pk
+        pk: int
+        config: int
+    """
+    pk = kwargs["pk"]
+
+    test_list = models.CaseStep.objects.\
+        filter(case__id=pk).order_by("step").values("body")
+
+    testcase_list = []
+
+    for content in test_list:
+        testcase_list.append(eval(content["body"]))
+
+    summary = loader.debug_api(testcase_list, request.query_params["config"])
 
     return Response(summary)

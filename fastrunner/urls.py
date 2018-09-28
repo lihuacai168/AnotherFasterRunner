@@ -96,5 +96,9 @@ urlpatterns = [
     path('run_api_tree/', views.run_api_tree),
     url(r'^run_api/$', views.run_api),
 
+    path('run_testsuite/', views.run_testsuite),
+    path('run_test/', views.run_test),
+    path('run_testsuite_pk/<int:pk>/', views.run_testsuite_pk),
+
 
 ]
