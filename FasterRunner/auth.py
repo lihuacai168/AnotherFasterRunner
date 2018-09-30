@@ -33,6 +33,10 @@ class Authenticator(BaseAuthentication):
                 "success": False
             })
 
+        # valid update valid time
+        obj.token = token
+        obj.save()
+
         return obj.user, obj
 
     def authenticate_header(self, request):
