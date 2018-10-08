@@ -1,4 +1,4 @@
-Django
-django-cors-headers
-djangorestframework
-HttpRunner
+Django == 2.1
+django-cors-headers == 2.4.0
+djangorestframework == 3.8.2
+HttpRunner == 1.5.4
