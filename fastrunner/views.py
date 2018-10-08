@@ -669,7 +669,7 @@ def run_api(request):
     api = Format(request.data)
     api.parse()
 
-    summary = loader.debug_api(api.testcase, pk=config)
+    summary = loader.debug_api(api.testcase, config, api.project)
 
     return Response(summary)
 
@@ -681,7 +681,7 @@ def run_api_pk(request, **kwargs):
     api = models.API.objects.get(id=kwargs['pk'])
     testcase = eval(api.body)
 
-    summary = loader.debug_api(testcase, request.query_params["config"])
+    summary = loader.debug_api(testcase, request.query_params["config"], api.project.id)
 
     return Response(summary)
 
@@ -696,15 +696,16 @@ def run_api_tree(request):
     }
     """
     # order by id default
+    project = request.data['project']
     api = models.API.objects. \
-        filter(project__id=request.data['project'], relation=request.data['relation']). \
+        filter(project__id=project, relation=request.data['relation']). \
         order_by('id').values('body')
 
     testcase = []
     for content in api:
         testcase.append(eval(content['body']))
 
-    summary = loader.debug_api(testcase, request.data["config"])
+    summary = loader.debug_api(testcase, request.data["config"], project)
 
     return Response(summary)
 
@@ -725,7 +726,7 @@ def run_testsuite(request):
     for test in body:
         testcase_list.append(loader.load_test(test))
 
-    summary = loader.debug_api(testcase_list, request.data['config'])
+    summary = loader.debug_api(testcase_list, request.data['config'], request.data["project"])
     return Response(summary)
 
 
@@ -739,7 +740,7 @@ def run_test(request):
     """
 
     body = request.data["body"]
-    summary = loader.debug_api(loader.load_test(body), request.data["config"])
+    summary = loader.debug_api(loader.load_test(body), request.data["config"], request.data["project"])
     return Response(summary)
 
 
@@ -759,6 +760,6 @@ def run_testsuite_pk(request, **kwargs):
     for content in test_list:
         testcase_list.append(eval(content["body"]))
 
-    summary = loader.debug_api(testcase_list, request.query_params["config"])
+    summary = loader.debug_api(testcase_list, request.query_params["config"], request.query_params["project"])
 
     return Response(summary)
