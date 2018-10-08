@@ -1,4 +1,4 @@
 Django == 2.1.2
 django-cors-headers == 2.4.0
 djangorestframework == 3.8.2
-HttpRunner == 1.5.14
+HttpRunner == 1.5.13
