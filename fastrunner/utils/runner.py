@@ -23,7 +23,7 @@ class DebugCode(object):
         """
         try:
             file_path = write_py("debugtalk", self.__code, self.temp)
-            self.resp = decode(subprocess.check_output([EXEC, file_path], stderr=subprocess.STDOUT, timeout=5))
+            self.resp = decode(subprocess.check_output([EXEC, file_path], stderr=subprocess.STDOUT, timeout=60))
 
         except subprocess.CalledProcessError as e:
             self.resp = decode(e.output)
