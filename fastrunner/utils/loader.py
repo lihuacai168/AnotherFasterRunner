@@ -1,11 +1,18 @@
+import importlib
 import io
 import json
+import os
+import shutil
+import sys
+import tempfile
 import types
+
 import yaml
 from httprunner import HttpRunner, logger
 from fastrunner import models
 from fastrunner.utils.parser import Format
 
+logger.setup_logger('DEBUG')
 
 def is_function(tup):
     """ Takes (name, object) tuple, returns True if it is a function.
@@ -57,11 +64,11 @@ class FileLoader(object):
             stream.write(data)
 
     @staticmethod
-    def load_python_module(module):
+    def load_python_module(file_path):
         """ load python module.
 
         Args:
-            module: python module
+            file_path: python path
 
         Returns:
             dict: variables and functions mapping for specified python module
@@ -77,8 +84,11 @@ class FileLoader(object):
             "functions": {}
         }
 
+        sys.path.insert(0, file_path)
+        module = importlib.import_module("debugtalk")
+        sys.path.pop(0)
+
         for name, item in vars(module).items():
-            print(name, item)
             if is_function((name, item)):
                 debugtalk_module["functions"][name] = item
             elif is_variable((name, item)):
@@ -91,41 +101,61 @@ class FileLoader(object):
         return debugtalk_module
 
 
-def parse_tests(testcases, config=None):
+def parse_tests(testcases, debugtalk, config=None):
     """get test case structure
         testcases: list
         config: none or dict
+        debugtalk: dict
     """
-    testcases = {
+    refs = {
+        "env": {},
+        "def-api": {},
+        "def-testcase": {},
+        "debugtalk": debugtalk
+    }
+    testset = {
+        "config": {
+            "name": testcases[-1]["name"]
+        },
         "teststeps": testcases,
     }
 
     if config:
-        testcases["config"] = config
+        testset["config"] = config
 
-    return testcases
+    testset["config"]["refs"] = refs
+
+    return testset
 
 
-def debug_api(api, pk):
+def debug_api(api, pk, project):
     """debug api
         api :dict
         pk: int
+        project: int
     """
     body = None
-
+    # config
     if pk:
         config = models.Config.objects.get(id=pk)
         body = eval(config.body)
 
+    #debugtalk.py
+    code = models.Debugtalk.objects.get(project__id=project).code
+    temp_path = tempfile.mkdtemp(prefix='debugtalk_')
+    file_path = os.path.join(temp_path, '%s.py' % "debugtalk")
+    FileLoader.dump_python_file(file_path, code)
+    debugtalk = FileLoader.load_python_module(temp_path)
+    shutil.rmtree(temp_path)
+
+    # testcases
     if isinstance(api, dict):
         """
         httprunner scripts or teststeps
         """
         api = [api]
 
-    testcase_list = [parse_tests(api, config=body)]
-
-    logger.setup_logger('DEBUG')
+    testcase_list = [parse_tests(api, debugtalk, config=body)]
 
     kwargs = {
         "failfast": False
@@ -159,3 +189,4 @@ def load_test(test):
             testcase['name'] = name
 
     return testcase
+
