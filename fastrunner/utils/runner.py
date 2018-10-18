@@ -6,7 +6,7 @@ import sys
 import os
 import subprocess
 import tempfile
-
+from fastrunner.utils import loader
 EXEC = sys.executable
 
 
@@ -15,14 +15,14 @@ class DebugCode(object):
     def __init__(self, code):
         self.__code = code
         self.resp = None
-        self.temp = tempfile.mkdtemp(prefix='debugtalk_')
+        self.temp = tempfile.mkdtemp(prefix='FasterRunner')
 
     def run(self):
-        """
-        run code
+        """ dumps debugtalk.py and run
         """
         try:
-            file_path = write_py("debugtalk", self.__code, self.temp)
+            file_path = os.path.join(self.temp, "debugtalk.py")
+            loader.FileLoader.dump_python_file(file_path, self.__code)
             self.resp = decode(subprocess.check_output([EXEC, file_path], stderr=subprocess.STDOUT, timeout=60))
 
         except subprocess.CalledProcessError as e:
@@ -32,19 +32,6 @@ class DebugCode(object):
             self.resp = 'RunnerTimeOut'
 
         shutil.rmtree(self.temp)
-
-
-def write_py(name, code, path):
-    """
-    name: str
-    code: str
-    """
-    file_path = os.path.join(path, '%s.py' % name)
-
-    with open(file_path, 'w', encoding='utf-8') as f:
-        f.write(code)
-
-    return file_path
 
 
 def decode(s):

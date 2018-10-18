@@ -12,7 +12,7 @@ from httprunner import HttpRunner, logger
 from fastrunner import models
 from fastrunner.utils.parser import Format
 
-logger.setup_logger('DEBUG')
+logger.setup_logger('INFO')
 
 def is_function(tup):
     """ Takes (name, object) tuple, returns True if it is a function.
@@ -142,11 +142,11 @@ def debug_api(api, pk, project):
 
     #debugtalk.py
     code = models.Debugtalk.objects.get(project__id=project).code
-    temp_path = tempfile.mkdtemp(prefix='debugtalk_')
-    file_path = os.path.join(temp_path, '%s.py' % "debugtalk")
+
+    file_path = os.path.join(tempfile.mkdtemp(prefix='FasterRunner'), "debugtalk.py")
     FileLoader.dump_python_file(file_path, code)
-    debugtalk = FileLoader.load_python_module(temp_path)
-    shutil.rmtree(temp_path)
+    debugtalk = FileLoader.load_python_module(os.path.dirname(file_path))
+    shutil.rmtree(os.path.dirname(file_path))
 
     # testcases
     if isinstance(api, dict):
