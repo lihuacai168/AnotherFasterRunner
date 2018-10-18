@@ -98,7 +98,7 @@ urlpatterns = [
 
     path('run_testsuite/', views.run_testsuite),
     path('run_test/', views.run_test),
-    path('run_testsuite_pk/<int:pk>/', views.run_testsuite_pk),
+    path('run_testsuite_pk/<int:pk>/', views.run_testsuite_pk)
 
 
 ]

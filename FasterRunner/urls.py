@@ -18,7 +18,5 @@ from django.urls import path, include
 
 urlpatterns = [
     path('api/user/', include('usermanager.urls')),
-    path('api/fastrunner/', include('fastrunner.urls')),
-
-
+    path('api/fastrunner/', include('fastrunner.urls'))
 ]
