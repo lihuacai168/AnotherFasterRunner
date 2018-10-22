@@ -27,7 +27,7 @@ DEBUG = False
 ALLOWED_HOSTS = ['*']
 
 # Token Settings
-INVALID_TIME = 30 * 60
+INVALID_TIME = 60 * 60
 
 # Application definition
 
@@ -80,10 +80,21 @@ WSGI_APPLICATION = 'FasterRunner.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': '*****',  # 新建数据库名
+        'USER': '*****',  # 数据库登录名
+        'PASSWORD': '*****',  # 数据库登录密码
+        'HOST': '******',  # 数据库所在服务器ip地址
+        'PORT': '*****',  # 监听端口 默认3306即可
     }
 }
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+#     }
+# }
 
 # Password validation
 # https://docs.djangoproject.com/en/2.1/ref/settings/#auth-password-validators
