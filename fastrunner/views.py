@@ -9,7 +9,7 @@ from fastrunner.utils import response
 from fastrunner.utils import prepare
 from fastrunner.utils.parser import Format, Parse
 from fastrunner.utils.runner import DebugCode
-from fastrunner.utils.tree import get_tree_max_id
+from fastrunner.utils.tree import get_tree_max_id, get_file_size
 from fastrunner.utils import loader
 from django.db import DataError
 
@@ -236,14 +236,17 @@ class FileView(APIView):
         接收文件并保存
         """
         file = request.FILES['file']
+
+        if models.FileBinary.objects.filter(name=file.name).first():
+            return Response(response.FILE_EXISTS)
+
         body = {
             "name": file.name,
             "body": file.file.read(),
-            "size": file.size,
-            "relation": 1
+            "size": get_file_size(file.size)
         }
 
-        # models.FileBinary.objects.create(**body)
+        models.FileBinary.objects.create(**body)
 
         return Response(response.FILE_UPLOAD_SUCCESS)
 

@@ -70,6 +70,12 @@ FILE_UPLOAD_SUCCESS = {
     'msg': '文件上传成功'
 }
 
+FILE_EXISTS = {
+    'code': '0101',
+    'success': False,
+    'msg': '文件已存在,默认使用已有文件'
+}
+
 API_ADD_SUCCESS = {
     'code': '0001',
     'success': True,
