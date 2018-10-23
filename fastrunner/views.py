@@ -730,6 +730,7 @@ def run_testsuite(request):
         testcase_list.append(loader.load_test(test))
 
     summary = loader.debug_api(testcase_list, request.data['config'], request.data["project"])
+
     return Response(summary)
 
 

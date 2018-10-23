@@ -9,10 +9,13 @@ import types
 
 import yaml
 from httprunner import HttpRunner, logger
+from requests_toolbelt import MultipartEncoder
+
 from fastrunner import models
 from fastrunner.utils.parser import Format
 
-logger.setup_logger('INFO')
+logger.setup_logger('DEBUG')
+
 
 def is_function(tup):
     """ Takes (name, object) tuple, returns True if it is a function.
@@ -61,6 +64,13 @@ class FileLoader(object):
         """dump python file
         """
         with io.open(python_file, 'w', encoding='utf-8') as stream:
+            stream.write(data)
+
+    @staticmethod
+    def dump_binary_file(binary_file, data):
+        """dump file
+        """
+        with io.open(binary_file, 'wb') as stream:
             stream.write(data)
 
     @staticmethod
@@ -125,6 +135,26 @@ def parse_tests(testcases, debugtalk, config=None):
 
     testset["config"]["refs"] = refs
 
+    for teststep in testcases:
+        # handle files
+        if "files" in teststep["request"].keys():
+            fields = {}
+
+            if "data" in teststep["request"].keys():
+                fields.update(teststep["request"].pop("data"))
+
+            for key, value in teststep["request"].pop("files").items():
+                file_binary = models.FileBinary.objects.get(name=value).body
+                # file_path = os.path.join(tempfile.mkdtemp(prefix='File'), value)
+                # FileLoader.dump_binary_file(file_path, file_binary)
+                fields[key] = (value, file_binary)
+
+            teststep["request"]["data"] = MultipartEncoder(fields)
+            try:
+                teststep["request"]["headers"]["Content-Type"] = teststep["request"]["data"].content_type
+            except KeyError:
+                teststep["request"].setdefault("headers", {"Content-Type": teststep["request"]["data"].content_type})
+
     return testset
 
 
@@ -140,7 +170,7 @@ def debug_api(api, pk, project):
         config = models.Config.objects.get(id=pk)
         body = eval(config.body)
 
-    #debugtalk.py
+    # debugtalk.py
     code = models.Debugtalk.objects.get(project__id=project).code
 
     file_path = os.path.join(tempfile.mkdtemp(prefix='FasterRunner'), "debugtalk.py")
@@ -189,4 +219,3 @@ def load_test(test):
             testcase['name'] = name
 
     return testcase
-
