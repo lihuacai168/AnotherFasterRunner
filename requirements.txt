@@ -1,0 +1,8 @@
+Django == 2.1.2
+django-cors-headers == 2.4.0
+djangorestframework == 3.8.2
+HttpRunner == 1.5.14
+mysqlclient == 1.3.13
+apscheduler == 3.5.3
+locustio == 0.9.0
+simplejson == 3.16.0
