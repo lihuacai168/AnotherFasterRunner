@@ -694,19 +694,19 @@ def run_api_tree(request):
     """run api by tree
     {
         project: int
-        relation: int
+        relation: list
         config: int
     }
     """
     # order by id default
     project = request.data['project']
-    api = models.API.objects. \
-        filter(project__id=project, relation=request.data['relation']). \
-        order_by('id').values('body')
+    relation = request.data["relation"]
 
     testcase = []
-    for content in api:
-        testcase.append(eval(content['body']))
+    for relation_id in relation:
+        api = models.API.objects.filter(project__id=project, relation=relation_id).order_by('id').values('body')
+        for content in api:
+            testcase.append(eval(content['body']))
 
     summary = loader.debug_api(testcase, request.data["config"], project)
 
@@ -756,7 +756,7 @@ def run_testsuite_pk(request, **kwargs):
     """
     pk = kwargs["pk"]
 
-    test_list = models.CaseStep.objects.\
+    test_list = models.CaseStep.objects. \
         filter(case__id=pk).order_by("step").values("body")
 
     testcase_list = []

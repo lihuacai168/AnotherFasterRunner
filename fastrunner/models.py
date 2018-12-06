@@ -62,7 +62,7 @@ class Config(BaseTable):
         verbose_name = "环境信息"
         db_table = "Config"
 
-    name = models.CharField("环境名称", null=False, max_length=50)
+    name = models.CharField("环境名称", null=False, max_length=100)
     body = models.TextField("主体信息", null=False)
     base_url = models.CharField("请求地址", null=False, max_length=100)
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
@@ -77,7 +77,7 @@ class API(BaseTable):
         verbose_name = "接口信息"
         db_table = "API"
 
-    name = models.CharField("接口名称", null=False, max_length=50)
+    name = models.CharField("接口名称", null=False, max_length=100)
     body = models.TextField("主体信息", null=False)
     url = models.CharField("请求地址", null=False, max_length=100)
     method = models.CharField("请求方式", null=False, max_length=10)
@@ -94,9 +94,10 @@ class Case(BaseTable):
         verbose_name = "用例信息"
         db_table = "Case"
 
-    name = models.CharField("用例名称", null=False, max_length=50)
+    name = models.CharField("用例名称", null=False, max_length=100)
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
     relation = models.IntegerField("节点id", null=False)
+    length = models.IntegerField("teststep个数", null=False)
 
 
 class CaseStep(BaseTable):
@@ -108,7 +109,7 @@ class CaseStep(BaseTable):
         verbose_name = "用例信息 Step"
         db_table = "CaseStep"
 
-    name = models.CharField("用例名称", null=False, max_length=50)
+    name = models.CharField("用例名称", null=False, max_length=100)
     body = models.TextField("主体信息", null=False)
     url = models.CharField("请求地址", null=False, max_length=100)
     method = models.CharField("请求方式", null=False, max_length=10)
@@ -133,7 +134,7 @@ class DataBase(BaseTable):
         verbose_name = "数据库信息"
         db_table = "DataBase"
 
-    name = models.CharField("数据库名称", null=False, max_length=50)
+    name = models.CharField("数据库名称", null=False, max_length=100)
     server = models.CharField("服务地址", null=False, max_length=100)
     account = models.CharField("登录名", max_length=50, null=False)
     password = models.CharField("登陆密码", max_length=50, null=False)
@@ -150,7 +151,7 @@ class FileBinary(models.Model):
         verbose_name = "二进制文件"
         db_table = "FileBinary"
 
-    name = models.CharField("文件名称", unique=True, null=False, max_length=50)
+    name = models.CharField("文件名称", unique=True, null=False, max_length=100)
     body = models.BinaryField("二进制流", null=False)
     size = models.CharField("大小", null=False, max_length=30)
 

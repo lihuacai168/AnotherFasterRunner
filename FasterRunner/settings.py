@@ -77,24 +77,13 @@ WSGI_APPLICATION = 'FasterRunner.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
-if not DEBUG:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.mysql',
-            'NAME': 'db_name',  # 新建数据库名
-            'USER': 'user',  # 数据库登录名
-            'PASSWORD': 'password',  # 数据库登录密码
-            'HOST': 'host',  # 数据库所在服务器ip地址
-            'PORT': 'port',  # 监听端口 默认3306即可
-        }
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
-else:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-        }
-    }
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/2.1/ref/settings/#auth-password-validators
@@ -142,7 +131,8 @@ REST_FRAMEWORK = {
     # json form 渲染
     'DEFAULT_PARSER_CLASSES': ['rest_framework.parsers.JSONParser',
                                'rest_framework.parsers.FormParser',
-                               'rest_framework.parsers.MultiPartParser'
+                               'rest_framework.parsers.MultiPartParser',
+                               'rest_framework.parsers.FileUploadParser',
                                ],
     'DEFAULT_PAGINATION_CLASS': 'FasterRunner.pagination.MyPageNumberPagination',
 }
