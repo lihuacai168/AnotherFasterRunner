@@ -16,6 +16,12 @@ from fastrunner.utils.parser import Format
 
 logger.setup_logger('DEBUG')
 
+TEST_NOT_EXISTS = {
+    "code": "0102",
+    "status": False,
+    "msg": "没有接口或者用例集"
+}
+
 
 def is_function(tup):
     """ Takes (name, object) tuple, returns True if it is a function.
@@ -160,25 +166,64 @@ def parse_tests(testcases, debugtalk, config=None):
     return testset
 
 
-def debug_api(api, pk, project):
-    """debug api
-        api :dict
-        pk: int
+def load_debugtalk(project):
+    """import debugtalk.py in sys.path and reload
         project: int
     """
-    body = None
-    # config
-    if pk:
-        config = models.Config.objects.get(id=pk)
-        body = eval(config.body)
-
     # debugtalk.py
     code = models.Debugtalk.objects.get(project__id=project).code
 
     file_path = os.path.join(tempfile.mkdtemp(prefix='FasterRunner'), "debugtalk.py")
     FileLoader.dump_python_file(file_path, code)
     debugtalk = FileLoader.load_python_module(os.path.dirname(file_path))
+
     shutil.rmtree(os.path.dirname(file_path))
+    return debugtalk
+
+
+def debug_suite(suite, pk, project):
+    """debug suite
+           suite :list
+           pk: int
+           project: int
+    """
+    if len(suite) == 0:
+        return TEST_NOT_EXISTS
+    body = None
+    # config
+    if pk:
+        config = models.Config.objects.get(id=pk)
+        body = eval(config.body)
+
+    debugtalk = load_debugtalk(project)
+
+    testsuite = []
+    for testcase in suite:
+        testsuite.append(parse_tests(testcase, debugtalk, config=body))
+
+    kwargs = {
+        "failfast": False
+    }
+
+    runner = HttpRunner(**kwargs)
+    runner.run(testsuite)
+    return runner.summary
+
+
+def debug_api(api, pk, project):
+    """debug api
+        api :dict or list
+        pk: int
+        project: int
+    """
+    if len(api) == 0:
+        return TEST_NOT_EXISTS
+
+    body = None
+    # config
+    if pk:
+        config = models.Config.objects.get(id=pk)
+        body = eval(config.body)
 
     # testcases
     if isinstance(api, dict):
@@ -187,7 +232,7 @@ def debug_api(api, pk, project):
         """
         api = [api]
 
-    testcase_list = [parse_tests(api, debugtalk, config=body)]
+    testcase_list = [parse_tests(api, load_debugtalk(project), config=body)]
 
     kwargs = {
         "failfast": False

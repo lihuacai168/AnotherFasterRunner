@@ -111,3 +111,36 @@ def run_testsuite_pk(request, **kwargs):
     summary = loader.debug_api(testcase_list, request.query_params["config"], request.query_params["project"])
 
     return Response(summary)
+
+
+@api_view(['POST'])
+def run_suite_tree(request):
+    """run api by tree
+    {
+        project: int
+        relation: list
+        config: int
+    }
+    """
+    # order by id default
+    project = request.data['project']
+    relation = request.data["relation"]
+
+    testcase = []
+    for relation_id in relation:
+        suite = models.Case.objects.filter(project__id=project, relation=relation_id).order_by('id').values('id')
+
+        for content in suite:
+            test_list = models.CaseStep.objects. \
+                filter(case__id=content["id"]).order_by("step").values("body")
+            # [{scripts}, {scripts}]
+            testcase_list = []
+
+            for content in test_list:
+                testcase_list.append(eval(content["body"]))
+            # [[{scripts}, {scripts}], [{scripts}, {scripts}]]
+            testcase.append(testcase_list)
+
+    summary = loader.debug_suite(testcase, request.data["config"], project)
+
+    return Response(summary)

@@ -118,7 +118,6 @@ SUITE_DEL_SUCCESS = {
     'msg': 'Suite删除成功'
 }
 
-
 CASE_ADD_SUCCESS = {
     'code': '0001',
     'success': True,
@@ -172,4 +171,3 @@ CONFIG_UPDATE_SUCCESS = {
     "success": True,
     "msg": "环境更新成功"
 }
-

@@ -93,11 +93,12 @@ urlpatterns = [
     # run api
     path('run_api_pk/<int:pk>/', run.run_api_pk),
     path('run_api_tree/', run.run_api_tree),
-    url(r'^run_api/$', run.run_api),
+    path('run_api/', run.run_api),
 
     # run testsuite
     path('run_testsuite/', run.run_testsuite),
     path('run_test/', run.run_test),
-    path('run_testsuite_pk/<int:pk>/', run.run_testsuite_pk)
+    path('run_testsuite_pk/<int:pk>/', run.run_testsuite_pk),
+    path('run_suite_tree/', run.run_suite_tree),
 
 ]
