@@ -1,7 +1,7 @@
 from django.db import models
 
 # Create your models here.
-from usermanager.models import BaseTable
+from fastuser.models import BaseTable
 
 
 class Project(BaseTable):

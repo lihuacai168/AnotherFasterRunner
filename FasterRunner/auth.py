@@ -4,7 +4,7 @@ from rest_framework import exceptions
 from rest_framework.authentication import BaseAuthentication
 
 from FasterRunner.settings import INVALID_TIME
-from usermanager import models
+from fastuser import models
 
 
 class Authenticator(BaseAuthentication):

@@ -39,7 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'fastrunner.apps.FastrunnerConfig',
-    'usermanager',
+    'fastuser',
     'rest_framework',
     'corsheaders'
 ]
