@@ -160,19 +160,19 @@ class Report(BaseTable):
     """
     报告存储
     """
+    report_type = (
+        (1, "调试用例报告"),
+        (2, "异步任务报告"),
+        (3, "定时任务报告")
+    )
 
     class Meta:
         verbose_name = "测试报告"
         db_table = "Report"
 
     name = models.CharField("报告名称", null=False, max_length=100)
-    body = models.TextField("主体信息", null=False)
-    total = models.IntegerField("总共个数", null=False)
-    success = models.IntegerField("通过用例")
-    failure = models.IntegerField("失败用例")
-    skipped = models.IntegerField("跳过用例")
-    start_time = models.DateTimeField("开始时间")
-    duration = models.CharField("持续时间", max_length=40)
+    type = models.IntegerField("报告类型", choices=report_type)
+    summary = models.TextField("主体信息", null=False)
 
 
 class Relation(models.Model):

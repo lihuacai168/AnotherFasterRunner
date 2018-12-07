@@ -1,3 +1,5 @@
+import datetime
+import functools
 import importlib
 import io
 import json
@@ -6,6 +8,7 @@ import shutil
 import sys
 import tempfile
 import types
+from threading import Thread
 
 import yaml
 from httprunner import HttpRunner, logger
@@ -19,7 +22,7 @@ logger.setup_logger('DEBUG')
 TEST_NOT_EXISTS = {
     "code": "0102",
     "status": False,
-    "msg": "没有接口或者用例集"
+    "msg": "节点下没有接口或者用例集"
 }
 
 
@@ -266,3 +269,46 @@ def load_test(test):
             testcase['name'] = name
 
     return testcase
+
+
+def async(func):
+    """异步执行装饰器
+    """
+
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs):
+        thread = Thread(target=func, args=args, kwargs=kwargs)
+        thread.start()
+
+    return wrapper
+
+
+def parse_summary(name, summary, type=2):
+    """解析结果
+    """
+    if "status" in summary.keys():
+        return
+    if name is "":
+        name = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+    models.Report.objects.create(**{
+        "name": name,
+        "type": type,
+        "summary": summary,
+    })
+
+
+@async
+def async_debug_api(api, pk, project, name):
+    """异步执行api
+    """
+    summary = debug_api(api, pk, project)
+    parse_summary(name, summary)
+
+
+@async
+def async_debug_suite(suite, pk, project, name):
+    """异步执行suite
+    """
+    summary = debug_suite(suite, pk, project)
+    parse_summary(name, summary)
