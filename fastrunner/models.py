@@ -4,6 +4,25 @@ from django.db import models
 from usermanager.models import BaseTable
 
 
+class LocustDetail(BaseTable):
+    """
+    压测信息表
+    """
+
+    class Meta:
+        verbose_name = "压测信息"
+        db_table = "LocustDetail"
+
+    suite_id = models.IntegerField('自动化测试用例集ID', unique=True, null=False)
+    suite_name = models.CharField('用例集名称', max_length=100)
+    config_id = models.IntegerField('配置ID')
+    config_name = models.CharField('配置名称', max_length=100)
+    config_url = models.CharField('配置地址', max_length=100)
+    port = models.IntegerField('端口')
+    project = models.IntegerField('项目id')
+    task = models.CharField('pid合集', max_length=100)
+
+
 class Project(BaseTable):
     """
     项目信息表
@@ -79,7 +98,7 @@ class API(BaseTable):
 
     name = models.CharField("接口名称", null=False, max_length=50)
     body = models.TextField("主体信息", null=False)
-    url = models.CharField("请求地址", null=False, max_length=100)
+    url = models.CharField("请求地址", null=False, max_length=2000)
     method = models.CharField("请求方式", null=False, max_length=10)
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
     relation = models.IntegerField("节点id", null=False)
@@ -155,23 +174,38 @@ class FileBinary(models.Model):
     size = models.CharField("大小", null=False, max_length=30)
 
 
-class Report(BaseTable):
-    """
-    报告存储
-    """
+class ReportRelation(BaseTable):
+    report_type = (
+        (1, "api"),
+        (2, "test_set"),
+        (3, "schedule"),
+        (4, "CI")
+    )
+    result_status = (
+        ("N/A", "N/A"),
+        ("success", "success"),
+        ("failure", "failure")
+    )
 
+    class Meta:
+        verbose_name = "测试报告来源关系"
+        db_table = "ReportRelation"
+
+    name = models.CharField("测试报告名称", null=False, max_length=50)
+    ref = models.IntegerField("测试报告来源", null=False, choices=report_type, default=1)
+    project = models.IntegerField("项目id", null=False, default=0)
+    status = models.CharField("状态", max_length=30, null=False, choices=result_status, default="N/A")
+
+
+class Report(BaseTable):
     class Meta:
         verbose_name = "测试报告"
         db_table = "Report"
 
-    name = models.CharField("报告名称", null=False, max_length=100)
-    body = models.TextField("主体信息", null=False)
-    total = models.IntegerField("总共个数", null=False)
-    success = models.IntegerField("通过用例")
-    failure = models.IntegerField("失败用例")
-    skipped = models.IntegerField("跳过用例")
-    start_time = models.DateTimeField("开始时间")
-    duration = models.CharField("持续时间", max_length=40)
+    refId = models.IntegerField("报告Id", null=False, default=0)
+    reportRelation = models.ForeignKey(ReportRelation, default=1, verbose_name='报告依赖id', related_name='reports',
+                                       on_delete=models.CASCADE)
+    content = models.TextField("报告内容")
 
 
 class Relation(models.Model):

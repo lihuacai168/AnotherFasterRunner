@@ -1,6 +1,8 @@
 import json
 from enum import Enum
+
 from fastrunner.models import FileBinary
+
 
 class FileType(Enum):
     """
@@ -231,6 +233,7 @@ class Parse(object):
             "name": self.name,
             "header": init,
             "request": {
+                "files": [],
                 "data": init_p,
                 "params": init_p,
                 "json_data": ''
@@ -298,7 +301,16 @@ class Parse(object):
                     "value": value,
                     "desc": self.__desc["header"][key]
                 })
-
+        if self.__request.get('files'):
+            for key, value in self.__request.pop("files").items():
+                size = FileBinary.objects.get(name=value).size
+                test['request']['data'].append({
+                    "key": key,
+                    "value": value,
+                    "size": size,
+                    "type": 5,
+                    "desc": self.__desc["files"][key]
+                })
         if self.__request.get('data'):
             test["request"]["data"] = []
             for key, value in self.__request.pop('data').items():
@@ -309,17 +321,6 @@ class Parse(object):
                     "value": obj[1],
                     "type": obj[0],
                     "desc": self.__desc["data"][key]
-                })
-
-        if self.__request.get('files'):
-            for key, value in self.__request.pop("files").items():
-                size = FileBinary.objects.get(name=value).size
-                test['request']['data'].append({
-                    "key": key,
-                    "value": value,
-                    "size": size,
-                    "type": 5,
-                    "desc": self.__desc["files"][key]
                 })
 
         if self.__request.get('params'):

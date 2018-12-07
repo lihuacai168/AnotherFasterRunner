@@ -1,5 +1,6 @@
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.viewsets import GenericViewSet
 from usermanager.common import response
 from usermanager import models
 from usermanager import serializers
@@ -12,8 +13,16 @@ from django.core.exceptions import ObjectDoesNotExist
 logger = logging.getLogger('FastRunner')
 
 
-class RegisterView(APIView):
+class validateView(APIView):
+    def get(self, request, **kwargs):
+        response.LOGIN_SUCCESS["token"] = request.auth
+        # serializer = serializers.TsignUserInfoSerializer(request.user)
+        # response.LOGIN_SUCCESS["user"] = serializer.data
+        response.LOGIN_SUCCESS["user"] = request.user.getDict()
+        return Response(response.LOGIN_SUCCESS)
 
+
+class RegisterView(APIView):
     authentication_classes = ()
     permission_classes = ()
 
@@ -90,5 +99,3 @@ class LoginView(APIView):
             response.LOGIN_SUCCESS["token"] = token
             response.LOGIN_SUCCESS["user"] = username
             return Response(response.LOGIN_SUCCESS)
-
-

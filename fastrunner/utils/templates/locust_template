@@ -1,0 +1,25 @@
+#coding: utf-8
+import zmq
+from locust import HttpLocust, TaskSet, task
+from httprunner import LocustRunner
+import json
+
+
+class WebPageTasks(TaskSet):
+    def on_start(self):
+        self.test_runner = LocustRunner(self.client)
+        self.testcases = eval(self.locust.test_cases)
+
+    @task
+    def test_specified_scenario(self):
+        print(isinstance(self.testcases,list))
+        self.test_runner.run(self.testcases)
+
+
+class WebPageUser(HttpLocust):
+    host = "$HOST"
+    task_set = WebPageTasks
+    min_wait = 1000
+    max_wait = 5000
+
+    test_cases = "$TESTCASES"

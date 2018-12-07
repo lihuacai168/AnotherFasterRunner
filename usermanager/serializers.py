@@ -27,3 +27,9 @@ class UserInfoSerializer(serializers.Serializer):
         实现create方法
         """
         return models.UserInfo.objects.create(**validated_data)
+
+
+class TsignUserInfoSerializer(serializers.Serializer):
+    class Meta:
+        model = models.TsignUserInfo
+        fields = ['id', 'userid', 'username', 'email', 'alias']

@@ -19,5 +19,6 @@ from usermanager import views
 
 urlpatterns = [
     path('register/', views.RegisterView.as_view()),
-    path('login/', views.LoginView.as_view())
+    path('login/', views.LoginView.as_view()),
+    path('validate/', views.validateView.as_view()),
 ]

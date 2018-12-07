@@ -38,8 +38,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'fastrunner.apps.FastrunnerConfig',
     'usermanager',
+    'extends',
+    'fastrunner',
     'rest_framework',
     'corsheaders'
 ]
@@ -75,17 +76,38 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'FasterRunner.wsgi.application'
 
+# 邮箱发送方配置
+# mail_host  SMTP服务器
+# mail_user  # 用户名
+# mail_pass  # 授权密码，非登录密码
+# mail_from  # 发件人邮箱(最好写全, 不然会失败)
+# 第三方 SMTP 服务
+MAIL_INFO = {
+    "mail_host": "smtp.163.com",
+    "mail_user": "fastrunner_tsign@163.com",
+    "mail_pass": "timevale12345",
+    "mail_from": "fastrunner_tsign@163.com",
+    "sender": "fastrunner_tsign@163.com"
+}
+# 服务地址,压测地址会用到
+SERVICE_URL = "http://127.0.0.1:8080"
+
 # Database
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
+
 if not DEBUG:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.mysql',
-            'NAME': 'db_name',  # 新建数据库名
-            'USER': 'user',  # 数据库登录名
-            'PASSWORD': 'password',  # 数据库登录密码
-            'HOST': 'host',  # 数据库所在服务器ip地址
-            'PORT': 'port',  # 监听端口 默认3306即可
+            'NAME': 'fasterrunner',  # 新建数据库名
+            'USER': 'fasterrunner',  # 数据库登录名
+            'PASSWORD': 'fasterrunner',  # 数据库登录密码
+            'HOST': '127.0.0.1',  # 数据库所在服务器ip地址
+            'PORT': '3306',  # 监听端口 默认3306即可
+            'OPTIONS': {
+                'init_command': 'SET character_set_connection=utf8mb4,collation_connection=utf8mb4_unicode_ci',
+            },
+
         }
     }
 else:
@@ -126,7 +148,6 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = False
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
@@ -169,7 +190,8 @@ CORS_ALLOW_HEADERS = (
     'dnt',
     'origin',
     'user-agent',
-    'x-csrftoken',
+    'x-csrf-token',
+    'x-xsrf-token',
+    'TOKEN',
     'x-requested-with',
 )
-
