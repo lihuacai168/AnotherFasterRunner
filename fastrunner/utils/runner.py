@@ -23,15 +23,15 @@ class DebugCode(object):
         try:
             file_path = os.path.join(self.temp, "debugtalk.py")
             loader.FileLoader.dump_python_file(file_path, self.__code)
-            self.resp = decode(subprocess.check_output(['python', file_path], stderr=subprocess.STDOUT, timeout=60))
+            self.resp = decode(subprocess.check_output([EXEC, file_path], stderr=subprocess.STDOUT, timeout=60))
 
         except subprocess.CalledProcessError as e:
             self.resp = decode(e.output)
 
         except subprocess.TimeoutExpired:
             self.resp = 'RunnerTimeOut'
-        shutil.rmtree(self.temp)
 
+        shutil.rmtree(self.temp)
 
 
 def decode(s):
@@ -40,4 +40,3 @@ def decode(s):
 
     except UnicodeDecodeError:
         return s.decode('gbk')
-

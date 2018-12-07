@@ -1,54 +1,6 @@
-import simplejson
 from rest_framework import serializers
-from extends import models as etModels
 from fastrunner import models
 from fastrunner.utils.parser import Parse
-
-
-class ScheduleReporterSerializer(serializers.ModelSerializer):
-    scheduleId = serializers.CharField(required=False)
-    """
-    定时任务发送人员序列化
-    """
-
-    class Meta:
-        model = etModels.ScheduleReporter
-        fields = ['id', 'userId', 'userName', 'email', 'scheduleId']
-
-
-class ScheduleDetailsSerializer(serializers.ModelSerializer):
-    scheduleId = serializers.CharField(required=False)
-    """
-    定时任务发送人员序列化
-    """
-
-    class Meta:
-        model = etModels.ScheduleDetail
-        fields = ['id', 'scheduleId', 'stepId', 'stepRef', 'stepName', 'configId']
-
-
-class ScheduleSerializer(serializers.ModelSerializer):
-    """
-    定时任务序列化
-    """
-    reporters = ScheduleReporterSerializer(many=True)
-    details = ScheduleDetailsSerializer(many=True)
-    update_time = serializers.DateTimeField(required=False)
-
-    class Meta:
-        model = etModels.Schedule
-        fields = ['id', 'name', 'desc', 'responsible', 'update_time', 'cron', 'project', 'reporters', 'details',
-                  'sendType']
-
-    def create(self, validated_data):
-        reporters = validated_data.pop('reporters')
-        details = validated_data.pop('details')
-        schedule_id = etModels.Schedule.objects.create(**validated_data)
-        for report in reporters:
-            etModels.ScheduleReporter.objects.create(scheduleId=schedule_id, **report)
-        for detail in details:
-            etModels.ScheduleDetail.objects.create(scheduleId=schedule_id, **detail)
-        return schedule_id
 
 
 class ProjectSerializer(serializers.ModelSerializer):
@@ -163,48 +115,3 @@ class ConfigSerializer(serializers.ModelSerializer):
         parse = Parse(eval(obj.body), level='config')
         parse.parse_http()
         return parse.testcase
-
-
-class ConfigListSerializer(serializers.ModelSerializer):
-    """
-    配置信息序列化
-    """
-
-    class Meta:
-        model = models.Config
-        fields = ['id', 'base_url', 'name']
-
-
-class ReportSerializer(serializers.ModelSerializer):
-    content = serializers.SerializerMethodField()
-    detail = serializers.SerializerMethodField()
-
-    class Meta:
-        model = models.Report
-        fields = ['id', 'refId', 'content', 'detail']
-
-    def get_content(self, obj):
-        return simplejson.loads(obj.content, encoding="UTF-8")
-
-    def get_detail(self, obj):
-        refId = obj.refId
-        data = {}
-        try:
-            data = ScheduleDetailsSerializer(etModels.ScheduleDetail.objects.get(pk=refId)).data
-        except Exception:
-            pass
-        return data
-
-
-class ReportRelationSerializer(serializers.ModelSerializer):
-    reports = ReportSerializer(many=True)
-
-    class Meta:
-        model = models.ReportRelation
-        fields = '__all__'
-
-    def create(self, validated_data):
-        projectReports = validated_data.pop('reports')
-        reportRelation_id = models.ReportRelation.objects.create(**validated_data)
-        for report in projectReports:
-            models.Report.objects.create(reportRelation=reportRelation_id, **report)

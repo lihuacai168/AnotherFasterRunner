@@ -1,10 +1,9 @@
 import time
-import requests
-from rest_framework import exceptions, response
+
+from rest_framework import exceptions
 from rest_framework.authentication import BaseAuthentication
-from rest_framework.response import Response
+
 from FasterRunner.settings import INVALID_TIME
-from rest_framework import status
 from usermanager import models
 
 
@@ -14,7 +13,7 @@ class Authenticator(BaseAuthentication):
     """
 
     def authenticate(self, request):
-        token = request.META.get("HTTP_TOKEN", None)
+        token = request.query_params.get("token", None)
         obj = models.UserToken.objects.filter(token=token).first()
 
         if not obj:
