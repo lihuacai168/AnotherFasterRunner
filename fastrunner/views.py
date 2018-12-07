@@ -1,21 +1,17 @@
-import base64
-
 from django.core.exceptions import ObjectDoesNotExist
-from django.db import DataError
 from rest_framework.decorators import api_view
-from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import GenericViewSet, ModelViewSet
-import threading
-from FasterRunner import pagination
 from fastrunner import models, serializers
-from fastrunner.utils import loader
+from FasterRunner import pagination
+from rest_framework.response import Response
+from fastrunner.utils import response
 from fastrunner.utils import prepare
-from fastrunner.utils import response, send
 from fastrunner.utils.parser import Format, Parse
 from fastrunner.utils.runner import DebugCode
 from fastrunner.utils.tree import get_tree_max_id, get_file_size
-from email.mime.text import MIMEText
+from fastrunner.utils import loader
+from django.db import DataError
 
 
 # Create your views here.
@@ -26,6 +22,7 @@ class ProjectView(GenericViewSet):
     项目增删改查
     """
 
+    queryset = models.Project.objects.all().order_by('-update_time')
     serializer_class = serializers.ProjectSerializer
     pagination_class = pagination.MyCursorPagination
 
@@ -33,22 +30,7 @@ class ProjectView(GenericViewSet):
         """
         查询项目信息
         """
-        user = request.query_params['user']
-        self.queryset = models.Project.objects.filter(responsible=user).order_by('-update_time')
-        # self.queryset = models.Project.objects.all()
-        projects = self.get_queryset()
-        page_projects = self.paginate_queryset(projects)
-        serializer = self.get_serializer(page_projects, many=True)
-        return self.get_paginated_response(serializer.data)
 
-    def list_all(self, request):
-        """
-        查询项目信息
-        """
-        name = request.query_params['name']
-        if not name:
-            name = ''
-        self.queryset = models.Project.objects.filter(name__contains=name)
         projects = self.get_queryset()
         page_projects = self.paginate_queryset(projects)
         serializer = self.get_serializer(page_projects, many=True)
@@ -74,6 +56,7 @@ class ProjectView(GenericViewSet):
             project = models.Project.objects.get(name=name)
             prepare.project_init(project)
             return Response(response.PROJECT_ADD_SUCCESS)
+
         else:
             return Response(response.SYSTEM_ERROR)
 
@@ -404,23 +387,6 @@ class TestCaseView(GenericViewSet):
 
         return self.get_paginated_response(serializer.data)
 
-    def get_list(self, request):
-        """
-        查询指定CASE列表，不包含CASE STEP
-        {
-            "project": int,
-        }
-        """
-        project = request.query_params["project"]
-
-        # update_time 降序排列
-        queryset = self.get_queryset().filter(project__id=project).order_by('-update_time')
-
-        pagination_query = self.paginate_queryset(queryset)
-        serializer = self.get_serializer(pagination_query, many=True)
-
-        return self.get_paginated_response(serializer.data)
-
     def copy(self, request, **kwargs):
         """
         pk int: test id
@@ -573,13 +539,6 @@ class ConfigView(GenericViewSet):
 
         return self.get_paginated_response(serializer.data)
 
-    def list_all(self, request):
-        project = request.query_params['project']
-        queryset = self.get_queryset().filter(project__id=project).all()
-        serializer = self.get_serializer(queryset, many=True)
-        self.serializer_class = serializers.ConfigListSerializer
-        return Response(serializer.data)
-
     def all(self, request, **kwargs):
         """
         get all config
@@ -719,28 +678,13 @@ def run_api(request):
 
 
 @api_view(['GET'])
-def runDevops(request, **kwargs):
-    # config base64加密
-    config = base64.b64decode(request.query_params["config"])
-
-
-@api_view(['GET'])
-def report(request, **kwargs):
-    pk = kwargs['pk']
-    report = serializers.ReportSerializer(models.Report.objects.get(pk=pk), many=False)
-    return Response(report.data.pop('content'))
-
-
-@api_view(['GET'])
 def run_api_pk(request, **kwargs):
     """run api by pk and config
     """
     api = models.API.objects.get(id=kwargs['pk'])
-    name = api.name
     testcase = eval(api.body)
 
-    summary = loader.debug_api(testcase, request.query_params["config"], api.project.id, loader.Run_type.API, api.id,
-                               name)
+    summary = loader.debug_api(testcase, request.query_params["config"], api.project.id)
 
     return Response(summary)
 
@@ -786,6 +730,7 @@ def run_testsuite(request):
         testcase_list.append(loader.load_test(test))
 
     summary = loader.debug_api(testcase_list, request.data['config'], request.data["project"])
+
     return Response(summary)
 
 
@@ -810,8 +755,8 @@ def run_testsuite_pk(request, **kwargs):
         config: int
     """
     pk = kwargs["pk"]
-    name = models.Case.objects.get(pk=pk).name
-    test_list = models.CaseStep.objects. \
+
+    test_list = models.CaseStep.objects.\
         filter(case__id=pk).order_by("step").values("body")
 
     testcase_list = []
@@ -819,47 +764,6 @@ def run_testsuite_pk(request, **kwargs):
     for content in test_list:
         testcase_list.append(eval(content["body"]))
 
-    summary = loader.debug_api(testcase_list, request.query_params["config"], request.query_params["project"],
-                               loader.Run_type.TEST_SET, pk, name)
+    summary = loader.debug_api(testcase_list, request.query_params["config"], request.query_params["project"])
 
     return Response(summary)
-
-
-def run_ci_test_suite(pk, configId, project, emails):
-    case = models.Case.objects.get(pk=pk)
-    name = case.name
-    test_list = models.CaseStep.objects. \
-        filter(case__id=pk).order_by("step").values("body")
-
-    testcase_list = []
-
-    for content in test_list:
-        testcase_list.append(eval(content["body"]))
-    relation_id = models.ReportRelation.objects.create(
-        name=name,
-        ref=4,
-        project=case.project,
-        status="N/A"
-    )
-    summary = loader.debug_api(testcase_list, configId, project,
-                               loader.Run_type.CI, pk, name, relation_id)
-    reportContent = summary.pop('report_content')
-    htmlContent = MIMEText(reportContent, _subtype='plain', _charset='utf-8')
-    title = "FasterRunner CI 测试报告-{}".format(name)
-    send.sendEmail(title, htmlContent, list(emails))
-
-
-@api_view(["POST"])
-def run_testsuite_pk_for_ci(request, **kwargs):
-    """run testsuite by pk
-        pk: int
-        config: int
-        project:int
-        emails: email
-    """
-    pk = request.data["id"]
-    configId = request.data["config"]
-    project = request.data["project"]
-    email = request.data["email"]
-    threading.Thread(target=run_ci_test_suite, args=(pk, configId, project, email)).start()
-    return Response(response.TASK_RUN_SUCCESS)

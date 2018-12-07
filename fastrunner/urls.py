@@ -26,7 +26,6 @@ urlpatterns = [
         "delete": "delete"
     })),
     path('project/<int:pk>/', views.ProjectView.as_view({"get": "single"})),
-    path('projects', views.ProjectView.as_view({"get": "list_all"})),
 
     # 数据库相关接口地址
     path('database/', views.DataBaseView.as_view({
@@ -69,9 +68,7 @@ urlpatterns = [
         "post": "post",
         "delete": "delete"
     })),
-    path('tests/', views.TestCaseView.as_view({
-        "get": "get_list",
-    })),
+
     path('test/<int:pk>/', views.TestCaseView.as_view({
         "delete": "delete",
         "post": "copy"
@@ -85,9 +82,7 @@ urlpatterns = [
         "get": "list",
         "delete": "delete"
     })),
-    path('configs', views.ConfigView.as_view({
-        "get": "list_all",
-    })),
+
     path('config/<int:pk>/', views.ConfigView.as_view({
         "post": "copy",
         "delete": "delete",
@@ -95,16 +90,15 @@ urlpatterns = [
         "get": "all"
     })),
 
+
     # run api
     path('run_api_pk/<int:pk>/', views.run_api_pk),
     path('run_api_tree/', views.run_api_tree),
     url(r'^run_api/$', views.run_api),
 
-    path('devops/', views.runDevops),
-    path('report/<int:pk>', views.report),
     path('run_testsuite/', views.run_testsuite),
     path('run_test/', views.run_test),
-    path('run_testsuite_pk/<int:pk>/', views.run_testsuite_pk),
-    path('run_testsuite_ci/', views.run_testsuite_pk_for_ci)
+    path('run_testsuite_pk/<int:pk>/', views.run_testsuite_pk)
+
 
 ]

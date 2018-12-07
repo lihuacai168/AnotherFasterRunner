@@ -69,12 +69,6 @@ FILE_UPLOAD_SUCCESS = {
     'success': True,
     'msg': '文件上传成功'
 }
-FILE_UPLOAD_FAILURE = {
-    'code': '0002',
-    'success': False,
-    'msg': '文件上传失败'
-}
-
 
 FILE_EXISTS = {
     'code': '0101',
@@ -178,64 +172,4 @@ CONFIG_UPDATE_SUCCESS = {
     "success": True,
     "msg": "环境更新成功"
 }
-
-
-TASK_NAME_EXITS = {
-    "code": "0101",
-    "success": False,
-    "msg": "任务名已存在,请重新命名"
-}
-
-TASK_DELETE_SUCCESS = {
-    "code": "0003",
-    "success": True,
-    "msg": "任务删除成功"
-}
-TASK_RUN_SUCCESS = {
-    "code": "0003",
-    "success": True,
-    "msg": "任务运行成功"
-}
-TASK_MODIFY_SUCCESS = {
-    "code": "0003",
-    "success": True,
-    "msg": "任务删除成功"
-}
-TASK_ADD_SUCCESS = {
-    "code": "0003",
-    "success": True,
-    "msg": "任务创建成功"
-}
-
-LOCUST_ENV_ADD_SUCCESS = {
-    "code": "0003",
-    "success": True,
-    "msg": "压测环境创建成功"
-}
-
-LOCUST_ENV_DELETE_SUCCESS = {
-    "code": "0003",
-    "success": True,
-    "msg": "压测环境删除成功"
-}
-LOCUST_ENV_DELETE_FAILURE = {
-    "code": "0003",
-    "success": False,
-    "msg": "压测环境删除失败"
-}
-
-LOCUST_ENV_ADD_FAILURE = {
-    "code": "0101",
-    "success": True,
-    "msg": "压测环境已存在"
-}
-
-LOCUST_ENV_ADD_FAILURE_BUSY = {
-    "code": "0101",
-    "success": False,
-    "msg": "压测环境创建成功"
-}
-
-
-
 
