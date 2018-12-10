@@ -1,3 +1,4 @@
+from rest_framework.renderers import TemplateHTMLRenderer
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 
@@ -9,6 +10,7 @@ class ReportView(GenericViewSet):
     """
     报告视图
     """
+    renderer_classes = [TemplateHTMLRenderer]
     authentication_classes = ()
     queryset = models.Report.objects.all().order_by('-update_time')
     serializer_class = serializers.ReportSerializer
@@ -33,7 +35,7 @@ class ReportView(GenericViewSet):
         """
         pk = kwargs["pk"]
         summary = models.Report.objects.get(id=pk).summary
-        return Response(summary)
+        return Response(summary, template_name="report_template.html")
 
     def download(self, request, **kwargs):
         """下载报告

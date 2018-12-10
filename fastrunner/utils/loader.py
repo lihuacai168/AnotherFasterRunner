@@ -12,7 +12,7 @@ from threading import Thread
 
 import requests
 import yaml
-from django.utils.html import format_html
+from bs4 import BeautifulSoup
 from httprunner import HttpRunner, logger
 from requests.cookies import RequestsCookieJar
 from requests_toolbelt import MultipartEncoder
@@ -304,6 +304,10 @@ def parse_summary(summary):
                     record["meta_data"]["response"][key] = value.decode("utf-8")
                 if isinstance(value, RequestsCookieJar):
                     record["meta_data"]["response"][key] = requests.utils.dict_from_cookiejar(value)
+
+            if "text/html" in record["meta_data"]["response"]["content_type"]:
+                record["meta_data"]["response"]["content"] = \
+                    BeautifulSoup(record["meta_data"]["response"]["content"], features="html.parser").prettify()
 
     return summary
 
