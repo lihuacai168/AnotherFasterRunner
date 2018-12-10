@@ -11,8 +11,8 @@
 # install requirements.txt
 pip install -r requirements.txt
 
-# make migrations for usermanager、fastrunner
-python manage.py makemigrations fastrunner usermanager
+# make migrations for fastuser、fastrunner
+python manage.py makemigrations fastrunner fastuser
 
 # migrate for database
 python manage.py migrate
