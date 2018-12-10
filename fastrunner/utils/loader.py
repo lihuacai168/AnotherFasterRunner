@@ -12,6 +12,7 @@ from threading import Thread
 
 import requests
 import yaml
+from django.utils.html import format_html
 from httprunner import HttpRunner, logger
 from requests.cookies import RequestsCookieJar
 from requests_toolbelt import MultipartEncoder
