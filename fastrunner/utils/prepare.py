@@ -55,6 +55,7 @@ def project_end(project):
     models.Config.objects.filter(project=project).delete()
     models.API.objects.filter(project=project).delete()
     models.Relation.objects.filter(project=project).delete()
+    models.Report.objects.filter(project=project).defer()
 
     case = models.Case.objects.filter(project=project).values_list('id')
 

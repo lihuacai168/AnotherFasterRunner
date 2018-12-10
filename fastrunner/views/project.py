@@ -1,3 +1,5 @@
+import json
+
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework.views import APIView
 from rest_framework.viewsets import GenericViewSet
@@ -155,7 +157,6 @@ class DebugTalkView(GenericViewSet):
         }
         return Response(resp)
 
-
 class TreeView(APIView):
     """
     树形结构操作
@@ -176,7 +177,7 @@ class TreeView(APIView):
         except ObjectDoesNotExist:
             return Response(response.SYSTEM_ERROR)
 
-        body = eval(tree.tree)  # list
+        body = eval(tree.tree) # list
         tree = {
             "tree": body,
             "id": tree.id,

@@ -173,6 +173,7 @@ class Report(BaseTable):
     name = models.CharField("报告名称", null=False, max_length=100)
     type = models.IntegerField("报告类型", choices=report_type)
     summary = models.TextField("主体信息", null=False)
+    project = models.ForeignKey(Project, on_delete=models.CASCADE)
 
 
 class Relation(models.Model):

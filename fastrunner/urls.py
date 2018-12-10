@@ -15,7 +15,7 @@ Including another URLconf
 """
 from django.conf.urls import url
 from django.urls import path
-from fastrunner.views import project, api, config, database, run, suite
+from fastrunner.views import project, api, config, database, run, suite, report
 
 urlpatterns = [
     # 项目相关接口地址
@@ -100,5 +100,12 @@ urlpatterns = [
     path('run_test/', run.run_test),
     path('run_testsuite_pk/<int:pk>/', run.run_testsuite_pk),
     path('run_suite_tree/', run.run_suite_tree),
+
+    # 报告地址
+    path('report/', report.ReportView.as_view({
+        "get": "list"
+    })),
+
+    path('report/<int:pk>/', report.ReportView.as_view({"get": "look"}))
 
 ]

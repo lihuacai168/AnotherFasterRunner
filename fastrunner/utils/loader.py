@@ -10,8 +10,10 @@ import tempfile
 import types
 from threading import Thread
 
+import requests
 import yaml
 from httprunner import HttpRunner, logger
+from requests.cookies import RequestsCookieJar
 from requests_toolbelt import MultipartEncoder
 
 from fastrunner import models
@@ -210,7 +212,7 @@ def debug_suite(suite, pk, project):
 
     runner = HttpRunner(**kwargs)
     runner.run(testsuite)
-    return runner.summary
+    return parse_summary(runner.summary)
 
 
 def debug_api(api, pk, project):
@@ -243,7 +245,7 @@ def debug_api(api, pk, project):
 
     runner = HttpRunner(**kwargs)
     runner.run(testcase_list)
-    return runner.summary
+    return parse_summary(runner.summary)
 
 
 def load_test(test):
@@ -283,8 +285,30 @@ def async(func):
     return wrapper
 
 
-def parse_summary(name, summary, type=2):
-    """解析结果
+def parse_summary(summary):
+    """序列化summary
+    """
+    for detail in summary["details"]:
+
+        for record in detail["records"]:
+
+            for key, value in record["meta_data"]["request"].items():
+                if isinstance(value, bytes):
+                    record["meta_data"]["request"][key] = value.decode("utf-8")
+                if isinstance(value, RequestsCookieJar):
+                    record["meta_data"]["request"][key] = requests.utils.dict_from_cookiejar(value)
+
+            for key, value in record["meta_data"]["response"].items():
+                if isinstance(value, bytes):
+                    record["meta_data"]["response"][key] = value.decode("utf-8")
+                if isinstance(value, RequestsCookieJar):
+                    record["meta_data"]["response"][key] = requests.utils.dict_from_cookiejar(value)
+
+    return summary
+
+
+def save_summary(name, summary, project, type=2):
+    """保存报告信息
     """
     if "status" in summary.keys():
         return
@@ -292,9 +316,10 @@ def parse_summary(name, summary, type=2):
         name = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
     models.Report.objects.create(**{
+        "project": models.Project.objects.get(id=project),
         "name": name,
         "type": type,
-        "summary": summary,
+        "summary": json.dumps(summary, ensure_ascii=False),
     })
 
 
@@ -303,7 +328,7 @@ def async_debug_api(api, pk, project, name):
     """异步执行api
     """
     summary = debug_api(api, pk, project)
-    parse_summary(name, summary)
+    save_summary(name, summary, project)
 
 
 @async
@@ -311,4 +336,4 @@ def async_debug_suite(suite, pk, project, name):
     """异步执行suite
     """
     summary = debug_suite(suite, pk, project)
-    parse_summary(name, summary)
+    save_summary(name, summary, project)
