@@ -274,7 +274,7 @@ def load_test(test):
     return testcase
 
 
-def async(func):
+def back_async(func):
     """异步执行装饰器
     """
 
@@ -328,7 +328,7 @@ def save_summary(name, summary, project, type=2):
     })
 
 
-@async
+@back_async
 def async_debug_api(api, pk, project, name):
     """异步执行api
     """
@@ -336,7 +336,7 @@ def async_debug_api(api, pk, project, name):
     save_summary(name, summary, project)
 
 
-@async
+@back_async
 def async_debug_suite(suite, pk, project, name):
     """异步执行suite
     """
