@@ -47,7 +47,7 @@ def run_api_tree(request):
     # order by id default
     project = request.data['project']
     relation = request.data["relation"]
-    async = request.data["async"]
+    back_async = request.data["async"]
     name = request.data["name"]
     config = request.data["config"]
 
@@ -56,7 +56,7 @@ def run_api_tree(request):
         api = models.API.objects.filter(project__id=project, relation=relation_id).order_by('id').values('body')
         for content in api:
             testcase.append(eval(content['body']))
-    if async:
+    if back_async:
         loader.async_debug_api(testcase, config, project, name)
         summary = loader.TEST_NOT_EXISTS
         summary["msg"] = "接口运行中，请稍后查看报告"
@@ -136,7 +136,7 @@ def run_suite_tree(request):
     # order by id default
     project = request.data['project']
     relation = request.data["relation"]
-    async = request.data["async"]
+    back_async = request.data["async"]
     name = request.data["name"]
     config = request.data["config"]
 
@@ -155,7 +155,7 @@ def run_suite_tree(request):
             # [[{scripts}, {scripts}], [{scripts}, {scripts}]]
             testcase.append(testcase_list)
 
-    if async:
+    if back_async:
         loader.async_debug_suite(testcase, config, project, name)
         summary = loader.TEST_NOT_EXISTS
         summary["msg"] = "用例运行中，请稍后查看报告"
