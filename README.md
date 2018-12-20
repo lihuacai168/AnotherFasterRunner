@@ -22,5 +22,13 @@ python manage.py runserver
 
 ```
 
+## Docker 部署
+1. docker pull docker.io/mysql:5.7 # 拉取mysql5.7镜像
+2. docker run --name mysql --net=host -d --restart always -v /var/lib/mysql:/var/lib/mysql -e  MYSQL_ROOT_PASSWORD=lcc123456 docker.io/mysql:5.7 --character-set-server=utf8mb4 --collation server=utf8mb4_unicode_ci  # 运行mysql容器
+3. 修改settings.py DATABASES 字典相关配置，密码为步骤2设置的MYSQL_ROOT_PASSWORD
+4. docker build -t FasterRunner:latest .    # 构建docker镜像
+5. docker run -d --name fastrunner --net=host --restart always FasterRunner:latest  # 后台运行docker容器
+
+
 
 
