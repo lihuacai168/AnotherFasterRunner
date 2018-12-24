@@ -19,6 +19,7 @@ from requests_toolbelt import MultipartEncoder
 
 from fastrunner import models
 from fastrunner.utils.parser import Format
+from fastrunner.utils.ding_message import DingMessage
 
 logger.setup_logger('DEBUG')
 
@@ -246,6 +247,12 @@ def debug_api(api, pk, project):
 
     runner = HttpRunner(**kwargs)
     runner.run(testcase_list)
+    print("测试结果")
+
+    # ding_message = DingMessage()
+    # sum = parse_summary(runner.summary)
+    # ding_message.send_ding_msg(sum)
+
     return parse_summary(runner.summary)
 
 
