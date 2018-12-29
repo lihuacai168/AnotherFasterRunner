@@ -20,12 +20,14 @@ def get_project_detail(pk):
     case_count = get_counter(models.Case, pk=pk)
     team_count = get_counter(models.Team, pk=pk)
     config_count = get_counter(models.Config, pk=pk)
+    variables_count = get_counter(models.Variables, pk=pk)
 
     return {
         "api_count": api_count,
         "case_count": case_count,
         "team_count": team_count,
-        "config_count": config_count
+        "config_count": config_count,
+        "variables_count": variables_count
     }
 
 
@@ -55,7 +57,8 @@ def project_end(project):
     models.Config.objects.filter(project=project).delete()
     models.API.objects.filter(project=project).delete()
     models.Relation.objects.filter(project=project).delete()
-    models.Report.objects.filter(project=project).defer()
+    models.Report.objects.filter(project=project).delete()
+    models.Variables.objects.filter(project=project).delete()
 
     case = models.Case.objects.filter(project=project).values_list('id')
 

@@ -187,7 +187,7 @@ def load_debugtalk(project):
     return debugtalk
 
 
-def debug_suite(suite, pk, project):
+def debug_suite(suite, project):
     """debug suite
            suite :list
            pk: int
@@ -196,16 +196,12 @@ def debug_suite(suite, pk, project):
     if len(suite) == 0:
         return TEST_NOT_EXISTS
     body = None
-    # config
-    if pk:
-        config = models.Config.objects.get(id=pk)
-        body = eval(config.body)
 
     debugtalk = load_debugtalk(project)
 
     testsuite = []
     for testcase in suite:
-        testsuite.append(parse_tests(testcase, debugtalk, config=body))
+        testsuite.append(parse_tests(testcase, debugtalk))
 
     kwargs = {
         "failfast": False
@@ -216,20 +212,15 @@ def debug_suite(suite, pk, project):
     return parse_summary(runner.summary)
 
 
-def debug_api(api, pk, project):
+def debug_api(api, project):
     """debug api
         api :dict or list
-        pk: int
         project: int
     """
     if len(api) == 0:
         return TEST_NOT_EXISTS
 
     body = None
-    # config
-    if pk:
-        config = models.Config.objects.get(id=pk)
-        body = eval(config.body)
 
     # testcases
     if isinstance(api, dict):
@@ -329,16 +320,16 @@ def save_summary(name, summary, project, type=2):
 
 
 @back_async
-def async_debug_api(api, pk, project, name):
+def async_debug_api(api, project, name):
     """异步执行api
     """
-    summary = debug_api(api, pk, project)
+    summary = debug_api(api, project)
     save_summary(name, summary, project)
 
 
 @back_async
-def async_debug_suite(suite, pk, project, name):
+def async_debug_suite(suite, project, name):
     """异步执行suite
     """
-    summary = debug_suite(suite, pk, project)
+    summary = debug_suite(suite, project)
     save_summary(name, summary, project)

@@ -133,3 +133,13 @@ class ReportSerializer(serializers.ModelSerializer):
 
     def get_summary(self, obj):
         return json.loads(obj.summary)
+
+
+class VariablesSerializer(serializers.ModelSerializer):
+    """
+    变量信息序列化
+    """
+
+    class Meta:
+        model = models.Variables
+        fields = '__all__'
