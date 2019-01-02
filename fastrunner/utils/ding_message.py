@@ -35,10 +35,12 @@ class DingMessage:
         pass_count = summary['stat']['successes']
         fail_count = summary['stat']['failures']
         skip_row = summary['stat']['skipped']
+        env_name = summary['details'][0]['name']
+        base_url = summary['details'][0]['base_url']
 
         # 已执行的条数
         executed = rows_count
-        title = '自动化测试报告'
+        title = '''自动化测试报告: \n环境:{0} \nHOST:{1}'''.format(env_name, base_url)
         # 通过率
         pass_rate = '{:.2%}'.format(pass_count / executed)
 
@@ -61,28 +63,30 @@ class DingMessage:
                     if record['status'] != 'failure':
                         continue
                     else:
-                        url_fail = record['meta_data']['request']['url']
+                        url_fail = record['meta_data']['request']['url'].replace(base_url,"")
                         case_name = record['name']
                         expect = []
                         check_value = []
                         for validator in record['meta_data']['validators']:
                             expect.append(validator['expect'])
                             check_value.append(validator['check_value'])
-                        fail_count_list.append({'case_name': case_name, 'url': url_fail, 'expect':expect, 'check_value':check_value})
+                        # fail_count_list.append({'case_name': case_name, 'url': url_fail, 'expect':expect, 'check_value':check_value})
+                        fail_count_list.append({'case_name': case_name, 'url': url_fail})
 
             fail_detail  = '失败的接口是:\n'
             for i in fail_count_list:
-                s = '用例名:{0} 请求url:{1}\n 期望值:{2}\n 返回结果:{3} \n'.format(i["case_name"], i["url"], i["expect"], i["check_value"])
+                # s = '用例名:{0} PATH:{1}\n 期望值:{2}\n 返回结果:{3} \n'.format(i["case_name"], i["url"], i["expect"], i["check_value"])
+                s = '用例名:{0}\n PATH:{1}\n  \n'.format(i["case_name"], i["url"])
                 fail_detail += s
 
-        msg = '''{0}:
+        msg = '''{0}
 总用例{1}共条,执行了{2}条,跳过{3}条.
 通过{4}条,通过率{5}.
 失败{6}条,失败率{7}.
 {8}'''.format(title, rows_count, executed, skip_row, pass_count, pass_rate, fail_count, fail_rate,fail_detail)
 
         print(msg)
-        # self.robot.send_text(msg)
+        self.robot.send_text(msg)
 
 if __name__ == '__main__':
     robot = DingMessage()
