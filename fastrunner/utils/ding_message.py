@@ -7,7 +7,7 @@
 # @Email: lihuacai168@gmail.com
 # @Software: PyCharm
 from dingtalkchatbot.chatbot import DingtalkChatbot
-
+import time
 
 class DingMessage:
     """
@@ -37,10 +37,13 @@ class DingMessage:
         skip_row = summary['stat']['skipped']
         env_name = summary['details'][0]['name']
         base_url = summary['details'][0]['base_url']
+        start_at = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(summary['time']['start_at']))
+        duration = '%.2fs' %summary['time']['duration']
+        receive_msg_mobiles = [18666126234, 13763312220]  # 接收钉钉消息的列表
 
         # 已执行的条数
         executed = rows_count
-        title = '''自动化测试报告: \n环境:{0} \nHOST:{1}'''.format(env_name, base_url)
+        title = '''自动化测试报告: \n开始执行时间:{2} \n消耗时间:{3} \n环境:{0} \nHOST:{1}'''.format(env_name, base_url, start_at, duration)
         # 通过率
         pass_rate = '{:.2%}'.format(pass_count / executed)
 
@@ -85,8 +88,12 @@ class DingMessage:
 失败{6}条,失败率{7}.
 {8}'''.format(title, rows_count, executed, skip_row, pass_count, pass_rate, fail_count, fail_rate,fail_detail)
 
-        print(msg)
-        self.robot.send_text(msg)
+        # print(msg)
+        if fail_count == 0:
+            self.robot.send_text(msg)
+        else:
+            self.robot.send_text(msg, at_mobiles=receive_msg_mobiles)
+
 
 if __name__ == '__main__':
     robot = DingMessage()
