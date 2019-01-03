@@ -22,8 +22,12 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'e$od9f28jce8q47u3raik$(e%$@lff6r89ux+=f!e1a$e42+#7'
 
 # SECURITY WARNING: don't run with debug turned on in production!
+<<<<<<< HEAD
 DEBUG = False
 # DEBUG = True
+=======
+DEBUG = True
+>>>>>>> bed266c72e864ecf73cde9235d3bc0e33dbfaf5d
 
 ALLOWED_HOSTS = ['*']
 
@@ -59,7 +63,7 @@ ROOT_URLCONF = 'FasterRunner.urls'
 
 TEMPLATES = [
     {
-        'BACKEND': 'django.template.backends.jinja2.Jinja2',
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
@@ -86,7 +90,6 @@ DATABASES = {
         'PASSWORD': 'root',  # 数据库登录密码
     }
 }
-
 # Password validation
 # https://docs.djangoproject.com/en/2.1/ref/settings/#auth-password-validators
 

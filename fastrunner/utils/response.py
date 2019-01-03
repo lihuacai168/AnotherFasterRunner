@@ -151,7 +151,13 @@ CASE_UPDATE_SUCCESS = {
 CONFIG_EXISTS = {
     "code": "0101",
     "success": False,
-    "msg": "此环境已存在，请重新命名"
+    "msg": "此配置已存在，请重新命名"
+}
+
+VARIABLES_EXISTS = {
+    "code": "0101",
+    "success": False,
+    "msg": "此变量已存在，请重新命名"
 }
 
 CONFIG_ADD_SUCCESS = {
@@ -160,14 +166,33 @@ CONFIG_ADD_SUCCESS = {
     'msg': '环境添加成功'
 }
 
+VARIABLES_ADD_SUCCESS = {
+    'code': '0001',
+    'success': True,
+    'msg': '变量添加成功'
+}
+
 CONFIG_NOT_EXISTS = {
     "code": "0102",
     "success": False,
     "msg": "指定的环境不存在"
 }
 
+
+VARIABLES_NOT_EXISTS = {
+    "code": "0102",
+    "success": False,
+    "msg": "指定的全局变量不存在"
+}
+
 CONFIG_UPDATE_SUCCESS = {
     "code": "0002",
     "success": True,
     "msg": "环境更新成功"
+}
+
+VARIABLES_UPDATE_SUCCESS = {
+    "code": "0002",
+    "success": True,
+    "msg": "全局变量更新成功"
 }
