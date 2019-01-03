@@ -92,7 +92,6 @@ def tree_end(params, project):
 
 
 def update_casestep(body, case):
-
     step_list = list(models.CaseStep.objects.filter(case=case).values('id'))
 
     for index in range(len(body)):
@@ -109,6 +108,8 @@ def update_casestep(body, case):
         except KeyError:
             if 'case' in test.keys():
                 case_step = models.CaseStep.objects.get(id=test['id'])
+            elif test["body"]["method"] == "config":
+                case_step = models.Config.objects.get(name=test['body']['name'])
             else:
                 case_step = models.API.objects.get(id=test['id'])
 
@@ -118,8 +119,12 @@ def update_casestep(body, case):
             if case_step.name != name:
                 new_body['name'] = name
 
-            url = test['body']['url']
-            method = test['body']['method']
+            if test["body"]["method"] == "config":
+                url = ""
+                method = "config"
+            else:
+                url = test['body']['url']
+                method = test['body']['method']
 
         kwargs = {
             "name": name,
@@ -166,15 +171,22 @@ def generate_casestep(body, case):
             method = format_http.method
 
         except KeyError:
-            api = models.API.objects.get(id=test['id'])
-            new_body = eval(api.body)
-            name = test['body']['name']
+            if test["body"]["method"] == "config":
+                name = test["body"]["name"]
+                method = test["body"]["method"]
+                config = models.Config.objects.get(name=name)
+                url = config.base_url
+                new_body = eval(config.body)
+            else:
+                api = models.API.objects.get(id=test['id'])
+                new_body = eval(api.body)
+                name = test['body']['name']
 
-            if api.name != name:
-                new_body['name'] = name
+                if api.name != name:
+                    new_body['name'] = name
 
-            url = test['body']['url']
-            method = test['body']['method']
+                url = test['body']['url']
+                method = test['body']['method']
 
         kwargs = {
             "name": name,

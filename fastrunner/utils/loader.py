@@ -1,3 +1,4 @@
+import copy
 import datetime
 import functools
 import importlib
@@ -125,7 +126,7 @@ class FileLoader(object):
         return debugtalk_module
 
 
-def parse_tests(testcases, debugtalk, config=None):
+def parse_tests(testcases, debugtalk, name=None, config=None):
     """get test case structure
         testcases: list
         config: none or dict
@@ -139,7 +140,8 @@ def parse_tests(testcases, debugtalk, config=None):
     }
     testset = {
         "config": {
-            "name": testcases[-1]["name"]
+            "name": testcases[-1]["name"],
+            "variables": []
         },
         "teststeps": testcases,
     }
@@ -147,27 +149,45 @@ def parse_tests(testcases, debugtalk, config=None):
     if config:
         testset["config"] = config
 
+    if name:
+        testset["config"]["name"] = name
+
+    global_variables = []
+
+    for variables in models.Variables.objects.all().values("key", "value"):
+        if testset["config"].get("variables"):
+            for content in testset["config"]["variables"]:
+                if variables["key"] not in content.keys():
+                    global_variables.append({variables["key"]: variables["value"]})
+        else:
+            global_variables.append({variables["key"]: variables["value"]})
+
+    if not testset["config"].get("variables"):
+        testset["config"].setdefault("variables", global_variables)
+    else:
+        testset["config"]["variables"].extend(global_variables)
+
     testset["config"]["refs"] = refs
 
-    for teststep in testcases:
-        # handle files
-        if "files" in teststep["request"].keys():
-            fields = {}
-
-            if "data" in teststep["request"].keys():
-                fields.update(teststep["request"].pop("data"))
-
-            for key, value in teststep["request"].pop("files").items():
-                file_binary = models.FileBinary.objects.get(name=value).body
-                # file_path = os.path.join(tempfile.mkdtemp(prefix='File'), value)
-                # FileLoader.dump_binary_file(file_path, file_binary)
-                fields[key] = (value, file_binary)
-
-            teststep["request"]["data"] = MultipartEncoder(fields)
-            try:
-                teststep["request"]["headers"]["Content-Type"] = teststep["request"]["data"].content_type
-            except KeyError:
-                teststep["request"].setdefault("headers", {"Content-Type": teststep["request"]["data"].content_type})
+    # for teststep in testcases:
+    #     # handle files
+    #     if "files" in teststep["request"].keys():
+    #         fields = {}
+    #
+    #         if "data" in teststep["request"].keys():
+    #             fields.update(teststep["request"].pop("data"))
+    #
+    #         for key, value in teststep["request"].pop("files").items():
+    #             file_binary = models.FileBinary.objects.get(name=value).body
+    #             # file_path = os.path.join(tempfile.mkdtemp(prefix='File'), value)
+    #             # FileLoader.dump_binary_file(file_path, file_binary)
+    #             fields[key] = (value, file_binary)
+    #
+    #         teststep["request"]["data"] = MultipartEncoder(fields)
+    #         try:
+    #             teststep["request"]["headers"]["Content-Type"] = teststep["request"]["data"].content_type
+    #         except KeyError:
+    #             teststep["request"].setdefault("headers", {"Content-Type": teststep["request"]["data"].content_type})
 
     return testset
 
@@ -187,7 +207,7 @@ def load_debugtalk(project):
     return debugtalk
 
 
-def debug_suite(suite, project):
+def debug_suite(suite, project, obj, config=None):
     """debug suite
            suite :list
            pk: int
@@ -195,32 +215,31 @@ def debug_suite(suite, project):
     """
     if len(suite) == 0:
         return TEST_NOT_EXISTS
-    body = None
 
     debugtalk = load_debugtalk(project)
 
-    testsuite = []
-    for testcase in suite:
-        testsuite.append(parse_tests(testcase, debugtalk))
+    test_sets = []
+
+    for index in range(len(suite)):
+        # copy.deepcopy 修复引用bug
+        testcases = copy.deepcopy(parse_tests(suite[index], debugtalk, name=obj[index]['name'], config=config))
+        test_sets.append(testcases)
 
     kwargs = {
         "failfast": False
     }
-
     runner = HttpRunner(**kwargs)
-    runner.run(testsuite)
+    runner.run(test_sets)
     return parse_summary(runner.summary)
 
 
-def debug_api(api, project):
+def debug_api(api, project, name=None, config=None):
     """debug api
         api :dict or list
         project: int
     """
     if len(api) == 0:
         return TEST_NOT_EXISTS
-
-    body = None
 
     # testcases
     if isinstance(api, dict):
@@ -229,7 +248,7 @@ def debug_api(api, project):
         """
         api = [api]
 
-    testcase_list = [parse_tests(api, load_debugtalk(project), config=body)]
+    testcase_list = [parse_tests(api, load_debugtalk(project), name=name, config=config)]
 
     kwargs = {
         "failfast": False
@@ -240,7 +259,7 @@ def debug_api(api, project):
     return parse_summary(runner.summary)
 
 
-def load_test(test):
+def load_test(test, project=None):
     """
     format testcase
     """
@@ -252,9 +271,15 @@ def load_test(test):
 
     except KeyError:
         if 'case' in test.keys():
-            case_step = models.CaseStep.objects.get(id=test['id'])
+            if test["body"]["method"] == "config":
+                case_step = models.Config.objects.get(name=test["body"]["name"], project=project)
+            else:
+                case_step = models.CaseStep.objects.get(id=test['id'])
         else:
-            case_step = models.API.objects.get(id=test['id'])
+            if test["body"]["method"] == "config":
+                case_step = models.Config.objects.get(name=test["body"]["name"], project=project)
+            else:
+                case_step = models.API.objects.get(id=test['id'])
 
         testcase = eval(case_step.body)
         name = test['body']['name']
@@ -328,8 +353,8 @@ def async_debug_api(api, project, name):
 
 
 @back_async
-def async_debug_suite(suite, project, name):
+def async_debug_suite(suite, project, report, obj, config=None):
     """异步执行suite
     """
-    summary = debug_suite(suite, project)
-    save_summary(name, summary, project)
+    summary = debug_suite(suite, project, obj, config=config)
+    save_summary(report, summary, project)

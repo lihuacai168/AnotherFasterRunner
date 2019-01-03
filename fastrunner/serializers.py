@@ -97,9 +97,16 @@ class CaseStepSerializer(serializers.ModelSerializer):
         depth = 1
 
     def get_body(self, obj):
-        parse = Parse(eval(obj.body))
-        parse.parse_http()
-        return parse.testcase
+        body = eval(obj.body)
+        if "base_url" in body["request"].keys():
+            return {
+                "name": body["name"],
+                "method": "config"
+            }
+        else:
+            parse = Parse(eval(obj.body))
+            parse.parse_http()
+            return parse.testcase
 
 
 class ConfigSerializer(serializers.ModelSerializer):

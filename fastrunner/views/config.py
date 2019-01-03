@@ -86,6 +86,13 @@ class ConfigView(GenericViewSet):
         if models.Config.objects.exclude(id=pk).filter(name=format.name).first():
             return Response(response.CONFIG_EXISTS)
 
+        case_step = models.CaseStep.objects.filter(method="config", name=config.name)
+
+        for case in case_step:
+            case.name = format.name
+            case.body = format.testcase
+            case.save()
+
         config.name = format.name
         config.body = format.testcase
         config.base_url = format.base_url
