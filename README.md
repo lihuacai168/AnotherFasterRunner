@@ -41,6 +41,9 @@ python manage.py migrate
 
 ```
 
+## FasterRunner 微信群
+![扫码加入](https://github.com/yinquanwang/FasterRunner/blob/master/images/Wechat.jpg)<br>
+
 
 
 

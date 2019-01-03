@@ -73,10 +73,10 @@ class TestCaseView(GenericViewSet):
 
         body = request.data.pop('body')
 
-        if "case" in body[0].keys():
-            case_info = body[0]["case"]
+        if "case" in body[-1].keys():
+            case_info = body[-1]["case"]
         else:
-            case_info = body[0]
+            case_info = body[-1]
 
         if models.Case.objects.exclude(id=pk). \
                 filter(name=request.data['name'],

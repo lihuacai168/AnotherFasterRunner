@@ -10,25 +10,24 @@ from fastrunner import models
 
 @api_view(['POST'])
 def run_api(request):
-    """ run api by body and config
+    """ run api by body
     """
-    config = request.data.pop("config")
     api = Format(request.data)
     api.parse()
 
-    summary = loader.debug_api(api.testcase, config, api.project)
+    summary = loader.debug_api(api.testcase, api.project)
 
     return Response(summary)
 
 
 @api_view(['GET'])
 def run_api_pk(request, **kwargs):
-    """run api by pk and config
+    """run api by pk
     """
     api = models.API.objects.get(id=kwargs['pk'])
     testcase = eval(api.body)
 
-    summary = loader.debug_api(testcase, request.query_params["config"], api.project.id)
+    summary = loader.debug_api(testcase, api.project.id)
 
     return Response(summary)
 
@@ -39,7 +38,6 @@ def run_api_tree(request):
     {
         project: int
         relation: list
-        config: int
         name: str
         async: bool
     }
@@ -49,7 +47,6 @@ def run_api_tree(request):
     relation = request.data["relation"]
     back_async = request.data["async"]
     name = request.data["name"]
-    config = request.data["config"]
 
     testcase = []
     for relation_id in relation:
@@ -57,11 +54,11 @@ def run_api_tree(request):
         for content in api:
             testcase.append(eval(content['body']))
     if back_async:
-        loader.async_debug_api(testcase, config, project, name)
+        loader.async_debug_api(testcase, project, name)
         summary = loader.TEST_NOT_EXISTS
         summary["msg"] = "接口运行中，请稍后查看报告"
     else:
-        summary = loader.debug_api(testcase, config, project)
+        summary = loader.debug_api(testcase, project)
 
     return Response(summary)
 
@@ -71,18 +68,25 @@ def run_testsuite(request):
     """debug testsuite
     {
         name: str,
-        config: int
         body: dict
     }
     """
     body = request.data["body"]
+    project = request.data["project"]
+    name = request.data["name"]
 
     testcase_list = []
+    config = None
 
     for test in body:
-        testcase_list.append(loader.load_test(test))
+        test = loader.load_test(test, project=project)
+        if "base_url" in test["request"].keys():
+            config = test
+            continue
 
-    summary = loader.debug_api(testcase_list, request.data['config'], request.data["project"])
+        testcase_list.append(test)
+
+    summary = loader.debug_api(testcase_list, project, name=name, config=config)
 
     return Response(summary)
 
@@ -91,33 +95,44 @@ def run_testsuite(request):
 def run_test(request):
     """debug single test
     {
-        config: int
         body: dict
     }
     """
 
     body = request.data["body"]
-    summary = loader.debug_api(loader.load_test(body), request.data["config"], request.data["project"])
+    summary = loader.debug_api(loader.load_test(body), request.data["project"])
     return Response(summary)
 
 
 @api_view(["GET"])
 def run_testsuite_pk(request, **kwargs):
     """run testsuite by pk
-        pk: int
-        config: int
+        {
+            project: int,
+            name: str
+        }
     """
     pk = kwargs["pk"]
 
     test_list = models.CaseStep.objects. \
         filter(case__id=pk).order_by("step").values("body")
 
+    project = request.query_params["project"]
+    name = request.query_params["name"]
+
     testcase_list = []
+    config = None
 
     for content in test_list:
-        testcase_list.append(eval(content["body"]))
+        body = eval(content["body"])
 
-    summary = loader.debug_api(testcase_list, request.query_params["config"], request.query_params["project"])
+        if "base_url" in body["request"].keys():
+            config = eval(models.Config.objects.get(name=body["name"], project__id=project).body)
+            continue
+
+        testcase_list.append(body)
+
+    summary = loader.debug_api(testcase_list, project, name=name, config=config)
 
     return Response(summary)
 
@@ -128,7 +143,6 @@ def run_suite_tree(request):
     {
         project: int
         relation: list
-        config: int
         name: str
         async: bool
     }
@@ -137,12 +151,13 @@ def run_suite_tree(request):
     project = request.data['project']
     relation = request.data["relation"]
     back_async = request.data["async"]
-    name = request.data["name"]
-    config = request.data["config"]
+    report = request.data["name"]
 
+    config = None
     testcase = []
     for relation_id in relation:
-        suite = models.Case.objects.filter(project__id=project, relation=relation_id).order_by('id').values('id')
+        suite = models.Case.objects.filter(project__id=project,
+                                           relation=relation_id).order_by('id').values('id', 'name')
 
         for content in suite:
             test_list = models.CaseStep.objects. \
@@ -151,15 +166,19 @@ def run_suite_tree(request):
             testcase_list = []
 
             for content in test_list:
-                testcase_list.append(eval(content["body"]))
+                body = eval(content["body"])
+                if "base_url" in body["request"].keys():
+                    config = eval(models.Config.objects.get(name=body["name"], project__id=project).body)
+                    continue
+                testcase_list.append(body)
             # [[{scripts}, {scripts}], [{scripts}, {scripts}]]
             testcase.append(testcase_list)
 
     if back_async:
-        loader.async_debug_suite(testcase, config, project, name)
+        loader.async_debug_suite(testcase, project, report, suite, config=config)
         summary = loader.TEST_NOT_EXISTS
         summary["msg"] = "用例运行中，请稍后查看报告"
     else:
-        summary = loader.debug_suite(testcase, config, project)
+        summary = loader.debug_suite(testcase, project, suite, config=config)
 
     return Response(summary)

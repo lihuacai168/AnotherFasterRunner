@@ -90,6 +90,17 @@ urlpatterns = [
         "get": "all"
     })),
 
+    path('variables/', config.VariablesView.as_view({
+        "post": "add",
+        "get": "list",
+        "delete": "delete"
+    })),
+
+    path('variables/<int:pk>/', config.VariablesView.as_view({
+        "delete": "delete",
+        "patch": "update"
+    })),
+
     # run api
     path('run_api_pk/<int:pk>/', run.run_api_pk),
     path('run_api_tree/', run.run_api_tree),
