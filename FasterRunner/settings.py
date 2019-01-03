@@ -22,7 +22,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'e$od9f28jce8q47u3raik$(e%$@lff6r89ux+=f!e1a$e42+#7'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
@@ -58,7 +58,7 @@ ROOT_URLCONF = 'FasterRunner.urls'
 
 TEMPLATES = [
     {
-        'BACKEND': 'django.template.backends.jinja2.Jinja2',
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
@@ -79,15 +79,10 @@ WSGI_APPLICATION = 'FasterRunner.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'FasterRunner',  # 新建数据库名
-        'USER': 'root',  # 数据库登录名
-        'PASSWORD': 'lcc123456',  # 数据库登录密码
-        'HOST': 'localhost',  # 数据库所在服务器ip地址
-        'PORT': '3306',  # 监听端口 默认3306即可
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
-
 # Password validation
 # https://docs.djangoproject.com/en/2.1/ref/settings/#auth-password-validators
 
