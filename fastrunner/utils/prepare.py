@@ -21,13 +21,15 @@ def get_project_detail(pk):
     team_count = get_counter(models.Team, pk=pk)
     config_count = get_counter(models.Config, pk=pk)
     variables_count = get_counter(models.Variables, pk=pk)
+    report_count = get_counter(models.Report, pk=pk)
 
     return {
         "api_count": api_count,
         "case_count": case_count,
         "team_count": team_count,
         "config_count": config_count,
-        "variables_count": variables_count
+        "variables_count": variables_count,
+        "report_count": report_count
     }
 
 

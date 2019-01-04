@@ -207,7 +207,7 @@ def load_debugtalk(project):
     return debugtalk
 
 
-def debug_suite(suite, project, obj, config=None):
+def debug_suite(suite, project, obj, config=None, save=True):
     """debug suite
            suite :list
            pk: int
@@ -230,10 +230,15 @@ def debug_suite(suite, project, obj, config=None):
     }
     runner = HttpRunner(**kwargs)
     runner.run(test_sets)
-    return parse_summary(runner.summary)
+    summary = parse_summary(runner.summary)
+
+    if save:
+        save_summary("", summary, project, type=1)
+
+    return summary
 
 
-def debug_api(api, project, name=None, config=None):
+def debug_api(api, project, name=None, config=None, save=True):
     """debug api
         api :dict or list
         project: int
@@ -256,7 +261,13 @@ def debug_api(api, project, name=None, config=None):
 
     runner = HttpRunner(**kwargs)
     runner.run(testcase_list)
-    return parse_summary(runner.summary)
+
+    summary = parse_summary(runner.summary)
+
+    if save:
+        save_summary("", summary, project, type=1)
+
+    return summary
 
 
 def load_test(test, project=None):
@@ -348,7 +359,7 @@ def save_summary(name, summary, project, type=2):
 def async_debug_api(api, project, name):
     """异步执行api
     """
-    summary = debug_api(api, project)
+    summary = debug_api(api, project, save=False)
     save_summary(name, summary, project)
 
 
@@ -356,5 +367,5 @@ def async_debug_api(api, project, name):
 def async_debug_suite(suite, project, report, obj, config=None):
     """异步执行suite
     """
-    summary = debug_suite(suite, project, obj, config=config)
+    summary = debug_suite(suite, project, obj, config=config, save=False)
     save_summary(report, summary, project)
