@@ -71,7 +71,7 @@
         <ul id='nav-mobile' class='right hide-on-med-and-down nav-right'>
             <li>
                 <a href='#!'>
-                    <span class='label suite-start-time blue darken-3'>{{ time.start_at }}</span>
+                    <span class='label suite-start-time blue darken-3'>{{ time.start_at|convert_timestamp }}</span>
                 </a>
             </li>
             <li>
@@ -224,7 +224,7 @@
                         </div>
                         <div class='test-content hide'>
                             <div class='test-time-info'>
-                                <span class='label start-time'>{{ test_suite_summary.time.start_at }}</span>
+                                <span class='label start-time'>{{ test_suite_summary.time.start_at|convert_timestamp }}</span>
                                 <span class='label end-time'>{{ test_suite_summary.time.duration|floatformat:3 }} seconds</span>
                             </div>
                             <div class='test-desc'>Pass: {{ test_suite_summary.stat.successes }} ;
@@ -482,7 +482,7 @@
                                     <tbody>
                                     {% for test_suite_summary in details %}
                                         <tr style="border: 1px solid #49cc90; background-color: rgba(73, 204, 144, .1)">
-                                            <td>{{ test_suite_summary.time.start_at }}</td>
+                                            <td>{{ test_suite_summary.time.start_at|convert_timestamp }}</td>
                                             <td class='linked'
                                                 test-id='{{ test_suite_summary.name }}_{{ forloop.counter }}'>{{ test_suite_summary.name }}</td>
                                             {% if test_suite_summary.success == True %}
