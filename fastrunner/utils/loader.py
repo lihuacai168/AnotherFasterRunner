@@ -164,7 +164,7 @@ def parse_tests(testcases, debugtalk, name=None, config=None):
             global_variables.append({variables["key"]: variables["value"]})
 
     if not testset["config"].get("variables"):
-        testset["config"].setdefault("variables", global_variables)
+        testset["config"]["variables"] = global_variables
     else:
         testset["config"]["variables"].extend(global_variables)
 

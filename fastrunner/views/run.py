@@ -91,19 +91,6 @@ def run_testsuite(request):
     return Response(summary)
 
 
-@api_view(["POST"])
-def run_test(request):
-    """debug single test
-    {
-        body: dict
-    }
-    """
-
-    body = request.data["body"]
-    summary = loader.debug_api(loader.load_test(body), request.data["project"])
-    return Response(summary)
-
-
 @api_view(["GET"])
 def run_testsuite_pk(request, **kwargs):
     """run testsuite by pk
@@ -180,5 +167,27 @@ def run_suite_tree(request):
         summary["msg"] = "用例运行中，请稍后查看报告"
     else:
         summary = loader.debug_suite(testcase, project, suite, config=config)
+
+    return Response(summary)
+
+
+@api_view(["POST"])
+def run_test(request):
+    """debug single test
+    {
+        body: dict
+        project :int
+        config: null or dict
+    }
+    """
+
+    body = request.data["body"]
+    config = request.data.get("config", None)
+    project = request.data["project"]
+
+    if config:
+        config = eval(models.Config.objects.get(project=project, name=config["name"]).body)
+
+    summary = loader.debug_api(loader.load_test(body), project, config=config)
 
     return Response(summary)
