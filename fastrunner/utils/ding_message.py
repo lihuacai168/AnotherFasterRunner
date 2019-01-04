@@ -35,8 +35,8 @@ class DingMessage:
         pass_count = summary['stat']['successes']
         fail_count = summary['stat']['failures']
         skip_row = summary['stat']['skipped']
-        env_name = summary['details'][0]['name']
         base_url = summary['details'][0]['base_url']
+        env_name = '测试' if 'test' in base_url else '生产'
         start_at = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(summary['time']['start_at']))
         duration = '%.2fs' %summary['time']['duration']
         receive_msg_mobiles = [18666126234, 13763312220]  # 接收钉钉消息的列表

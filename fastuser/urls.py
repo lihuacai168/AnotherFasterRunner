@@ -14,10 +14,12 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 
-from django.urls import path
+from django.urls import path,re_path
 from fastuser import views
+from fastrunner.views import timer_task
 
 urlpatterns = [
     path('register/', views.RegisterView.as_view()),
-    path('login/', views.LoginView.as_view())
+    path('login/', views.LoginView.as_view()),
+    re_path(r'^auto_run_testsuite_pk/$', timer_task.auto_run_testsuite_pk, name='auto_run_testsuite_pk'),
 ]

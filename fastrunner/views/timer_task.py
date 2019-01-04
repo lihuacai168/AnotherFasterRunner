@@ -21,11 +21,13 @@ def auto_run_testsuite_pk(request):
     :return:
     """
     # 请求URL
-    # url = 'http://localhost:8000/auto_run_pk/?pk=7&config=3&project_id=1'
+    # url = 'http://localhost:8000/auto_run_pk/?pk=7&project_id=1&name=xxx'
 
     pk = request.GET.get('pk')
-    config = request.GET.get('config')
+    # config = request.GET.get('config')
+    config = None
     project_id = request.GET.get('project_id')
+    name = request.GET.get('name')
 
     # 通过主键获取单个用例
     test_list = models.CaseStep.objects. \
@@ -34,9 +36,16 @@ def auto_run_testsuite_pk(request):
     # 把用例加入列表
     testcase_list = []
     for content in test_list:
-        testcase_list.append(eval(content["body"]))
+        # testcase_list.append(eval(content["body"]))
+        body = eval(content["body"])
 
-    summary = loader.debug_api(testcase_list, config, project_id)
+        if "base_url" in body["request"].keys():
+            config = eval(models.Config.objects.get(name=body["name"], project__id=project_id).body)
+            continue
+        testcase_list.append(body)
+
+    # summary = loader.debug_api(testcase_list, config, project_id)
+    summary = loader.debug_api(testcase_list, project_id, name=name, config=config)
 
     ding_message = DingMessage()
     ding_message.send_ding_msg(summary)
