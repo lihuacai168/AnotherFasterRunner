@@ -100,6 +100,12 @@ API_DEL_SUCCESS = {
     'msg': 'API删除成功'
 }
 
+REPORT_DEL_SUCCESS = {
+    'code': '0003',
+    'success': True,
+    'msg': '报告删除成功'
+}
+
 API_UPDATE_SUCCESS = {
     'code': '0002',
     'success': True,
@@ -178,6 +184,11 @@ CONFIG_NOT_EXISTS = {
     "msg": "指定的环境不存在"
 }
 
+REPORT_NOT_EXISTS = {
+    "code": "0102",
+    "success": False,
+    "msg": "指定的报告不存在"
+}
 
 VARIABLES_NOT_EXISTS = {
     "code": "0102",
