@@ -113,10 +113,13 @@ urlpatterns = [
     path('run_suite_tree/', run.run_suite_tree),
 
     # 报告地址
-    path('report/', report.ReportView.as_view({
+    path('reports/', report.ReportView.as_view({
         "get": "list"
     })),
 
-    path('report/<int:pk>/', report.ReportView.as_view({"get": "look"}))
+    path('reports/<int:pk>/', report.ReportView.as_view({
+        "delete": "delete",
+        "get": "look"
+    })),
 
 ]
