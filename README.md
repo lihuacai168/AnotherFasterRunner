@@ -37,9 +37,13 @@ python manage.py runserver
 python manage.py makemigrations fastrunner fastuser
 
 # migrate for database
-python manage.py migrate
+python manage.py migrate fastrunner
+python manage.py migrate fastuser
 
 ```
+
+## 在线体验地址
+[FasterRunner](http://39.108.239.78:8082/#/fastrunner/index)
 
 ## FasterRunner 微信群
 ![扫码加入](https://github.com/yinquanwang/FasterRunner/blob/master/images/Wechat.jpg)<br>
