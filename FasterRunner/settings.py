@@ -23,13 +23,13 @@ SECRET_KEY = 'e$od9f28jce8q47u3raik$(e%$@lff6r89ux+=f!e1a$e42+#7'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 
-DEBUG = True
+DEBUG = False
 
 
 ALLOWED_HOSTS = ['*']
 
 # Token Settings
-INVALID_TIME = 60 * 60
+INVALID_TIME = 60 * 60 * 24
 
 # Application definition
 
@@ -79,6 +79,7 @@ WSGI_APPLICATION = 'FasterRunner.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
 
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
@@ -87,8 +88,6 @@ DATABASES = {
         'PASSWORD': 'root',  # 数据库登录密码
     }
 }
-# Password validation
-# https://docs.djangoproject.com/en/2.1/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
     {
