@@ -22,12 +22,12 @@ class TestCaseView(GenericViewSet):
         """
         node = request.query_params["node"]
         project = request.query_params["project"]
-
+        search = request.query_params["search"]
         # update_time 降序排列
         queryset = self.get_queryset().filter(project__id=project).order_by('-update_time')
 
-        if "search" in request.query_params.keys():
-            queryset = queryset.filter(name__contains=request.query_params["search"])
+        if search != '':
+            queryset = queryset.filter(name__contains=search)
 
         if node != '':
             queryset = queryset.filter(relation=node)
