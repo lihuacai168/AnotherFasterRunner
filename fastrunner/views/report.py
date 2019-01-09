@@ -23,8 +23,15 @@ class ReportView(GenericViewSet):
         """报告列表
         """
 
-        report = self.get_queryset().filter(project__id=request.query_params["project"]).order_by('-update_time')
-        page_report = self.paginate_queryset(report)
+        project = request.query_params['project']
+        search = request.query_params["search"]
+
+        queryset = self.get_queryset().filter(project__id=project).order_by('-update_time')
+
+        if search != '':
+            queryset = queryset.filter(name__contains=search)
+
+        page_report = self.paginate_queryset(queryset)
         serializer = self.get_serializer(page_report, many=True)
         return self.get_paginated_response(serializer.data)
 
