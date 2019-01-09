@@ -27,8 +27,8 @@ python manage.py runserver
 2. docker run --name mysql --net=host -d --restart always -v /var/lib/mysql:/var/lib/mysql -e  MYSQL_ROOT_PASSWORD=lcc123456 docker.io/mysql:5.7 --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci  # 运行mysql容器
 3. 修改settings.py DATABASES 字典相关配置，密码为步骤2设置的MYSQL_ROOT_PASSWORD
 4. 连接数据库, 新建FasterRunner库
-5. docker build -t fasterrunner:latest .    # 构建docker镜像
-6. docker run -d --name fastrunner --net=host --restart always fasterrunner:latest  # 后台运行docker容器
+5. docker build -t fastrunner:latest .    # 构建docker镜像
+6. docker run -d --name fastrunner --net=host --restart always fastrunner:latest  # 后台运行docker容器
 7. docker exec -it fastrunner /bin/sh  #进入容器内部
 8. 应用数据库表
 ``` bash
@@ -43,7 +43,8 @@ python manage.py migrate fastuser
 ```
 
 ## 在线体验地址
-[FasterRunner](http://39.108.239.78:8082/#/fastrunner/register)
+-------------
+[FasterRunner 接口自动化测试平台](http://39.108.239.78:8082/#/fastrunner/register)
 
 ## FasterRunner 微信群
 ![扫码加入](https://github.com/yinquanwang/FasterRunner/blob/master/images/Wechat.jpg)<br>
