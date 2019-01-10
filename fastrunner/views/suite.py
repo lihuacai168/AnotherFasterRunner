@@ -22,9 +22,15 @@ class TestCaseView(GenericViewSet):
         """
         node = request.query_params["node"]
         project = request.query_params["project"]
-
+        search = request.query_params["search"]
         # update_time 降序排列
-        queryset = self.get_queryset().filter(project__id=project, relation=node).order_by('-update_time')
+        queryset = self.get_queryset().filter(project__id=project).order_by('-update_time')
+
+        if search != '':
+            queryset = queryset.filter(name__contains=search)
+
+        if node != '':
+            queryset = queryset.filter(relation=node)
 
         pagination_query = self.paginate_queryset(queryset)
         serializer = self.get_serializer(pagination_query, many=True)

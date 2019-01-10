@@ -12,7 +12,13 @@ class ConfigView(GenericViewSet):
 
     def list(self, request):
         project = request.query_params['project']
+        search = request.query_params["search"]
+
         queryset = self.get_queryset().filter(project__id=project).order_by('-update_time')
+
+        if search != '':
+            queryset = queryset.filter(name__contains=search)
+
         pagination_queryset = self.paginate_queryset(queryset)
         serializer = self.get_serializer(pagination_queryset, many=True)
 
@@ -156,7 +162,13 @@ class VariablesView(GenericViewSet):
 
     def list(self, request):
         project = request.query_params['project']
+        search = request.query_params["search"]
+
         queryset = self.get_queryset().filter(project__id=project).order_by('-update_time')
+
+        if search != '':
+            queryset = queryset.filter(key__contains=search)
+
         pagination_queryset = self.paginate_queryset(queryset)
         serializer = self.get_serializer(pagination_queryset, many=True)
 
