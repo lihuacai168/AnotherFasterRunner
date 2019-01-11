@@ -15,7 +15,7 @@ Including another URLconf
 """
 
 from django.urls import path
-from usermanager import views
+from fastuser import views
 
 urlpatterns = [
     path('register/', views.RegisterView.as_view()),

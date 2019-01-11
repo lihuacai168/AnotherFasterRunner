@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from usermanager import models
+from fastuser import models
 
 
 class UserInfoSerializer(serializers.Serializer):

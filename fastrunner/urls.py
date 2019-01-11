@@ -13,92 +13,113 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from django.conf.urls import url
+
 from django.urls import path
-from fastrunner import views
+from fastrunner.views import project, api, config, database, run, suite, report
 
 urlpatterns = [
     # 项目相关接口地址
-    path('project/', views.ProjectView.as_view({
+    path('project/', project.ProjectView.as_view({
         "get": "list",
         "post": "add",
         "patch": "update",
         "delete": "delete"
     })),
-    path('project/<int:pk>/', views.ProjectView.as_view({"get": "single"})),
+    path('project/<int:pk>/', project.ProjectView.as_view({"get": "single"})),
 
     # 数据库相关接口地址
-    path('database/', views.DataBaseView.as_view({
+    path('database/', database.DataBaseView.as_view({
         "get": "list",
         "post": "create",
     })),
-    path('database/<int:pk>/', views.DataBaseView.as_view({
+    path('database/<int:pk>/', database.DataBaseView.as_view({
         'patch': 'partial_update',
         'delete': 'destroy'
     })),
 
     # debugtalk.py相关接口地址
-    path('debugtalk/<int:pk>/', views.DebugTalkView.as_view({"get": "debugtalk"})),
-    path('debugtalk/', views.DebugTalkView.as_view({
+    path('debugtalk/<int:pk>/', project.DebugTalkView.as_view({"get": "debugtalk"})),
+    path('debugtalk/', project.DebugTalkView.as_view({
         "patch": "update",
         "post": "run"
     })),
 
     # 二叉树接口地址
-    path('tree/<int:pk>/', views.TreeView.as_view()),
+    path('tree/<int:pk>/', project.TreeView.as_view()),
 
     # 文件上传 修改 删除接口地址
-    path('file/', views.FileView.as_view()),
+    path('file/', project.FileView.as_view()),
 
     # api接口模板地址
-    path('api/', views.APITemplateView.as_view({
+    path('api/', api.APITemplateView.as_view({
         "post": "add",
         "get": "list"
     })),
 
-    path('api/<int:pk>/', views.APITemplateView.as_view({
+    path('api/<int:pk>/', api.APITemplateView.as_view({
         "delete": "delete",
         "get": "single",
         "patch": "update"
     })),
 
     # test接口地址
-    path('test/', views.TestCaseView.as_view({
+    path('test/', suite.TestCaseView.as_view({
         "get": "get",
         "post": "post",
         "delete": "delete"
     })),
 
-    path('test/<int:pk>/', views.TestCaseView.as_view({
+    path('test/<int:pk>/', suite.TestCaseView.as_view({
         "delete": "delete",
         "post": "copy"
     })),
 
-    path('teststep/<int:pk>/', views.CaseStepView.as_view()),
+    path('teststep/<int:pk>/', suite.CaseStepView.as_view()),
 
     # config接口地址
-    path('config/', views.ConfigView.as_view({
+    path('config/', config.ConfigView.as_view({
         "post": "add",
         "get": "list",
         "delete": "delete"
     })),
 
-    path('config/<int:pk>/', views.ConfigView.as_view({
+    path('config/<int:pk>/', config.ConfigView.as_view({
         "post": "copy",
         "delete": "delete",
         "patch": "update",
         "get": "all"
     })),
 
+    path('variables/', config.VariablesView.as_view({
+        "post": "add",
+        "get": "list",
+        "delete": "delete"
+    })),
+
+    path('variables/<int:pk>/', config.VariablesView.as_view({
+        "delete": "delete",
+        "patch": "update"
+    })),
 
     # run api
-    path('run_api_pk/<int:pk>/', views.run_api_pk),
-    path('run_api_tree/', views.run_api_tree),
-    url(r'^run_api/$', views.run_api),
+    path('run_api_pk/<int:pk>/', run.run_api_pk),
+    path('run_api_tree/', run.run_api_tree),
+    path('run_api/', run.run_api),
 
-    path('run_testsuite/', views.run_testsuite),
-    path('run_test/', views.run_test),
-    path('run_testsuite_pk/<int:pk>/', views.run_testsuite_pk)
+    # run testsuite
+    path('run_testsuite/', run.run_testsuite),
+    path('run_test/', run.run_test),
+    path('run_testsuite_pk/<int:pk>/', run.run_testsuite_pk),
+    path('run_suite_tree/', run.run_suite_tree),
 
+    # 报告地址
+    path('reports/', report.ReportView.as_view({
+        "get": "list"
+    })),
+
+    path('reports/<int:pk>/', report.ReportView.as_view({
+        "delete": "delete",
+        "get": "look"
+    })),
 
 ]

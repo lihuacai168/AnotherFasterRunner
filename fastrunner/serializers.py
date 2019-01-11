@@ -1,3 +1,5 @@
+import json
+
 from rest_framework import serializers
 from fastrunner import models
 from fastrunner.utils.parser import Parse
@@ -95,9 +97,16 @@ class CaseStepSerializer(serializers.ModelSerializer):
         depth = 1
 
     def get_body(self, obj):
-        parse = Parse(eval(obj.body))
-        parse.parse_http()
-        return parse.testcase
+        body = eval(obj.body)
+        if "base_url" in body["request"].keys():
+            return {
+                "name": body["name"],
+                "method": "config"
+            }
+        else:
+            parse = Parse(eval(obj.body))
+            parse.parse_http()
+            return parse.testcase
 
 
 class ConfigSerializer(serializers.ModelSerializer):
@@ -115,3 +124,40 @@ class ConfigSerializer(serializers.ModelSerializer):
         parse = Parse(eval(obj.body), level='config')
         parse.parse_http()
         return parse.testcase
+
+
+class ReportSerializer(serializers.ModelSerializer):
+    """
+    报告信息序列化
+    """
+    type = serializers.CharField(source="get_type_display")
+    time = serializers.SerializerMethodField()
+    stat = serializers.SerializerMethodField()
+    platform = serializers.SerializerMethodField()
+    success = serializers.SerializerMethodField()
+
+    class Meta:
+        model = models.Report
+        fields = ["id", "name", "type", "time", "stat", "platform", "success"]
+
+    def get_time(self, obj):
+        return json.loads(obj.summary)["time"]
+
+    def get_stat(self, obj):
+        return json.loads(obj.summary)["stat"]
+
+    def get_platform(self, obj):
+        return json.loads(obj.summary)["platform"]
+
+    def get_success(self, obj):
+        return json.loads(obj.summary)["success"]
+
+
+class VariablesSerializer(serializers.ModelSerializer):
+    """
+    变量信息序列化
+    """
+
+    class Meta:
+        model = models.Variables
+        fields = '__all__'
