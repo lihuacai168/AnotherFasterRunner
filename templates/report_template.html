@@ -495,7 +495,7 @@
                                         {% for record in test_suite_summary.records %}
                                             {% if record.name !=  test_suite_summary.name %}
                                                 <tr>
-                                                    <td>{{ record.meta_data.request.start_timestamp }}</td>
+                                                    <td>{{ record.meta_data.request.start_timestamp|convert_timestamp }}</td>
                                                     <td class='linked'
                                                         test-id='{{ test_suite_summary.name }}_{{ record.name }}_{{ forloop.counter }}'>{{ record.name }}</td>
                                                     {% if record.status == 'success' %}
@@ -555,7 +555,7 @@
                                         <tbody>
                                         {% for record in test_suite_summary.records %}
                                             <tr>
-                                                <td>{{ record.meta_data.request.start_timestamp }}</td>
+                                                <td>{{ record.meta_data.request.start_timestamp|convert_timestamp }}</td>
                                                 <td class='linked'
                                                     test-id='{{ test_suite_summary.name }}_{{ record.name }}_{{ forloop.counter }}'>{{ record.name }}</td>
                                                 {% if record.status == 'success' %}
