@@ -53,7 +53,7 @@ def run_api_tree(request):
     name = request.data["name"]
     config = request.data["config"]
 
-    config = None if name == '请选择' else eval(models.Config.objects.get(name=config).body)
+    config = None if config == '请选择' else eval(models.Config.objects.get(name=config).body)
     test_case = []
     for relation_id in relation:
         api = models.API.objects.filter(project__id=project, relation=relation_id).order_by('id').values('body')
