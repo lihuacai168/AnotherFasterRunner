@@ -16,4 +16,7 @@ def json_dumps(value):
 
 @register.filter(name='convert_timestamp')
 def convert_timestamp(value):
-    return time.strftime("%Y--%m--%d %H:%M:%S", time.localtime(int(float(value))))
+    try:
+        return time.strftime("%Y--%m--%d %H:%M:%S", time.localtime(int(float(value))))
+    except:
+        return value
