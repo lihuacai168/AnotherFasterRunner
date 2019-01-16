@@ -59,7 +59,8 @@ urlpatterns = [
     path('api/<int:pk>/', api.APITemplateView.as_view({
         "delete": "delete",
         "get": "single",
-        "patch": "update"
+        "patch": "update",
+        "post": "copy"
     })),
 
     # test接口地址

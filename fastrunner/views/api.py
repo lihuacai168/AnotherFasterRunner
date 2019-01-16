@@ -85,6 +85,21 @@ class APITemplateView(GenericViewSet):
 
         return Response(response.API_UPDATE_SUCCESS)
 
+    def copy(self, request, **kwargs):
+        """
+        pk int: test id
+        {
+            name: api name
+        }
+        """
+        pk = kwargs['pk']
+        api = models.API.objects.get(id=pk)
+        api.id = None
+        api.name = request.data['name']
+        api.save()
+        return Response(response.API_ADD_SUCCESS)
+
+
     def delete(self, request, **kwargs):
         """
         删除一个接口 pk
