@@ -95,7 +95,9 @@ class APITemplateView(GenericViewSet):
         pk = kwargs['pk']
         name = request.data['name']
         api = models.API.objects.get(id=pk)
-        api.body = eval(api.body)["name"] = name
+        body = eval(api.body)
+        body["name"] = name
+        api.body = body
         api.id = None
         api.name = name
         api.save()
