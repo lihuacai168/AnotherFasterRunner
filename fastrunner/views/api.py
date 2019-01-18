@@ -93,9 +93,11 @@ class APITemplateView(GenericViewSet):
         }
         """
         pk = kwargs['pk']
+        name = request.data['name']
         api = models.API.objects.get(id=pk)
+        api.body = eval(api.body)["name"] = name
         api.id = None
-        api.name = request.data['name']
+        api.name = name
         api.save()
         return Response(response.API_ADD_SUCCESS)
 
