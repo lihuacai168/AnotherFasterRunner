@@ -21,7 +21,7 @@ def auto_run_testsuite_pk(request):
     :return:
     """
     # 请求URL
-    # url = 'http://localhost:8000/auto_run_pk/?pk=7&project_id=1&name=xxx'
+    # 用例集中固定配置:http://localhost:8000/auto_run_testsuite_pk/?pk=11&config=4&project_id=1
 
     pk = request.GET.get('pk')
     # config = request.GET.get('config')
