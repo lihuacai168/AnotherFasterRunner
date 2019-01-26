@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'fastrunner.apps.FastrunnerConfig',
     'fastuser',
+    'fasttask',
     'rest_framework',
     'corsheaders'
 ]
