@@ -12,22 +12,26 @@ from fastrunner import models
 def run_api(request):
     """ run api by body
     """
+    name = request.data.pop('config')
     api = Format(request.data)
     api.parse()
 
-    summary = loader.debug_api(api.testcase, api.project)
+    config = None if name == '请选择' else eval(models.Config.objects.get(name=name).body)
+    summary = loader.debug_api(api.testcase, api.project, config=config)
 
     return Response(summary)
 
 
 @api_view(['GET'])
 def run_api_pk(request, **kwargs):
-    """run api by pk
+    """run api by pk and config
     """
     api = models.API.objects.get(id=kwargs['pk'])
-    testcase = eval(api.body)
+    name = request.query_params["config"]
+    config = None if name == '请选择' else eval(models.Config.objects.get(name=name).body)
 
-    summary = loader.debug_api(testcase, api.project.id)
+    test_case = eval(api.body)
+    summary = loader.debug_api(test_case, api.project.id, config=config)
 
     return Response(summary)
 
@@ -47,18 +51,20 @@ def run_api_tree(request):
     relation = request.data["relation"]
     back_async = request.data["async"]
     name = request.data["name"]
+    config = request.data["config"]
 
-    testcase = []
+    config = None if config == '请选择' else eval(models.Config.objects.get(name=config).body)
+    test_case = []
     for relation_id in relation:
         api = models.API.objects.filter(project__id=project, relation=relation_id).order_by('id').values('body')
         for content in api:
-            testcase.append(eval(content['body']))
+            test_case.append(eval(content['body']))
     if back_async:
-        loader.async_debug_api(testcase, project, name)
+        loader.async_debug_api(test_case, project, name, config=config)
         summary = loader.TEST_NOT_EXISTS
         summary["msg"] = "接口运行中，请稍后查看报告"
     else:
-        summary = loader.debug_api(testcase, project)
+        summary = loader.debug_api(test_case, project, config=config)
 
     return Response(summary)
 

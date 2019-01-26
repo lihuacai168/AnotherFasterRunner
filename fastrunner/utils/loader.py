@@ -357,10 +357,10 @@ def save_summary(name, summary, project, type=2):
 
 
 @back_async
-def async_debug_api(api, project, name):
+def async_debug_api(api, project, name, config=None):
     """异步执行api
     """
-    summary = debug_api(api, project, save=False)
+    summary = debug_api(api, project, save=False, config=config)
     save_summary(name, summary, project)
 
 

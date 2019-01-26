@@ -22,12 +22,12 @@ class TestCaseView(GenericViewSet):
         """
         node = request.query_params["node"]
         project = request.query_params["project"]
-
+        search = request.query_params["search"]
         # update_time 降序排列
         queryset = self.get_queryset().filter(project__id=project).order_by('-update_time')
 
-        if "search" in request.query_params.keys():
-            queryset = queryset.filter(name__contains=request.query_params["search"])
+        if search != '':
+            queryset = queryset.filter(name__contains=search)
 
         if node != '':
             queryset = queryset.filter(relation=node)
@@ -47,20 +47,17 @@ class TestCaseView(GenericViewSet):
         }
         """
         pk = kwargs['pk']
-
-        if models.Case.objects.filter(**request.data).first():
-            return Response(response.CASE_EXISTS)
-
+        name = request.data['name']
         case = models.Case.objects.get(id=pk)
         case.id = None
-        case.name = request.data['name']
+        case.name = name
         case.save()
 
         case_step = models.CaseStep.objects.filter(case__id=pk)
 
         for step in case_step:
             step.id = None
-            step.case = models.Case.objects.get(name=request.data['name'])
+            step.case = case
             step.save()
 
         return Response(response.CASE_ADD_SUCCESS)
@@ -126,10 +123,6 @@ class TestCaseView(GenericViewSet):
             return Response(response.PROJECT_NOT_EXISTS)
 
         body = request.data.pop('body')
-
-        # 同一项目同一节点下存在相同用例集
-        if models.Case.objects.filter(**request.data).first():
-            return Response(response.CASE_EXISTS)
 
         models.Case.objects.create(**request.data)
 

@@ -25,11 +25,11 @@ class APITemplateView(GenericViewSet):
 
         node = request.query_params["node"]
         project = request.query_params["project"]
-
+        search = request.query_params["search"]
         queryset = self.get_queryset().filter(project__id=project).order_by('-update_time')
 
-        if "search" in request.query_params.keys():
-            queryset = queryset.filter(name__contains=request.query_params["search"])
+        if search != '':
+            queryset = queryset.filter(name__contains=search)
 
         if node != '':
             queryset = queryset.filter(relation=node)
@@ -84,6 +84,25 @@ class APITemplateView(GenericViewSet):
             return Response(response.API_NOT_FOUND)
 
         return Response(response.API_UPDATE_SUCCESS)
+
+    def copy(self, request, **kwargs):
+        """
+        pk int: test id
+        {
+            name: api name
+        }
+        """
+        pk = kwargs['pk']
+        name = request.data['name']
+        api = models.API.objects.get(id=pk)
+        body = eval(api.body)
+        body["name"] = name
+        api.body = body
+        api.id = None
+        api.name = name
+        api.save()
+        return Response(response.API_ADD_SUCCESS)
+
 
     def delete(self, request, **kwargs):
         """
