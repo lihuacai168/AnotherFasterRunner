@@ -41,13 +41,14 @@ class DingMessage:
         except KeyError:
             base_url = summary['details'][0]['base_url']
         env_name = '测试' if 'test' in base_url else '生产'
+        case_suite_name = summary['details'][0]['name'] # 用例集名称
         start_at = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(summary['time']['start_at']))
         duration = '%.2fs' %summary['time']['duration']
         receive_msg_mobiles = [18666126234, 13763312220, 15989041619, 18665742877, 13719220901]  # 接收钉钉消息的列表
 
         # 已执行的条数
         executed = rows_count
-        title = '''自动化测试报告: \n开始执行时间:{2} \n消耗时间:{3} \n环境:{0} \nHOST:{1}'''.format(env_name, base_url, start_at, duration)
+        title = '''自动化测试报告: \n开始执行时间:{2} \n消耗时间:{3} \n环境:{0} \nHOST:{1} \n用例集:{4}'''.format(env_name, base_url, start_at, duration,case_suite_name)
         # 通过率
         pass_rate = '{:.2%}'.format(pass_count / executed)
 

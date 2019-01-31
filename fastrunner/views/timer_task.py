@@ -23,11 +23,13 @@ def auto_run_testsuite_pk(request):
     # 请求URL
     # 用例集中固定配置:http://localhost:8000/auto_run_testsuite_pk/?pk=11&config=4&project_id=1
 
+
     pk = request.GET.get('pk')
     # config = request.GET.get('config')
     config = None
     project_id = request.GET.get('project_id')
-    name = request.GET.get('name')
+    # name = request.GET.get('name')
+    name = models.Case.objects.get(pk = pk).name
 
     # 通过主键获取单个用例
     test_list = models.CaseStep.objects. \
