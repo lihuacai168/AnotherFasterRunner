@@ -44,7 +44,7 @@ class DingMessage:
         case_suite_name = summary['details'][0]['name'] # 用例集名称
         start_at = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(summary['time']['start_at']))
         duration = '%.2fs' %summary['time']['duration']
-        receive_msg_mobiles = [18666126234, 13763312220, 15989041619, 18665742877, 13719220901]  # 接收钉钉消息的列表
+        receive_msg_mobiles = [18666126234, 13763312220, 15989041619, 18665742877, 13512756535]  # 接收钉钉消息的列表
 
         # 已执行的条数
         executed = rows_count
