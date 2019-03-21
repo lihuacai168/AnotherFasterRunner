@@ -14,8 +14,12 @@ class DingMessage:
     调用钉钉机器人发送测试结果
     """
 
-    def __init__(self):
-        webhook = 'https://oapi.dingtalk.com/robot/send?access_token=998422738ca7d32f8641e9369da7f1b5545aa09c8fcec5ae17324e609c5d1af0'
+    def __init__(self, run_type):
+        self.run_type = run_type
+        if run_type == 'auto':
+            webhook = 'https://oapi.dingtalk.com/robot/send?access_token=998422738ca7d32f8641e9369da7f1b5545aa09c8fcec5ae17324e609c5d1af0'
+        elif run_type == 'deploy':
+            webhook = 'https://oapi.dingtalk.com/robot/send?access_token=16c4dbf613c5f1f288bbf695c1997ad41d37ad580d94ff1a0b7ceae6797bbc70'
         self.robot = DingtalkChatbot(webhook)
 
     def send_ding_msg(self,summary):
@@ -97,7 +101,10 @@ class DingMessage:
         if fail_count == 0:
             self.robot.send_text(msg)
         else:
-            self.robot.send_text(msg, at_mobiles=receive_msg_mobiles)
+            if self.run_type == 'deploy':
+                self.robot.send_text(msg, is_at_all=True)
+            elif self.run_type == 'auto':
+                self.robot.send_text(msg, at_mobiles=receive_msg_mobiles)
 
 
 if __name__ == '__main__':

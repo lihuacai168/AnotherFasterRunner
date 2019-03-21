@@ -23,8 +23,8 @@ def auto_run_testsuite_pk(request):
     # 请求URL
     # 用例集中固定配置:http://localhost:8000/auto_run_testsuite_pk/?pk=11&config=4&project_id=1
 
-
     pk = request.GET.get('pk')
+    run_type = request.GET.get('run_type')
     # config = request.GET.get('config')
     config = None
     project_id = request.GET.get('project_id')
@@ -49,7 +49,7 @@ def auto_run_testsuite_pk(request):
     # summary = loader.debug_api(testcase_list, config, project_id)
     summary = loader.debug_api(testcase_list, project_id, name=name, config=config)
 
-    ding_message = DingMessage()
+    ding_message = DingMessage(run_type)
     ding_message.send_ding_msg(summary)
 
     return HttpResponse("success")
