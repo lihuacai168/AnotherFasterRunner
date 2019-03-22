@@ -101,7 +101,7 @@ class DingMessage:
             if self.run_type == 'deploy':
                 print("deploy_success")
             elif self.run_type == 'auto':
-                self.robot.send_text(msg, at_mobiles=receive_msg_mobiles)
+                self.robot.send_text(msg)
         else:
             if self.run_type == 'deploy':
                 self.robot.send_text(msg, is_at_all=True)
