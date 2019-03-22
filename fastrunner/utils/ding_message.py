@@ -97,9 +97,11 @@ class DingMessage:
 失败{6}条,失败率{7}.
 {8}'''.format(title, rows_count, executed, skip_row, pass_count, pass_rate, fail_count, fail_rate,fail_detail)
 
-        # print(msg)
         if fail_count == 0:
-            self.robot.send_text(msg)
+            if self.run_type == 'deploy':
+                print("deploy_success")
+            elif self.run_type == 'auto':
+                self.robot.send_text(msg, at_mobiles=receive_msg_mobiles)
         else:
             if self.run_type == 'deploy':
                 self.robot.send_text(msg, is_at_all=True)
