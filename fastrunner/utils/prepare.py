@@ -1,5 +1,6 @@
 from fastrunner import models
 from fastrunner.utils.parser import Format
+from djcelery import models as celery_models
 
 
 def get_counter(model, pk=None):
@@ -18,49 +19,47 @@ def get_project_detail(pk):
     """
     api_count = get_counter(models.API, pk=pk)
     case_count = get_counter(models.Case, pk=pk)
-    team_count = get_counter(models.Team, pk=pk)
     config_count = get_counter(models.Config, pk=pk)
     variables_count = get_counter(models.Variables, pk=pk)
     report_count = get_counter(models.Report, pk=pk)
+    host_count = get_counter(models.HostIP, pk=pk)
+    plan_count = get_counter(models.Plan, pk=pk)
+    task_count = celery_models.PeriodicTask.objects.filter(description=pk).count()
 
     return {
         "api_count": api_count,
         "case_count": case_count,
-        "team_count": team_count,
+        "task_count": task_count,
         "config_count": config_count,
         "variables_count": variables_count,
-        "report_count": report_count
+        "report_count": report_count,
+        "host_count":host_count,
+        "plan_count": plan_count
     }
 
 
 def project_init(project):
+    """新建项目初始化
     """
-    新建项目初始化
-    """
-    tree = [{
-        "id": 1,
-        "label": "默认分组",
-        "children": []
-    }]
+
     # 自动生成默认debugtalk.py
     models.Debugtalk.objects.create(project=project)
     # 自动生成API tree
-    models.Relation.objects.create(project=project, tree=tree)
+    models.Relation.objects.create(project=project)
     # 自动生成Test Tree
-    models.Relation.objects.create(project=project, type=2, tree=tree)
+    models.Relation.objects.create(project=project, type=2)
 
 
 def project_end(project):
-    """
-    删除项目相关表 filter不会报异常 最好不用get
+    """删除项目相关表 filter不会报异常 最好不用get
     """
     models.Debugtalk.objects.filter(project=project).delete()
-    models.Team.objects.filter(project=project).delete()
     models.Config.objects.filter(project=project).delete()
     models.API.objects.filter(project=project).delete()
     models.Relation.objects.filter(project=project).delete()
     models.Report.objects.filter(project=project).delete()
     models.Variables.objects.filter(project=project).delete()
+    celery_models.PeriodicTask.objects.filter(description=project).delete()
 
     case = models.Case.objects.filter(project=project).values_list('id')
 

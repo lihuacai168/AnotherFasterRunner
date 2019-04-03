@@ -207,3 +207,100 @@ VARIABLES_UPDATE_SUCCESS = {
     "success": True,
     "msg": "全局变量更新成功"
 }
+
+TASK_ADD_SUCCESS = {
+    "code": "0001",
+    "success": True,
+    "msg": "定时任务新增成功"
+}
+
+TASK_TIME_ILLEGAL = {
+    "code": "0101",
+    "success": False,
+    "msg": "时间表达式非法"
+}
+
+TASK_HAS_EXISTS = {
+    "code": "0102",
+    "success": False,
+    "msg": "定时任务已存在"
+}
+
+TASK_EMAIL_ILLEGAL = {
+    "code": "0102",
+    "success": False,
+    "msg": "请指定邮件接收人列表"
+}
+
+TASK_DEL_SUCCESS = {
+    "code": "0003",
+    "success": True,
+    "msg": "任务删除成功"
+}
+
+PLAN_DEL_SUCCESS = {
+    "code": "0003",
+    "success": True,
+    "msg": "集成计划删除成功"
+}
+
+PLAN_ADD_SUCCESS = {
+    "code": "0001",
+    "success": True,
+    "msg": "计划添加成功"
+}
+
+PLAN_KEY_EXIST = {
+    "code": "0101",
+    "success": False,
+    "msg": "该KEY值已存在，请修改KEY值"
+}
+
+PLAN_ILLEGAL = {
+    "code": "0101",
+    "success": False,
+    "msg": "提取字段格式错误，请检查"
+}
+
+PLAN_UPDATE_SUCCESS = {
+    "code": "0002",
+    "success": True,
+    "msg": "计划更新成功"
+}
+
+HOSTIP_EXISTS = {
+    "code": "0101",
+    "success": False,
+    "msg": "此域名已存在，请重新命名"
+}
+
+HOSTIP_ADD_SUCCESS = {
+    'code': '0001',
+    'success': True,
+    'msg': '域名添加成功'
+}
+
+HOSTIP_NOT_EXISTS = {
+    "code": "0102",
+    "success": False,
+    "msg": "指定的域名不存在"
+}
+
+HOSTIP_EXISTS = {
+    "code": "0101",
+    "success": False,
+    "msg": "此域名已存在，请重新命名"
+}
+
+HOSTIP_UPDATE_SUCCESS = {
+    "code": "0002",
+    "success": True,
+    "msg": "域名更新成功"
+}
+HOST_DEL_SUCCESS = {
+    'code': '0003',
+    'success': True,
+    'msg': '域名删除成功'
+}
+
+

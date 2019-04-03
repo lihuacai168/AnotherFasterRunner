@@ -13,6 +13,7 @@ class Authenticator(BaseAuthentication):
     """
 
     def authenticate(self, request):
+
         token = request.query_params.get("token", None)
         obj = models.UserToken.objects.filter(token=token).first()
 

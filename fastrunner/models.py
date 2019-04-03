@@ -18,28 +18,6 @@ class Project(BaseTable):
     responsible = models.CharField("创建人", max_length=20, null=False)
 
 
-class Team(BaseTable):
-    """
-    项目成员
-    """
-
-    permission_union = (
-        (1, "admin"),
-        (2, "read"),
-        (3, "write"),
-        (4, "delete"),
-        (5, "admin")
-    )
-
-    class Meta:
-        verbose_name = "项目成员"
-        db_table = "Team"
-
-    account = models.CharField("账号", max_length=20)
-    permission = models.IntegerField("权限", choices=permission_union)
-    project = models.ForeignKey(Project, on_delete=models.CASCADE)
-
-
 class Debugtalk(models.Model):
     """
     驱动文件表
@@ -94,10 +72,16 @@ class Case(BaseTable):
         verbose_name = "用例信息"
         db_table = "Case"
 
+    tag = (
+        (1, "冒烟用例"),
+        (2, "集成用例"),
+        (3, "监控脚本")
+    )
     name = models.CharField("用例名称", null=False, max_length=100)
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
     relation = models.IntegerField("节点id", null=False)
-    length = models.IntegerField("teststep个数", null=False)
+    length = models.IntegerField("API个数", null=False)
+    tag = models.IntegerField("用例标签", choices=tag, default=2)
 
 
 class CaseStep(BaseTable):
@@ -117,29 +101,18 @@ class CaseStep(BaseTable):
     step = models.IntegerField("顺序", null=False)
 
 
-class DataBase(BaseTable):
+class HostIP(BaseTable):
     """
-    数据库信息表
+    全局变量
     """
-
-    db_type = (
-        (1, "Sql Server"),
-        (2, "MySQL"),
-        (3, "Oracle"),
-        (4, "Mongodb"),
-        (5, "InfluxDB")
-    )
 
     class Meta:
-        verbose_name = "数据库信息"
-        db_table = "DataBase"
+        verbose_name = "HOST配置"
+        db_table = "HostIP"
 
-    name = models.CharField("数据库名称", null=False, max_length=100)
-    server = models.CharField("服务地址", null=False, max_length=100)
-    account = models.CharField("登录名", max_length=50, null=False)
-    password = models.CharField("登陆密码", max_length=50, null=False)
-    type = models.IntegerField('数据库类型', default=2, choices=db_type)
-    desc = models.CharField("描述", max_length=50, null=False)
+    name = models.CharField(null=False, max_length=100)
+    value = models.TextField(null=False)
+    project = models.ForeignKey(Project, on_delete=models.CASCADE)
 
 
 class Variables(BaseTable):
@@ -155,19 +128,6 @@ class Variables(BaseTable):
     value = models.CharField(null=False, max_length=1024)
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
 
-
-class FileBinary(models.Model):
-    """
-    二进制文件流
-    """
-
-    class Meta:
-        verbose_name = "二进制文件"
-        db_table = "FileBinary"
-
-    name = models.CharField("文件名称", unique=True, null=False, max_length=100)
-    body = models.BinaryField("二进制流", null=False)
-    size = models.CharField("大小", null=False, max_length=30)
 
 
 class Report(BaseTable):
@@ -202,3 +162,14 @@ class Relation(models.Model):
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
     tree = models.TextField("结构主题", null=False, default=[])
     type = models.IntegerField("树类型", default=1)
+
+[
+    {
+        "name": "testcase",
+        "body": "body",
+        "url": "https://www.baidu.com",
+        "method": "post",
+        "project": "1",
+        "relation": 1
+    }
+]

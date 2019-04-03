@@ -1,6 +1,5 @@
 import copy
 import datetime
-import functools
 import importlib
 import io
 import json
@@ -9,19 +8,16 @@ import shutil
 import sys
 import tempfile
 import types
-from threading import Thread
-
 import requests
 import yaml
 from bs4 import BeautifulSoup
 from httprunner import HttpRunner, logger
 from requests.cookies import RequestsCookieJar
-from requests_toolbelt import MultipartEncoder
 
 from fastrunner import models
 from fastrunner.utils.parser import Format
 
-logger.setup_logger('DEBUG')
+logger.setup_logger('INFO')
 
 TEST_NOT_EXISTS = {
     "code": "0102",
@@ -126,7 +122,7 @@ class FileLoader(object):
         return debugtalk_module
 
 
-def parse_tests(testcases, debugtalk, name=None, config=None):
+def parse_tests(testcases, debugtalk, project, name=None, config=None):
     """get test case structure
         testcases: list
         config: none or dict
@@ -147,6 +143,13 @@ def parse_tests(testcases, debugtalk, name=None, config=None):
     }
 
     if config:
+        if "parameters" in config.keys():
+            for content in config["parameters"]:
+                for key, value in content.items():
+                    try:
+                        content[key] = eval(value.replace("\n", ""))
+                    except:
+                        content[key] = value
         testset["config"] = config
 
     if name:
@@ -154,7 +157,7 @@ def parse_tests(testcases, debugtalk, name=None, config=None):
 
     global_variables = []
 
-    for variables in models.Variables.objects.all().values("key", "value"):
+    for variables in models.Variables.objects.filter(project__id=project).values("key", "value"):
         if testset["config"].get("variables"):
             for content in testset["config"]["variables"]:
                 if variables["key"] not in content.keys():
@@ -168,26 +171,6 @@ def parse_tests(testcases, debugtalk, name=None, config=None):
         testset["config"]["variables"].extend(global_variables)
 
     testset["config"]["refs"] = refs
-
-    # for teststep in testcases:
-    #     # handle files
-    #     if "files" in teststep["request"].keys():
-    #         fields = {}
-    #
-    #         if "data" in teststep["request"].keys():
-    #             fields.update(teststep["request"].pop("data"))
-    #
-    #         for key, value in teststep["request"].pop("files").items():
-    #             file_binary = models.FileBinary.objects.get(name=value).body
-    #             # file_path = os.path.join(tempfile.mkdtemp(prefix='File'), value)
-    #             # FileLoader.dump_binary_file(file_path, file_binary)
-    #             fields[key] = (value, file_binary)
-    #
-    #         teststep["request"]["data"] = MultipartEncoder(fields)
-    #         try:
-    #             teststep["request"]["headers"]["Content-Type"] = teststep["request"]["data"].content_type
-    #         except KeyError:
-    #             teststep["request"].setdefault("headers", {"Content-Type": teststep["request"]["data"].content_type})
 
     return testset
 
@@ -207,7 +190,7 @@ def load_debugtalk(project):
     return debugtalk
 
 
-def debug_suite(suite, project, obj, config=None, save=True):
+def debug_suite(suite, project, obj, config, save=True):
     """debug suite
            suite :list
            pk: int
@@ -216,13 +199,12 @@ def debug_suite(suite, project, obj, config=None, save=True):
     if len(suite) == 0:
         return TEST_NOT_EXISTS
 
-    debugtalk = load_debugtalk(project)
-
     test_sets = []
-
+    debugtalk = load_debugtalk(project)
     for index in range(len(suite)):
         # copy.deepcopy 修复引用bug
-        testcases = copy.deepcopy(parse_tests(suite[index], debugtalk, name=obj[index]['name'], config=config))
+        testcases = copy.deepcopy(
+            parse_tests(suite[index], debugtalk, project, name=obj[index]['name'], config=config[index]))
         test_sets.append(testcases)
 
     kwargs = {
@@ -231,14 +213,13 @@ def debug_suite(suite, project, obj, config=None, save=True):
     runner = HttpRunner(**kwargs)
     runner.run(test_sets)
     summary = parse_summary(runner.summary)
-
     if save:
         save_summary("", summary, project, type=1)
 
     return summary
 
 
-def debug_api(api, project, name=None, config=None, save=True):
+def debug_api(api, project, name=None, config=None, save=True, report_name=""):
     """debug api
         api :dict or list
         project: int
@@ -253,7 +234,7 @@ def debug_api(api, project, name=None, config=None, save=True):
         """
         api = [api]
 
-    testcase_list = [parse_tests(api, load_debugtalk(project), name=name, config=config)]
+    testcase_list = [parse_tests(api, load_debugtalk(project), project, name=name, config=config)]
 
     kwargs = {
         "failfast": False
@@ -263,9 +244,8 @@ def debug_api(api, project, name=None, config=None, save=True):
     runner.run(testcase_list)
 
     summary = parse_summary(runner.summary)
-
     if save:
-        save_summary("", summary, project, type=1)
+        save_summary(report_name, summary, project, type=1)
 
     return summary
 
@@ -299,18 +279,6 @@ def load_test(test, project=None):
             testcase['name'] = name
 
     return testcase
-
-
-def back_async(func):
-    """异步执行装饰器
-    """
-
-    @functools.wraps(func)
-    def wrapper(*args, **kwargs):
-        thread = Thread(target=func, args=args, kwargs=kwargs)
-        thread.start()
-
-    return wrapper
 
 
 def parse_summary(summary):
@@ -353,19 +321,3 @@ def save_summary(name, summary, project, type=2):
         "type": type,
         "summary": json.dumps(summary, ensure_ascii=False),
     })
-
-
-@back_async
-def async_debug_api(api, project, name, config=None):
-    """异步执行api
-    """
-    summary = debug_api(api, project, save=False, config=config)
-    save_summary(name, summary, project)
-
-
-@back_async
-def async_debug_suite(suite, project, report, obj, config=None):
-    """异步执行suite
-    """
-    summary = debug_suite(suite, project, obj, config=config, save=False)
-    save_summary(report, summary, project)

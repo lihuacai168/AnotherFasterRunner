@@ -15,7 +15,7 @@ Including another URLconf
 """
 
 from django.urls import path
-from fastrunner.views import project, api, config, database, run, suite, report
+from fastrunner.views import project, api, config, schedule, run, suite, report
 
 urlpatterns = [
     # 项目相关接口地址
@@ -27,15 +27,17 @@ urlpatterns = [
     })),
     path('project/<int:pk>/', project.ProjectView.as_view({"get": "single"})),
 
-    # 数据库相关接口地址
-    path('database/', database.DataBaseView.as_view({
+    # 定时任务相关接口
+    path('schedule/', schedule.ScheduleView.as_view({
         "get": "list",
-        "post": "create",
+        "post": "add",
     })),
-    path('database/<int:pk>/', database.DataBaseView.as_view({
-        'patch': 'partial_update',
-        'delete': 'destroy'
+
+    path('schedule/<int:pk>/', schedule.ScheduleView.as_view({
+        "delete": "delete"
     })),
+
+
 
     # debugtalk.py相关接口地址
     path('debugtalk/<int:pk>/', project.DebugTalkView.as_view({"get": "debugtalk"})),
@@ -48,7 +50,7 @@ urlpatterns = [
     path('tree/<int:pk>/', project.TreeView.as_view()),
 
     # 文件上传 修改 删除接口地址
-    path('file/', project.FileView.as_view()),
+    # path('file/', project.FileView.as_view()),
 
     # api接口模板地址
     path('api/', api.APITemplateView.as_view({
@@ -112,6 +114,7 @@ urlpatterns = [
     path('run_test/', run.run_test),
     path('run_testsuite_pk/<int:pk>/', run.run_testsuite_pk),
     path('run_suite_tree/', run.run_suite_tree),
+    path('automation_test/', run.automation_test),
 
     # 报告地址
     path('reports/', report.ReportView.as_view({
@@ -123,4 +126,14 @@ urlpatterns = [
         "get": "look"
     })),
 
+    path('host_ip/', config.HostIPView.as_view({
+        "post": "add",
+        "get": "list"
+    })),
+
+    path('host_ip/<int:pk>/', config.HostIPView.as_view({
+        "delete": "delete",
+        "patch": "update",
+        "get": "all"
+    })),
 ]
