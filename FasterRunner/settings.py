@@ -81,33 +81,19 @@ WSGI_APPLICATION = 'FasterRunner.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
-<<<<<<< .mine
-
-
-=======
-
-
->>>>>>> .theirs
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'fastrunner',  # 新建数据库名
+        # 'NAME': 'fastrunner',  # 新建数据库名
+        'NAME': 'fast',  # 新建数据库名
         'USER': 'root',  # 数据库登录名
         'PASSWORD': 'root',  # 数据库登录密码
     }
-<<<<<<< .mine
-}
-
-
-
-
-=======
 }
 
 
 # Password validation
 # https://docs.djangoproject.com/en/2.1/ref/settings/#auth-password-validators
->>>>>>> .theirs
 
 AUTH_PASSWORD_VALIDATORS = [
     {
