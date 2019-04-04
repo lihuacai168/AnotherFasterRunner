@@ -219,7 +219,7 @@ def debug_suite(suite, project, obj, config, save=True):
     return summary
 
 
-def debug_api(api, project, name=None, config=None, save=True, report_name=""):
+def debug_api(api, project, name=None, config=None, save=True):
     """debug api
         api :dict or list
         project: int
@@ -245,7 +245,7 @@ def debug_api(api, project, name=None, config=None, save=True, report_name=""):
 
     summary = parse_summary(runner.summary)
     if save:
-        save_summary(report_name, summary, project, type=1)
+        save_summary("", summary, project, type=1)
 
     return summary
 
