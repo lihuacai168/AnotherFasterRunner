@@ -1,6 +1,5 @@
-import json
-
 from django.core.exceptions import ObjectDoesNotExist
+from django.utils.decorators import method_decorator
 from rest_framework.views import APIView
 from rest_framework.viewsets import GenericViewSet
 from fastrunner import models, serializers
@@ -8,32 +7,34 @@ from FasterRunner import pagination
 from rest_framework.response import Response
 from fastrunner.utils import response
 from fastrunner.utils import prepare
+from fastrunner.utils.decorator import request_log
 from fastrunner.utils.runner import DebugCode
-from fastrunner.utils.tree import get_tree_max_id, get_file_size
+from fastrunner.utils.tree import get_tree_max_id
 
 
 class ProjectView(GenericViewSet):
     """
     项目增删改查
     """
-
     queryset = models.Project.objects.all().order_by('-update_time')
     serializer_class = serializers.ProjectSerializer
     pagination_class = pagination.MyCursorPagination
 
+    @method_decorator(request_log(level='DEBUG'))
     def list(self, request):
         """
         查询项目信息
         """
-
         projects = self.get_queryset()
         page_projects = self.paginate_queryset(projects)
         serializer = self.get_serializer(page_projects, many=True)
         return self.get_paginated_response(serializer.data)
 
+    @method_decorator(request_log(level='INFO'))
     def add(self, request):
-        """
-        添加项目
+        """添加项目 {
+            name: str
+        }
         """
 
         name = request.data["name"]
@@ -41,9 +42,7 @@ class ProjectView(GenericViewSet):
         if models.Project.objects.filter(name=name).first():
             response.PROJECT_EXISTS["name"] = name
             return Response(response.PROJECT_EXISTS)
-        """
-        反序列化
-        """
+        # 反序列化
         serializer = serializers.ProjectSerializer(data=request.data)
 
         if serializer.is_valid():
@@ -52,9 +51,9 @@ class ProjectView(GenericViewSet):
             prepare.project_init(project)
             return Response(response.PROJECT_ADD_SUCCESS)
 
-        else:
-            return Response(response.SYSTEM_ERROR)
+        return Response(response.SYSTEM_ERROR)
 
+    @method_decorator(request_log(level='INFO'))
     def update(self, request):
         """
         编辑项目
@@ -76,6 +75,7 @@ class ProjectView(GenericViewSet):
 
         return Response(response.PROJECT_UPDATE_SUCCESS)
 
+    @method_decorator(request_log(level='INFO'))
     def delete(self, request):
         """
         删除项目
@@ -90,6 +90,7 @@ class ProjectView(GenericViewSet):
         except ObjectDoesNotExist:
             return Response(response.SYSTEM_ERROR)
 
+    @method_decorator(request_log(level='INFO'))
     def single(self, request, **kwargs):
         """
         得到单个项目相关统计信息
@@ -113,8 +114,10 @@ class DebugTalkView(GenericViewSet):
     """
     DebugTalk update
     """
+
     serializer_class = serializers.DebugTalkSerializer
 
+    @method_decorator(request_log(level='INFO'))
     def debugtalk(self, request, **kwargs):
         """
         得到debugtalk code
@@ -129,6 +132,7 @@ class DebugTalkView(GenericViewSet):
 
         return Response(serializer.data)
 
+    @method_decorator(request_log(level='INFO'))
     def update(self, request):
         """
         编辑debugtalk.py 代码并保存
@@ -143,6 +147,7 @@ class DebugTalkView(GenericViewSet):
 
         return Response(response.DEBUGTALK_UPDATE_SUCCESS)
 
+    @method_decorator(request_log(level='INFO'))
     def run(self, request):
         try:
             code = request.data["code"]
@@ -157,11 +162,13 @@ class DebugTalkView(GenericViewSet):
         }
         return Response(resp)
 
+
 class TreeView(APIView):
     """
     树形结构操作
     """
 
+    @method_decorator(request_log(level='INFO'))
     def get(self, request, **kwargs):
         """
         返回树形结构
@@ -177,7 +184,7 @@ class TreeView(APIView):
         except ObjectDoesNotExist:
             return Response(response.SYSTEM_ERROR)
 
-        body = eval(tree.tree) # list
+        body = eval(tree.tree)  # list
         tree = {
             "tree": body,
             "id": tree.id,
@@ -186,6 +193,7 @@ class TreeView(APIView):
         }
         return Response(tree)
 
+    @method_decorator(request_log(level='INFO'))
     def patch(self, request, **kwargs):
         """
         修改树形结构，ID不能重复
@@ -213,24 +221,24 @@ class TreeView(APIView):
 
         return Response(response.TREE_UPDATE_SUCCESS)
 
-
-class FileView(APIView):
-
-    def post(self, request):
-        """
-        接收文件并保存
-        """
-        file = request.FILES['file']
-
-        if models.FileBinary.objects.filter(name=file.name).first():
-            return Response(response.FILE_EXISTS)
-
-        body = {
-            "name": file.name,
-            "body": file.file.read(),
-            "size": get_file_size(file.size)
-        }
-
-        models.FileBinary.objects.create(**body)
-
-        return Response(response.FILE_UPLOAD_SUCCESS)
+#
+# class FileView(APIView):
+#
+#     def post(self, request):
+#         """
+#         接收文件并保存
+#         """
+#         file = request.FILES['file']
+#
+#         if models.FileBinary.objects.filter(name=file.name).first():
+#             return Response(response.FILE_EXISTS)
+#
+#         body = {
+#             "name": file.name,
+#             "body": file.file.read(),
+#             "size": get_file_size(file.size)
+#         }
+#
+#         models.FileBinary.objects.create(**body)
+#
+#         return Response(response.FILE_UPLOAD_SUCCESS)

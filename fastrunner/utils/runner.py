@@ -7,10 +7,12 @@ import os
 import subprocess
 import tempfile
 from fastrunner.utils import loader
+
 EXEC = sys.executable
 
 if 'uwsgi' in EXEC:
     EXEC = "/usr/bin/python3"
+
 
 class DebugCode(object):
 

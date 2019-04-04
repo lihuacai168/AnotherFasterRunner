@@ -25,10 +25,13 @@ WORKDIR /opt/workspace/FasterRunner/
 
 COPY . .
 
-RUN pip3 install uwsgi -i https://pypi.tuna.tsinghua.edu.cn/simple && \
-    pip3 install -r /opt/workspace/FasterRunner/requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple && \
+RUN  pip3 install -r ./requirements.txt -i \
+    https://pypi.tuna.tsinghua.edu.cn/simple \
+    --default-timeout=100 && \
     ln -s /opt/workspace/FasterRunner/nginx.conf /etc/nginx/sites-enabled/
 
 EXPOSE 5000
 
-ENTRYPOINT service nginx start && uwsgi --ini /opt/workspace/FasterRunner/uwsgi.ini
+CMD bash ./start.sh
+
+

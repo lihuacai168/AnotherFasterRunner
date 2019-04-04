@@ -7,6 +7,7 @@ class BaseTable(models.Model):
     """
     公共字段列
     """
+
     class Meta:
         abstract = True
         verbose_name = "公共字段表"
@@ -20,6 +21,7 @@ class UserInfo(BaseTable):
     """
     用户注册信息表
     """
+
     class Meta:
         verbose_name = "用户信息"
         db_table = "UserInfo"
@@ -33,6 +35,7 @@ class UserToken(BaseTable):
     """
     用户登陆token
     """
+
     class Meta:
         verbose_name = "用户登陆token"
         db_table = "UserToken"

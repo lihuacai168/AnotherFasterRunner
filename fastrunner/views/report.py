@@ -2,12 +2,14 @@ import json
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import render_to_response
+from django.utils.decorators import method_decorator
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 
 from FasterRunner import pagination
 from fastrunner import models, serializers
 from fastrunner.utils import response
+from fastrunner.utils.decorator import request_log
 
 
 class ReportView(GenericViewSet):
@@ -19,6 +21,7 @@ class ReportView(GenericViewSet):
     serializer_class = serializers.ReportSerializer
     pagination_class = pagination.MyPageNumberPagination
 
+    @method_decorator(request_log(level='DEBUG'))
     def list(self, request):
         """报告列表
         """
@@ -35,16 +38,17 @@ class ReportView(GenericViewSet):
         serializer = self.get_serializer(page_report, many=True)
         return self.get_paginated_response(serializer.data)
 
+    @method_decorator(request_log(level='INFO'))
     def delete(self, request, **kwargs):
         """删除报告
         """
         """
-               删除一个报告pk
-               删除多个
-               [{
-                   id:int
-               }]
-               """
+           删除一个报告pk
+           删除多个
+           [{
+               id:int
+           }]
+        """
         try:
             if kwargs.get('pk'):  # 单个删除
                 models.Report.objects.get(id=kwargs['pk']).delete()
@@ -57,6 +61,7 @@ class ReportView(GenericViewSet):
 
         return Response(response.REPORT_DEL_SUCCESS)
 
+    @method_decorator(request_log(level='INFO'))
     def look(self, request, **kwargs):
         """查看报告
         """
