@@ -26,6 +26,7 @@ python3 manage.py makemigrations fastrunner fastuser
 # migrate for database
 python3 manage.py migrate fastrunner
 python3 manage.py migrate fastuser
+python3 manage.py migrate djcelery
 ```
 
 

@@ -45,7 +45,7 @@ def run_api(request):
         host = models.HostIP.objects.get(name=host, project__id=api.project).value.splitlines()
         api.testcase = parse_host(host, api.testcase)
 
-    summary = loader.debug_api(api.testcase, api.project, config=parse_host(host, config), report_name=api.name)
+    summary = loader.debug_api(api.testcase, api.project, config=parse_host(host, config))
 
     return Response(summary)
 
