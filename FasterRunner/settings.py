@@ -24,8 +24,8 @@ SECRET_KEY = 'e$od9f28jce8q47u3raik$(e%$@lff6r89ux+=f!e1a$e42+#7'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 
-# DEBUG = False
-DEBUG = True
+DEBUG = False
+# DEBUG = True
 
 
 ALLOWED_HOSTS = ['*']
@@ -81,16 +81,25 @@ WSGI_APPLICATION = 'FasterRunner.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql',
+#         # 'NAME': 'fastrunner',  # 新建数据库名
+#         'NAME': 'fast',  # 新建数据库名
+#         'USER': 'root',  # 数据库登录名
+#         'PASSWORD': 'root',  # 数据库登录密码
+#     }
+# }
+# 阿里云数据库
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        # 'NAME': 'fastrunner',  # 新建数据库名
-        'NAME': 'fast',  # 新建数据库名
-        'USER': 'root',  # 数据库登录名
-        'PASSWORD': 'root',  # 数据库登录密码
+        'HOST':'10.0.3.57',
+        'NAME': 'fast_last',  # 新建数据库名
+        'USER': 'faster',  # 数据库登录名
+        'PASSWORD': 'fast!~WB2019',  # 数据库登录密码
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/2.1/ref/settings/#auth-password-validators
