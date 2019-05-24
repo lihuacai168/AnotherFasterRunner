@@ -1,3 +1,5 @@
+import datetime
+
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils.decorators import method_decorator
 from rest_framework.viewsets import GenericViewSet
@@ -7,7 +9,7 @@ from fastrunner.utils import response
 from fastrunner.utils.decorator import request_log
 from fastrunner.utils.parser import Format, Parse
 from django.db import DataError
-
+from django.db.models import Q
 
 class APITemplateView(GenericViewSet):
     """
@@ -28,7 +30,10 @@ class APITemplateView(GenericViewSet):
         node = request.query_params["node"]
         project = request.query_params["project"]
         search = request.query_params["search"]
-        queryset = self.get_queryset().filter(project__id=project).order_by('-update_time')
+        # queryset = self.get_queryset().filter(project__id=project).order_by('-update_time')
+        queryset = self.get_queryset().filter(project__id=project, delete=None).order_by('-update_time')
+        # queryset = self.get_queryset().filter(Q(project__id=project) and ~Q(delete=1)).order_by('-update_time')
+
 
         if search != '':
             queryset = queryset.filter(name__contains=search)
@@ -120,10 +125,12 @@ class APITemplateView(GenericViewSet):
 
         try:
             if kwargs.get('pk'):  # 单个删除
-                models.API.objects.get(id=kwargs['pk']).delete()
+                # models.API.objects.get(id=kwargs['pk']).delete()
+                models.API.objects.filter(id=kwargs['pk']).update(delete=1,update_time=datetime.datetime.now())
             else:
                 for content in request.data:
-                    models.API.objects.get(id=content['id']).delete()
+                    # models.API.objects.get(id=content['id']).delete()
+                    models.API.objects.filter(id=content['id']).update(delete=1)
 
         except ObjectDoesNotExist:
             return Response(response.API_NOT_FOUND)

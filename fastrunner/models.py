@@ -61,7 +61,7 @@ class API(BaseTable):
     method = models.CharField("请求方式", null=False, max_length=10)
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
     relation = models.IntegerField("节点id", null=False)
-
+    delete = models.IntegerField("是否删除", null=True)
 
 class Case(BaseTable):
     """
