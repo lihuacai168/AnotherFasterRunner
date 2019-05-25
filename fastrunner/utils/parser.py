@@ -82,7 +82,11 @@ class Format(object):
 
             self.project = body.pop('project')
             self.relation = body.pop('nodeId')
-
+            # FastRunner的API没有rig_id字段,需要兼容
+            try:
+                self.rig_id = body.pop('rig_id')
+            except KeyError:
+                self.rig_id = None
         except KeyError:
             # project or relation
             pass
@@ -91,10 +95,16 @@ class Format(object):
         """
         返回标准化HttpRunner "desc" 字段运行需去除
         """
+        try:
+            if self.rig_id is not None:
+                pass
+        except AttributeError:
+            self.rig_id = None
 
         if self.__level is 'test':
             test = {
                 "name": self.name,
+                "rig_id": self.rig_id,
                 "times": self.__times,
                 "request": {
                     "url": self.url,

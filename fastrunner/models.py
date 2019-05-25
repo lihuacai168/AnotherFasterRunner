@@ -62,6 +62,7 @@ class API(BaseTable):
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
     relation = models.IntegerField("节点id", null=False)
     delete = models.IntegerField("是否删除", null=True)
+    rig_id = models.IntegerField("网关API_id", null=True)
 
 class Case(BaseTable):
     """

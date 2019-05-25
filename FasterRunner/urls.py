@@ -15,11 +15,15 @@ Including another URLconf
 """
 
 from django.urls import path, include, re_path
-from fastrunner.views import timer_task,run_all_auto_case
+from fastrunner.views import timer_task,run_all_auto_case, api_rig
 urlpatterns = [
     path('api/user/', include('fastuser.urls')),
     path('api/fastrunner/', include('fastrunner.urls')),
     re_path(r'^auto_run_testsuite_pk/$', timer_task.auto_run_testsuite_pk, name='auto_run_testsuite_pk'),
     re_path(r'^run_all_auto_case/$', run_all_auto_case.run_all_auto_case, name='run_all_auto_case'),
+    # 网关rig增加API接口 http://localhost:8000/api_add/?token=5b9c762514728ef01b1cc9f05e8ba74e
+    path('api_add/', api_rig.APIRigView.as_view({"post": "add"})),
+    # 网关rig更新API接口 http://localhost:8000/api_update/200008/?token=5b9c762514728ef01b1cc9f05e8ba74e
+    path('api_update/<int:rig_id>/', api_rig.APIRigView.as_view({"post": "update"})),
 
 ]
