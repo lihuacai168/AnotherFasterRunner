@@ -126,6 +126,8 @@ class APIRigView(GenericViewSet):
         }
 
         try:
+
+            api_exist = models.API.objects.get(rig_id=pk)
             models.API.objects.filter(rig_id=pk).update(**api_body)
         except ObjectDoesNotExist:
             return Response(response.API_NOT_FOUND)
