@@ -19,7 +19,7 @@ from django.db import DataError
 from rest_framework import exceptions
 from rest_framework.authentication import BaseAuthentication
 from fastuser import models as user_model
-
+from fastrunner.utils.relation import API_RELATION
 
 class Authenticator(BaseAuthentication):
     """
@@ -94,10 +94,14 @@ class APIRigView(GenericViewSet):
             'url': api.url,
             'method': api.method,
             'project': models.Project.objects.get(id=api.project),
-            'relation': api.relation,
+            # 'relation': api.relation,
             'rig_id': api.rig_id,
         }
-
+        try:
+            relation = API_RELATION[api.relation]
+        except KeyError:
+            relation = API_RELATION['default']
+        api_body['relation'] = relation
         try:
             models.API.objects.create(**api_body)
         except DataError:
