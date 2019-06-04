@@ -19,7 +19,7 @@ from django.db import DataError
 from rest_framework import exceptions
 from rest_framework.authentication import BaseAuthentication
 from fastuser import models as user_model
-from fastrunner.utils.relation import API_RELATION
+from fastrunner.utils.relation import API_RELATION, API_AUTHOR
 
 class Authenticator(BaseAuthentication):
     """
@@ -107,7 +107,27 @@ class APIRigView(GenericViewSet):
         except DataError:
             return Response(response.DATA_TO_LONG)
 
+
+        # api作者
+        author = api_body['body']['variables'][4]['author']
+        self.copy_to_java(api.rig_id, author)
         return Response(response.API_ADD_SUCCESS)
+
+
+    # 复制一份到Java同学项目
+    def copy_to_java(self, rig_id, author):
+        # 根据作者决定分组
+        try:
+            relation = API_AUTHOR[author]
+        except KeyError:
+            relation = API_AUTHOR['default']
+
+        # Java项目的id=4
+        obj = models.API.objects.get(rig_id=rig_id)
+        obj.id = None
+        obj.relation = relation
+        obj.project_id = 4
+        obj.save()
 
     @method_decorator(request_log(level='INFO'))
     def update(self, request, **kwargs):
