@@ -123,7 +123,9 @@ class APIRigView(GenericViewSet):
             relation = API_AUTHOR['default']
 
         # Java项目的id=4
-        obj = models.API.objects.get(rig_id=rig_id)
+        # obj = models.API.objects.get(rig_id=rig_id)
+        # 修复已经存在的rig_id的api无法复制
+        obj = models.API.objects.filter(rig_id=rig_id).order_by('-id')[0]
         obj.id = None
         obj.relation = relation
         obj.project_id = 4
