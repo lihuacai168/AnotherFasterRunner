@@ -79,7 +79,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'FasterRunner.wsgi.application'
 
-
 # DATABASES = {
 #     'default': {
 #         'ENGINE': 'django.db.backends.mysql',
@@ -94,22 +93,31 @@ WSGI_APPLICATION = 'FasterRunner.wsgi.application'
 # }
 # 阿里云数据库
 DATABASES = {
-    'default': {
+    'prod': {
         'ENGINE': 'django.db.backends.mysql',
         'HOST': '10.0.3.57',
         'NAME': 'fast_last',  # 新建数据库名
         'USER': 'faster',  # 数据库登录名
         'PASSWORD': 'fast!~WB2019',  # 数据库登录密码
-        # 单元测试数据库
         'TEST': {
-            'NAME': 'test',  # 测试过程中会生成名字为test的数据库,测试结束后Django会自动删除该数据库
+            'MIRROR': 'default', # 单元测试时,使用default的配置
+            # 'DEPENDENCIES': ['default']
         }
     },
-
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'fast',  # 新建数据库名
+        'USER': 'root',  # 数据库登录名
+        'PASSWORD': 'root',  # 数据库登录密码
+        # 单元测试数据库
+        'TEST': {
+            'NAME': 'test_fast_last',  # 测试过程中会生成名字为test的数据库,测试结束后Django会自动删除该数据库
+        }
+    }
 }
 
-
-
+# 设置数据库路由类
+DATABASE_ROUTERS = ['FasterRunner.database.AutoChoiceDataBase']
 
 # Password validation
 # https://docs.djangoproject.com/en/2.1/ref/settings/#auth-password-validators
