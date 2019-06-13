@@ -79,27 +79,37 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'FasterRunner.wsgi.application'
 
-# Database
-# https://docs.djangoproject.com/en/2.1/ref/settings/#databases
+
 # DATABASES = {
 #     'default': {
 #         'ENGINE': 'django.db.backends.mysql',
-#         # 'NAME': 'fastrunner',  # 新建数据库名
 #         'NAME': 'fast',  # 新建数据库名
 #         'USER': 'root',  # 数据库登录名
 #         'PASSWORD': 'root',  # 数据库登录密码
+#         # 单元测试数据库
+#         'TEST': {
+#             'NAME': 'test',  # 测试过程中会生成名字为test的数据库,测试结束后Django会自动删除该数据库
+#         }
 #     }
 # }
 # 阿里云数据库
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'HOST':'10.0.3.57',
+        'HOST': '10.0.3.57',
         'NAME': 'fast_last',  # 新建数据库名
         'USER': 'faster',  # 数据库登录名
         'PASSWORD': 'fast!~WB2019',  # 数据库登录密码
-    }
+        # 单元测试数据库
+        'TEST': {
+            'NAME': 'test',  # 测试过程中会生成名字为test的数据库,测试结束后Django会自动删除该数据库
+        }
+    },
+
 }
+
+
+
 
 # Password validation
 # https://docs.djangoproject.com/en/2.1/ref/settings/#auth-password-validators
