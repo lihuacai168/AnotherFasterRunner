@@ -117,7 +117,7 @@ DATABASES = {
 }
 
 # 设置数据库路由类
-DATABASE_ROUTERS = ['FasterRunner.routers.AutoChoiceDataBase']
+DATABASE_ROUTERS = ['FasterRunner.database.AutoChoiceDataBase']
 
 # Password validation
 # https://docs.djangoproject.com/en/2.1/ref/settings/#auth-password-validators
