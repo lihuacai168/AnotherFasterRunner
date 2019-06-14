@@ -17,6 +17,7 @@ class AutoChoiceDataBase:
         if self.is_windows:
             return 'default'
         else:
+            print("使用remote远程数据库")
             return 'remote'
 
     def db_for_write(self, model, **hints):
