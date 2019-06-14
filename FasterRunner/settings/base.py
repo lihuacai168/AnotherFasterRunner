@@ -14,8 +14,8 @@ import os
 import djcelery
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
+# BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(os.path.join(__file__, os.pardir))))
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/
 
@@ -25,7 +25,6 @@ SECRET_KEY = 'e$od9f28jce8q47u3raik$(e%$@lff6r89ux+=f!e1a$e42+#7'
 # SECURITY WARNING: don't run with debug turned on in production!
 
 DEBUG = False
-# DEBUG = True
 
 
 ALLOWED_HOSTS = ['*']
@@ -64,7 +63,7 @@ ROOT_URLCONF = 'FasterRunner.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates')],
+        'DIRS': [os.path.join(BASE_DIR, '../../templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -92,32 +91,32 @@ WSGI_APPLICATION = 'FasterRunner.wsgi.application'
 #     }
 # }
 # 阿里云数据库
-DATABASES = {
-    'remote': {
-        'ENGINE': 'django.db.backends.mysql',
-        'HOST': '10.0.3.57',
-        'NAME': 'fast_last',  # 新建数据库名
-        'USER': 'faster',  # 数据库登录名
-        'PASSWORD': 'fast!~WB2019',  # 数据库登录密码
-        'TEST': {
-            'MIRROR': 'default',  # 单元测试时,使用default的配置
-            # 'DEPENDENCIES': ['default']
-        }
-    },
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'fast',  # 新建数据库名
-        'USER': 'root',  # 数据库登录名
-        'PASSWORD': 'root',  # 数据库登录密码
-        # 单元测试数据库
-        'TEST': {
-            'NAME': 'test_fast_last',  # 测试过程中会生成名字为test的数据库,测试结束后Django会自动删除该数据库
-        }
-    }
-}
+# DATABASES = {
+#     'remote': {
+#         'ENGINE': 'django.db.backends.mysql',
+#         'HOST': '10.0.3.57',
+#         'NAME': 'fast_last',  # 新建数据库名
+#         'USER': 'faster',  # 数据库登录名
+#         'PASSWORD': 'fast!~WB2019',  # 数据库登录密码
+#         'TEST': {
+#             'MIRROR': 'default',  # 单元测试时,使用default的配置
+#             # 'DEPENDENCIES': ['default']
+#         }
+#     },
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql',
+#         'NAME': 'fast',  # 新建数据库名
+#         'USER': 'root',  # 数据库登录名
+#         'PASSWORD': 'root',  # 数据库登录密码
+#         # 单元测试数据库
+#         'TEST': {
+#             # 'NAME': 'test_fast_last',  # 测试过程中会生成名字为test的数据库,测试结束后Django会自动删除该数据库
+#         }
+#     }
+# }
 
 # 设置数据库路由类
-DATABASE_ROUTERS = ['FasterRunner.database.AutoChoiceDataBase']
+# DATABASE_ROUTERS = ['FasterRunner.database.AutoChoiceDataBase']
 
 # Password validation
 # https://docs.djangoproject.com/en/2.1/ref/settings/#auth-password-validators
@@ -229,7 +228,7 @@ LOGGING = {
         'default': {
             'level': 'DEBUG',
             'class': 'logging.handlers.RotatingFileHandler',
-            'filename': os.path.join(BASE_DIR, 'logs/debug.log'),
+            'filename': os.path.join(BASE_DIR, 'logs/../../logs/debug.log'),
             'maxBytes': 1024 * 1024 * 50,
             'backupCount': 5,
             'formatter': 'standard',
@@ -242,7 +241,7 @@ LOGGING = {
         'request_handler': {
             'level': 'INFO',
             'class': 'logging.handlers.RotatingFileHandler',
-            'filename': os.path.join(BASE_DIR, 'logs/run.log'),
+            'filename': os.path.join(BASE_DIR, 'logs/../../logs/run.log'),
             'maxBytes': 1024 * 1024 * 50,
             'backupCount': 5,
             'formatter': 'standard',
@@ -250,7 +249,7 @@ LOGGING = {
         'scprits_handler': {
             'level': 'INFO',
             'class': 'logging.handlers.RotatingFileHandler',
-            'filename': os.path.join(BASE_DIR, 'logs/run.log'),
+            'filename': os.path.join(BASE_DIR, 'logs/../../logs/run.log'),
             'maxBytes': 1024 * 1024 * 100,
             'backupCount': 5,
             'formatter': 'standard',

@@ -3,7 +3,7 @@ import time
 from rest_framework import exceptions
 from rest_framework.authentication import BaseAuthentication
 
-from FasterRunner.settings import INVALID_TIME
+from FasterRunner.settings.base import INVALID_TIME
 from fastuser import models
 
 
