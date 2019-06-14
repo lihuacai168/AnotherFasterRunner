@@ -24,4 +24,4 @@ class ModelTest(TestCase):
 
     def test_user_register(self):
         res = models.UserInfo.objects.get(username='rikasai')
-        self.assertEqual(res.email,"lihuacai168@gmail.com")
+        self.assertEqual(res.email, "lihuacai168@gmail.com")
