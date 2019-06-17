@@ -198,7 +198,8 @@ CORS_ALLOW_HEADERS = (
 djcelery.setup_loader()
 CELERY_ENABLE_UTC = True
 CELERY_TIMEZONE = 'Asia/Shanghai'
-BROKER_URL = 'amqp://username:password@IP:5672//'
+#BROKER_URL = 'amqp://username:password@IP:5672//'
+BROKER_URL = 'amqp://admin:111111@10.0.3.57:5672//'
 CELERYBEAT_SCHEDULER = 'djcelery.schedulers.DatabaseScheduler'
 CELERY_RESULT_BACKEND = 'djcelery.backends.database:DatabaseBackend'
 CELERY_ACCEPT_CONTENT = ['application/json']
