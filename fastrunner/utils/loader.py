@@ -223,7 +223,7 @@ def debug_suite(suite, project, obj, config=None, save=True):
 
     for index in range(len(suite)):
         # copy.deepcopy 修复引用bug
-        testcases = copy.deepcopy(parse_tests(suite[index], debugtalk, name=obj[index]['name'], config=config))
+        testcases = copy.deepcopy(parse_tests(suite[index], debugtalk, name=obj[index]['name'], config=config[index]))
         test_sets.append(testcases)
 
     kwargs = {
