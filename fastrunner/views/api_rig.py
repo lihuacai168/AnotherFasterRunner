@@ -21,13 +21,14 @@ from rest_framework.authentication import BaseAuthentication
 from fastuser import models as user_model
 from fastrunner.utils.relation import API_RELATION, API_AUTHOR
 import datetime
+
+
 class Authenticator(BaseAuthentication):
     """
     账户鉴权认证 token
     """
 
     def authenticate(self, request):
-
         token = request.query_params.get("token", None)
         obj = user_model.UserToken.objects.filter(token=token).first()
 
@@ -48,7 +49,7 @@ class Authenticator(BaseAuthentication):
 
 
 class APIRigView(GenericViewSet):
-    authentication_classes = [Authenticator,]
+    authentication_classes = [Authenticator, ]
     serializer_class = serializers.APISerializer
     queryset = models.API.objects
 
@@ -66,7 +67,6 @@ class APIRigView(GenericViewSet):
         # queryset = self.get_queryset().filter(project__id=project).order_by('-update_time')
         queryset = self.get_queryset().filter(project__id=project, delete=None).order_by('-update_time')
         # queryset = self.get_queryset().filter(Q(project__id=project) and ~Q(delete=1)).order_by('-update_time')
-
 
         if search != '':
             queryset = queryset.filter(name__contains=search)
@@ -89,7 +89,7 @@ class APIRigView(GenericViewSet):
         api.parse()
 
         api_body = {
-            'name': api.name,
+            'name': api.name + '-' + str(api.rig_id),
             'body': api.testcase,
             'url': api.url,
             'method': api.method,
@@ -109,12 +109,10 @@ class APIRigView(GenericViewSet):
         except DataError:
             return Response(response.DATA_TO_LONG)
 
-
         # api作者
         author = api_body['body']['variables'][4]['author']
         self.copy_to_java(api.rig_id, author)
         return Response(response.API_ADD_SUCCESS)
-
 
     # 复制一份到Java同学项目
     def copy_to_java(self, rig_id, author):
@@ -154,4 +152,3 @@ class APIRigView(GenericViewSet):
         except ObjectDoesNotExist:
             return Response(response.API_NOT_FOUND)
         return Response(response.API_UPDATE_SUCCESS)
-
