@@ -20,7 +20,7 @@ from rest_framework import exceptions
 from rest_framework.authentication import BaseAuthentication
 from fastuser import models as user_model
 from fastrunner.utils.relation import API_RELATION, API_AUTHOR
-
+import datetime
 class Authenticator(BaseAuthentication):
     """
     账户鉴权认证 token
@@ -103,6 +103,8 @@ class APIRigView(GenericViewSet):
             relation = API_RELATION['default']
         api_body['relation'] = relation
         try:
+            # 增加api之前先删除已经存在的相同id的api
+            models.API.objects.filter(rig_id=api.rig_id).update(delete=1, update_time=datetime.datetime.now())
             models.API.objects.create(**api_body)
         except DataError:
             return Response(response.DATA_TO_LONG)
