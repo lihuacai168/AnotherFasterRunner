@@ -87,9 +87,10 @@ class APIRigView(GenericViewSet):
 
         api = Format(request.data)
         api.parse()
-
+        merge_name = api.name + '-' + str(api.rig_id)
+        api.testcase['name'] = merge_name
         api_body = {
-            'name': api.name + '-' + str(api.rig_id),
+            'name': merge_name,
             'body': api.testcase,
             'url': api.url,
             'method': api.method,
