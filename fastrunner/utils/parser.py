@@ -91,7 +91,7 @@ class Format(object):
                 self.rig_env = body.pop('rig_env')
             except KeyError:
                 # 不传rig_env,使用默认测试环境参数0
-                self.rig_id = 0
+                self.rig_env = 0
         except KeyError:
             # project or relation
             pass
