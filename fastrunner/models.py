@@ -55,6 +55,11 @@ class API(BaseTable):
         verbose_name = "接口信息"
         db_table = "API"
 
+    env_type = (
+        (0, "测试环境"),
+        (1, "生产环境"),
+        (2, "预发布 ")
+    )
     name = models.CharField("接口名称", null=False, max_length=100)
     body = models.TextField("主体信息", null=False)
     url = models.CharField("请求地址", null=False, max_length=200)
@@ -63,6 +68,8 @@ class API(BaseTable):
     relation = models.IntegerField("节点id", null=False)
     delete = models.IntegerField("是否删除", null=True)
     rig_id = models.IntegerField("网关API_id", null=True, db_index=True)
+    rig_env = models.IntegerField("网关环境", choices=env_type, db_index=True, default=0)
+
 
 class Case(BaseTable):
     """
@@ -130,7 +137,6 @@ class Variables(BaseTable):
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
 
 
-
 class Report(BaseTable):
     """
     报告存储
@@ -163,6 +169,7 @@ class Relation(models.Model):
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
     tree = models.TextField("结构主题", null=False, default=[])
     type = models.IntegerField("树类型", default=1)
+
 
 [
     {

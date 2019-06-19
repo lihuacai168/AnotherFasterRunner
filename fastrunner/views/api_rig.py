@@ -87,7 +87,28 @@ class APIRigView(GenericViewSet):
 
         api = Format(request.data)
         api.parse()
+        # try:
+        #     rig_env = api.rig_env
+        # except KeyError:
+        #     # 不传环境,使用默认测试环境0
+        #     rig_env = 0
+        try:
+            relation = API_RELATION[api.relation]
+        except KeyError:
+            relation = API_RELATION['default']
+
         merge_name = api.name + '-' + str(api.rig_id)
+
+        if api.rig_env == 0:
+            merge_name += '-测试'
+
+        elif api.rig_env == 1:
+            merge_name += '-生产'
+            # 生产环境比测试环境的关系节点大20
+            relation += 20
+        else:
+            merge_name += '-预发布'
+
         api.testcase['name'] = merge_name
         api_body = {
             'name': merge_name,
@@ -97,12 +118,15 @@ class APIRigView(GenericViewSet):
             'project': models.Project.objects.get(id=api.project),
             # 'relation': api.relation,
             'rig_id': api.rig_id,
+            'rig_env': api.rig_env,
+            'relation': relation
         }
-        try:
-            relation = API_RELATION[api.relation]
-        except KeyError:
-            relation = API_RELATION['default']
-        api_body['relation'] = relation
+        # try:
+        #     relation = API_RELATION[api.relation]
+        # except KeyError:
+        #     relation = API_RELATION['default']
+
+        # api_body['relation'] = relation
         try:
             # 增加api之前先删除已经存在的相同id的api
             models.API.objects.filter(rig_id=api.rig_id).update(delete=1, update_time=datetime.datetime.now())

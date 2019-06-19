@@ -5,7 +5,6 @@ from enum import Enum
 logger = logging.getLogger('FasterRunner')
 
 
-
 class FileType(Enum):
     """
     文件类型枚举
@@ -87,6 +86,12 @@ class Format(object):
                 self.rig_id = body.pop('rig_id')
             except KeyError:
                 self.rig_id = None
+
+            try:
+                self.rig_env = body.pop('rig_env')
+            except KeyError:
+                # 不传rig_env,使用默认测试环境参数0
+                self.rig_id = 0
         except KeyError:
             # project or relation
             pass
@@ -100,6 +105,13 @@ class Format(object):
                 pass
         except AttributeError:
             self.rig_id = None
+
+        try:
+            if self.rig_env is not None:
+                pass
+        except AttributeError:
+            # 不传参数,默认测试环境0
+            self.rig_env = 0
 
         if self.__level is 'test':
             test = {
