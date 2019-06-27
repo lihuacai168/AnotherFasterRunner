@@ -41,6 +41,7 @@ class DingMessage:
         skip_row = summary['stat']['skipped']
         # base_url = summary['details'][0]['base_url']
         try:
+            # 使用运行环境在配置的report_url
             base_url = summary['details'][0]['in_out']['in']['report_url']
         except KeyError:
             base_url = summary['details'][0]['base_url']
