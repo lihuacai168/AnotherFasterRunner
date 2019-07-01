@@ -65,6 +65,10 @@ urlpatterns = [
         "post": "copy"
     })),
 
+    path('api/tag/<int:pk>/', api.APITemplateView.as_view({
+        "patch": "add_tag",
+    })),
+
     # test接口地址
     path('test/', suite.TestCaseView.as_view({
         "get": "get",

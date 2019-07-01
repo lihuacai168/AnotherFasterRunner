@@ -94,6 +94,7 @@ class APITemplateView(GenericViewSet):
 
         return Response(response.API_UPDATE_SUCCESS)
 
+
     @method_decorator(request_log(level='INFO'))
     def copy(self, request, **kwargs):
         """
@@ -136,6 +137,26 @@ class APITemplateView(GenericViewSet):
             return Response(response.API_NOT_FOUND)
 
         return Response(response.API_DEL_SUCCESS)
+
+    @method_decorator(request_log(level='INFO'))
+    def add_tag(self, request, **kwargs):
+        """
+        更新接口的tag,暂时默认为调试成功
+
+        [{
+            id:int
+        }]
+        """
+
+        try:
+            if kwargs.get('pk'):  # 单个删除
+
+                models.API.objects.filter(id=kwargs['pk']).update(tag=1, update_time=datetime.datetime.now())
+
+        except ObjectDoesNotExist:
+            return Response(response.API_NOT_FOUND)
+
+        return Response(response.API_UPDATE_SUCCESS)
 
     @method_decorator(request_log(level='INFO'))
     def single(self, request, **kwargs):
