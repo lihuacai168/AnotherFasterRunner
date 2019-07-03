@@ -41,10 +41,11 @@ class APISerializer(serializers.ModelSerializer):
     接口信息序列化
     """
     body = serializers.SerializerMethodField()
-    tag = serializers.CharField(source="get_tag_display")
+    # tag = serializers.CharField(source="get_tag_display")
+    tag_name = serializers.CharField(source="get_tag_display")
     class Meta:
         model = models.API
-        fields = ['id', 'name', 'url', 'method', 'project', 'relation', 'body', 'rig_env', 'tag']
+        fields = ['id', 'name', 'url', 'method', 'project', 'relation', 'body', 'rig_env', 'tag', 'tag_name']
 
     def get_body(self, obj):
         parse = Parse(eval(obj.body))

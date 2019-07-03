@@ -60,6 +60,11 @@ class API(BaseTable):
         (1, "生产环境"),
         (2, "预发布 ")
     )
+    tag = (
+        (0, "未调试"),
+        (1, "调试成功"),
+        (2, "调试失败")
+    )
     name = models.CharField("接口名称", null=False, max_length=100)
     body = models.TextField("主体信息", null=False)
     url = models.CharField("请求地址", null=False, max_length=200)
@@ -69,6 +74,7 @@ class API(BaseTable):
     delete = models.IntegerField("是否删除", null=True)
     rig_id = models.IntegerField("网关API_id", null=True, db_index=True)
     rig_env = models.IntegerField("网关环境", choices=env_type, db_index=True, default=0)
+    tag = models.IntegerField("API标签", choices=tag, db_index=True, default=0)
 
 
 class Case(BaseTable):

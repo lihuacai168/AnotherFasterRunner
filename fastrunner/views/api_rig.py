@@ -129,7 +129,7 @@ class APIRigView(GenericViewSet):
         # api_body['relation'] = relation
         try:
             # 增加api之前先删除已经存在的相同id的api
-            models.API.objects.filter(rig_id=api.rig_id).update(delete=1, update_time=datetime.datetime.now())
+            models.API.objects.filter(rig_id=api.rig_id, tag=0).update(delete=1, update_time=datetime.datetime.now())
             models.API.objects.create(**api_body)
         except DataError:
             return Response(response.DATA_TO_LONG)
