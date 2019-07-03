@@ -11,6 +11,7 @@ from fastrunner.utils.parser import Format, Parse
 from django.db import DataError
 from django.db.models import Q
 
+
 class APITemplateView(GenericViewSet):
     """
     API操作视图
@@ -30,16 +31,22 @@ class APITemplateView(GenericViewSet):
         node = request.query_params["node"]
         project = request.query_params["project"]
         search = request.query_params["search"]
+        if 'tag' in request.query_params.keys():
+            tag = request.query_params["tag"]
+        else:
+            tag = ''
         # queryset = self.get_queryset().filter(project__id=project).order_by('-update_time')
         queryset = self.get_queryset().filter(project__id=project, delete=None).order_by('-update_time')
         # queryset = self.get_queryset().filter(Q(project__id=project) and ~Q(delete=1)).order_by('-update_time')
-
 
         if search != '':
             queryset = queryset.filter(name__contains=search)
 
         if node != '':
             queryset = queryset.filter(relation=node)
+
+        if tag != '':
+            queryset = queryset.filter(tag=tag)
 
         pagination_queryset = self.paginate_queryset(queryset)
         serializer = self.get_serializer(pagination_queryset, many=True)
@@ -94,7 +101,6 @@ class APITemplateView(GenericViewSet):
 
         return Response(response.API_UPDATE_SUCCESS)
 
-
     @method_decorator(request_log(level='INFO'))
     def copy(self, request, **kwargs):
         """
@@ -127,7 +133,7 @@ class APITemplateView(GenericViewSet):
         try:
             if kwargs.get('pk'):  # 单个删除
                 # models.API.objects.get(id=kwargs['pk']).delete()
-                models.API.objects.filter(id=kwargs['pk']).update(delete=1,update_time=datetime.datetime.now())
+                models.API.objects.filter(id=kwargs['pk']).update(delete=1, update_time=datetime.datetime.now())
             else:
                 for content in request.data:
                     # models.API.objects.get(id=content['id']).delete()
