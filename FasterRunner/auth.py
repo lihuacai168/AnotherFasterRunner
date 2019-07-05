@@ -7,6 +7,32 @@ from FasterRunner.settings.base import INVALID_TIME
 from fastuser import models
 
 
+def is_admin(token):
+    is_permission = models.UserToken.objects.filter(token=token, user_id__level=1).first()
+    if not is_permission:
+        raise exceptions.PermissionDenied({
+            "code": "9996",
+            "msg": "权限不足,请联系管理员",
+            "success": False
+        })
+    else:
+        return True
+
+
+class OnlyGetAuthenticator(BaseAuthentication):
+    """
+    非管理员,只允许GET调用方法,不能执行,不能修改DebugTalk
+    """
+
+    def authenticate(self, request):
+        if request.method != 'GET':
+            token = request.query_params.get("token", None)
+            is_admin(token)
+
+    def authenticate_header(self, request):
+        return 'PermissionDenied'
+
+
 class Authenticator(BaseAuthentication):
     """
     账户鉴权认证 token
@@ -42,3 +68,17 @@ class Authenticator(BaseAuthentication):
 
     def authenticate_header(self, request):
         return 'Auth Failed'
+
+
+class DeleteAuthenticator(BaseAuthentication):
+    """
+    删除方法权限判断
+    """
+
+    def authenticate(self, request):
+        if request.method == 'DELETE':
+            token = request.query_params.get("token", None)
+            is_admin(token)
+
+    def authenticate_header(self, request):
+        return 'PermissionDenied'

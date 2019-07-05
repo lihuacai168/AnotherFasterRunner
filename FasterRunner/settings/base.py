@@ -158,7 +158,7 @@ STATIC_URL = '/static/'
 # rest_framework config
 
 REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': ['FasterRunner.auth.Authenticator'],
+    'DEFAULT_AUTHENTICATION_CLASSES': ['FasterRunner.auth.DeleteAuthenticator', 'FasterRunner.auth.Authenticator', ],
     'UNAUTHENTICATED_USER': None,
     'UNAUTHENTICATED_TOKEN': None,
     # json form 渲染

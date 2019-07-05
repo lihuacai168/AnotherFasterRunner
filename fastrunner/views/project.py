@@ -10,6 +10,7 @@ from fastrunner.utils import prepare
 from fastrunner.utils.decorator import request_log
 from fastrunner.utils.runner import DebugCode
 from fastrunner.utils.tree import get_tree_max_id
+from FasterRunner.auth import OnlyGetAuthenticator
 
 
 class ProjectView(GenericViewSet):
@@ -114,7 +115,7 @@ class DebugTalkView(GenericViewSet):
     """
     DebugTalk update
     """
-
+    authentication_classes = [OnlyGetAuthenticator, ]
     serializer_class = serializers.DebugTalkSerializer
 
     @method_decorator(request_log(level='INFO'))
@@ -167,6 +168,7 @@ class TreeView(APIView):
     """
     树形结构操作
     """
+    authentication_classes = [OnlyGetAuthenticator, ]
 
     @method_decorator(request_log(level='INFO'))
     def get(self, request, **kwargs):
