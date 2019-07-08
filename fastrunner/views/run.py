@@ -66,8 +66,48 @@ def run_api_pk(request, **kwargs):
         test_case = parse_host(host, test_case)
 
     summary = loader.debug_api(test_case, api.project.id, config=parse_host(host, config))
-
     return Response(summary)
+
+
+def auto_run_api_pk(**kwargs):
+    """run api by pk and config
+    """
+    id = kwargs['id']
+    env = kwargs['config']
+    config_name = 'rig_prod' if env == 1 else 'rig_test'
+    api = models.API.objects.get(id=id)
+    config = eval(models.Config.objects.get(name=config_name, project=api.project).body)
+    test_case = eval(api.body)
+
+    summary = loader.debug_api(test_case, api.project.id, config=config)
+    api_request = summary['details'][0]['records'][0]['meta_data']['request']
+    api_response = summary['details'][0]['records'][0]['meta_data']['response']
+
+    # API执行成功,设置tag为自动运行成功
+    if summary['stat']['failures'] == 0 and summary['stat']['errors'] == 0:
+        models.API.objects.filter(id=id).update(tag=3)
+        return 'success'
+    elif summary['stat']['failures'] == 1:
+        models.API.objects.filter(id=id).update(tag=2)
+        return 'fail'
+
+
+def update_auto_case_step(**kwargs):
+    # 去掉多余字段
+    kwargs.pop('project')
+    kwargs.pop('rig_id')
+    kwargs.pop('relation')
+
+    # 测试环境0,对应97 生产环境1,对应98
+    rig_env = kwargs.pop('rig_env')
+    case_id = 98 if rig_env == 1 else 97
+    # 获取case的长度,+1是因为增加了一个case_step,
+    length = models.Case.objects.filter(id=case_id).first().length + 1
+    # case的长度也就是case_step的数量
+    kwargs['step'] = length
+    kwargs['case_id'] = case_id
+    models.Case.objects.filter(id=case_id).update(length=length)
+    models.CaseStep.objects.create(**kwargs)
 
 
 @api_view(['POST'])

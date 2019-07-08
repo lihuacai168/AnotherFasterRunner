@@ -61,9 +61,10 @@ class API(BaseTable):
         (2, "预发布 ")
     )
     tag = (
-        (0, "未调试"),
-        (1, "调试成功"),
-        (2, "调试失败")
+        (0, "还未调试"),
+        (1, "手动成功"),
+        (2, "调试失败"),
+        (3, "自动成功")
     )
     name = models.CharField("接口名称", null=False, max_length=100)
     body = models.TextField("主体信息", null=False)

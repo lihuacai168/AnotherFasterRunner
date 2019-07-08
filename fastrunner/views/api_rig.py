@@ -20,6 +20,7 @@ from rest_framework import exceptions
 from rest_framework.authentication import BaseAuthentication
 from fastuser import models as user_model
 from fastrunner.utils.relation import API_RELATION, API_AUTHOR
+from fastrunner.views import run
 import datetime
 
 
@@ -130,10 +131,15 @@ class APIRigView(GenericViewSet):
         try:
             # 增加api之前先删除已经存在的相同id的api
             models.API.objects.filter(rig_id=api.rig_id, tag=0).update(delete=1, update_time=datetime.datetime.now())
-            models.API.objects.create(**api_body)
+            # 创建成功,返回对象,方便获取id
+            obj = models.API.objects.create(**api_body)
         except DataError:
             return Response(response.DATA_TO_LONG)
 
+        # api运行成功,就自动增加到用例集里面
+        run_result = run.auto_run_api_pk(config=api.rig_env, id=obj.id)
+        if run_result == 'success':
+            run.update_auto_case_step(**api_body)
         # api作者
         author = api_body['body']['variables'][4]['author']
         self.copy_to_java(api.rig_id, author)
