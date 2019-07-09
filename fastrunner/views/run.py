@@ -88,7 +88,7 @@ def auto_run_api_pk(**kwargs):
         models.API.objects.filter(id=id).update(tag=3)
         return 'success'
     elif summary['stat']['failures'] == 1:
-        models.API.objects.filter(id=id).update(tag=2)
+        # models.API.objects.filter(id=id).update(tag=2)
         return 'fail'
 
 
