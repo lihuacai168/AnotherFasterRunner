@@ -1,5 +1,6 @@
 import json
 import logging
+import datetime
 
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework.decorators import api_view, authentication_classes
@@ -93,6 +94,22 @@ def auto_run_api_pk(**kwargs):
 
 
 def update_auto_case_step(**kwargs):
+    """
+    {'name': '查询关联的商品推荐列表-小程序需签名-200014-生产',
+    'body': {'name': '查询关联的商品推荐列表-小程序需签名-200014-生产',
+    'rig_id': 200014, 'times': 1,
+    'request': {'url': '/wxmp/mall/goods/detail/getRecommendGoodsList',
+    'method': 'GET', 'verify': False, 'headers': {'wb-token': '$wb_token'},
+    'params': {'goodsCode': '42470'}}, 'desc': {'header': {'wb-token': '用户登陆token'}, 'data': {}, 'files': {},
+    'params': {'goodsCode': '商品编码'}, 'variables': {'auth_type': '认证类型', 'rpc_Group': 'RPC服务组',
+    'rpc_Interface': '后端服务接口', 'params_type': '入参数形式', 'author': '作者'}, 'extract': {}},
+    'validate': [{'equals': ['content.info.error', 0]}], 'variables': [{'auth_type': 5},
+    {'rpc_Group': 'wbiao.seller.prod'}, {'rpc_Interface': 'cn.wbiao.seller.api.GoodsDetailService'},
+    {'params_type': 'Key_Value'}, {'author': 'xuqirong'}], 'setup_hooks': ['${get_sign($request,$auth_type)}']},
+    'url': '/wxmp/mall/goods/detail/getRecommendGoodsList', 'method': 'GET', 'step': 5}
+    :param kwargs:
+    :return:
+    """
     # 去掉多余字段
     kwargs.pop('project')
     kwargs.pop('rig_id')
@@ -106,8 +123,14 @@ def update_auto_case_step(**kwargs):
     # case的长度也就是case_step的数量
     kwargs['step'] = length
     kwargs['case_id'] = case_id
-    models.Case.objects.filter(id=case_id).update(length=length)
-    models.CaseStep.objects.create(**kwargs)
+    case_step_name = kwargs['name']
+    # api不存在用例中,就新增,已经存在就更新
+    is_case_step_name = models.CaseStep.objects.filter(case_id=case_id).filter(name=case_step_name)
+    if len(is_case_step_name) == 0:
+        models.Case.objects.filter(id=case_id).update(length=length, update_time=datetime.datetime.now())
+        models.CaseStep.objects.create(**kwargs)
+    else:
+        is_case_step_name.update(update_time=datetime.datetime.now(), **kwargs)
 
 
 @api_view(['POST'])
