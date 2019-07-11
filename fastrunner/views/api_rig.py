@@ -6,7 +6,9 @@
 # @Time : 2019/5/25 9:25
 # @Email: lihuacai168@gmail.com
 # @Software: PyCharm
+import datetime
 
+from django.db.models import Q
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils.decorators import method_decorator
 from rest_framework.viewsets import GenericViewSet
@@ -21,7 +23,6 @@ from rest_framework.authentication import BaseAuthentication
 from fastuser import models as user_model
 from fastrunner.utils.relation import API_RELATION, API_AUTHOR
 from fastrunner.views import run
-import datetime
 
 
 class Authenticator(BaseAuthentication):
@@ -129,8 +130,9 @@ class APIRigView(GenericViewSet):
 
         # api_body['relation'] = relation
         try:
-            # 增加api之前先删除已经存在的相同id的api
-            models.API.objects.filter(rig_id=api.rig_id, tag=0).update(delete=1, update_time=datetime.datetime.now())
+            # 增加api之前先删除已经存在的相同id的除了手动调试成功的api
+            models.API.objects.filter(rig_id=100257).filter(~Q(tag=1)).update(delete=1,
+                                                                              update_time=datetime.datetime.now())
             # 创建成功,返回对象,方便获取id
             obj = models.API.objects.create(**api_body)
         except DataError:
