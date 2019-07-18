@@ -10,6 +10,7 @@
 API_RELATION = {"default": 66,
                 "api": 67,
                 "manage": 68,
+                "app_manage": 68,
                 "artisan": 69,
                 "goods": 70,
                 "member": 71,
@@ -26,7 +27,7 @@ API_RELATION = {"default": 66,
                 "content": 82,
                 "bmpm": 83,
                 "bi": 84
-}
+                }
 
 # Java同学项目分组
 API_AUTHOR = {

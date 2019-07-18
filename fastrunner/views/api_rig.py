@@ -85,6 +85,81 @@ class APIRigView(GenericViewSet):
     def add(self, request):
         """
         新增一个接口
+        {
+  "header": {
+    "header": {
+      "wb-token": "$wb_token"
+    },
+    "desc": {
+      "wb-token": "用户登陆token"
+    }
+  },
+  "request": {
+    "form": {
+      "data": {},
+      "desc": {}
+    },
+    "json": {},
+    "params": {
+      "params": {
+        "goodsCode": "42470"
+      },
+      "desc": {
+        "goodsCode": "商品编码"
+      }
+    },
+    "files": {
+      "files": {},
+      "desc": {}
+    }
+  },
+  "extract": {
+    "extract": [],
+    "desc": {}
+  },
+  "validate": {
+    "validate": [{"equals": ["content.info.error",0]}]
+  },
+  "variables": {
+    "variables": [
+      {
+        "auth_type": "APP_MEMBER_AUTH"
+      },
+      {
+        "rpc_Group": "wbiao.seller.prod"
+      },
+      {
+        "rpc_Interface": "cn.wbiao.seller.api.GoodsDetailService"
+      },
+      {
+        "params_type": "Key_Value"
+      },
+      {
+        "author": "xuqirong"
+      }
+    ],
+    "desc": {
+      "auth_type": "认证类型",
+      "rpc_Group": "RPC服务组",
+      "rpc_Interface": "后端服务接口",
+      "params_type": "入参数形式",
+      "author": "作者"
+    }
+  },
+  "hooks": {
+    "setup_hooks": [
+      "${get_sign($request,$auth_type)}"
+    ],
+    "teardown_hooks": []
+  },
+  "url": "/wxmp/mall/goods/detail/getRecommendGoodsList",
+  "method": "GET",
+  "name": "查询关联的商品推荐列表-小程序需签名",
+  "times": 1,
+  "nodeId": "member",
+  "project": 5,
+  "rig_id":200014
+}
         """
 
         api = Format(request.data)
