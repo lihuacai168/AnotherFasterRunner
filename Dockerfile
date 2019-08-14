@@ -28,9 +28,10 @@ COPY . .
 RUN  pip3 install -r ./requirements.txt -i \
     https://pypi.tuna.tsinghua.edu.cn/simple \
     --default-timeout=100 && \
+    mkdir -p /opt/workspace/logs && \
     ln -s /opt/workspace/FasterRunner/nginx.conf /etc/nginx/sites-enabled/
 
-EXPOSE 5000
+EXPOSE 8000
 
 CMD bash ./start.sh
 
