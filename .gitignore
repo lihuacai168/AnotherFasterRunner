@@ -1,4 +1,4 @@
-*.logs
+*.log
 /.idea/
 *.pyc
 *.iml
