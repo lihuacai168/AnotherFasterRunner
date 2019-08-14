@@ -20,7 +20,10 @@
 ### 2.创建MySQL用户
 - 进入mysql容器 `docker exec -it mysql /bin/bash`
 - 用root用户连接mysql `mysql -uroot -pfaster12356`
-- 创建远程登陆`faster`用户 `CREATE USER 'faster'@'%' IDENTIFIED BY 'faster2019';`
+- 创建远程登陆`faster`用户,密码是`faster2019` 
+```
+CREATE USER 'faster'@'%' IDENTIFIED BY 'faster2019';
+```
 ### 3.创建和授权数据库
 - 创建`db_faster`数据库
 `create database db_faster default charset utf8 collate utf8_general_ci;` 
@@ -35,7 +38,9 @@ flush privileges; # 刷新权限表,使授权生效
 
 ### 5.配置和运行`RabbittMQ`(消息队列中间件)
 - 运行RabbittMQ
-`rabbitmq docker run -d --name --net=host --restart always rabbitmq -e RABBITMQ_DEFAULT_USER=user -e RABBITMQ_DEFAULT_PASS=password rabbitmq:3-management`
+```
+rabbitmq docker run -d --name --net=host --restart always rabbitmq -e RABBITMQ_DEFAULT_USER=user -e RABBITMQ_DEFAULT_PASS=password rabbitmq:3-management
+1```
 - 配置`RabbittMQ`
 在`/FasterRunner/settings/base.py`修改`BROKER_URL`的`IP,username,password`
 
@@ -87,3 +92,6 @@ docker images
 ```
 
 
+# 普通模式部署
+- [Django原生部署](https://www.jianshu.com/p/e26ccc21ddf2)
+- [uWSGI+Nginx+Supervisor+Python虚拟环境部署](https://www.jianshu.com/p/577a966b0998)
