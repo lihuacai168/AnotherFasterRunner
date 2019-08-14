@@ -40,7 +40,7 @@ flush privileges; # 刷新权限表,使授权生效
 - 运行RabbittMQ
 ```
 rabbitmq docker run -d --name --net=host --restart always rabbitmq -e RABBITMQ_DEFAULT_USER=user -e RABBITMQ_DEFAULT_PASS=password rabbitmq:3-management
-1```
+```
 - 配置`RabbittMQ`
 在`/FasterRunner/settings/base.py`修改`BROKER_URL`的`IP,username,password`
 
