@@ -15,7 +15,7 @@ Including another URLconf
 """
 
 from django.urls import path, include, re_path
-from fastrunner.views import timer_task,run_all_auto_case, api_rig
+from fastrunner.views import timer_task, run_all_auto_case, api_rig, api_provide_to_nodejs
 urlpatterns = [
     path('api/user/', include('fastuser.urls')),
     path('api/fastrunner/', include('fastrunner.urls')),
@@ -25,4 +25,5 @@ urlpatterns = [
     path('api_rig/<int:rig_id>/', api_rig.APIRigView.as_view({"patch": "update"})),
     # 网关rig增加API接口 http://localhost:8000/api_rig/?token=5b9c762514728ef01b1cc9f05e8ba74e
     path('api_rig/', api_rig.APIRigView.as_view({"post": "add"})),
+    path('api_provide_to_nodejs/', api_provide_to_nodejs.APIRigView.as_view({"get": "list"})),
 ]
