@@ -7,7 +7,7 @@ import os
 import subprocess
 import tempfile
 from fastrunner.utils import loader
-
+from FasterRunner.settings.base import BASE_DIR
 EXEC = sys.executable
 
 if 'uwsgi' in EXEC:
@@ -25,6 +25,7 @@ class DebugCode(object):
         """ dumps debugtalk.py and run
         """
         try:
+            os.chdir(self.temp)
             file_path = os.path.join(self.temp, "debugtalk.py")
             loader.FileLoader.dump_python_file(file_path, self.__code)
             self.resp = decode(subprocess.check_output([EXEC, file_path], stderr=subprocess.STDOUT, timeout=60))
@@ -34,7 +35,7 @@ class DebugCode(object):
 
         except subprocess.TimeoutExpired:
             self.resp = 'RunnerTimeOut'
-
+        os.chdir(BASE_DIR)
         shutil.rmtree(self.temp)
 
 

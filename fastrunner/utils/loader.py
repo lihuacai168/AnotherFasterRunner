@@ -20,6 +20,7 @@ from requests_toolbelt import MultipartEncoder
 
 from fastrunner import models
 from fastrunner.utils.parser import Format
+from FasterRunner.settings.base import BASE_DIR
 
 
 logger.setup_logger('DEBUG')
@@ -200,12 +201,19 @@ def load_debugtalk(project):
     # debugtalk.py
     code = models.Debugtalk.objects.get(project__id=project).code
 
-    file_path = os.path.join(tempfile.mkdtemp(prefix='FasterRunner'), "debugtalk.py")
-    FileLoader.dump_python_file(file_path, code)
-    debugtalk = FileLoader.load_python_module(os.path.dirname(file_path))
+    # file_path = os.path.join(tempfile.mkdtemp(prefix='FasterRunner'), "debugtalk.py")
+    tempfile_path = tempfile.mkdtemp(prefix='FasterRunner', dir=os.path.join(BASE_DIR, 'tempWorkDir'))
+    file_path = os.path.join(tempfile_path, 'debugtalk.py')
+    os.chdir(tempfile_path)
+    try:
+        FileLoader.dump_python_file(file_path, code)
+        debugtalk = FileLoader.load_python_module(os.path.dirname(file_path))
+        return debugtalk, file_path
 
-    shutil.rmtree(os.path.dirname(file_path))
-    return debugtalk
+    except Exception as e:
+        os.chdir(BASE_DIR)
+        shutil.rmtree(os.path.dirname(file_path))
+
 
 
 def debug_suite(suite, project, obj, config=None, save=True):
@@ -218,12 +226,16 @@ def debug_suite(suite, project, obj, config=None, save=True):
         return TEST_NOT_EXISTS
 
     debugtalk = load_debugtalk(project)
-
+    debugtalk_content = debugtalk[0]
+    debugtalk_path = debugtalk[1]
+    os.chdir(os.path.dirname(debugtalk_path))
     test_sets = []
 
     for index in range(len(suite)):
         # copy.deepcopy 修复引用bug
-        testcases = copy.deepcopy(parse_tests(suite[index], debugtalk, name=obj[index]['name'], config=config[index]))
+        # testcases = copy.deepcopy(parse_tests(suite[index], debugtalk, name=obj[index]['name'], config=config[index]))
+        testcases = copy.deepcopy(
+            parse_tests(suite[index], debugtalk_content, name=obj[index]['name'], config=config[index]))
         test_sets.append(testcases)
 
     kwargs = {
@@ -235,7 +247,7 @@ def debug_suite(suite, project, obj, config=None, save=True):
 
     if save:
         save_summary("", summary, project, type=1)
-
+    os.chdir(BASE_DIR)
     return summary
 
 
@@ -254,7 +266,13 @@ def debug_api(api, project, name=None, config=None, save=True):
         """
         api = [api]
 
-    testcase_list = [parse_tests(api, load_debugtalk(project), name=name, config=config)]
+    debugtalk = load_debugtalk(project)
+    debugtalk_content = debugtalk[0]
+    debugtalk_path = debugtalk[1]
+    os.chdir(os.path.dirname(debugtalk_path))
+
+    # testcase_list = [parse_tests(api, load_debugtalk(project), name=name, config=config)]
+    testcase_list = [parse_tests(api, debugtalk_content, name=name, config=config)]
 
     kwargs = {
         "failfast": False
@@ -269,6 +287,8 @@ def debug_api(api, project, name=None, config=None, save=True):
     if save:
         save_summary("", summary, project, type=1)
 
+    os.chdir(BASE_DIR)
+    shutil.rmtree(os.path.dirname(debugtalk_path))
     return summary
 
 def load_test(test, project=None):
