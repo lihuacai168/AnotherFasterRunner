@@ -213,13 +213,16 @@ class APIRigView(GenericViewSet):
         except DataError:
             return Response(response.DATA_TO_LONG)
 
+        # api作者
+        # 2019年10月22日 修复rig增加api运行失败时,没有复制api到Java同学项目
+        author = api_body['body']['variables'][4]['author']
+        self.copy_to_java(api.rig_id, author)
+
         # api运行成功,就自动增加到用例集里面
         run_result = run.auto_run_api_pk(config=api.rig_env, id=obj.id)
         if run_result == 'success':
             run.update_auto_case_step(**api_body)
-        # api作者
-        author = api_body['body']['variables'][4]['author']
-        self.copy_to_java(api.rig_id, author)
+
         return Response(response.API_ADD_SUCCESS)
 
     # 复制一份到Java同学项目
