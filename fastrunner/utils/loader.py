@@ -65,14 +65,22 @@ class FileLoader(object):
         """ dump yaml file
         """
         with io.open(yaml_file, 'w', encoding='utf-8') as stream:
-            yaml.dump(data, stream, indent=4, default_flow_style=False, encoding='utf-8', allow_unicode=True)
+            yaml.dump(
+                data,
+                stream,
+                indent=4,
+                default_flow_style=False,
+                encoding='utf-8',
+                allow_unicode=True)
 
     @staticmethod
     def dump_json_file(json_file, data):
         """ dump json file
         """
         with io.open(json_file, 'w', encoding='utf-8') as stream:
-            json.dump(data, stream, indent=4, separators=(',', ': '), ensure_ascii=False)
+            json.dump(
+                data, stream, indent=4, separators=(
+                    ',', ': '), ensure_ascii=False)
 
     @staticmethod
     def dump_python_file(python_file, data):
@@ -160,7 +168,8 @@ def parse_tests(testcases, debugtalk, name=None, config=None):
         if testset["config"].get("variables"):
             for content in testset["config"]["variables"]:
                 if variables["key"] not in content.keys():
-                    global_variables.append({variables["key"]: variables["value"]})
+                    global_variables.append(
+                        {variables["key"]: variables["value"]})
         else:
             global_variables.append({variables["key"]: variables["value"]})
 
@@ -202,7 +211,9 @@ def load_debugtalk(project):
     code = models.Debugtalk.objects.get(project__id=project).code
 
     # file_path = os.path.join(tempfile.mkdtemp(prefix='FasterRunner'), "debugtalk.py")
-    tempfile_path = tempfile.mkdtemp(prefix='FasterRunner', dir=os.path.join(BASE_DIR, 'tempWorkDir'))
+    tempfile_path = tempfile.mkdtemp(
+        prefix='FasterRunner', dir=os.path.join(
+            BASE_DIR, 'tempWorkDir'))
     file_path = os.path.join(tempfile_path, 'debugtalk.py')
     os.chdir(tempfile_path)
     try:
@@ -213,7 +224,6 @@ def load_debugtalk(project):
     except Exception as e:
         os.chdir(BASE_DIR)
         shutil.rmtree(os.path.dirname(file_path))
-
 
 
 def debug_suite(suite, project, obj, config=None, save=True):
@@ -235,7 +245,11 @@ def debug_suite(suite, project, obj, config=None, save=True):
             # copy.deepcopy 修复引用bug
             # testcases = copy.deepcopy(parse_tests(suite[index], debugtalk, name=obj[index]['name'], config=config[index]))
             testcases = copy.deepcopy(
-                parse_tests(suite[index], debugtalk_content, name=obj[index]['name'], config=config[index]))
+                parse_tests(
+                    suite[index],
+                    debugtalk_content,
+                    name=obj[index]['name'],
+                    config=config[index]))
             test_sets.append(testcases)
 
         kwargs = {
@@ -253,6 +267,7 @@ def debug_suite(suite, project, obj, config=None, save=True):
     finally:
         os.chdir(BASE_DIR)
         shutil.rmtree(os.path.dirname(debugtalk_path))
+
 
 def debug_api(api, project, name=None, config=None, save=True):
     """debug api
@@ -273,26 +288,33 @@ def debug_api(api, project, name=None, config=None, save=True):
     debugtalk_content = debugtalk[0]
     debugtalk_path = debugtalk[1]
     os.chdir(os.path.dirname(debugtalk_path))
+    try:
+        # testcase_list = [parse_tests(api, load_debugtalk(project), name=name, config=config)]
+        testcase_list = [
+            parse_tests(
+                api,
+                debugtalk_content,
+                name=name,
+                config=config)]
 
-    # testcase_list = [parse_tests(api, load_debugtalk(project), name=name, config=config)]
-    testcase_list = [parse_tests(api, debugtalk_content, name=name, config=config)]
+        kwargs = {
+            "failfast": False
+        }
 
-    kwargs = {
-        "failfast": False
-    }
+        runner = HttpRunner(**kwargs)
+        runner.run(testcase_list)
 
-    runner = HttpRunner(**kwargs)
-    runner.run(testcase_list)
+        summary = parse_summary(runner.summary)
 
+        if save:
+            save_summary("", summary, project, type=1)
+        return summary
+    except Exception as e:
+        raise SyntaxError(str(e))
+    finally:
+        os.chdir(BASE_DIR)
+        shutil.rmtree(os.path.dirname(debugtalk_path))
 
-    summary = parse_summary(runner.summary)
-
-    if save:
-        save_summary("", summary, project, type=1)
-
-    os.chdir(BASE_DIR)
-    shutil.rmtree(os.path.dirname(debugtalk_path))
-    return summary
 
 def load_test(test, project=None):
     """
@@ -307,12 +329,14 @@ def load_test(test, project=None):
     except KeyError:
         if 'case' in test.keys():
             if test["body"]["method"] == "config":
-                case_step = models.Config.objects.get(name=test["body"]["name"], project=project)
+                case_step = models.Config.objects.get(
+                    name=test["body"]["name"], project=project)
             else:
                 case_step = models.CaseStep.objects.get(id=test['id'])
         else:
             if test["body"]["method"] == "config":
-                case_step = models.Config.objects.get(name=test["body"]["name"], project=project)
+                case_step = models.Config.objects.get(
+                    name=test["body"]["name"], project=project)
             else:
                 case_step = models.API.objects.get(id=test['id'])
 
@@ -348,17 +372,20 @@ def parse_summary(summary):
                 if isinstance(value, bytes):
                     record["meta_data"]["request"][key] = value.decode("utf-8")
                 if isinstance(value, RequestsCookieJar):
-                    record["meta_data"]["request"][key] = requests.utils.dict_from_cookiejar(value)
+                    record["meta_data"]["request"][key] = requests.utils.dict_from_cookiejar(
+                        value)
 
             for key, value in record["meta_data"]["response"].items():
                 if isinstance(value, bytes):
-                    record["meta_data"]["response"][key] = value.decode("utf-8")
+                    record["meta_data"]["response"][key] = value.decode(
+                        "utf-8")
                 if isinstance(value, RequestsCookieJar):
-                    record["meta_data"]["response"][key] = requests.utils.dict_from_cookiejar(value)
+                    record["meta_data"]["response"][key] = requests.utils.dict_from_cookiejar(
+                        value)
 
             if "text/html" in record["meta_data"]["response"]["content_type"]:
-                record["meta_data"]["response"]["content"] = \
-                    BeautifulSoup(record["meta_data"]["response"]["content"], features="html.parser").prettify()
+                record["meta_data"]["response"]["content"] = BeautifulSoup(
+                    record["meta_data"]["response"]["content"], features="html.parser").prettify()
 
     return summary
 
