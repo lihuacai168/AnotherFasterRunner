@@ -230,26 +230,29 @@ def debug_suite(suite, project, obj, config=None, save=True):
     debugtalk_path = debugtalk[1]
     os.chdir(os.path.dirname(debugtalk_path))
     test_sets = []
+    try:
+        for index in range(len(suite)):
+            # copy.deepcopy 修复引用bug
+            # testcases = copy.deepcopy(parse_tests(suite[index], debugtalk, name=obj[index]['name'], config=config[index]))
+            testcases = copy.deepcopy(
+                parse_tests(suite[index], debugtalk_content, name=obj[index]['name'], config=config[index]))
+            test_sets.append(testcases)
 
-    for index in range(len(suite)):
-        # copy.deepcopy 修复引用bug
-        # testcases = copy.deepcopy(parse_tests(suite[index], debugtalk, name=obj[index]['name'], config=config[index]))
-        testcases = copy.deepcopy(
-            parse_tests(suite[index], debugtalk_content, name=obj[index]['name'], config=config[index]))
-        test_sets.append(testcases)
+        kwargs = {
+            "failfast": False
+        }
+        runner = HttpRunner(**kwargs)
+        runner.run(test_sets)
+        summary = parse_summary(runner.summary)
 
-    kwargs = {
-        "failfast": False
-    }
-    runner = HttpRunner(**kwargs)
-    runner.run(test_sets)
-    summary = parse_summary(runner.summary)
-
-    if save:
-        save_summary("", summary, project, type=1)
-    os.chdir(BASE_DIR)
-    return summary
-
+        if save:
+            save_summary("", summary, project, type=1)
+        return summary
+    except Exception as e:
+        raise SyntaxError(str(e))
+    finally:
+        os.chdir(BASE_DIR)
+        shutil.rmtree(os.path.dirname(debugtalk_path))
 
 def debug_api(api, project, name=None, config=None, save=True):
     """debug api
