@@ -167,9 +167,11 @@ def parse_tests(testcases, debugtalk, name=None, config=None):
     for variables in models.Variables.objects.all().values("key", "value"):
         if testset["config"].get("variables"):
             for content in testset["config"]["variables"]:
-                if variables["key"] not in content.keys():
+                temp_variable = {variables["key"]: variables["value"]}
+                if variables["key"] not in content.keys(
+                ) and temp_variable not in global_variables:
                     global_variables.append(
-                        {variables["key"]: variables["value"]})
+                        temp_variable)
         else:
             global_variables.append({variables["key"]: variables["value"]})
 
