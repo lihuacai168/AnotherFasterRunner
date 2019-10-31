@@ -230,7 +230,8 @@ LOGGING = {
         'default': {
             'level': 'DEBUG',
             'class': 'logging.handlers.RotatingFileHandler',
-            'filename': os.path.join(BASE_DIR, 'logs/../../logs/debug.log'),
+            # 'filename': os.path.join(BASE_DIR, 'logs/../../logs/debug.log'),
+            'filename': os.path.join(BASE_DIR, 'logs/debug.log'),
             'maxBytes': 1024 * 1024 * 50,
             'backupCount': 5,
             'formatter': 'standard',
@@ -243,7 +244,8 @@ LOGGING = {
         'request_handler': {
             'level': 'INFO',
             'class': 'logging.handlers.RotatingFileHandler',
-            'filename': os.path.join(BASE_DIR, 'logs/../../logs/run.log'),
+            # 'filename': os.path.join(BASE_DIR, 'logs/../../logs/run.log'),
+            'filename': os.path.join(BASE_DIR, 'logs/run.log'),
             'maxBytes': 1024 * 1024 * 50,
             'backupCount': 5,
             'formatter': 'standard',
@@ -251,7 +253,8 @@ LOGGING = {
         'scprits_handler': {
             'level': 'INFO',
             'class': 'logging.handlers.RotatingFileHandler',
-            'filename': os.path.join(BASE_DIR, 'logs/../../logs/run.log'),
+            # 'filename': os.path.join(BASE_DIR, 'logs/../../logs/run.log'),
+            'filename': os.path.join(BASE_DIR, 'logs/run.log'),
             'maxBytes': 1024 * 1024 * 100,
             'backupCount': 5,
             'formatter': 'standard',
