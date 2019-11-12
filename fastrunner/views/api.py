@@ -40,7 +40,8 @@ class APITemplateView(GenericViewSet):
         # queryset = self.get_queryset().filter(Q(project__id=project) and ~Q(delete=1)).order_by('-update_time')
 
         if search != '':
-            queryset = queryset.filter(name__contains=search)
+            # queryset = queryset.filter(name__contains=search)
+            queryset = queryset.filter(body__contains=search)
 
         if node != '':
             queryset = queryset.filter(relation=node)
