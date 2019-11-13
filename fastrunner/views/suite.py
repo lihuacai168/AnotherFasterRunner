@@ -1,3 +1,5 @@
+import datetime
+
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils.decorators import method_decorator
 from rest_framework.views import APIView
@@ -99,7 +101,7 @@ class TestCaseView(GenericViewSet):
         prepare.update_casestep(body, case)
 
         request.data['tag'] = self.tag_options[request.data['tag']]
-        models.Case.objects.filter(id=pk).update(**request.data)
+        models.Case.objects.filter(id=pk).update(update_time=datetime.datetime.now(), **request.data)
 
         return Response(response.CASE_UPDATE_SUCCESS)
 
