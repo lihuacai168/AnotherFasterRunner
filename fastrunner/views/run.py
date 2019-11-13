@@ -160,7 +160,7 @@ def run_api_tree(request):
         host = models.HostIP.objects.get(name=host, project=project).value.splitlines()
 
     for relation_id in relation:
-        api = models.API.objects.filter(project__id=project, relation=relation_id, delete=None).order_by('id').values(
+        api = models.API.objects.filter(project__id=project, relation=relation_id, delete=0).order_by('id').values(
             'body')
         for content in api:
             api = eval(content['body'])

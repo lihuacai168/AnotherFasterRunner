@@ -67,7 +67,7 @@ class APIRigView(GenericViewSet):
         project = request.query_params["project"]
         search = request.query_params["search"]
         # queryset = self.get_queryset().filter(project__id=project).order_by('-update_time')
-        queryset = self.get_queryset().filter(project__id=project, delete=None).order_by('-update_time')
+        queryset = self.get_queryset().filter(project__id=project, delete=0).order_by('-update_time')
         # queryset = self.get_queryset().filter(Q(project__id=project) and ~Q(delete=1)).order_by('-update_time')
 
         if search != '':

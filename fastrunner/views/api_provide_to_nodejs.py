@@ -66,7 +66,7 @@ class APIRigView(GenericViewSet):
         project = request.query_params["project"]
         search = request.query_params["search"]
         env = request.query_params["env"]
-        queryset = self.get_queryset().filter(project__id=project, delete=None).order_by('-update_time')
+        queryset = self.get_queryset().filter(project__id=project, delete=0).order_by('-update_time')
         if env != '':
             queryset = queryset.filter(rig_env=env)
         if search != '':
