@@ -214,6 +214,12 @@ TASK_ADD_SUCCESS = {
     "msg": "定时任务新增成功"
 }
 
+TASK_UPDATE_SUCCESS = {
+    "code": "0002",
+    "success": True,
+    "msg": "定时任务更新成功"
+}
+
 TASK_TIME_ILLEGAL = {
     "code": "0101",
     "success": False,

@@ -32,7 +32,7 @@ class ScheduleView(GenericViewSet):
     def add(self, request):
         """新增定时任务{
             name: str
-            corntab: str
+            crontab: str
             switch: bool
             data: [int,int]
             strategy: str
@@ -44,6 +44,10 @@ class ScheduleView(GenericViewSet):
         task = Task(**request.data)
         resp = task.add_task()
         return Response(resp)
+
+    # def update(self,request):
+    #     task = Task(**request.data)
+    #     resp = 1
 
     #
     # @method_decorator(request_log(level='INFO'))
@@ -69,6 +73,18 @@ class ScheduleView(GenericViewSet):
     #     return Response(response.PROJECT_UPDATE_SUCCESS)
     #
     # @method_decorator(request_log(level='INFO'))
+
+    @method_decorator(request_log(level='INFO'))
+    def update(self, request, **kwargs):
+        """更新任务
+        :param request:
+        :param kwargs:
+        :return:
+        """
+        task = Task(**request.data)
+        resp = task.update_task(kwargs['pk'])
+        return Response(resp)
+
     def delete(self, request, **kwargs):
         """删除任务
         """
