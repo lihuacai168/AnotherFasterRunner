@@ -231,6 +231,7 @@ class VariablesView(GenericViewSet):
 
         variables.key = request.data["key"]
         variables.value = request.data["value"]
+        variables.description = request.data["description"]
         variables.save()
 
         return Response(response.VARIABLES_UPDATE_SUCCESS)

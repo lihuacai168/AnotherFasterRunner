@@ -142,7 +142,7 @@ class Variables(BaseTable):
     key = models.CharField(null=False, max_length=100)
     value = models.CharField(null=False, max_length=1024)
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
-
+    description = models.CharField("全局变量描述", null=True, max_length=100)
 
 class Report(BaseTable):
     """
