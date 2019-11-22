@@ -18,7 +18,7 @@ def run_all_auto_case(request):
     run_type = request.GET.get('run_type')
     all_cases = get_all_auto_case()
     if all_cases:
-        for pk,project_id in all_cases.items():
+        for pk, project_id in all_cases.items():
             url = "http://{2}:8000/auto_run_testsuite_pk/?pk={0}&project_id={1}&run_type={3}"\
                 .format(pk, project_id, get_local_ip(), run_type)
             requests.get(url)

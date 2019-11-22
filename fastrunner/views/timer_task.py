@@ -29,7 +29,7 @@ def auto_run_testsuite_pk(request):
     config = None
     project_id = request.GET.get('project_id')
     # name = request.GET.get('name')
-    name = models.Case.objects.get(pk = pk).name
+    name = models.Case.objects.get(pk=pk).name
 
     # 通过主键获取单个用例
     test_list = models.CaseStep.objects. \

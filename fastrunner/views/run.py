@@ -8,6 +8,7 @@ from fastrunner.utils import loader
 from fastrunner import tasks
 from rest_framework.response import Response
 from fastrunner.utils.decorator import request_log
+from fastrunner.utils.ding_message import DingMessage
 from fastrunner.utils.host import parse_host
 from fastrunner.utils.parser import Format
 from fastrunner import models

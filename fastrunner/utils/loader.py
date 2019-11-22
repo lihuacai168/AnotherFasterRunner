@@ -264,6 +264,7 @@ def debug_suite(suite, project, obj, config=None, save=True):
         if save:
             save_summary("", summary, project, type=1)
         return summary
+
     except Exception as e:
         raise SyntaxError(str(e))
     finally:

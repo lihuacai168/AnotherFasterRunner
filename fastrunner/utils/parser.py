@@ -1,6 +1,8 @@
 import json
 import logging
+import time
 from enum import Enum
+from fastrunner import models
 
 logger = logging.getLogger('FasterRunner')
 
@@ -399,6 +401,96 @@ class Parse(object):
 
 def format_json(value):
     try:
-        return json.dumps(value, indent=4, separators=(',', ': '), ensure_ascii=False)
-    except:
+        return json.dumps(
+            value, indent=4, separators=(
+                ',', ': '), ensure_ascii=False)
+    except BaseException:
         return value
+
+
+def format_summary_to_ding(msg_type, summary):
+    rows_count = summary['stat']['testsRun']
+    pass_count = summary['stat']['successes']
+    fail_count = summary['stat']['failures']
+    error_count = summary['stat']['errors']
+    try:
+        # 使用运行环境在配置的report_url
+        base_url = summary['details'][0]['in_out']['in']['report_url']
+    except KeyError:
+        base_url = summary['details'][0]['base_url']
+    env_name = '测试' if 'test' in base_url else '生产'
+    case_suite_name = summary['details'][0]['name']  # 用例集名称
+    start_at = time.strftime(
+        '%Y-%m-%d %H:%M:%S',
+        time.localtime(
+            summary['time']['start_at']))
+    duration = '%.2fs' % summary['time']['duration']
+
+    # 已执行的条数
+    executed = rows_count
+    title = '''自动化测试报告: \n开始执行时间:{2} \n消耗时间:{3} \n环境:{0} \nHOST:{1} \n用例集:{4}'''.format(
+        env_name, base_url, start_at, duration, case_suite_name)
+    # 通过率
+    pass_rate = '{:.2%}'.format(pass_count / executed)
+
+    # 失败率
+    fail_rate = '{:.2%}'.format(fail_count / executed)
+
+    fail_count_list = []
+
+    # 失败详情
+    if fail_count == 0:
+        fail_detail = ''
+
+    else:
+        details = summary['details']
+        print(details)
+        for detail in details:
+            for record in detail['records']:
+                print(record['meta_data']['validators'])
+                if record['status'] != 'failure':
+                    continue
+                else:
+                    response_message = record['meta_data']['response']['json']['info']['message']
+                    response_error = record['meta_data']['response']['json']['info']['error']
+                    case_name = record['name']
+                    expect = []
+                    check_value = []
+                    for validator in record['meta_data']['validators']:
+                        expect.append(validator['expect'])
+                        check_value.append(validator['check_value'])
+                    fail_count_list.append(
+                        {'case_name': case_name, 'fail_message': f'{response_error} - {response_message}'})
+
+        fail_detail = '失败的接口是:\n'
+        for i in fail_count_list:
+            s = '用例名:{0}\n PATH:{1}\n  \n'.format(i["case_name"], i["fail_message"])
+            fail_detail += s
+
+    if msg_type == 'markdown':
+        fail_detail_markdown = ''
+        report_id = models.Report.objects.last().id
+        report_url = f'http://10.0.3.57:8000/api/fastrunner/reports/{report_id}/'
+        for item in fail_count_list:
+            case_name_and_fail_message = f'> - **{item["case_name"]} - {item["fail_message"]}**\n'
+            fail_detail_markdown += case_name_and_fail_message
+        msg_markdown = f"""
+## FasterRunner自动化测试报告
+### 用例集: {case_suite_name}
+### 耗时: {duration}
+### 成功用例: {pass_count}个
+### 异常用例: {error_count}个
+### 失败用例: {fail_count}个
+{fail_detail_markdown}
+### 失败率: {fail_rate}
+### [查看详情]({report_url})"""
+
+    else:
+        msg = '''{0}
+        总用例{1}共条,执行了{2}条,异常{3}条.
+        通过{4}条,通过率{5}.
+        失败{6}条,失败率{7}.
+        {8}'''.format(title, rows_count, executed, error_count, pass_count, pass_rate, fail_count, fail_rate,
+                      fail_detail)
+
+    return (msg_markdown, fail_count) if msg_markdown else (msg, fail_count)
