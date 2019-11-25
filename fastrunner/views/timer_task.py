@@ -6,9 +6,11 @@
 # @Time : 2018/12/29 13:44
 # @Email: lihuacai168@gmail.com
 # @Software: PyCharm
+import datetime
+
 from django.http import HttpResponse
 from fastrunner import models
-from fastrunner.utils import loader
+from fastrunner.utils.loader import debug_api, save_summary
 from fastrunner.utils.ding_message import DingMessage
 
 
@@ -47,7 +49,9 @@ def auto_run_testsuite_pk(request):
         testcase_list.append(body)
 
     # summary = loader.debug_api(testcase_list, config, project_id)
-    summary = loader.debug_api(testcase_list, project_id, name=name, config=config)
+    summary = debug_api(testcase_list, project_id, name=name, config=config)
+
+    save_summary(f'{name}_'+datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'), summary, project_id, type=3)
 
     ding_message = DingMessage(run_type)
     ding_message.send_ding_msg(summary)
