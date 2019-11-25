@@ -41,7 +41,12 @@ class DingMessage:
             if self.run_type == 'deploy':
                 self.robot.send_markdown(title=title, text=msg, is_at_all=True)
             elif self.run_type == 'auto':
-                receive_msg_mobiles = [18666126234, 13763312220, 15989041619, 18665742877, 13512756535]  # 接收钉钉消息的列表
+                receive_msg_mobiles = [18666126234, 18122118571, 13763312220, 15989041619, 18665742877,
+                                       13512756535]  # 接收钉钉消息的列表
+                at_phone = ''
+                for phone in [f'@{phone} ' for phone in receive_msg_mobiles]:
+                    at_phone += phone
+                msg += at_phone
                 self.robot.send_markdown(title=title, text=msg, at_mobiles=receive_msg_mobiles)
 
 
