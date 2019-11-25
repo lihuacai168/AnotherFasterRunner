@@ -15,22 +15,18 @@ from fastrunner.utils.ding_message import DingMessage
 
 
 # 单个用例组
-def auto_run_testsuite_pk(request):
+def auto_run_testsuite_pk(**kwargs):
     """
     :param pk: int 用例组主键
     :param config: int 运行环境
     :param project_id: int 项目id
     :return:
     """
-    # 请求URL
-    # 用例集中固定配置:http://localhost:8000/auto_run_testsuite_pk/?pk=11&config=4&project_id=1
 
-    pk = request.GET.get('pk')
-    run_type = request.GET.get('run_type')
-    # config = request.GET.get('config')
-    config = None
-    project_id = request.GET.get('project_id')
-    # name = request.GET.get('name')
+    pk = kwargs.get('pk')
+    run_type = kwargs.get('run_type')
+    project_id = kwargs.get('project_id')
+
     name = models.Case.objects.get(pk=pk).name
 
     # 通过主键获取单个用例
@@ -40,7 +36,6 @@ def auto_run_testsuite_pk(request):
     # 把用例加入列表
     testcase_list = []
     for content in test_list:
-        # testcase_list.append(eval(content["body"]))
         body = eval(content["body"])
 
         if "base_url" in body["request"].keys():
@@ -48,14 +43,12 @@ def auto_run_testsuite_pk(request):
             continue
         testcase_list.append(body)
 
-    # summary = loader.debug_api(testcase_list, config, project_id)
-    summary = debug_api(testcase_list, project_id, name=name, config=config)
+    summary = debug_api(testcase_list, project_id, name=name, config=config, save=False)
 
     save_summary(f'{name}_'+datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'), summary, project_id, type=3)
 
     ding_message = DingMessage(run_type)
     ding_message.send_ding_msg(summary)
 
-    return HttpResponse("success")
 
 

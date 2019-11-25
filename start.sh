@@ -9,7 +9,8 @@ celery multi start w1 -A FasterRunner.mycelery -l info --logfile=./logs/worker.l
 
 # start celery beat
 #nohup python3 manage.py celery beat -l info > ./logs/beat.log 2>&1 &
-nohup python3 manage.py FasterRunner.mycelery beat -l info > ./logs/beat.log 2>&1 &
+#nohup python3 manage.py FasterRunner.mycelery beat -l info > ./logs/beat.log 2>&1 &
+nohup celery -A FasterRunner.mycelery beat -l info > ./logs/beat.log 2>&1 &
 
 # start fastrunner
 uwsgi --ini ./uwsgi_docker.ini
