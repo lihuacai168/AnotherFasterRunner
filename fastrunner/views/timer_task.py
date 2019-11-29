@@ -8,7 +8,6 @@
 # @Software: PyCharm
 import datetime
 
-from django.http import HttpResponse
 from fastrunner import models
 from fastrunner.utils.loader import debug_api, save_summary
 from fastrunner.utils.ding_message import DingMessage

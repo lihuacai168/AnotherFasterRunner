@@ -3,7 +3,7 @@ from celery import shared_task
 from django.core.exceptions import ObjectDoesNotExist
 from fastrunner import models
 from fastrunner.utils.loader import save_summary, debug_suite, debug_api
-
+from fastrunner.utils.ding_message import DingMessage
 
 
 @shared_task
@@ -59,3 +59,5 @@ def schedule_debug_suite(*args, **kwargs):
 
     summary = debug_suite(test_sets, project, suite, config_list, save=False)
     save_summary("", summary, project, type=3)
+    ding_message = DingMessage('auto')
+    ding_message.send_ding_msg(summary)
