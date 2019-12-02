@@ -1,3 +1,4 @@
+import datetime
 
 from celery import shared_task
 from django.core.exceptions import ObjectDoesNotExist
@@ -58,6 +59,11 @@ def schedule_debug_suite(*args, **kwargs):
         test_sets.append(testcase_list)
 
     summary = debug_suite(test_sets, project, suite, config_list, save=False)
-    save_summary("", summary, project, type=3)
-    ding_message = DingMessage('auto')
-    ding_message.send_ding_msg(summary)
+    task_name = kwargs["task_name"]
+    report_name = task_name + '_' + datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    save_summary(report_name, summary, project, type=3)
+
+    strategy = kwargs["strategy"]
+    if strategy == '始终发送' or (strategy == '仅失败发送' and summary['stat']['failures'] > 0):
+        ding_message = DingMessage('auto')
+        ding_message.send_ding_msg(summary, report_name=task_name)

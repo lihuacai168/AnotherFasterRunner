@@ -167,4 +167,6 @@ class PeriodicTaskSerializer(serializers.ModelSerializer):
         return json.loads(obj.kwargs)
 
     def get_args(self, obj):
-        return json.loads(obj.args)
+        case_id_list = json.loads(obj.args)
+        # 数据格式,list of dict : [{"id":case_id,"name":case_name}]
+        return list(models.Case.objects.filter(pk__in=case_id_list).values('id', 'name'))

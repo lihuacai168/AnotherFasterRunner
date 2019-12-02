@@ -408,7 +408,7 @@ def format_json(value):
         return value
 
 
-def format_summary_to_ding(msg_type, summary):
+def format_summary_to_ding(msg_type, summary, report_name=None):
     rows_count = summary['stat']['testsRun']
     pass_count = summary['stat']['successes']
     fail_count = summary['stat']['failures']
@@ -420,6 +420,9 @@ def format_summary_to_ding(msg_type, summary):
         base_url = summary['details'][0]['base_url']
     env_name = '测试' if 'test' in base_url else '生产'
     case_suite_name = summary['details'][0]['name']  # 用例集名称
+    # celery执行的报告名
+    if report_name:
+        case_suite_name = report_name
     start_at = time.strftime(
         '%Y-%m-%d %H:%M:%S',
         time.localtime(

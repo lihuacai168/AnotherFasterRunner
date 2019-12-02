@@ -26,7 +26,8 @@ class Task(object):
             "mail_cc": kwargs["mail_cc"],
             "receiver": kwargs["receiver"],
             "crontab": self.__crontab,
-            "project": self.__project
+            "project": self.__project,
+            "task_name": self.__name
         }
         self.__crontab_time = None
 

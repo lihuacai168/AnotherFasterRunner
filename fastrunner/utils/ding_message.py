@@ -26,8 +26,8 @@ class DingMessage:
             # webhook = 'https://oapi.dingtalk.com/robot/send?access_token=cb1ece248f594144a11bc0cf467ae4fd0f73beb3133f6a79b16d07ef23da0a59' # 调试机器人
         self.robot = DingtalkChatbot(webhook)
 
-    def send_ding_msg(self, summary):
-        msg_and_fail_count = format_summary_to_ding('markdown', summary)
+    def send_ding_msg(self, summary, report_name=None):
+        msg_and_fail_count = format_summary_to_ding('markdown', summary, report_name=report_name)
         msg = msg_and_fail_count[0]
         fail_count = msg_and_fail_count[1]
         title = 'FasterRunner自动化测试报告'
