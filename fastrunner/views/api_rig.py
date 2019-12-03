@@ -51,7 +51,7 @@ class Authenticator(BaseAuthentication):
 
 
 class APIRigView(GenericViewSet):
-    authentication_classes = [Authenticator, ]
+    authentication_classes = []
     serializer_class = serializers.APISerializer
     queryset = models.API.objects
 
