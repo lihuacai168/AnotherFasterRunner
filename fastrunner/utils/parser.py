@@ -456,6 +456,7 @@ def format_summary_to_ding(msg_type, summary, report_name=None):
                 else:
                     response_message = record['meta_data']['response']['json']['info']['message']
                     response_error = record['meta_data']['response']['json']['info']['error']
+                    request_url = record['meta_data']['request']['url']
                     case_name = record['name']
                     expect = []
                     check_value = []
@@ -463,11 +464,15 @@ def format_summary_to_ding(msg_type, summary, report_name=None):
                         expect.append(validator['expect'])
                         check_value.append(validator['check_value'])
                     fail_count_list.append(
-                        {'case_name': case_name, 'fail_message': f'{response_error} - {response_message}'})
+                        {
+                            'case_name': case_name,
+                            'request_url': request_url,
+                            'fail_message': f'{response_error} - {response_message}'})
 
         fail_detail = '失败的接口是:\n'
         for i in fail_count_list:
-            s = '用例名:{0}\n PATH:{1}\n  \n'.format(i["case_name"], i["fail_message"])
+            s = '用例名:{0}\n PATH:{1}\n  \n'.format(
+                i["case_name"], i["fail_message"])
             fail_detail += s
 
     if msg_type == 'markdown':
@@ -475,7 +480,7 @@ def format_summary_to_ding(msg_type, summary, report_name=None):
         report_id = models.Report.objects.last().id
         report_url = f'http://10.0.3.57:8000/api/fastrunner/reports/{report_id}/'
         for item in fail_count_list:
-            case_name_and_fail_message = f'> - **{item["case_name"]} - {item["fail_message"]}**\n'
+            case_name_and_fail_message = f'> - **{item["case_name"]} - {item["request_url"]} - {item["fail_message"]}**\n'
             fail_detail_markdown += case_name_and_fail_message
         msg_markdown = f"""
 ## FasterRunner自动化测试报告
