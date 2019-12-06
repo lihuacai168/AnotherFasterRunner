@@ -1,6 +1,7 @@
 import datetime
 
 from django.core.exceptions import ObjectDoesNotExist
+from django.db.models import Q
 from django.utils.decorators import method_decorator
 from rest_framework.views import APIView
 from rest_framework.viewsets import GenericViewSet
@@ -59,19 +60,51 @@ class TestCaseView(GenericViewSet):
         """
         pk = kwargs['pk']
         name = request.data['name']
+        if '|' in name:
+            resp = self.split(pk, name)
+        else:
+            case = models.Case.objects.get(id=pk)
+            case.id = None
+            case.name = name
+            case.save()
+
+            case_step = models.CaseStep.objects.filter(case__id=pk)
+
+            for step in case_step:
+                step.id = None
+                step.case = case
+                step.save()
+            resp = response.CASE_ADD_SUCCESS
+
+        return Response(resp)
+
+    def split(self, pk, name):
+        split_case_name = name.split('|')[0]
+        split_condition = name.split('|')[1]
+
+        # 更新原本的case长度
         case = models.Case.objects.get(id=pk)
-        case.id = None
-        case.name = name
+        case_step = models.CaseStep.objects.filter(case__id=pk, name__icontains=split_condition)
+        # case_step = case_step.filter(Q(method='config') | Q(name__icontains=split_condition))
+        case_step_length = len(case_step)
+        case.length -= case_step_length
         case.save()
 
-        case_step = models.CaseStep.objects.filter(case__id=pk)
+        new_case = models.Case.objects.filter(name=split_case_name).last()
+        if new_case:
+            new_case.length += case_step_length
+            case_step.update(case=new_case)
+        else:
+            # 创建一条新的case
+            case.id = None
+            case.name = split_case_name
+            case.length = case_step_length
+            case.save()
 
-        for step in case_step:
-            step.id = None
-            step.case = case
-            step.save()
-
-        return Response(response.CASE_ADD_SUCCESS)
+            # 把原来的case_step中的case_id改成新的case_id
+            case_step.update(case=case)
+        # case_step.filter(name=).update_or_create(defaults={'case_id': case.id})
+        return response.CASE_SPILT_SUCCESS
 
     @method_decorator(request_log(level='INFO'))
     def patch(self, request, **kwargs):
