@@ -13,7 +13,7 @@
   </component>
   <component name="NewModuleRootManager">
     <content url="file://$MODULE_DIR$" />
-    <orderEntry type="jdk" jdkName="Python 3.6 virtualenv at D:\wbiao\virtualenv\FastRunner" jdkType="Python SDK" />
+    <orderEntry type="jdk" jdkName="Python 3.6 (faster)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
   <component name="TemplatesService">

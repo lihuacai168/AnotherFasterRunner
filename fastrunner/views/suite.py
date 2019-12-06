@@ -93,6 +93,7 @@ class TestCaseView(GenericViewSet):
         new_case = models.Case.objects.filter(name=split_case_name).last()
         if new_case:
             new_case.length += case_step_length
+            new_case.save()
             case_step.update(case=new_case)
         else:
             # 创建一条新的case
