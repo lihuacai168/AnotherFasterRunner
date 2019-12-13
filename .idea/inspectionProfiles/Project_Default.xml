@@ -4,9 +4,13 @@
     <inspection_tool class="PyPackageRequirementsInspection" enabled="true" level="WARNING" enabled_by_default="true">
       <option name="ignoredPackages">
         <value>
-          <list size="2">
+          <list size="6">
             <item index="0" class="java.lang.String" itemvalue="mysqlclient" />
             <item index="1" class="java.lang.String" itemvalue="uwsgi" />
+            <item index="2" class="java.lang.String" itemvalue="beautifulsoup4" />
+            <item index="3" class="java.lang.String" itemvalue="tornado" />
+            <item index="4" class="java.lang.String" itemvalue="DingtalkChatbot" />
+            <item index="5" class="java.lang.String" itemvalue="django-celery" />
           </list>
         </value>
       </option>

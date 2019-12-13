@@ -130,6 +130,12 @@ CASE_ADD_SUCCESS = {
     'msg': '用例添加成功'
 }
 
+CASE_SPILT_SUCCESS = {
+    'code': '0001',
+    'success': True,
+    'msg': '用例切割成功'
+}
+
 CASE_EXISTS = {
     "code": "0101",
     "success": False,
