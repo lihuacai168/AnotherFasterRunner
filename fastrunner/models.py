@@ -151,7 +151,8 @@ class Report(BaseTable):
     report_type = (
         (1, "调试"),
         (2, "异步"),
-        (3, "定时")
+        (3, "定时"),
+        (4, "部署"),
     )
 
     class Meta:

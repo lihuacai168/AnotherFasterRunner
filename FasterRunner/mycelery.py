@@ -1,11 +1,12 @@
 import os
 from celery import Celery
 # set the default Django settings module for the 'celery' program.
-#from django.conf import settings
-from FasterRunner.settings import pro as settings
+from django.conf import settings
+
+# from FasterRunner.settings import pro as settings
 
 #os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'FasterRunner.settings')
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'FasterRunner.settings.pro')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', settings.SETTINGS_MODULE)
 
 app = Celery('FasterRunner')
 

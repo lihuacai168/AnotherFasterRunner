@@ -23,7 +23,6 @@ def async_debug_suite(suite, project, obj, report, config):
     save_summary(report, summary, project)
 
 
-
 @shared_task
 def schedule_debug_suite(*args, **kwargs):
     """定时任务
@@ -52,7 +51,10 @@ def schedule_debug_suite(*args, **kwargs):
         for content in test_list:
             body = eval(content["body"])
             if "base_url" in body["request"].keys():
-                config = eval(models.Config.objects.get(name=body["name"], project__id=project).body)
+                config = eval(
+                    models.Config.objects.get(
+                        name=body["name"],
+                        project__id=project).body)
                 continue
             testcase_list.append(body)
         config_list.append(config)
@@ -60,10 +62,20 @@ def schedule_debug_suite(*args, **kwargs):
 
     summary = debug_suite(test_sets, project, suite, config_list, save=False)
     task_name = kwargs["task_name"]
+
+    if kwargs.get('run_type') == 'deploy':
+        task_name = '部署_' + task_name
+        run_type = 'deploy'
+        report_type = 4
+    else:
+        run_type = 'auto'
+        report_type = 3
+
     report_name = task_name + '_' + datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    save_summary(report_name, summary, project, type=3)
+    save_summary(report_name, summary, project, type=report_type)
 
     strategy = kwargs["strategy"]
-    if strategy == '始终发送' or (strategy == '仅失败发送' and summary['stat']['failures'] > 0):
-        ding_message = DingMessage('auto')
+    if strategy == '始终发送' or (
+            strategy == '仅失败发送' and summary['stat']['failures'] > 0):
+        ding_message = DingMessage(run_type)
         ding_message.send_ding_msg(summary, report_name=task_name)
