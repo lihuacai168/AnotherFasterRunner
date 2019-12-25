@@ -8,7 +8,7 @@
 # @Software: PyCharm
 # api模块和数据库api表relation对应关系
 API_RELATION = {"default": 66,
-                "api": 67,
+                "energy.ball": 67,
                 "manage": 68,
                 "app_manage": 68,
                 "artisan": 69,
