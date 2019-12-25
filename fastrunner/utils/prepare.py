@@ -1,3 +1,4 @@
+from django.db.models import Sum
 from fastrunner import models
 from fastrunner.utils.parser import Format
 from djcelery import models as celery_models
@@ -24,7 +25,13 @@ def get_project_detail(pk):
     report_count = get_counter(models.Report, pk=pk)
     host_count = get_counter(models.HostIP, pk=pk)
     # plan_count = get_counter(models.Plan, pk=pk)
-    task_count = celery_models.PeriodicTask.objects.filter(description=pk).count()
+    task_query_set = celery_models.PeriodicTask.objects.filter(description=pk)
+    task_count = task_query_set.count()
+    case_id = []
+    task_query_set = task_query_set.filter(enabled=1).values("args")
+    for i in task_query_set:
+        case_id += eval(i.get('args'))
+    case_step_count = models.Case.objects.filter(pk__in=case_id).aggregate(Sum("length"))
 
     return {
         "api_count": api_count,
@@ -33,7 +40,8 @@ def get_project_detail(pk):
         "config_count": config_count,
         "variables_count": variables_count,
         "report_count": report_count,
-        "host_count":host_count,
+        "host_count": host_count,
+        "case_step_count": case_step_count.get("length__sum"),
     }
 
 
