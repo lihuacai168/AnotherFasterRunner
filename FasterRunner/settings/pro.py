@@ -1,12 +1,26 @@
+from dotenv import load_dotenv, find_dotenv
+from os import environ
 from .base import *
 DEBUG = False
+# RabbitMQ和MySQL配置相关的设置
+if find_dotenv():
+    load_dotenv(find_dotenv())
+    # RabbitMQ 账号密码
+    MQ_USER = environ.get('FASTER_MQ_USER')
+    MQ_PASSWORD = environ.get('FASTER_MQ_PASSWORD')
+    # 数据库账号密码
+    FASTER_HOST = environ.get('FASTER_HOST')
+    DB_NAME = environ.get('FASTER_DB_NAME')
+    DB_USER = environ.get('FASTER_DB_USERNAME')
+    DB_PASSWORD = environ.get('FASTER_DB_PASSWORD')
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'HOST': '10.0.3.57',
-        'NAME': 'fast_last',  # 新建数据库名
-        'USER': 'faster',  # 数据库登录名
-        'PASSWORD': 'fast!~WB2019',  # 数据库登录密码
+        'HOST': FASTER_HOST,
+        'NAME': DB_NAME,  # 新建数据库名
+        'USER': DB_USER,  # 数据库登录名
+        'PASSWORD': DB_PASSWORD,  # 数据库登录密码
         'OPTIONS': {'charset': 'utf8mb4'},
         'TEST': {
             # 'MIRROR': 'default',  # 单元测试时,使用default的配置
@@ -14,3 +28,5 @@ DATABASES = {
         }
     }
 }
+
+BROKER_URL = f'amqp://{MQ_USER}:{MQ_PASSWORD}@{FASTER_HOST}:5672//'

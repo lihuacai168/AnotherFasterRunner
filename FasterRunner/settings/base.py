@@ -80,48 +80,8 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'FasterRunner.wsgi.application'
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.mysql',
-#         'NAME': 'fast',  # 新建数据库名
-#         'USER': 'root',  # 数据库登录名
-#         'PASSWORD': 'root',  # 数据库登录密码
-#         # 单元测试数据库
-#         'TEST': {
-#             'NAME': 'test',  # 测试过程中会生成名字为test的数据库,测试结束后Django会自动删除该数据库
-#         }
-#     }
-# }
-# 阿里云数据库
-# DATABASES = {
-#     'remote': {
-#         'ENGINE': 'django.db.backends.mysql',
-#         'HOST': '10.0.3.57',
-#         'NAME': 'fast_last',  # 新建数据库名
-#         'USER': 'faster',  # 数据库登录名
-#         'PASSWORD': 'fast!~WB2019',  # 数据库登录密码
-#         'TEST': {
-#             'MIRROR': 'default',  # 单元测试时,使用default的配置
-#             # 'DEPENDENCIES': ['default']
-#         }
-#     },
-#     'default': {
-#         'ENGINE': 'django.db.backends.mysql',
-#         'NAME': 'fast',  # 新建数据库名
-#         'USER': 'root',  # 数据库登录名
-#         'PASSWORD': 'root',  # 数据库登录密码
-#         # 单元测试数据库
-#         'TEST': {
-#             # 'NAME': 'test_fast_last',  # 测试过程中会生成名字为test的数据库,测试结束后Django会自动删除该数据库
-#         }
-#     }
-# }
-
-# 设置数据库路由类
-# DATABASE_ROUTERS = ['FasterRunner.database.AutoChoiceDataBase']
-
 # Password validation
-# https://docs.djangoproject.com/en/2.1/ref/settings/#auth-password-validators
+# https://docs.djangoproject.com/en/2.1/ref/settings/#auth-password-valid
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -218,12 +178,17 @@ CORS_ALLOW_HEADERS = (
     'x-csrftoken',
     'x-requested-with',
 )
+MQ_USER = 'admin'
+MQ_PASSWORD = '111111'
+HOST = 'localhost'
+DB_NAME = 'faster_db'
+
 
 djcelery.setup_loader()
 CELERY_ENABLE_UTC = True
 CELERY_TIMEZONE = 'Asia/Shanghai'
 #BROKER_URL = 'amqp://username:password@IP:5672//'
-BROKER_URL = 'amqp://admin:111111@10.0.3.57:5672//'
+
 CELERYBEAT_SCHEDULER = 'djcelery.schedulers.DatabaseScheduler'
 CELERY_RESULT_BACKEND = 'djcelery.backends.database:DatabaseBackend'
 CELERY_ACCEPT_CONTENT = ['application/json']
