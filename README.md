@@ -39,7 +39,10 @@ flush privileges; # 刷新权限表,使授权生效
 ### 5.配置和运行`RabbittMQ`(消息队列中间件)
 - 运行RabbittMQ
 ```
-rabbitmq docker run -d --name --net=host --restart always rabbitmq -e RABBITMQ_DEFAULT_USER=user -e RABBITMQ_DEFAULT_PASS=password rabbitmq:3-management
+# 跟宿主机同一个网络启动
+docker run -d --name rabbitmq --net=host --restart always  -e RABBITMQ_DEFAULT_USER=username -e RABBITMQ_DEFAULT_PASS=password rabbitmq:3-management
+# 指定端口和网络启动
+docker run -d --hostname my-rabbit --name rabbit --restart always -p 15672:15672 -p 5672:5672 -e RABBITMQ_DEFAULT_USER=username -e RABBITMQ_DEFAULT_PASS=password rabbitmq:3.7.7-management
 ```
 - 配置`RabbittMQ`
 在`/FasterRunner/settings/base.py`修改`BROKER_URL`的`IP,username,password`
