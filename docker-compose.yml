@@ -1,0 +1,42 @@
+version: '3'
+services:
+  # 容器名
+  db:
+    container_name: fasterunner-db
+    # 镜像
+    image: docker.io/mysql:5.7
+    # 获取root权限
+    privileged: true
+    # 环境变量
+    environment:
+      - MYSQL_DATABASE=fast
+      - MYSQL_ROOT_PASSWORD=root
+    # 目录共享,格式 宿主机目录:容器目录
+    volumes:
+      - /var/lib/mysql:/var/lib/mysql
+    # 端口映射,格式 宿主机端口:容器端口
+
+    ports:
+      - 3306:3306
+    restart: always
+    # 容器开机启动命令
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci  --socket=/var/lib/mysql/mysql.sock
+    networks:
+      - fast_network
+
+  fastrunner:
+    image: fastrunner:latest
+    container_name: fasterunner-backend
+    privileged: true
+    env_file:
+      - .env
+    # 共享目录到容器,每次启动容器会copy宿主机代码
+    volumes:
+      - .:/share/fasterunner
+    ports:
+      - 8000:8000
+    networks:
+      - fast_network
+networks:
+  fast_network:
+    external: true
