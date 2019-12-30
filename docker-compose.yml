@@ -30,9 +30,9 @@ services:
     privileged: true
     env_file:
       - .env
-    # 共享目录到容器,每次启动容器会copy宿主机代码
+    # 宿主机当前目录挂载到容器的工作目录:WORKDIR /opt/workspace/FasterRunner/
     volumes:
-      - .:/share/fasterunner
+      - .:.
     ports:
       - 8000:8000
     networks:
