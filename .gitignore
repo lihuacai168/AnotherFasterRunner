@@ -5,3 +5,4 @@
 celerybeat.pid
 start.sh.bak
 tempWorkDir
+mysql

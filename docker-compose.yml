@@ -13,7 +13,8 @@ services:
       - MYSQL_ROOT_PASSWORD=root
     # 目录共享,格式 宿主机目录:容器目录
     volumes:
-      - /var/lib/mysql:/var/lib/mysql
+      - ./mysql:/var/lib/mysql
+      - ./FasterRunner/mydb.cnf:/etc/mysql/mysql.conf.d/mysqld.cnf  # 映射出mysql的配置文件
     # 端口映射,格式 宿主机端口:容器端口
 
     ports:
@@ -32,7 +33,7 @@ services:
       - .env
     # 宿主机当前目录挂载到容器的工作目录:WORKDIR /opt/workspace/FasterRunner/
     volumes:
-      - .:.
+      - .:/opt/workspace/FasterRunner/
     ports:
       - 8000:8000
     networks:
