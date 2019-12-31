@@ -8,3 +8,5 @@ datadir=/var/lib/mysql
 # Disabling symbolic-links is recommended to prevent assorted security risks
 symbolic-links=0
 max_allowed_packet=1073741824
+# 大小写不敏感
+lower_case_table_names=1
