@@ -38,7 +38,7 @@ services:
 
   web:
     image: fasterweb:latest
-    container_name: fastweb
+    container_name: fasterweb
     privileged: true
     volumes:
       - ./FasterWeb/dist:/usr/share/nginx/html
