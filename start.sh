@@ -5,7 +5,7 @@ service nginx start
 
 # start celery worker
 #celery multi start w1 -A FasterRunner -l info --logfile=./logs/worker.log
-python3 manage.py celery -A FasterRunner.mycelery worker -l info  --settings=FasterRunner.settings.pro --logfile=./logs/worker.log 2>&1 &
+python3 manage.py celery -A FasterRunner.mycelery worker -l info -P solo --settings=FasterRunner.settings.pro --logfile=./logs/worker.log 2>&1 &
 
 
 # start celery beat
