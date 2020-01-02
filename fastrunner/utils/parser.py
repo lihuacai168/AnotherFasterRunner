@@ -83,17 +83,11 @@ class Format(object):
 
             self.project = body.pop('project')
             self.relation = body.pop('nodeId')
-            # FastRunner的API没有rig_id字段,需要兼容
-            try:
-                self.rig_id = body.pop('rig_id')
-            except KeyError:
-                self.rig_id = None
 
-            try:
-                self.rig_env = body.pop('rig_env')
-            except KeyError:
-                # 不传rig_env,使用默认测试环境参数0
-                self.rig_env = 0
+            # FastRunner的API没有rig_id字段,需要兼容
+            self.rig_id = body['rig_id'] if body.get('rig_id') else None
+            self.rig_env = body['rig_env'] if body.get('rig_env') else 0
+
         except KeyError:
             # project or relation
             pass
@@ -102,17 +96,10 @@ class Format(object):
         """
         返回标准化HttpRunner "desc" 字段运行需去除
         """
-        try:
-            if self.rig_id is not None:
-                pass
-        except AttributeError:
+        if not hasattr(self, 'rig_id'):
             self.rig_id = None
 
-        try:
-            if self.rig_env is not None:
-                pass
-        except AttributeError:
-            # 不传参数,默认测试环境0
+        if not hasattr(self, 'rig_env'):
             self.rig_env = 0
 
         if self.__level is 'test':
