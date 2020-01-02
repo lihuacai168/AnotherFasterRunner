@@ -174,21 +174,22 @@ class APIRigView(GenericViewSet):
         except KeyError:
             relation = API_RELATION['default']
 
-        merge_name = api.name + '-' + str(api.rig_id)
+        if api.rig_id:
+            api.name = api.name + '-' + str(api.rig_id)
 
         if api.rig_env == 0:
-            merge_name += '-测试'
+            api.name += '-测试'
 
         elif api.rig_env == 1:
-            merge_name += '-生产'
+            api.name += '-生产'
             # 生产环境比测试环境的关系节点大20
             relation += 20
         else:
-            merge_name += '-预发布'
+            api.name += '-预发布'
 
-        api.testcase['name'] = merge_name
+        api.testcase['name'] = api.name
         api_body = {
-            'name': merge_name,
+            'name': api.name,
             'body': api.testcase,
             'url': api.url,
             'method': api.method,
