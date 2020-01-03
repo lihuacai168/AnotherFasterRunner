@@ -7,14 +7,7 @@ def get_tree_max_id(value, list_id=[]):
 
     if isinstance(value, list):
         for content in value:  # content -> dict
-            try:
-                children = content['children']
-            except KeyError:
-                """
-                待返回错误信息
-                """
-                pass
-
+            children = content.get('children')
             if children:
                 get_tree_max_id(children)
 
@@ -35,3 +28,31 @@ def get_file_size(size):
         size = str(size) + 'Byte'
 
     return size
+
+
+# 默认分组的id=1
+label_id = 1
+
+
+def get_tree_label(value, search_label):
+    """
+    # 根据分组名查找分组的id,默认为1
+    :param value:
+    :param search_label:
+    :return: label_id
+    """
+    global label_id
+    if not value:
+        return label_id  # 默认分组
+
+    if isinstance(value, list):
+        for content in value:  # content -> dict
+            if content['label'] == search_label:
+                label_id = content['id']
+            children = content.get('children')
+            if children:
+                get_tree_label(children, search_label)
+    return label_id
+
+
+
