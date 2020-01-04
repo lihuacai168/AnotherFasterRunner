@@ -10,3 +10,7 @@ symbolic-links=0
 max_allowed_packet=1073741824
 # 大小写不敏感
 lower_case_table_names=1
+#　慢查询
+slow_query_log = ON
+slow_query_log_file = /var/lib/mysql/data/slow.log
+long_query_time = 1
