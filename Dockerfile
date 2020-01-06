@@ -4,7 +4,8 @@ MAINTAINER lihuacai
 
 WORKDIR /opt/workspace/FasterRunner/
 
-COPY . .
+COPY ["start.sh", "manage.py", "uwsgi_docker.ini" ,"requirements.txt", "nginx.conf", "./"]
+
 
 RUN  pip3 install -r ./requirements.txt -i \
     https://mirrors.aliyun.com/pypi/simple \
