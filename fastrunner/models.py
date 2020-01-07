@@ -144,6 +144,15 @@ class Variables(BaseTable):
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
     description = models.CharField("全局变量描述", null=True, max_length=100)
 
+
+class ReportDetail(models.Model):
+    class Meta:
+        verbose_name = "测试报告详情"
+        db_table = "ReportDetail"
+
+    summary_detail = models.TextField("报告详细信息")
+
+
 class Report(BaseTable):
     """
     报告存储
@@ -161,8 +170,9 @@ class Report(BaseTable):
 
     name = models.CharField("报告名称", null=False, max_length=100)
     type = models.IntegerField("报告类型", choices=report_type)
-    summary = models.TextField("主体信息", null=False)
+    summary = models.TextField("报告基础信息", null=False)
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
+    summary_detail = models.OneToOneField(ReportDetail, on_delete=models.CASCADE, null=True)
 
 
 class Relation(models.Model):

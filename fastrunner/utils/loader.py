@@ -22,7 +22,6 @@ from fastrunner import models
 from fastrunner.utils.parser import Format
 from FasterRunner.settings.base import BASE_DIR
 
-
 logger.setup_logger('DEBUG')
 
 TEST_NOT_EXISTS = {
@@ -400,12 +399,20 @@ def save_summary(name, summary, project, type=2):
         return
     if name is "":
         name = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+    # 　删除用不到的属性
     summary['details'][0].pop('in_out')
+    # 复制一份,避免影响原始的测试报告
+    summary = copy.copy(summary)
+
+    summary_detail = summary.pop('details')
+    summary_detail_id = models.ReportDetail.objects.create(summary_detail=summary_detail)
     models.Report.objects.create(**{
         "project": models.Project.objects.get(id=project),
         "name": name,
         "type": type,
         "summary": json.dumps(summary, ensure_ascii=False),
+        "summary_detail": summary_detail_id,
     })
 
 

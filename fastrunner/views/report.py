@@ -68,6 +68,7 @@ class ReportView(GenericViewSet):
         pk = kwargs["pk"]
         report = models.Report.objects.get(id=pk)
         summary = json.loads(report.summary, encoding="utf-8")
+        summary['details'] = eval(report.summary_detail.summary_detail)
         summary["html_report_name"] = report.name
         return render_to_response('report_template.html', summary)
 
