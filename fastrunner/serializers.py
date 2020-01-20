@@ -96,7 +96,7 @@ class ConfigSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.Config
-        fields = ['id', 'base_url', 'body', 'name', 'update_time']
+        fields = ['id', 'base_url', 'body', 'name', 'update_time', 'is_default']
         depth = 1
 
     def get_body(self, obj):

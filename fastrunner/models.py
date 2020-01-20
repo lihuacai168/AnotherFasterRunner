@@ -44,6 +44,7 @@ class Config(BaseTable):
     body = models.TextField("主体信息", null=False)
     base_url = models.CharField("请求地址", null=False, max_length=100)
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
+    is_default = models.BooleanField("默认配置", default=False)
 
 
 class API(BaseTable):
