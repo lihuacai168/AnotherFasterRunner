@@ -406,14 +406,13 @@ def save_summary(name, summary, project, type=2):
     summary = copy.copy(summary)
 
     summary_detail = summary.pop('details')
-    summary_detail_id = models.ReportDetail.objects.create(summary_detail=summary_detail)
-    models.Report.objects.create(**{
+    report = models.Report.objects.create(**{
         "project": models.Project.objects.get(id=project),
         "name": name,
         "type": type,
         "summary": json.dumps(summary, ensure_ascii=False),
-        "summary_detail": summary_detail_id,
     })
+    models.ReportDetail.objects.create(summary_detail=summary_detail, report=report)
 
 
 @back_async
