@@ -16,4 +16,5 @@ if [ -f celerybeat.pid ]; then rm celerybeat.pid;fi
 python3 manage.py  celery -A FasterRunner.mycelery beat -l info --settings=FasterRunner.settings.pro --logfile=./logs/beat.log 2>&1 &
 
 # start fastrunner
-uwsgi --ini ./uwsgi_docker.ini
+#uwsgi --ini ./uwsgi_docker.ini
+uwsgi --ini ./uwsgi_docker.ini --logto ./logs/uwsgi.log
