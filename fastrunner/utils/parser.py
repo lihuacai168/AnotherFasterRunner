@@ -75,6 +75,7 @@ class Format(object):
 
             elif level is 'config':
                 self.base_url = body.pop('base_url')
+                self.is_default = body.pop('is_default')
                 self.__parameters = body['parameters'].pop('parameters')
                 self.__desc["parameters"] = body['parameters'].pop('desc')
 

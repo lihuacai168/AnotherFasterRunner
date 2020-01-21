@@ -110,6 +110,9 @@ class ConfigView(GenericViewSet):
         config.name = format.name
         config.body = format.testcase
         config.base_url = format.base_url
+        if format.is_default is True:
+            models.Config.objects.filter(project=config.project_id, is_default=True).update(is_default=False)
+        config.is_default = format.is_default
         config.save()
 
         return Response(response.CONFIG_UPDATE_SUCCESS)
@@ -132,7 +135,7 @@ class ConfigView(GenericViewSet):
             return Response(response.CONFIG_EXISTS)
 
         config.id = None
-
+        config.is_default = False
         body = eval(config.body)
         name = request.data['name']
 
