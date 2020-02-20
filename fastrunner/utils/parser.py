@@ -64,7 +64,7 @@ class Format(object):
                 "variables": body['variables'].pop('desc'),
             }
 
-            if level is 'test':
+            if level == 'test':
                 self.url = body.pop('url')
                 self.method = body.pop('method')
 
@@ -73,7 +73,7 @@ class Format(object):
                 self.__validate = body.pop('validate').pop('validate')
                 self.__desc['extract'] = body['extract'].pop('desc')
 
-            elif level is 'config':
+            elif level == 'config':
                 self.base_url = body.pop('base_url')
                 self.is_default = body.pop('is_default')
                 self.__parameters = body['parameters'].pop('parameters')
@@ -103,7 +103,7 @@ class Format(object):
         if not hasattr(self, 'rig_env'):
             self.rig_env = 0
 
-        if self.__level is 'test':
+        if self.__level == 'test':
             test = {
                 "name": self.name,
                 "rig_id": self.rig_id,
@@ -121,7 +121,7 @@ class Format(object):
             if self.__validate:
                 test['validate'] = self.__validate
 
-        elif self.__level is 'config':
+        elif self.__level == 'config':
             test = {
                 "name": self.name,
                 "request": {
@@ -192,12 +192,12 @@ class Parse(object):
         self.__teardown_hooks = body.get('teardown_hooks', [])
         self.__desc = body.get('desc')
 
-        if level is 'test':
+        if level == 'test':
             self.__times = body.get('times', 1)  # 如果导入没有times 默认为1
             self.__extract = body.get('extract')
             self.__validate = body.get('validate')
 
-        elif level is "config":
+        elif level == "config":
             self.__parameters = body.get("parameters")
 
         self.__level = level
@@ -258,7 +258,7 @@ class Parse(object):
             }]
         }
 
-        if self.__level is 'test':
+        if self.__level == 'test':
             test["times"] = self.__times
             test["method"] = self.__request['method']
             test["url"] = self.__request['url']
@@ -292,7 +292,7 @@ class Parse(object):
                             "type": obj[0]
                         })
 
-        elif self.__level is "config":
+        elif self.__level == "config":
             test["base_url"] = self.__request["base_url"]
             test["parameters"] = init
 

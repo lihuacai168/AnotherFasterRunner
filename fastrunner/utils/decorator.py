@@ -13,12 +13,12 @@ def request_log(level):
             msg_data = "before process request data:\n{data}".format(data=parser.format_json(request.data))
             msg_params = "before process request params:\n{params}".format(
                 params=parser.format_json(request.query_params))
-            if level is 'INFO':
+            if level == 'INFO':
                 if request.data:
                     logger.info(msg_data)
                 if request.query_params:
                     logger.info(msg_params)
-            elif level is 'DEBUG':
+            elif level == 'DEBUG':
                 if request.data:
                     logger.debug(msg_data)
                 if request.query_params:

@@ -397,7 +397,7 @@ def save_summary(name, summary, project, type=2):
     """
     if "status" in summary.keys():
         return
-    if name is "":
+    if name == "":
         name = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
     # 　删除用不到的属性
