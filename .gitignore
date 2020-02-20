@@ -7,3 +7,4 @@ start.sh.bak
 tempWorkDir
 mysql
 .env
+/venv/
