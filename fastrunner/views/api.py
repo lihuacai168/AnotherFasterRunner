@@ -31,10 +31,8 @@ class APITemplateView(GenericViewSet):
         node = request.query_params["node"]
         project = request.query_params["project"]
         search = request.query_params["search"]
-        if 'tag' in request.query_params.keys():
-            tag = request.query_params["tag"]
-        else:
-            tag = ''
+        tag = request.query_params["tag"]
+        rig_env = request.query_params["rigEnv"]
         # queryset = self.get_queryset().filter(project__id=project).order_by('-update_time')
         queryset = self.get_queryset().filter(project__id=project, delete=0).order_by('-update_time')
         # queryset = self.get_queryset().filter(Q(project__id=project) and ~Q(delete=1)).order_by('-update_time')
@@ -47,6 +45,9 @@ class APITemplateView(GenericViewSet):
 
         if tag != '':
             queryset = queryset.filter(tag=tag)
+
+        if rig_env != '':
+            queryset = queryset.filter(rig_env=rig_env)
 
         pagination_queryset = self.paginate_queryset(queryset)
         serializer = self.get_serializer(pagination_queryset, many=True)
