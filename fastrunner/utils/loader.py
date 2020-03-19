@@ -286,6 +286,22 @@ def debug_api(api, project, name=None, config=None, save=True):
         """
         api = [api]
 
+    # 参数化过滤,只加载api中调用到的参数
+    if config.get('parameters'):
+        api_params = []
+        for item in api:
+            params = item['request'].get('params') or item['request'].get('json')
+            for v in params.values():
+                if type(v) == list:
+                    api_params.extend(v)
+                else:
+                    api_params.append(v)
+
+        for index, dic in enumerate(config['parameters']):
+            for key in dic.keys():
+                if '$' + key not in api_params:
+                    del config['parameters'][index]
+
     debugtalk = load_debugtalk(project)
     debugtalk_content = debugtalk[0]
     debugtalk_path = debugtalk[1]
