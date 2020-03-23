@@ -135,7 +135,7 @@ class FileLoader(object):
         return debugtalk_module
 
 
-def parse_tests(testcases, debugtalk, name=None, config=None):
+def parse_tests(testcases, debugtalk, name=None, config=None, project=None):
     """get test case structure
         testcases: list
         config: none or dict
@@ -161,24 +161,11 @@ def parse_tests(testcases, debugtalk, name=None, config=None):
     if name:
         testset["config"]["name"] = name
 
-    global_variables = []
-
-    for variables in models.Variables.objects.all().values("key", "value"):
-        if testset["config"].get("variables"):
-            for content in testset["config"]["variables"]:
-                temp_variable = {variables["key"]: variables["value"]}
-                if variables["key"] not in content.keys(
-                ) and temp_variable not in global_variables:
-                    global_variables.append(
-                        temp_variable)
-        else:
-            global_variables.append({variables["key"]: variables["value"]})
-
-    if not testset["config"].get("variables"):
-        testset["config"]["variables"] = global_variables
-    else:
-        testset["config"]["variables"].extend(global_variables)
-
+    # 获取当前项目的全局变量
+    global_variables = list(models.Variables.objects.filter(project=project).all().values("key", "value"))
+    # 有variables就直接extend,没有就加一个[],再extend
+    # 配置的variables和全局变量重叠,优先使用配置中的variables
+    testset["config"].setdefault("variables", []).extend(global_variables)
     testset["config"]["refs"] = refs
 
     # for teststep in testcases:
@@ -250,7 +237,9 @@ def debug_suite(suite, project, obj, config=None, save=True):
                     suite[index],
                     debugtalk_content,
                     name=obj[index]['name'],
-                    config=config[index]))
+                    config=config[index],
+                    project=project
+                ))
             test_sets.append(testcases)
 
         kwargs = {
@@ -318,7 +307,8 @@ def debug_api(api, project, name=None, config=None, save=True):
                 api,
                 debugtalk_content,
                 name=name,
-                config=config)]
+                config=config,
+                project=project)]
 
         kwargs = {
             "failfast": False
