@@ -162,10 +162,16 @@ def parse_tests(testcases, debugtalk, name=None, config=None, project=None):
         testset["config"]["name"] = name
 
     # 获取当前项目的全局变量
-    global_variables = list(models.Variables.objects.filter(project=project).all().values("key", "value"))
+    global_variables = models.Variables.objects.filter(project=project).all().values("key", "value")
+    all_config_variables_keys = set().union(*(d.keys() for d in testset["config"].setdefault("variables", [])))
+    global_variables_list_of_dict = []
+    for item in global_variables:
+        if item["key"] not in all_config_variables_keys:
+            global_variables_list_of_dict.append({item["key"]: item["value"]})
+
     # 有variables就直接extend,没有就加一个[],再extend
     # 配置的variables和全局变量重叠,优先使用配置中的variables
-    testset["config"].setdefault("variables", []).extend(global_variables)
+    testset["config"].setdefault("variables", []).extend(global_variables_list_of_dict)
     testset["config"]["refs"] = refs
 
     # for teststep in testcases:
