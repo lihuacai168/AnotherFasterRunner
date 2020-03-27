@@ -22,6 +22,17 @@ class TestCaseView(GenericViewSet):
         "监控脚本": 3
     }
 
+    @staticmethod
+    def case_step_search(search):
+        """
+        搜索case_step的url或者name
+        返回对应的case_id
+        """
+        case_id = models.CaseStep.objects.filter(Q(name__contains=search) | Q(url__contains=search)).values('case_id')
+
+        case_id = set([item['case_id'] for _, item in enumerate(case_id)])
+        return case_id
+
     @method_decorator(request_log(level='INFO'))
     def get(self, request):
         """
@@ -34,6 +45,7 @@ class TestCaseView(GenericViewSet):
         node = request.query_params["node"]
         project = request.query_params["project"]
         search = request.query_params["search"]
+        case_name_or_url = request.query_params["caseNameOrUrl"]
         # update_time 降序排列
         queryset = self.get_queryset().filter(project__id=project).order_by('-update_time')
 
@@ -42,6 +54,10 @@ class TestCaseView(GenericViewSet):
 
         if node != '':
             queryset = queryset.filter(relation=node)
+
+        if case_name_or_url != '':
+            case_id = self.case_step_search(case_name_or_url)
+            queryset = queryset.filter(pk__in=case_id)
 
         pagination_query = self.paginate_queryset(queryset)
         serializer = self.get_serializer(pagination_query, many=True)
