@@ -291,16 +291,14 @@ def debug_api(api, project, name=None, config=None, save=True):
                     api_params.extend(v)
                 else:
                     api_params.append(v)
-
+        parameters = []
         for index, dic in enumerate(config['parameters']):
             for key in dic.keys():
                 # key可能是key-key1这种模式,所以需要分割
                 for i in key.split('-'):
                     if '$' + i in api_params:
-                        break
-                else:
-                    # api中的不存在的参数,就删除掉
-                    config['parameters'].remove(dic)
+                        parameters.append(dic)
+        config['parameters'] = parameters
 
     debugtalk = load_debugtalk(project)
     debugtalk_content = debugtalk[0]
