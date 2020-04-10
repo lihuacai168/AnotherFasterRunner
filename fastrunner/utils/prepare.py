@@ -23,6 +23,8 @@ def get_project_detail(pk):
     config_count = get_counter(models.Config, pk=pk)
     variables_count = get_counter(models.Variables, pk=pk)
     report_count = get_counter(models.Report, pk=pk)
+    report_fail = models.Report.objects.filter(project__id=pk, status=0).count()
+    report_success = models.Report.objects.filter(project__id=pk, status=1).count()
     host_count = get_counter(models.HostIP, pk=pk)
     # plan_count = get_counter(models.Plan, pk=pk)
     task_query_set = celery_models.PeriodicTask.objects.filter(description=pk)
@@ -40,6 +42,8 @@ def get_project_detail(pk):
         "config_count": config_count,
         "variables_count": variables_count,
         "report_count": report_count,
+        "report_fail": report_fail,
+        "report_success": report_success,
         "host_count": host_count,
         "case_step_count": case_step_count.get("length__sum"),
     }
