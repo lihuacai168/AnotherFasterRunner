@@ -28,11 +28,19 @@ class ReportView(GenericViewSet):
 
         project = request.query_params['project']
         search = request.query_params["search"]
+        report_type = request.query_params["reportType"]
+        report_status = request.query_params["reportStatus"]
 
         queryset = self.get_queryset().filter(project__id=project).order_by('-update_time')
 
         if search != '':
             queryset = queryset.filter(name__contains=search)
+
+        if report_type != '':
+            queryset = queryset.filter(type=report_type)
+
+        if report_status != '':
+            queryset = queryset.filter(status=report_status)
 
         page_report = self.paginate_queryset(queryset)
         serializer = self.get_serializer(page_report, many=True)

@@ -156,6 +156,10 @@ class Report(BaseTable):
         (3, "定时"),
         (4, "部署"),
     )
+    report_status = (
+        (0, "失败"),
+        (1, "成功"),
+    )
 
     class Meta:
         verbose_name = "测试报告"
@@ -163,6 +167,7 @@ class Report(BaseTable):
 
     name = models.CharField("报告名称", null=False, max_length=100)
     type = models.IntegerField("报告类型", choices=report_type)
+    status = models.BooleanField("报告状态", choices=report_status, blank=True)
     summary = models.TextField("报告基础信息", null=False)
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
 
