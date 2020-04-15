@@ -33,9 +33,7 @@ class APITemplateView(GenericViewSet):
         search = request.query_params["search"]
         tag = request.query_params["tag"]
         rig_env = request.query_params["rigEnv"]
-        # queryset = self.get_queryset().filter(project__id=project).order_by('-update_time')
         queryset = self.get_queryset().filter(project__id=project, delete=0).order_by('-update_time')
-        # queryset = self.get_queryset().filter(Q(project__id=project) and ~Q(delete=1)).order_by('-update_time')
 
         if search != '':
             queryset = queryset.filter(Q(name__contains=search) | Q(url__contains=search))
