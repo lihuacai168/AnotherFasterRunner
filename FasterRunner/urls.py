@@ -20,7 +20,8 @@ from fastrunner.views import timer_task, run_all_auto_case, api_rig, api_provide
 
 from rest_framework.schemas import get_schema_view
 from rest_framework_swagger.renderers import SwaggerUIRenderer, OpenAPIRenderer
-schema_view = get_schema_view(title='Users API', renderer_classes=[OpenAPIRenderer, SwaggerUIRenderer],permission_classes=[],authentication_classes=[])
+schema_view = get_schema_view(title='Users API', renderer_classes=[OpenAPIRenderer, SwaggerUIRenderer],
+                              permission_classes=[], authentication_classes=[])
 
 urlpatterns = [
     url(r'^docs/', schema_view, name="docs"),
