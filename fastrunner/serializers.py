@@ -1,4 +1,5 @@
 import json
+from abc import ABC
 
 from rest_framework import serializers
 from fastrunner import models
@@ -36,16 +37,29 @@ class RelationSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class AssertSerializer(serializers.Serializer):
+    class Meta:
+        models = models.API
+
+    node = serializers.IntegerField(min_value=0, default='')
+    project = serializers.IntegerField(required=True, min_value=1, max_value=models.Project.objects.latest('id').id)
+    search = serializers.CharField(default='')
+    tag = serializers.ChoiceField(choices=models.API.TAG, default='')
+    rigEnv = serializers.ChoiceField(choices=models.API.ENV_TYPE, default='')
+    delete = serializers.ChoiceField(choices=(0, 1), default=0)
+
+
 class APISerializer(serializers.ModelSerializer):
     """
     接口信息序列化
     """
     body = serializers.SerializerMethodField()
-    # tag = serializers.CharField(source="get_tag_display")
     tag_name = serializers.CharField(source="get_tag_display")
+
     class Meta:
         model = models.API
-        fields = ['id', 'name', 'url', 'method', 'project', 'relation', 'body', 'rig_env', 'tag', 'tag_name']
+        fields = ['id', 'name', 'url', 'method', 'project', 'relation', 'body', 'rig_env', 'tag', 'tag_name',
+                  'update_time', 'delete']
 
     def get_body(self, obj):
         parse = Parse(eval(obj.body))

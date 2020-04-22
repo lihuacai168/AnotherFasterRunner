@@ -2,6 +2,7 @@ import datetime
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils.decorators import method_decorator
+from rest_framework import status
 from rest_framework.viewsets import GenericViewSet
 from fastrunner import models, serializers
 from rest_framework.response import Response
@@ -27,30 +28,35 @@ class APITemplateView(GenericViewSet):
             node: int
         }
         """
+        ser = serializers.AssertSerializer(data=request.query_params)
+        if ser.is_valid():
+            node = ser.validated_data.get('node')
+            project = ser.validated_data.get('project')
+            search = ser.validated_data.get('search')
+            tag = ser.validated_data.get('tag')
+            rig_env = ser.validated_data.get('rigEnv')
+            delete = ser.validated_data.get('delete')
 
-        node = request.query_params["node"]
-        project = request.query_params["project"]
-        search = request.query_params["search"]
-        tag = request.query_params["tag"]
-        rig_env = request.query_params["rigEnv"]
-        queryset = self.get_queryset().filter(project__id=project, delete=0).order_by('-update_time')
+            queryset = self.get_queryset().filter(project__id=project, delete=delete).order_by('-update_time')
 
-        if search != '':
-            queryset = queryset.filter(Q(name__contains=search) | Q(url__contains=search))
+            if search != '':
+                queryset = queryset.filter(Q(name__contains=search) | Q(url__contains=search))
 
-        if node != '':
-            queryset = queryset.filter(relation=node)
+            if node != '':
+                queryset = queryset.filter(relation=node)
 
-        if tag != '':
-            queryset = queryset.filter(tag=tag)
+            if tag != '':
+                queryset = queryset.filter(tag=tag)
 
-        if rig_env != '':
-            queryset = queryset.filter(rig_env=rig_env)
+            if rig_env != '':
+                queryset = queryset.filter(rig_env=rig_env)
 
-        pagination_queryset = self.paginate_queryset(queryset)
-        serializer = self.get_serializer(pagination_queryset, many=True)
+            pagination_queryset = self.paginate_queryset(queryset)
+            serializer = self.get_serializer(pagination_queryset, many=True)
 
-        return self.get_paginated_response(serializer.data)
+            return self.get_paginated_response(serializer.data)
+        else:
+            return Response(ser.errors, status=status.HTTP_400_BAD_REQUEST)
 
     @method_decorator(request_log(level='INFO'))
     def add(self, request):

@@ -15,6 +15,7 @@ django-celery==3.2.2
 django-cors-headers==2.4.0
 django-rest-swagger==2.2.0
 djangorestframework==3.8.2
+django-model-utils==4.0.0
 har2case==0.3.1
 HttpRunner==1.5.15
 idna==2.8

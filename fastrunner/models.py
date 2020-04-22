@@ -1,6 +1,8 @@
 from django.db import models
 
 # Create your models here.
+from model_utils import Choices
+
 from fastuser.models import BaseTable
 
 
@@ -56,12 +58,12 @@ class API(BaseTable):
         verbose_name = "接口信息"
         db_table = "API"
 
-    env_type = (
+    ENV_TYPE = (
         (0, "测试环境"),
         (1, "生产环境"),
         (2, "预发布 ")
     )
-    tag = (
+    TAG = Choices(
         (0, "还未调试"),
         (1, "手动成功"),
         (2, "调试失败"),
@@ -75,8 +77,8 @@ class API(BaseTable):
     relation = models.IntegerField("节点id", null=False)
     delete = models.IntegerField("是否删除", null=True, default=0)
     rig_id = models.IntegerField("网关API_id", null=True, db_index=True)
-    rig_env = models.IntegerField("网关环境", choices=env_type, default=0)
-    tag = models.IntegerField("API标签", choices=tag, default=0)
+    rig_env = models.IntegerField("网关环境", choices=ENV_TYPE, default=0)
+    tag = models.IntegerField("API标签", choices=TAG, default=0)
 
 
 class Case(BaseTable):
