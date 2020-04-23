@@ -179,7 +179,7 @@ class ReportDetail(models.Model):
         verbose_name = "测试报告详情"
         db_table = "ReportDetail"
 
-    report = models.OneToOneField(Report, on_delete=models.CASCADE, null=True)
+    report = models.OneToOneField(Report, on_delete=models.CASCADE, null=True, db_constraint=False)
     summary_detail = models.TextField("报告详细信息")
 
 
