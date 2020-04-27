@@ -90,6 +90,7 @@ class DeleteAuthenticator(BaseAuthentication):
     def authenticate_header(self, request):
         return 'PermissionDenied'
 
+
 class MyJWTAuthentication(JSONWebTokenAuthentication):
 
     def authenticate(self, request):
@@ -97,8 +98,8 @@ class MyJWTAuthentication(JSONWebTokenAuthentication):
         Returns a two-tuple of `User` and token if a valid signature has been
         supplied using JWT-based authentication.  Otherwise returns `None`.
         """
-        jwt_value = request.query_params.get("token", None)
-
+        # jwt_value = request.query_params.get("token", None)
+        jwt_value = request.META.get('HTTP_AUTHORIZATION', None)
         try:
             payload = jwt_decode_handler(jwt_value)
         except jwt.ExpiredSignature:
