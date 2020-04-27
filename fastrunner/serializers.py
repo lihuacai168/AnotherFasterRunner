@@ -42,7 +42,8 @@ class AssertSerializer(serializers.Serializer):
         models = models.API
 
     node = serializers.IntegerField(min_value=0, default='')
-    project = serializers.IntegerField(required=True, min_value=1, max_value=models.Project.objects.latest('id').id)
+    # max_value=models.Project.objects.latest('id').id 会导致数据库迁移找不到project
+    project = serializers.IntegerField(required=True, min_value=1)
     search = serializers.CharField(default='')
     tag = serializers.ChoiceField(choices=models.API.TAG, default='')
     rigEnv = serializers.ChoiceField(choices=models.API.ENV_TYPE, default='')
