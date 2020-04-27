@@ -11,10 +11,13 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 """
 
 import os
-import djcelery
 
+import datetime as datetime
+import djcelery
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 # BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(os.path.join(__file__, os.pardir))))
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/
@@ -116,10 +119,12 @@ USE_TZ = False
 
 STATIC_URL = '/static/'
 
-# rest_framework config
 
 REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': ['FasterRunner.auth.DeleteAuthenticator', 'FasterRunner.auth.Authenticator', ],
+    # 'DEFAULT_AUTHENTICATION_CLASSES': ['FasterRunner.auth.DeleteAuthenticator', 'FasterRunner.auth.Authenticator', ],
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+            'FasterRunner.auth.MyJWTAuthentication',
+        ],
     'UNAUTHENTICATED_USER': None,
     'UNAUTHENTICATED_TOKEN': None,
     # json form 渲染
@@ -131,6 +136,13 @@ REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'FasterRunner.pagination.MyPageNumberPagination',
     'DEFAULT_PERMISSION_CLASSES': ('rest_framework.permissions.AllowAny',),
 }
+JWT_AUTH = {
+    # 'JWT_SECRET_KEY': SECRET_KEY,
+    'JWT_EXPIRATION_DELTA': datetime.timedelta(days=1),
+    'JWT_ALLOW_REFRESH': True,
+}
+AUTH_USER_MODEL = 'fastuser.MyUser'
+
 SWAGGER_SETTINGS = {
     # 基础样式
     'SECURITY_DEFINITIONS': {

@@ -13,17 +13,22 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+from django.contrib import admin
 from django.conf.urls import url
 from django.urls import path, include, re_path
 from fastrunner.views import timer_task, run_all_auto_case, api_rig, api_provide_to_nodejs
-
 
 from rest_framework.schemas import get_schema_view
 from rest_framework_swagger.renderers import SwaggerUIRenderer, OpenAPIRenderer
 schema_view = get_schema_view(title='Users API', renderer_classes=[OpenAPIRenderer, SwaggerUIRenderer],
                               permission_classes=[], authentication_classes=[])
 
+
+from rest_framework_jwt.views import obtain_jwt_token
+
 urlpatterns = [
+    path(r"login", obtain_jwt_token),
+    path('admin/', admin.site.urls),
     url(r'^docs/', schema_view, name="docs"),
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     path('api/user/', include('fastuser.urls')),
