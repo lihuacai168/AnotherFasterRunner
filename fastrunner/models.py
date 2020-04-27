@@ -13,7 +13,7 @@ class Project(BaseTable):
 
     class Meta:
         verbose_name = "项目信息"
-        db_table = "Project"
+        db_table = "project"
 
     name = models.CharField("项目名称", unique=True, null=False, max_length=100)
     desc = models.CharField("简要介绍", max_length=100, null=False)
@@ -27,10 +27,10 @@ class Debugtalk(models.Model):
 
     class Meta:
         verbose_name = "驱动库"
-        db_table = "Debugtalk"
+        db_table = "debugtalk"
 
     code = models.TextField("python代码", default="# write you code", null=False)
-    project = models.OneToOneField(to=Project, on_delete=models.CASCADE)
+    project = models.OneToOneField(to=Project, on_delete=models.CASCADE, db_constraint=False)
 
 
 class Config(BaseTable):
@@ -40,12 +40,12 @@ class Config(BaseTable):
 
     class Meta:
         verbose_name = "环境信息"
-        db_table = "Config"
+        db_table = "config"
 
     name = models.CharField("环境名称", null=False, max_length=100)
     body = models.TextField("主体信息", null=False)
     base_url = models.CharField("请求地址", null=False, max_length=100)
-    project = models.ForeignKey(Project, on_delete=models.CASCADE)
+    project = models.ForeignKey(Project, on_delete=models.CASCADE, db_constraint=False)
     is_default = models.BooleanField("默认配置", default=False)
 
 
@@ -56,7 +56,7 @@ class API(BaseTable):
 
     class Meta:
         verbose_name = "接口信息"
-        db_table = "API"
+        db_table = "api"
 
     ENV_TYPE = (
         (0, "测试环境"),
@@ -73,7 +73,7 @@ class API(BaseTable):
     body = models.TextField("主体信息", null=False)
     url = models.CharField("请求地址", null=False, max_length=200, db_index=True)
     method = models.CharField("请求方式", null=False, max_length=10)
-    project = models.ForeignKey(Project, on_delete=models.CASCADE)
+    project = models.ForeignKey(Project, on_delete=models.CASCADE, db_constraint=False)
     relation = models.IntegerField("节点id", null=False)
     delete = models.IntegerField("是否删除", null=True, default=0)
     rig_id = models.IntegerField("网关API_id", null=True, db_index=True)
@@ -88,7 +88,7 @@ class Case(BaseTable):
 
     class Meta:
         verbose_name = "用例信息"
-        db_table = "Case"
+        db_table = "case"
 
     tag = (
         (1, "冒烟用例"),
@@ -96,7 +96,7 @@ class Case(BaseTable):
         (3, "监控脚本")
     )
     name = models.CharField("用例名称", null=False, max_length=100)
-    project = models.ForeignKey(Project, on_delete=models.CASCADE)
+    project = models.ForeignKey(Project, on_delete=models.CASCADE, db_constraint=False)
     relation = models.IntegerField("节点id", null=False)
     length = models.IntegerField("API个数", null=False)
     tag = models.IntegerField("用例标签", choices=tag, default=2)
@@ -109,7 +109,7 @@ class CaseStep(BaseTable):
 
     class Meta:
         verbose_name = "用例信息 Step"
-        db_table = "CaseStep"
+        db_table = "case_step"
 
     name = models.CharField("用例名称", null=False, max_length=100)
     body = models.TextField("主体信息", null=False)
@@ -126,11 +126,11 @@ class HostIP(BaseTable):
 
     class Meta:
         verbose_name = "HOST配置"
-        db_table = "HostIP"
+        db_table = "host_ip"
 
     name = models.CharField(null=False, max_length=100)
     value = models.TextField(null=False)
-    project = models.ForeignKey(Project, on_delete=models.CASCADE)
+    project = models.ForeignKey(Project, on_delete=models.CASCADE, db_constraint=False)
 
 
 class Variables(BaseTable):
@@ -140,11 +140,11 @@ class Variables(BaseTable):
 
     class Meta:
         verbose_name = "全局变量"
-        db_table = "Variables"
+        db_table = "variables"
 
     key = models.CharField(null=False, max_length=100)
     value = models.CharField(null=False, max_length=1024)
-    project = models.ForeignKey(Project, on_delete=models.CASCADE)
+    project = models.ForeignKey(Project, on_delete=models.CASCADE, db_constraint=False)
     description = models.CharField("全局变量描述", null=True, max_length=100)
 
 
@@ -165,19 +165,19 @@ class Report(BaseTable):
 
     class Meta:
         verbose_name = "测试报告"
-        db_table = "Report"
+        db_table = "report"
 
     name = models.CharField("报告名称", null=False, max_length=100)
     type = models.IntegerField("报告类型", choices=report_type)
     status = models.BooleanField("报告状态", choices=report_status, blank=True)
     summary = models.TextField("报告基础信息", null=False)
-    project = models.ForeignKey(Project, on_delete=models.CASCADE)
+    project = models.ForeignKey(Project, on_delete=models.CASCADE, db_constraint=False)
 
 
 class ReportDetail(models.Model):
     class Meta:
         verbose_name = "测试报告详情"
-        db_table = "ReportDetail"
+        db_table = "report_detail"
 
     report = models.OneToOneField(Report, on_delete=models.CASCADE, null=True, db_constraint=False)
     summary_detail = models.TextField("报告详细信息")
@@ -190,9 +190,9 @@ class Relation(models.Model):
 
     class Meta:
         verbose_name = "树形结构关系"
-        db_table = "Relation"
+        db_table = "relation"
 
-    project = models.ForeignKey(Project, on_delete=models.CASCADE)
+    project = models.ForeignKey(Project, on_delete=models.CASCADE, db_constraint=False)
     tree = models.TextField("结构主题", null=False, default=[])
     type = models.IntegerField("树类型", default=1)
 
