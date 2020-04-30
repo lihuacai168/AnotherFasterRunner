@@ -33,3 +33,8 @@ DATABASES = {
 }
 
 BROKER_URL = f'amqp://{MQ_USER}:{MQ_PASSWORD}@{FASTER_HOST}:5672//'
+STATIC_ROOT='/opt/workspace/FasterRunner/static'
+STATIC_URL = '/static/'
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, "static"),
+)
