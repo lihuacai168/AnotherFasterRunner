@@ -115,7 +115,7 @@ class CaseStep(BaseTable):
     body = models.TextField("主体信息", null=False)
     url = models.CharField("请求地址", null=False, max_length=200)
     method = models.CharField("请求方式", null=False, max_length=10)
-    case = models.ForeignKey(Case, on_delete=models.CASCADE)
+    case = models.ForeignKey(Case, on_delete=models.CASCADE, db_constraint=False)
     step = models.IntegerField("顺序", null=False)
 
 
