@@ -8,3 +8,4 @@ tempWorkDir
 mysql
 .env
 /venv/
+/static/
