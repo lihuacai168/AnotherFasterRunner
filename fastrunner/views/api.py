@@ -2,6 +2,7 @@ import datetime
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils.decorators import method_decorator
+from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status
 from rest_framework.viewsets import GenericViewSet
 from fastrunner import models, serializers
@@ -12,6 +13,24 @@ from fastrunner.utils.parser import Format, Parse
 from django.db import DataError
 from django.db.models import Q
 
+from rest_framework.schemas import AutoSchema,SchemaGenerator
+import coreapi
+
+
+class APITemplateViewSchema(AutoSchema):
+    def get_manual_fields(self, path, method):
+        extra_fields = []
+        if method.lower() in ('get',):
+            extra_fields = [
+              coreapi.Field('node'),
+              coreapi.Field('project'),
+              coreapi.Field('search'),
+              coreapi.Field('tag'),
+              coreapi.Field('rigEnv'),
+            ]
+        manual_fields = super().get_manual_fields(path, method)
+        return manual_fields + extra_fields
+
 
 class APITemplateView(GenericViewSet):
     """
@@ -19,14 +38,12 @@ class APITemplateView(GenericViewSet):
     """
     serializer_class = serializers.APISerializer
     queryset = models.API.objects
+    schema = APITemplateViewSchema()
 
     @method_decorator(request_log(level='DEBUG'))
     def list(self, request):
         """
-        接口列表 {
-            project: int,
-            node: int
-        }
+        API列表
         """
         ser = serializers.AssertSerializer(data=request.query_params)
         if ser.is_valid():
