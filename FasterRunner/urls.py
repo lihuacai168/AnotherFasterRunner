@@ -34,11 +34,14 @@ urlpatterns = [
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     path('api/user/', include('fastuser.urls')),
     path('api/fastrunner/', include('fastrunner.urls')),
-    re_path(r'^auto_run_testsuite_pk/$', timer_task.auto_run_testsuite_pk, name='auto_run_testsuite_pk'),
+
+    # 已经废弃
+    # re_path(r'^auto_run_testsuite_pk/$', timer_task.auto_run_testsuite_pk, name='auto_run_testsuite_pk'),
+
+    # 执行定时任务
     re_path(r'^run_all_auto_case/$', run_all_auto_case.run_all_auto_case, name='run_all_auto_case'),
-    # 网关rig更新API接口 http://localhost:8000/api_rig/200008/?token=5b9c762514728ef01b1cc9f05e8ba74e
+
     path('api_rig/<int:rig_id>/', api_rig.APIRigView.as_view({"patch": "update"})),
-    # 网关rig增加API接口 http://localhost:8000/api_rig/?token=5b9c762514728ef01b1cc9f05e8ba74e
     path('api_rig/', api_rig.APIRigView.as_view({"post": "add"})),
     path('api_provide_to_nodejs/', api_provide_to_nodejs.APIRigView.as_view({"get": "list"})),
 ]
