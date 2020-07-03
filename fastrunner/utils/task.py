@@ -1,11 +1,9 @@
 import json
-import logging
+from loguru import logger
 from djcelery import models as celery_models
 
 from fastrunner.utils import response
 from fastrunner.utils.parser import format_json
-
-logger = logging.getLogger('FasterRunner')
 
 
 class Task(object):

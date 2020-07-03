@@ -1,5 +1,5 @@
 import json
-import logging
+from loguru import logger
 import datetime
 
 from django.core.exceptions import ObjectDoesNotExist
@@ -15,7 +15,6 @@ from fastrunner import models
 
 """运行方式
 """
-logger = logging.getLogger('FasterRunner')
 
 config_err = {
     "success": False,

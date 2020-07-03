@@ -1,9 +1,7 @@
 import functools
-import logging
+from loguru import logger
 
 from fastrunner.utils import parser
-
-logger = logging.getLogger('FasterRunner')
 
 
 def request_log(level):

@@ -1,6 +1,3 @@
-import logging
-
-
 from django.contrib.auth import get_user_model
 from django.contrib.auth.hashers import make_password, check_password
 from rest_framework_jwt.settings import api_settings
@@ -16,7 +13,6 @@ from fastuser.common.token import generate_token
 from django.core.exceptions import ObjectDoesNotExist
 from django.conf import settings
 
-logger = logging.getLogger('FastRunner')
 
 # 获取用户模型
 User = get_user_model()

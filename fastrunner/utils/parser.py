@@ -1,10 +1,8 @@
 import json
-import logging
+
 import time
 from enum import Enum
 from fastrunner import models
-
-logger = logging.getLogger('FasterRunner')
 
 
 class FileType(Enum):
