@@ -417,9 +417,9 @@ def save_summary(name, summary, project, type=2):
 
     # 　删除用不到的属性
     summary['details'][0].pop('in_out')
-    # 复制一份,避免影响原始的测试报告
+    # 需要先复制一份,不然会把影响到debug_api返回给前端的报告
     summary = copy.copy(summary)
-
+    summary_detail = summary.pop('details')
     report = models.Report.objects.create(**{
         "project": models.Project.objects.get(id=project),
         "name": name,
@@ -427,7 +427,7 @@ def save_summary(name, summary, project, type=2):
         "status": summary['success'],
         "summary": json.dumps(summary, ensure_ascii=False),
     })
-    summary_detail = summary.pop('details')
+
     models.ReportDetail.objects.create(summary_detail=summary_detail, report=report)
 
 
