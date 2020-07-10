@@ -179,7 +179,7 @@ class APITemplateView(GenericViewSet):
         try:
             if kwargs.get('pk'):  # 单个删除
 
-                models.API.objects.filter(id=kwargs['pk']).update(tag=1, update_time=datetime.datetime.now())
+                models.API.objects.filter(id=kwargs['pk']).update(tag=request.data['tag'], update_time=datetime.datetime.now())
 
         except ObjectDoesNotExist:
             return Response(response.API_NOT_FOUND)
