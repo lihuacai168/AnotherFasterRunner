@@ -19,3 +19,4 @@ DATABASES = {
     }
 }
 BROKER_URL = 'amqp://username:password@localhost:5672//'
+BROKER_URL = 'amqp://admin:111111@192.168.17.107:5672//'

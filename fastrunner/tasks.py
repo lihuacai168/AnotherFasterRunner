@@ -5,6 +5,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from fastrunner import models
 from fastrunner.utils.loader import save_summary, debug_suite, debug_api
 from fastrunner.utils.ding_message import DingMessage
+from fastrunner.utils import lark_message
 
 
 @shared_task
@@ -77,5 +78,9 @@ def schedule_debug_suite(*args, **kwargs):
     strategy = kwargs["strategy"]
     if strategy == '始终发送' or (
             strategy == '仅失败发送' and summary['stat']['failures'] > 0):
-        ding_message = DingMessage(run_type)
-        ding_message.send_ding_msg(summary, report_name=task_name)
+        # ding_message = DingMessage(run_type)
+        # ding_message.send_ding_msg(summary, report_name=task_name)
+        webhook = kwargs.get("webhook", "")
+        if webhook:
+            summary["task_name"] = task_name
+            lark_message.send_message(summary=summary, webhook=webhook)

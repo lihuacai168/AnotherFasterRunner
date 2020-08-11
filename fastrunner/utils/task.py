@@ -25,7 +25,8 @@ class Task(object):
             "receiver": kwargs["receiver"],
             "crontab": self.__crontab,
             "project": self.__project,
-            "task_name": self.__name
+            "task_name": self.__name,
+            "webhook": kwargs["webhook"]
         }
         self.__crontab_time = None
 
