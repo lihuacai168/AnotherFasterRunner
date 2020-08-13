@@ -228,10 +228,14 @@ class TestCaseView(GenericViewSet):
         # 把原来api的name, body, url, method更新到case_step中
         for item in api_id_list_of_dict:
             source_api_id: int = item['source_api_id']
+            # 不存在api_id的直接跳过
+            if source_api_id == 0:
+                continue
             step: int = item['step']
             source_api = models.API.objects.filter(pk=source_api_id).values("name", "body", "url", "method").first()
             if source_api is not None:
                 models.CaseStep.objects.filter(case_id=pk, source_api_id=source_api_id, step=step).update(**source_api)
+        models.Case.objects.filter(pk=pk).update(update_time=datetime.datetime.now())
         return Response(response.CASE_STEP_SYNC_SUCCESS)
 
 
