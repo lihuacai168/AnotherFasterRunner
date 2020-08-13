@@ -38,6 +38,7 @@ INVALID_TIME = 60 * 60 * 24
 # Application definition
 
 INSTALLED_APPS = [
+    'simpleui',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
