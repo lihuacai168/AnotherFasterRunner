@@ -38,8 +38,6 @@ urlpatterns = [
         "patch": "update"
     })),
 
-
-
     # debugtalk.py相关接口地址
     path('debugtalk/<int:pk>/', project.DebugTalkView.as_view({"get": "debugtalk"})),
     path('debugtalk/', project.DebugTalkView.as_view({
@@ -79,7 +77,9 @@ urlpatterns = [
 
     path('test/<int:pk>/', suite.TestCaseView.as_view({
         "delete": "delete",
-        "post": "copy"
+        "post": "copy",
+        "put": "put"  # 请求方法和处理方法同名时可以省略
+
     })),
 
     path('teststep/<int:pk>/', suite.CaseStepView.as_view()),

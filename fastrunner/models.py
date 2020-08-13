@@ -117,7 +117,7 @@ class CaseStep(BaseTable):
     method = models.CharField("请求方式", null=False, max_length=10)
     case = models.ForeignKey(Case, on_delete=models.CASCADE, db_constraint=False)
     step = models.IntegerField("顺序", null=False)
-
+    source_api_id = models.IntegerField("api来源", null=False)
 
 class HostIP(BaseTable):
     """

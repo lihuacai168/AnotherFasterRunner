@@ -160,6 +160,11 @@ CASE_UPDATE_SUCCESS = {
     'msg': '用例集更新成功'
 }
 
+CASE_STEP_SYNC_SUCCESS = {
+    'code': '0002',
+    'success': True,
+    'msg': '用例步骤同步成功'
+}
 CONFIG_EXISTS = {
     "code": "0101",
     "success": False,

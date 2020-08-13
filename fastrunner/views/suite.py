@@ -215,6 +215,25 @@ class TestCaseView(GenericViewSet):
 
         return Response(response.CASE_DELETE_SUCCESS)
 
+    @method_decorator(request_log(level='INFO'))
+    def put(self, request, **kwargs):
+        # case_id
+        pk = kwargs['pk']
+
+        # 在case_step表中找出case_id对应的所有记录,并且排除config
+        api_id_list_of_dict = list(
+            models.CaseStep.objects.filter(case_id=pk).exclude(method='config').values('source_api_id', 'step'))
+
+        # 通过source_api_id找到原来的api
+        # 把原来api的name, body, url, method更新到case_step中
+        for item in api_id_list_of_dict:
+            source_api_id: int = item['source_api_id']
+            step: int = item['step']
+            source_api = models.API.objects.filter(pk=source_api_id).values("name", "body", "url", "method").first()
+            if source_api is not None:
+                models.CaseStep.objects.filter(case_id=pk, source_api_id=source_api_id, step=step).update(**source_api)
+        return Response(response.CASE_STEP_SYNC_SUCCESS)
+
 
 class CaseStepView(APIView):
     """

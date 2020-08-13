@@ -195,6 +195,7 @@ def generate_casestep(body, case):
                 config = models.Config.objects.get(name=name)
                 url = config.base_url
                 new_body = eval(config.body)
+                source_api_id = 0  # config没有api,默认为0
             else:
                 api = models.API.objects.get(id=test['id'])
                 new_body = eval(api.body)
@@ -205,14 +206,15 @@ def generate_casestep(body, case):
 
                 url = test['body']['url']
                 method = test['body']['method']
-
+                source_api_id = test['id']
         kwargs = {
             "name": name,
             "body": new_body,
             "url": url,
             "method": method,
             "step": index,
-            "case": case
+            "case": case,
+            "source_api_id": source_api_id
         }
 
         models.CaseStep.objects.create(**kwargs)
