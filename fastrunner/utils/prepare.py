@@ -109,7 +109,7 @@ def tree_end(params, project):
             models.Case.objects.filter(id=case_id['id']).delete()
 
 
-def update_casestep(body, case):
+def update_casestep(body, case, username):
     step_list = list(models.CaseStep.objects.filter(case=case).values('id'))
 
     for index in range(len(body)):
@@ -159,18 +159,18 @@ def update_casestep(body, case):
             "source_api_id": source_api_id
         }
         if 'case' in test.keys():
-            models.CaseStep.objects.filter(id=test['id']).update(**kwargs)
+            models.CaseStep.objects.filter(id=test['id']).update(**kwargs, updater=username)
             step_list.remove({"id": test['id']})
         else:
             kwargs['case'] = case
-            models.CaseStep.objects.create(**kwargs)
+            models.CaseStep.objects.create(**kwargs, creator=username)
 
     #  去掉多余的step
     for content in step_list:
         models.CaseStep.objects.filter(id=content['id']).delete()
 
 
-def generate_casestep(body, case):
+def generate_casestep(body, case, username):
     """
     生成用例集步骤
     [{
@@ -221,7 +221,8 @@ def generate_casestep(body, case):
             "method": method,
             "step": index,
             "case": case,
-            "source_api_id": source_api_id
+            "source_api_id": source_api_id,
+            "creator": username
         }
 
         models.CaseStep.objects.create(**kwargs)

@@ -76,12 +76,15 @@ class TestCaseView(GenericViewSet):
         """
         pk = kwargs['pk']
         name = request.data['name']
+        username = request.user.username
         if '|' in name:
             resp = self.split(pk, name)
         else:
             case = models.Case.objects.get(id=pk)
             case.id = None
             case.name = name
+            case.creator = username
+            case.updater = username
             case.save()
 
             case_step = models.CaseStep.objects.filter(case__id=pk)
@@ -89,6 +92,8 @@ class TestCaseView(GenericViewSet):
             for step in case_step:
                 step.id = None
                 step.case = case
+                step.creator = username
+                step.updater = username
                 step.save()
             resp = response.CASE_ADD_SUCCESS
 
@@ -148,10 +153,11 @@ class TestCaseView(GenericViewSet):
 
         case = models.Case.objects.get(id=pk)
 
-        prepare.update_casestep(body, case)
+        prepare.update_casestep(body, case, username=request.user.username)
 
         request.data['tag'] = self.tag_options[request.data['tag']]
-        models.Case.objects.filter(id=pk).update(update_time=datetime.datetime.now(), **request.data)
+        models.Case.objects.filter(id=pk).update(update_time=datetime.datetime.now(), updater=request.user.username,
+                                                 **request.data)
 
         return Response(response.CASE_UPDATE_SUCCESS)
 
@@ -169,7 +175,8 @@ class TestCaseView(GenericViewSet):
                 project: int,
                 name: str,
                 method: str,
-                url: str
+                url: str,
+                source_api_id: int
             }]
         }
         """
@@ -187,11 +194,11 @@ class TestCaseView(GenericViewSet):
         body = request.data.pop('body')
 
         request.data['tag'] = self.tag_options[request.data['tag']]
-        models.Case.objects.create(**request.data)
+        models.Case.objects.create(**request.data, creator=request.user.username)
 
         case = models.Case.objects.filter(**request.data).first()
 
-        prepare.generate_casestep(body, case)
+        prepare.generate_casestep(body, case, request.user.username)
 
         return Response(response.CASE_ADD_SUCCESS)
 
