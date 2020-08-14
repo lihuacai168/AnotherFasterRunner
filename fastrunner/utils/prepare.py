@@ -140,9 +140,15 @@ def update_casestep(body, case):
             if test["body"]["method"] == "config":
                 url = ""
                 method = "config"
+                # config没有source_api_id,默认为0
+                source_api_id = 0
             else:
                 url = test['body']['url']
                 method = test['body']['method']
+                source_api_id = test.get('source_api_id', 0)
+                # 新增的case_step没有source_api_id字段,需要重新赋值
+                if source_api_id == 0:
+                    source_api_id = test['id']
 
         kwargs = {
             "name": name,
@@ -150,6 +156,7 @@ def update_casestep(body, case):
             "url": url,
             "method": method,
             "step": index,
+            "source_api_id": source_api_id
         }
         if 'case' in test.keys():
             models.CaseStep.objects.filter(id=test['id']).update(**kwargs)

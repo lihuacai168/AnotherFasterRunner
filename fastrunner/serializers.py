@@ -87,7 +87,7 @@ class CaseStepSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.CaseStep
-        fields = ['id', 'name', 'url', 'method', 'body', 'case']
+        fields = ['id', 'name', 'url', 'method', 'body', 'case', 'source_api_id']
         depth = 1
 
     def get_body(self, obj):
