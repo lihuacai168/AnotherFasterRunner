@@ -10,7 +10,7 @@ from FasterRunner.auth import OnlyGetAuthenticator
 
 
 class ConfigView(GenericViewSet):
-    authentication_classes = [OnlyGetAuthenticator, ]
+    # authentication_classes = [OnlyGetAuthenticator, ]
     serializer_class = serializers.ConfigSerializer
     queryset = models.Config.objects
 
@@ -70,7 +70,7 @@ class ConfigView(GenericViewSet):
             "project": config.project
         }
 
-        models.Config.objects.create(**config_body)
+        models.Config.objects.create(**config_body, creator=request.user.username)
         return Response(response.CONFIG_ADD_SUCCESS)
 
     @method_decorator(request_log(level='INFO'))
@@ -113,6 +113,7 @@ class ConfigView(GenericViewSet):
         if format.is_default is True:
             models.Config.objects.filter(project=config.project_id, is_default=True).update(is_default=False)
         config.is_default = format.is_default
+        config.updater = request.user.username
         config.save()
 
         return Response(response.CONFIG_UPDATE_SUCCESS)
@@ -142,6 +143,8 @@ class ConfigView(GenericViewSet):
         body['name'] = name
         config.name = name
         config.body = body
+        config.creator = request.user.username
+        config.updater = request.user.username
         config.save()
 
         return Response(response.CONFIG_ADD_SUCCESS)
