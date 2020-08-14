@@ -91,7 +91,8 @@ class APITemplateView(GenericViewSet):
             'url': api.url,
             'method': api.method,
             'project': models.Project.objects.get(id=api.project),
-            'relation': api.relation
+            'relation': api.relation,
+            'creator': request.user.username
         }
 
         try:
@@ -115,6 +116,7 @@ class APITemplateView(GenericViewSet):
             'body': api.testcase,
             'url': api.url,
             'method': api.method,
+            'updater': request.user.username
         }
 
         try:
@@ -140,6 +142,8 @@ class APITemplateView(GenericViewSet):
         api.body = body
         api.id = None
         api.name = name
+        api.creator = request.user.username
+        api.updater = request.user.username
         api.save()
         return Response(response.API_ADD_SUCCESS)
 
@@ -178,10 +182,10 @@ class APITemplateView(GenericViewSet):
         """
 
         try:
-            if kwargs.get('pk'):  # 单个删除
-
-                models.API.objects.filter(id=kwargs['pk']).update(tag=request.data['tag'], update_time=datetime.datetime.now())
-
+            if kwargs.get('pk'):
+                models.API.objects.filter(id=kwargs['pk']).update(tag=request.data['tag'],
+                                                                  update_time=datetime.datetime.now(),
+                                                                  updater=request.user.username)
         except ObjectDoesNotExist:
             return Response(response.API_NOT_FOUND)
 
