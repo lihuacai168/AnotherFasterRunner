@@ -14,7 +14,7 @@ class ProjectSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.Project
-        fields = ['id', 'name', 'desc', 'responsible', 'update_time']
+        fields = ['id', 'name', 'desc', 'responsible', 'update_time', 'creator', 'updater']
 
 
 class DebugTalkSerializer(serializers.ModelSerializer):
@@ -24,7 +24,7 @@ class DebugTalkSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.Debugtalk
-        fields = ['id', 'code']
+        fields = ['id', 'code', 'creator', 'updater']
 
 
 class RelationSerializer(serializers.ModelSerializer):
@@ -60,7 +60,7 @@ class APISerializer(serializers.ModelSerializer):
     class Meta:
         model = models.API
         fields = ['id', 'name', 'url', 'method', 'project', 'relation', 'body', 'rig_env', 'tag', 'tag_name',
-                  'update_time', 'delete']
+                  'update_time', 'delete', 'creator', 'updater']
 
     def get_body(self, obj):
         parse = Parse(eval(obj.body))
@@ -87,7 +87,7 @@ class CaseStepSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.CaseStep
-        fields = ['id', 'name', 'url', 'method', 'body', 'case', 'source_api_id']
+        fields = ['id', 'name', 'url', 'method', 'body', 'case', 'source_api_id', 'creator', 'updater']
         depth = 1
 
     def get_body(self, obj):
@@ -111,7 +111,7 @@ class ConfigSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.Config
-        fields = ['id', 'base_url', 'body', 'name', 'update_time', 'is_default']
+        fields = ['id', 'base_url', 'body', 'name', 'update_time', 'is_default', 'creator', 'updater']
         depth = 1
 
     def get_body(self, obj):
@@ -132,7 +132,7 @@ class ReportSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.Report
-        fields = ["id", "name", "type", "time", "stat", "platform", "success"]
+        fields = ["id", "name", "type", "time", "stat", "platform", "success", 'creator', 'updater']
 
     def get_time(self, obj):
         return json.loads(obj.summary)["time"]
@@ -176,7 +176,8 @@ class PeriodicTaskSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = celery_models.PeriodicTask
-        fields = ['id', 'name', 'args', 'kwargs', 'enabled', 'date_changed', 'enabled', 'description']
+        fields = ['id', 'name', 'args', 'kwargs', 'enabled', 'date_changed', 'enabled', 'description', 'creator',
+                  'updater']
 
     def get_kwargs(self, obj):
         return json.loads(obj.kwargs)

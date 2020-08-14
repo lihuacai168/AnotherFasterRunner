@@ -16,6 +16,8 @@ class BaseTable(models.Model):
 
     create_time = models.DateTimeField('创建时间', auto_now_add=True)
     update_time = models.DateTimeField('更新时间', auto_now=True)
+    creator = models.CharField(verbose_name="创建人", max_length=20, null=True)
+    updater = models.CharField(verbose_name="更新人", max_length=20, null=True)
 
 
 class UserInfo(BaseTable):
