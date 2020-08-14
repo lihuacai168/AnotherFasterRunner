@@ -176,8 +176,7 @@ class PeriodicTaskSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = celery_models.PeriodicTask
-        fields = ['id', 'name', 'args', 'kwargs', 'enabled', 'date_changed', 'enabled', 'description', 'creator',
-                  'updater']
+        fields = ['id', 'name', 'args', 'kwargs', 'enabled', 'date_changed', 'enabled', 'description']
 
     def get_kwargs(self, obj):
         return json.loads(obj.kwargs)
