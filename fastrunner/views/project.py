@@ -115,7 +115,7 @@ class DebugTalkView(GenericViewSet):
     """
     DebugTalk update
     """
-    authentication_classes = [OnlyGetAuthenticator, ]
+    # authentication_classes = [OnlyGetAuthenticator, ]
     serializer_class = serializers.DebugTalkSerializer
 
     @method_decorator(request_log(level='INFO'))
@@ -141,7 +141,7 @@ class DebugTalkView(GenericViewSet):
         pk = request.data['id']
         try:
             models.Debugtalk.objects.filter(id=pk). \
-                update(code=request.data['code'])
+                update(code=request.data['code'], updater=request.user.username)
 
         except ObjectDoesNotExist:
             return Response(response.SYSTEM_ERROR)

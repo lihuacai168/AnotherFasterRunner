@@ -24,8 +24,8 @@ class DebugTalkSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.Debugtalk
-        fields = ['id', 'code', 'creator', 'updater']
-
+        # fields = ['id', 'code', 'creator', 'updater']
+        fields = '__all__'
 
 class RelationSerializer(serializers.ModelSerializer):
     """

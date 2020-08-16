@@ -20,7 +20,7 @@ class Project(BaseTable):
     responsible = models.CharField("创建人", max_length=20, null=False)
 
 
-class Debugtalk(models.Model):
+class Debugtalk(BaseTable):
     """
     驱动文件表
     """
