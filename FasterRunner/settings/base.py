@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'djcelery',
     'rest_framework_swagger',
+    'drf_yasg',
 ]
 
 MIDDLEWARE = [

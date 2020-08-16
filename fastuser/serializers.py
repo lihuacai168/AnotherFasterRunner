@@ -27,3 +27,8 @@ class UserInfoSerializer(serializers.Serializer):
         实现create方法
         """
         return models.UserInfo.objects.create(**validated_data)
+
+
+class UserLoginSerialzer(serializers.Serializer):
+    username = serializers.CharField(required=True)
+    password = serializers.CharField(required=True)

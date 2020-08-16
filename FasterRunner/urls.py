@@ -18,13 +18,26 @@ from django.conf.urls import url
 from django.urls import path, include, re_path
 
 from fastrunner.views import timer_task, run_all_auto_case, api_rig, api_provide_to_nodejs
-from rest_framework.schemas import get_schema_view
-from rest_framework_swagger.renderers import SwaggerUIRenderer, OpenAPIRenderer
-schema_view = get_schema_view(title='Users API', renderer_classes=[OpenAPIRenderer, SwaggerUIRenderer],
-                              permission_classes=[], authentication_classes=[])
 
+
+from rest_framework import permissions
+from drf_yasg.views import get_schema_view
+from drf_yasg import openapi
 
 from rest_framework_jwt.views import obtain_jwt_token
+schema_view = get_schema_view(
+    openapi.Info(
+        title="Snippets API",
+        default_version='v1',
+        description="Test description",
+        terms_of_service="https://www.google.com/policies/terms/",
+        contact=openapi.Contact(email="contact@snippets.local"),
+        license=openapi.License(name="BSD License"),
+    ),
+    public=True,
+    permission_classes=(permissions.AllowAny,),
+    authentication_classes=[],
+)
 
 urlpatterns = [
     path(r"login", obtain_jwt_token),
@@ -44,4 +57,9 @@ urlpatterns = [
     path('api_rig/<int:rig_id>/', api_rig.APIRigView.as_view({"patch": "update"})),
     path('api_rig/', api_rig.APIRigView.as_view({"post": "add"})),
     path('api_provide_to_nodejs/', api_provide_to_nodejs.APIRigView.as_view({"get": "list"})),
+    # swagger
+    url(r'^swagger(?P<format>\.json|\.yaml)$', schema_view.without_ui(cache_timeout=0), name='schema-json'),
+    url(r'^swagger/$', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
+    url(r'^redoc/$', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
+
 ]

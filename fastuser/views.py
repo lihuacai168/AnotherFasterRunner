@@ -3,6 +3,8 @@ from django.contrib.auth.hashers import make_password, check_password
 from rest_framework_jwt.settings import api_settings
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from drf_yasg.utils import swagger_auto_schema
+
 
 
 from fastuser.common import response
@@ -63,6 +65,7 @@ class LoginView(APIView):
     authentication_classes = ()
     permission_classes = ()
 
+    @swagger_auto_schema(request_body=serializers.UserLoginSerialzer)
     def post(self, request):
         """
         用户名密码一致返回token
