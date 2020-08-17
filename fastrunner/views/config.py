@@ -224,15 +224,16 @@ class VariablesView(GenericViewSet):
           value:str
         }
         """
-        pk = kwargs['pk']
 
+        project_id = kwargs['pk']
+        variable_id = request.data["id"]
         try:
-            variables = models.Variables.objects.get(id=pk)
+            variables = models.Variables.objects.get(id=variable_id)
 
         except ObjectDoesNotExist:
             return Response(response.VARIABLES_NOT_EXISTS)
 
-        if models.Variables.objects.exclude(id=pk).filter(key=request.data['key']).first():
+        if models.Variables.objects.exclude(id=variable_id, project_id=project_id).filter(key=request.data['key']).first():
             return Response(response.VARIABLES_EXISTS)
 
         variables.key = request.data["key"]
