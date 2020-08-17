@@ -233,7 +233,7 @@ class VariablesView(GenericViewSet):
         except ObjectDoesNotExist:
             return Response(response.VARIABLES_NOT_EXISTS)
 
-        if models.Variables.objects.exclude(id=variable_id, project_id=project_id).filter(key=request.data['key']).first():
+        if models.Variables.objects.exclude(id=variable_id).filter(project_id=project_id, key=request.data['key']).first():
             return Response(response.VARIABLES_EXISTS)
 
         variables.key = request.data["key"]
