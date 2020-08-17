@@ -44,7 +44,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     url(r'^docs/', schema_view, name="docs"),
     url(r'^accounts/', include('rest_framework.urls',)),
-    url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
+    url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework_api_auth')),
     path('api/user/', include('fastuser.urls')),
     path('api/fastrunner/', include('fastrunner.urls')),
 
