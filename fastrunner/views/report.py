@@ -1,7 +1,7 @@
 import json
 
 from django.core.exceptions import ObjectDoesNotExist
-from django.shortcuts import render_to_response
+from django.shortcuts import render
 from django.utils.decorators import method_decorator
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
@@ -79,7 +79,8 @@ class ReportView(GenericViewSet):
         summary = json.loads(report.summary, encoding="utf-8")
         summary['details'] = eval(report_detail.summary_detail)
         summary["html_report_name"] = report.name
-        return render_to_response('report_template.html', summary)
+        # return render_to_response('report_template.html', summary)
+        return render(request,template_name='report_template.html',context=summary)
 
     def download(self, request, **kwargs):
         """下载报告
