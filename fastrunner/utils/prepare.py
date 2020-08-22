@@ -232,5 +232,5 @@ def case_end(pk):
     """
     pk: int case id
     """
-    models.CaseStep.objects.filter(case__id=pk).delete()
+    # models.CaseStep.objects.filter(case__id=pk).delete()
     models.Case.objects.filter(id=pk).delete()

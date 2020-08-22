@@ -194,11 +194,17 @@ class TestCaseView(GenericViewSet):
         body = request.data.pop('body')
 
         request.data['tag'] = self.tag_options[request.data['tag']]
-        models.Case.objects.create(**request.data, creator=request.user.username)
-
-        case = models.Case.objects.filter(**request.data).first()
-
+        case = models.Case.objects.create(**request.data, creator=request.user.username)
         prepare.generate_casestep(body, case, request.user.username)
+
+        # 多余操作
+        # case = models.Case.objects.filter(**request.data).first()
+
+        # 不用多对多关系也能实现
+        # case_step中的所有api_id
+        # api_ids: set = prepare.generate_casestep(body, case, request.user.username)
+        # apis = models.API.objects.filter(pk__in=api_ids).all()
+        # case.apis.add(*apis)
 
         return Response(response.CASE_ADD_SUCCESS)
 

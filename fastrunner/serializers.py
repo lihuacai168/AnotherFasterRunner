@@ -27,6 +27,7 @@ class DebugTalkSerializer(serializers.ModelSerializer):
         # fields = ['id', 'code', 'creator', 'updater']
         fields = '__all__'
 
+
 class RelationSerializer(serializers.ModelSerializer):
     """
     树形结构序列化
@@ -48,24 +49,6 @@ class AssertSerializer(serializers.Serializer):
     tag = serializers.ChoiceField(choices=models.API.TAG, default='')
     rigEnv = serializers.ChoiceField(choices=models.API.ENV_TYPE, default='')
     delete = serializers.ChoiceField(choices=(0, 1), default=0)
-
-
-class APISerializer(serializers.ModelSerializer):
-    """
-    接口信息序列化
-    """
-    body = serializers.SerializerMethodField()
-    tag_name = serializers.CharField(source="get_tag_display")
-
-    class Meta:
-        model = models.API
-        fields = ['id', 'name', 'url', 'method', 'project', 'relation', 'body', 'rig_env', 'tag', 'tag_name',
-                  'update_time', 'delete', 'creator', 'updater']
-
-    def get_body(self, obj):
-        parse = Parse(eval(obj.body))
-        parse.parse_http()
-        return parse.testcase
 
 
 class CaseSerializer(serializers.ModelSerializer):
@@ -101,6 +84,44 @@ class CaseStepSerializer(serializers.ModelSerializer):
             parse = Parse(eval(obj.body))
             parse.parse_http()
             return parse.testcase
+
+
+class APIRelatedCaseSerializer(serializers.Serializer):
+    case_name = serializers.CharField(source='case.name')
+    case_id = serializers.CharField(source='case.id')
+
+    class Meta:
+        fields = ['case_id', 'case_name']
+
+
+class APISerializer(serializers.ModelSerializer):
+    """
+    接口信息序列化
+    """
+    body = serializers.SerializerMethodField()
+    tag_name = serializers.CharField(source="get_tag_display")
+    cases = serializers.SerializerMethodField()
+
+    class Meta:
+        model = models.API
+        # fields = '__all__'
+        fields = ['id', 'name', 'url', 'method', 'project', 'relation', 'body', 'rig_env', 'tag', 'tag_name',
+                  'update_time', 'delete', 'creator', 'updater', 'cases']
+
+    def get_body(self, obj):
+        parse = Parse(eval(obj.body))
+        parse.parse_http()
+        return parse.testcase
+
+    def get_cases(self, obj):
+        cases = models.CaseStep.objects.filter(source_api_id=obj.id)
+        case_id = APIRelatedCaseSerializer(many=True, instance=cases)
+        return case_id.data
+
+    # def get_cases(self, obj):
+    #     cases = obj.api_case_relate.all()
+    #     case_id = CaseSerializer(many=True, instance=cases)
+    #     return case_id.data
 
 
 class ConfigSerializer(serializers.ModelSerializer):

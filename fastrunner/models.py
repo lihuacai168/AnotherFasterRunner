@@ -100,6 +100,7 @@ class Case(BaseTable):
     relation = models.IntegerField("节点id", null=False)
     length = models.IntegerField("API个数", null=False)
     tag = models.IntegerField("用例标签", choices=tag, default=2)
+    # apis = models.ManyToManyField(API, db_table='api_case', related_name='api_case_relate')
 
 
 class CaseStep(BaseTable):
@@ -118,6 +119,7 @@ class CaseStep(BaseTable):
     case = models.ForeignKey(Case, on_delete=models.CASCADE, db_constraint=False)
     step = models.IntegerField("顺序", null=False)
     source_api_id = models.IntegerField("api来源", null=False)
+
 
 class HostIP(BaseTable):
     """
