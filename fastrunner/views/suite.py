@@ -220,8 +220,10 @@ class TestCaseView(GenericViewSet):
             if pk:
                 prepare.case_end(pk)
             else:
+                case_ids: list = []
                 for content in request.data:
-                    prepare.case_end(content['id'])
+                    case_ids.append(content['id'])
+                prepare.case_end(case_ids)
 
         except ObjectDoesNotExist:
             return Response(response.SYSTEM_ERROR)

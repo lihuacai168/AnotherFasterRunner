@@ -233,4 +233,9 @@ def case_end(pk):
     pk: int case id
     """
     # models.CaseStep.objects.filter(case__id=pk).delete()
-    models.Case.objects.filter(id=pk).delete()
+    if isinstance(pk, int):
+        models.Case.objects.filter(id=pk).delete()
+    elif isinstance(pk, list):
+        models.Case.objects.filter(id__in=pk).delete()
+    else:
+        return
