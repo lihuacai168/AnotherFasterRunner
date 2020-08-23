@@ -183,7 +183,7 @@ def generate_casestep(body, case, username):
 
     """
     #  index也是case step的执行顺序
-
+    case_steps: list = []
     for index in range(len(body)):
 
         test = body[index]
@@ -224,9 +224,9 @@ def generate_casestep(body, case, username):
             "source_api_id": source_api_id,
             "creator": username
         }
-
-        models.CaseStep.objects.create(**kwargs)
-
+        case_step = models.CaseStep(**kwargs)
+        case_steps.append(case_step)
+    models.CaseStep.objects.bulk_create(objs=case_steps)
 
 def case_end(pk):
     """
