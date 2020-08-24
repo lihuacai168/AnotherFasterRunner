@@ -65,7 +65,11 @@ urlpatterns = [
     })),
 
     path('api/tag/<int:pk>/', api.APITemplateView.as_view({
-        "patch": "add_tag",
+        "patch": "add_tag",  # api修改状态
+    })),
+
+    path('api/sync/<int:pk>/', api.APITemplateView.as_view({
+        "patch": "sync_case",  # api同步用例步骤
     })),
 
     # test接口地址

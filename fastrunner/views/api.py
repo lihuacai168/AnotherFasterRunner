@@ -192,6 +192,21 @@ class APITemplateView(GenericViewSet):
         return Response(response.API_UPDATE_SUCCESS)
 
     @method_decorator(request_log(level='INFO'))
+    def sync_case(self, request, **kwargs):
+        """
+        1.根据api_id查出("name", "body", "url", "method")
+        2.根据api_id更新case_step中的("name", "body", "url", "method", "updater")
+        3.更新case的update_time, updater
+        """
+        pk = kwargs['pk']
+        source_api = models.API.objects.filter(pk=pk).values("name", "body", "url", "method").first()
+        case_steps = models.CaseStep.objects.filter(source_api_id=pk)
+        case_steps.update(**source_api, updater=request.user.username, update_time=datetime.datetime.now())
+        case_ids = case_steps.values('case')
+        models.Case.objects.filter(pk__in=case_ids).update(update_time=datetime.datetime.now(), updater=request.user.username)
+        return Response(response.CASE_STEP_SYNC_SUCCESS)
+
+    @method_decorator(request_log(level='INFO'))
     def single(self, request, **kwargs):
         """
         查询单个api，返回body信息
