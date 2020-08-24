@@ -115,4 +115,5 @@ class LoginView(APIView):
         token = jwt_encode_handler(payload)
         response.LOGIN_SUCCESS["token"] = token
         response.LOGIN_SUCCESS["user"] = username
+        response.LOGIN_SUCCESS["is_superuser"] = user.is_superuser
         return Response(response.LOGIN_SUCCESS)

@@ -2,6 +2,7 @@ import time
 
 import jwt
 from django.contrib.auth import get_user_model
+from django.utils.translation import gettext as _
 from rest_framework import exceptions
 from rest_framework.authentication import BaseAuthentication
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication, jwt_get_username_from_payload

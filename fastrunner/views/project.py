@@ -1,6 +1,7 @@
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils.decorators import method_decorator
 from rest_framework.views import APIView
+from rest_framework import status
 from rest_framework.viewsets import GenericViewSet
 from fastrunner import models, serializers
 from FasterRunner import pagination
@@ -81,6 +82,8 @@ class ProjectView(GenericViewSet):
         """
         删除项目
         """
+        if request.user.is_superuser is False:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
         try:
             project = models.Project.objects.get(id=request.data['id'])
 
