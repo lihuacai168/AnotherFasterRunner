@@ -5,7 +5,7 @@ services:
     container_name: mysql
     privileged: true
     env_file:
-      - "./FasterRunner/.env"
+      - "/root/.env"
     environment:
       # 设置默认数据库和root默认密码,如果宿主机中/var/lib/mysql已经存在,这两个设置都不会生效
       - MYSQL_DATABASE="${FASTER_DB_NAME}"
@@ -54,7 +54,7 @@ services:
     image: rabbitmq:management-alpine
     container_name: rabbitmq
     env_file:
-      - "./FasterRunner/.env"
+      - "/root/.env"
     environment:
       # mq的环境变量不能用""
       - RABBITMQ_DEFAULT_USER=${FASTER_MQ_USER}
