@@ -38,12 +38,12 @@ services:
       - fasterrunner
 
   web:
-    image: fasterweb:latest
+    image: nginx:latest
     container_name: fasterweb
     privileged: true
     volumes:
-      - ../FasterWeb/dist:/usr/share/nginx/html
-      - ../FasterWeb/default.conf:/etc/nginx/conf.d/default.conf
+      - /root/code/FasterWeb/dist:/usr/share/nginx/html
+      - /root/code/default.conf:/etc/nginx/conf.d/default.conf
     ports:
       - "80:8080"
     restart: always
