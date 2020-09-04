@@ -17,7 +17,7 @@ def parse_message(summary: dict):
     error_count = summary['stat']['errors']
     duration = '%.2fs' % summary['time']['duration']
     report_id = models.Report.objects.last().id
-    report_url = f'http://192.168.17.107:8000/api/fastrunner/reports/{report_id}/'
+    report_url = f'http://192.168.22.19:8000/api/fastrunner/reports/{report_id}/'
     executed = rows_count
     fail_rate = '{:.2%}'.format(fail_count / executed)
     text = f" 任务名称: {task_name}\n 总共耗时: {duration}\n 成功接口: {pass_count}个\n 异常接口: {error_count}个\n 失败接口: {fail_count}个\n 失败比例: {fail_rate}\n 查看详情: {report_url}"
