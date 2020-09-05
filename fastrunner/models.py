@@ -64,9 +64,9 @@ class API(BaseTable):
         (2, "预发布 ")
     )
     TAG = Choices(
-        (0, "还未调试"),
-        (1, "手动成功"),
-        (2, "调试失败"),
+        (0, "未知"),
+        (1, "成功"),
+        (2, "失败"),
         (3, "自动成功")
     )
     name = models.CharField("接口名称", null=False, max_length=100, db_index=True)
