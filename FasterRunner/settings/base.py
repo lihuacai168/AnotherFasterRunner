@@ -32,8 +32,8 @@ DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 
-# Token Settings
-INVALID_TIME = 60 * 60 * 24
+# Token Settings, 30天过期
+INVALID_TIME = 60 * 60 * 24 * 3650
 
 # Application definition
 
