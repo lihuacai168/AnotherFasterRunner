@@ -16,6 +16,9 @@ class UserAdmin(BaseUserAdmin):
         # (_('Permissions'), {
         #     'fields': ('is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions'),
         # }),
+        (_('Permissions'), {
+            'fields': ('is_active', 'is_staff', 'is_superuser'),
+        }),
         (_('Important dates'), {'fields': ('last_login', 'date_joined')}),
     )
     # 新增用户需要填写的字段
