@@ -282,7 +282,7 @@ def debug_api(api, project, name=None, config=None, save=True):
         api = [api]
 
     # 参数化过滤,只加载api中调用到的参数
-    if config.get('parameters'):
+    if config and config.get('parameters'):
         api_params = []
         for item in api:
             params = item['request'].get('params') or item['request'].get('json')
