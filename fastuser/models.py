@@ -53,7 +53,7 @@ class UserToken(BaseTable):
 
 
 class MyUser(AbstractUser):
-    phone = models.CharField(verbose_name='手机号码', unique=True, null=False, max_length=11)
+    phone = models.CharField(verbose_name='手机号码', unique=True, null=True, max_length=11)
 
     class Meta(AbstractUser.Meta):
         pass
