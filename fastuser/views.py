@@ -85,6 +85,9 @@ class LoginView(APIView):
         if not user:
             return Response(response.USER_NOT_EXISTS)
 
+        if user.is_active == 0:
+            return Response(response.USER_BLOCKED)
+
         if not check_password(password, user.password):
             return Response(response.LOGIN_FAILED)
 

@@ -40,6 +40,12 @@ USER_NOT_EXISTS = {
     "msg": "该用户未注册"
 }
 
+USER_BLOCKED = {
+    "code": "0105",
+    "success": False,
+    "msg": "用户被禁用"
+}
+
 LOGIN_SUCCESS = {
     "code": "0001",
     "success": True,
