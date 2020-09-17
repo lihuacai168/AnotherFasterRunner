@@ -172,6 +172,9 @@ class VariablesSerializer(serializers.ModelSerializer):
     """
     变量信息序列化
     """
+    key = serializers.CharField(allow_null=False, max_length=100, required=True)
+    value = serializers.CharField(allow_null=False, max_length=1024)
+    description = serializers.CharField(required=False, allow_blank=True)
 
     class Meta:
         model = models.Variables

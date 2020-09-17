@@ -1,3 +1,5 @@
+from copy import deepcopy
+
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils.decorators import method_decorator
 from rest_framework.viewsets import GenericViewSet
@@ -201,19 +203,24 @@ class VariablesView(GenericViewSet):
                 project: int
             }
         """
+        ser = self.serializer_class(data=request.data)
+        if ser.is_valid():
+            try:
+                project = models.Project.objects.get(id=request.data["project"])
+            except ObjectDoesNotExist:
+                return Response(response.PROJECT_NOT_EXISTS)
 
-        try:
-            project = models.Project.objects.get(id=request.data["project"])
-        except ObjectDoesNotExist:
-            return Response(response.PROJECT_NOT_EXISTS)
+            if models.Variables.objects.filter(key=request.data["key"], project=project).first():
+                return Response(response.VARIABLES_EXISTS)
 
-        if models.Variables.objects.filter(key=request.data["key"], project=project).first():
-            return Response(response.VARIABLES_EXISTS)
+            request.data["project"] = project
 
-        request.data["project"] = project
-
-        models.Variables.objects.create(**request.data)
-        return Response(response.CONFIG_ADD_SUCCESS)
+            models.Variables.objects.create(**request.data)
+            return Response(response.CONFIG_ADD_SUCCESS)
+        else:
+            res = deepcopy(response.PROJECT_NOT_EXISTS)
+            res['msg'] = ser.errors
+            return Response(res)
 
     @method_decorator(request_log(level='INFO'))
     def update(self, request, **kwargs):
