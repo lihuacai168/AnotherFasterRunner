@@ -49,7 +49,7 @@ class AssertSerializer(serializers.Serializer):
     tag = serializers.ChoiceField(choices=models.API.TAG, default='')
     rigEnv = serializers.ChoiceField(choices=models.API.ENV_TYPE, default='')
     delete = serializers.ChoiceField(choices=(0, 1), default=0)
-    onlyMe = serializers.BooleanField(default=True)
+    onlyMe = serializers.BooleanField(default=False)
 
 
 class CaseSerializer(serializers.ModelSerializer):
