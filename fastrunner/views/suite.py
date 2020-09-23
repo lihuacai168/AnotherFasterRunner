@@ -46,6 +46,8 @@ class TestCaseView(GenericViewSet):
         project = request.query_params["project"]
         search = request.query_params["search"]
         case_name_or_url = request.query_params["caseNameOrUrl"]
+        case_type = request.query_params["caseType"]
+
         # update_time 降序排列
         queryset = self.get_queryset().filter(project__id=project).order_by('-update_time')
 
@@ -58,6 +60,9 @@ class TestCaseView(GenericViewSet):
         if case_name_or_url != '':
             case_id = self.case_step_search(case_name_or_url)
             queryset = queryset.filter(pk__in=case_id)
+
+        if case_type != '':
+            queryset = queryset.filter(tag=case_type)
 
         pagination_query = self.paginate_queryset(queryset)
         serializer = self.get_serializer(pagination_query, many=True)
