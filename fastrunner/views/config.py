@@ -2,6 +2,7 @@ from copy import deepcopy
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils.decorators import method_decorator
+from django.db.models import Q
 from rest_framework.viewsets import GenericViewSet
 from fastrunner import models, serializers
 from rest_framework.response import Response
@@ -186,7 +187,7 @@ class VariablesView(GenericViewSet):
         queryset = self.get_queryset().filter(project__id=project).order_by('-update_time')
 
         if search != '':
-            queryset = queryset.filter(key__contains=search)
+            queryset = queryset.filter(Q(key__contains=search) | Q(value__contains=search) | Q(description__contains=search))
 
         pagination_queryset = self.paginate_queryset(queryset)
         serializer = self.get_serializer(pagination_queryset, many=True)
