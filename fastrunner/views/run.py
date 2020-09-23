@@ -46,7 +46,7 @@ def run_api(request):
         host = models.HostIP.objects.get(name=host, project__id=api.project).value.splitlines()
         api.testcase = parse_host(host, api.testcase)
 
-    summary = loader.debug_api(api.testcase, api.project, config=parse_host(host, config))
+    summary = loader.debug_api(api.testcase, api.project, name=api.name, config=parse_host(host, config))
 
     return Response(summary)
 
@@ -66,7 +66,7 @@ def run_api_pk(request, **kwargs):
         host = models.HostIP.objects.get(name=host, project=api.project).value.splitlines()
         test_case = parse_host(host, test_case)
 
-    summary = loader.debug_api(test_case, api.project.id, config=parse_host(host, config))
+    summary = loader.debug_api(test_case, api.project.id, name=api.name, config=parse_host(host, config))
     return Response(summary)
 
 

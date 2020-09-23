@@ -324,7 +324,7 @@ def debug_api(api, project, name=None, config=None, save=True):
         summary = parse_summary(runner.summary)
 
         if save:
-            save_summary("", summary, project, type=1)
+            save_summary(name, summary, project, type=1)
         return summary
     except Exception as e:
         raise SyntaxError(str(e))
@@ -412,7 +412,7 @@ def save_summary(name, summary, project, type=2):
     """
     if "status" in summary.keys():
         return
-    if name == "":
+    if name == "" or name is None:
         name = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
     # 　删除用不到的属性
