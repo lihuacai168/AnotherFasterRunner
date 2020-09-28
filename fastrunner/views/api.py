@@ -50,7 +50,7 @@ class APITemplateView(GenericViewSet):
         if ser.is_valid():
             node = ser.validated_data.get('node')
             project = ser.validated_data.get('project')
-            search = ser.validated_data.get('search')
+            search: str = ser.validated_data.get('search')
             tag = ser.validated_data.get('tag')
             rig_env = ser.validated_data.get('rigEnv')
             delete = ser.validated_data.get('delete')
@@ -62,7 +62,9 @@ class APITemplateView(GenericViewSet):
                 queryset = queryset.filter(creator=request.user)
 
             if search != '':
-                queryset = queryset.filter(Q(name__contains=search) | Q(url__contains=search))
+                search: list = search.split()
+                for key in search:
+                    queryset = queryset.filter(Q(name__contains=key) | Q(url__contains=key))
 
             if node != '':
                 queryset = queryset.filter(relation=node)
