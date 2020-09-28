@@ -54,11 +54,11 @@ class APITemplateView(GenericViewSet):
             tag = ser.validated_data.get('tag')
             rig_env = ser.validated_data.get('rigEnv')
             delete = ser.validated_data.get('delete')
-            onlyMe = ser.validated_data.get('onlyMe')
+            only_me = ser.validated_data.get('onlyMe')
 
             queryset = self.get_queryset().filter(project__id=project, delete=delete).order_by('-update_time')
 
-            if onlyMe is True:
+            if only_me is True:
                 queryset = queryset.filter(creator=request.user)
 
             if search != '':
