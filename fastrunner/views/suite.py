@@ -45,8 +45,8 @@ class TestCaseView(GenericViewSet):
         node = request.query_params["node"]
         project = request.query_params["project"]
         search = request.query_params["search"]
-        search_type = request.query_params["searchType"]
-        case_type = request.query_params["caseType"]
+        search_type = request.query_params.get("searchType", '')
+        case_type = request.query_params.get("caseType", '')
 
         # update_time 降序排列
         queryset = self.get_queryset().filter(project__id=project).order_by('-update_time')
