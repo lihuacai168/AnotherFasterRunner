@@ -71,7 +71,7 @@ class API(BaseTable):
     )
     name = models.CharField("接口名称", null=False, max_length=100, db_index=True)
     body = models.TextField("主体信息", null=False)
-    url = models.CharField("请求地址", null=False, max_length=200, db_index=True)
+    url = models.CharField("请求地址", null=False, max_length=1000, db_index=True)
     method = models.CharField("请求方式", null=False, max_length=10)
     project = models.ForeignKey(Project, on_delete=models.CASCADE, db_constraint=False)
     relation = models.IntegerField("节点id", null=False)
@@ -114,7 +114,7 @@ class CaseStep(BaseTable):
 
     name = models.CharField("用例名称", null=False, max_length=100)
     body = models.TextField("主体信息", null=False)
-    url = models.CharField("请求地址", null=False, max_length=200)
+    url = models.CharField("请求地址", null=False, max_length=1000)
     method = models.CharField("请求方式", null=False, max_length=10)
     case = models.ForeignKey(Case, on_delete=models.CASCADE, db_constraint=False)
     step = models.IntegerField("顺序", null=False)
@@ -211,7 +211,7 @@ class Visit(models.Model):
 
     user = models.CharField(max_length=100, verbose_name='访问url的用户名')
     ip = models.CharField(max_length=20, verbose_name='用户的ip')
-    url = models.CharField(max_length=100, verbose_name='被访问的url')
+    url = models.CharField(max_length=1000, verbose_name='被访问的url')
     request_method = models.CharField(max_length=7, verbose_name='请求方法', choices=METHODS)
     request_body = models.TextField(verbose_name='请求体')
     create_time = models.DateTimeField('创建时间', auto_now_add=True)
