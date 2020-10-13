@@ -199,13 +199,22 @@ class Relation(models.Model):
     type = models.IntegerField("树类型", default=1)
 
 
-[
-    {
-        "name": "testcase",
-        "body": "body",
-        "url": "https://www.baidu.com",
-        "method": "post",
-        "project": "1",
-        "relation": 1
-    }
-]
+class Visit(models.Model):
+    METHODS = Choices(
+        ('GET', "GET"),
+        ('POST', "POST"),
+        ('PUT', "PUT"),
+        ('PATCH', "PATCH"),
+        ('DELETE', "DELETE"),
+        ('OPTION', "OPTION"),
+    )
+
+    user = models.CharField(max_length=100, verbose_name='访问url的用户名')
+    ip = models.CharField(max_length=20, verbose_name='用户的ip')
+    url = models.CharField(max_length=100, verbose_name='被访问的url')
+    request_method = models.CharField(max_length=7, verbose_name='请求方法', choices=METHODS)
+    request_body = models.TextField(verbose_name='请求体')
+    create_time = models.DateTimeField('创建时间', auto_now_add=True)
+
+    class Meta:
+        db_table = 'visit'

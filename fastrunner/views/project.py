@@ -171,7 +171,7 @@ class TreeView(APIView):
     """
     树形结构操作
     """
-    authentication_classes = [OnlyGetAuthenticator, ]
+    # authentication_classes = [OnlyGetAuthenticator, ]
 
     @method_decorator(request_log(level='INFO'))
     def get(self, request, **kwargs):
