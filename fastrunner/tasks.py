@@ -72,8 +72,7 @@ def schedule_debug_suite(*args, **kwargs):
         run_type = 'auto'
         report_type = 3
 
-    report_name = task_name + '_' + datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    save_summary(report_name, summary, project, type=report_type)
+    save_summary(task_name, summary, project, type=report_type)
 
     strategy = kwargs["strategy"]
     if strategy == '始终发送' or (
