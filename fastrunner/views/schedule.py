@@ -7,6 +7,7 @@ from fastrunner import serializers
 from fastrunner.utils import response
 from fastrunner.utils.decorator import request_log
 from fastrunner.utils.task import Task
+from FasterRunner.mycelery import app
 
 
 class ScheduleView(GenericViewSet):
@@ -45,35 +46,6 @@ class ScheduleView(GenericViewSet):
         resp = task.add_task()
         return Response(resp)
 
-    # def update(self,request):
-    #     task = Task(**request.data)
-    #     resp = 1
-
-    #
-    # @method_decorator(request_log(level='INFO'))
-    # def update(self, request):
-    #     """
-    #     编辑项目
-    #     """
-    #
-    #     try:
-    #         project = models.Project.objects.get(id=request.data['id'])
-    #     except (KeyError, ObjectDoesNotExist):
-    #         return Response(response.SYSTEM_ERROR)
-    #
-    #     if request.data['name'] != project.name:
-    #         if models.Project.objects.filter(name=request.data['name']).first():
-    #             return Response(response.PROJECT_EXISTS)
-    #
-    #     # 调用save方法update_time字段才会自动更新
-    #     project.name = request.data['name']
-    #     project.desc = request.data['desc']
-    #     project.save()
-    #
-    #     return Response(response.PROJECT_UPDATE_SUCCESS)
-    #
-    # @method_decorator(request_log(level='INFO'))
-
     @method_decorator(request_log(level='INFO'))
     def update(self, request, **kwargs):
         """更新任务
@@ -92,3 +64,15 @@ class ScheduleView(GenericViewSet):
         task.enabled = False
         task.delete()
         return Response(response.TASK_DEL_SUCCESS)
+
+    @method_decorator(request_log(level='INFO'))
+    def run(self, request, **kwargs):
+        task = models.PeriodicTask.objects.get(id=kwargs["pk"])
+        task_name = 'fastrunner.tasks.schedule_debug_suite'
+        args = eval(task.args)
+        kwargs = eval(task.kwargs)
+        res = app.send_task(name=task_name, args=args, kwargs=kwargs)
+        if res.status == 'SUCCESS':
+            return Response(response.TASK_RUN_SUCCESS)
+        else:
+            return Response(response.TASK_RUN_FAIL)

@@ -255,6 +255,18 @@ TASK_DEL_SUCCESS = {
     "msg": "任务删除成功"
 }
 
+TASK_RUN_SUCCESS = {
+    "code": "0001",
+    "success": True,
+    "msg": "任务运行成功"
+}
+
+TASK_RUN_FAIL = {
+    "code": "0103",
+    "success": False,
+    "msg": "任务运行失败"
+}
+
 PLAN_DEL_SUCCESS = {
     "code": "0003",
     "success": True,
