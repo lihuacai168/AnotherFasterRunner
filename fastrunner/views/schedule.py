@@ -71,8 +71,6 @@ class ScheduleView(GenericViewSet):
         task_name = 'fastrunner.tasks.schedule_debug_suite'
         args = eval(task.args)
         kwargs = eval(task.kwargs)
-        res = app.send_task(name=task_name, args=args, kwargs=kwargs)
-        if res.status == 'SUCCESS':
-            return Response(response.TASK_RUN_SUCCESS)
-        else:
-            return Response(response.TASK_RUN_FAIL)
+        app.send_task(name=task_name, args=args, kwargs=kwargs)
+        return Response(response.TASK_RUN_SUCCESS)
+
