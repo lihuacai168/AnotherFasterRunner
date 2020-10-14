@@ -14,7 +14,8 @@ from threading import Thread
 import requests
 import yaml
 from bs4 import BeautifulSoup
-from httprunner import HttpRunner, logger
+from httprunner import HttpRunner, logger, parser
+from httprunner.exceptions import FunctionNotFound, VariableNotFound
 from requests.cookies import RequestsCookieJar
 from requests_toolbelt import MultipartEncoder
 
@@ -135,6 +136,28 @@ class FileLoader(object):
         return debugtalk_module
 
 
+def parse_validate_and_extract(list_of_dict: list, variables_mapping: dict, functions_mapping):
+    """
+    Args:
+        list_of_dict (list)
+        variables_mapping (dict): variables mapping.
+        functions_mapping (dict): functions mapping.
+
+    Returns:
+        引用传参，直接修改dict的内容，不需要返回
+    """
+    for index, d in enumerate(list_of_dict):
+        try:
+            d = parser.parse_data(d, variables_mapping=variables_mapping, functions_mapping=functions_mapping)
+            for k, v in d.items():
+                v = parser.parse_string_functions(v, variables_mapping=variables_mapping,
+                                                  functions_mapping=functions_mapping)
+                d[k] = v
+            list_of_dict[index] = d
+        except (FunctionNotFound, VariableNotFound):
+            continue
+
+
 def parse_tests(testcases, debugtalk, name=None, config=None, project=None):
     """get test case structure
         testcases: list
@@ -147,6 +170,7 @@ def parse_tests(testcases, debugtalk, name=None, config=None, project=None):
         "def-testcase": {},
         "debugtalk": debugtalk
     }
+
     testset = {
         "config": {
             "name": testcases[-1]["name"],
@@ -174,25 +198,21 @@ def parse_tests(testcases, debugtalk, name=None, config=None, project=None):
     testset["config"].setdefault("variables", []).extend(global_variables_list_of_dict)
     testset["config"]["refs"] = refs
 
-    # for teststep in testcases:
-    #     # handle files
-    #     if "files" in teststep["request"].keys():
-    #         fields = {}
-    #
-    #         if "data" in teststep["request"].keys():
-    #             fields.update(teststep["request"].pop("data"))
-    #
-    #         for key, value in teststep["request"].pop("files").items():
-    #             file_binary = models.FileBinary.objects.get(name=value).body
-    #             # file_path = os.path.join(tempfile.mkdtemp(prefix='File'), value)
-    #             # FileLoader.dump_binary_file(file_path, file_binary)
-    #             fields[key] = (value, file_binary)
-    #
-    #         teststep["request"]["data"] = MultipartEncoder(fields)
-    #         try:
-    #             teststep["request"]["headers"]["Content-Type"] = teststep["request"]["data"].content_type
-    #         except KeyError:
-    #             teststep["request"].setdefault("headers", {"Content-Type": teststep["request"]["data"].content_type})
+    # 配置中的变量和全局变量合并
+    variables_mapping = {}
+    if config:
+        for variables in config['variables']:
+            variables_mapping.update(variables)
+
+    # 驱动代码中的所有函数
+    functions_mapping = debugtalk.get('functions', {})
+
+    # 替换extract,validate中的变量和函数，只对value有效，key无效
+    for testcase in testcases:
+        extract: list = testcase.get('extract', [])
+        validate: list = testcase.get('validate', [])
+        parse_validate_and_extract(extract, variables_mapping, functions_mapping)
+        parse_validate_and_extract(validate, variables_mapping, functions_mapping)
 
     return testset
 
