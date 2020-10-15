@@ -3,6 +3,7 @@ import datetime
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q
 from django.utils.decorators import method_decorator
+from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.viewsets import GenericViewSet
 from fastrunner import models, serializers
@@ -42,34 +43,42 @@ class TestCaseView(GenericViewSet):
             "node": int
         }
         """
-        node = request.query_params["node"]
-        project = request.query_params["project"]
-        search = request.query_params["search"]
-        search_type = request.query_params.get("searchType", '')
-        case_type = request.query_params.get("caseType", '')
-
-        # update_time 降序排列
-        queryset = self.get_queryset().filter(project__id=project).order_by('-update_time')
-
-        if node != '':
-            queryset = queryset.filter(relation=node)
-
-        if case_type != '':
-            queryset = queryset.filter(tag=case_type)
-
-        if search != '':
-            # 用例名称搜索
-            if search_type == '1':
-                queryset = queryset.filter(name__contains=search)
-            # API名称或者API URL搜索
-            elif search_type == '2':
-                case_id = self.case_step_search(search)
-                queryset = queryset.filter(pk__in=case_id)
-
-        pagination_query = self.paginate_queryset(queryset)
-        serializer = self.get_serializer(pagination_query, many=True)
-
-        return self.get_paginated_response(serializer.data)
+        ser = serializers.CaseSearchSerializer(data=request.query_params)
+        if ser.is_valid():
+            node = ser.validated_data.get("node")
+            project = ser.validated_data.get("project")
+            search = ser.validated_data.get("search")
+            search_type = ser.validated_data.get("searchType")
+            case_type = ser.validated_data.get("caseType")
+            only_me = ser.validated_data.get("onlyMe")
+    
+            # update_time 降序排列
+            queryset = self.get_queryset().filter(project__id=project).order_by('-update_time')
+    
+            if only_me is True:
+                queryset = queryset.filter(creator=request.user)
+    
+            if node != '':
+                queryset = queryset.filter(relation=node)
+    
+            if case_type != '':
+                queryset = queryset.filter(tag=case_type)
+    
+            if search != '':
+                # 用例名称搜索
+                if search_type == '1':
+                    queryset = queryset.filter(name__contains=search)
+                # API名称或者API URL搜索
+                elif search_type == '2':
+                    case_id = self.case_step_search(search)
+                    queryset = queryset.filter(pk__in=case_id)
+    
+            pagination_query = self.paginate_queryset(queryset)
+            serializer = self.get_serializer(pagination_query, many=True)
+    
+            return self.get_paginated_response(serializer.data)
+        else:
+            return Response(ser.errors, status=status.HTTP_400_BAD_REQUEST)
 
     @method_decorator(request_log(level='INFO'))
     def copy(self, request, **kwargs):

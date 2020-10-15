@@ -52,6 +52,16 @@ class AssertSerializer(serializers.Serializer):
     onlyMe = serializers.BooleanField(default=False)
 
 
+# 用例反序列化验证器
+class CaseSearchSerializer(serializers.Serializer):
+    node = serializers.IntegerField(min_value=0, default='')
+    project = serializers.IntegerField(required=True, min_value=1)
+    search = serializers.CharField(default='')
+    searchType = serializers.CharField(default='')
+    caseType = serializers.CharField(default='')
+    onlyMe = serializers.BooleanField(default=False)
+
+
 class CaseSerializer(serializers.ModelSerializer):
     """
     用例信息序列化
