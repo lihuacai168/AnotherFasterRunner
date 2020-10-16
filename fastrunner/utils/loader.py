@@ -136,24 +136,46 @@ class FileLoader(object):
         return debugtalk_module
 
 
-def parse_validate_and_extract(list_of_dict: list, variables_mapping: dict, functions_mapping):
+def parse_validate_and_extract(list_of_dict: list, variables_mapping: dict, functions_mapping, api_variables: list):
     """
     Args:
         list_of_dict (list)
         variables_mapping (dict): variables mapping.
         functions_mapping (dict): functions mapping.
-
+        api_variables: (list)
     Returns:
         引用传参，直接修改dict的内容，不需要返回
     """
+
+    # 获取api中所有变量的key
+    api_variables_key = []
+    for variable in api_variables:
+        api_variables_key.extend(list(variable.keys()))
+
     for index, d in enumerate(list_of_dict):
+        is_need_parse = True
+        # extract: d是{'k':'v'}, v类型是str
+        # validate: d是{'equals': ['v1', 'v2']}， v类型是list
+        v = list(d.values())[0]
         try:
-            d = parser.parse_data(d, variables_mapping=variables_mapping, functions_mapping=functions_mapping)
-            for k, v in d.items():
-                v = parser.parse_string_functions(v, variables_mapping=variables_mapping,
-                                                  functions_mapping=functions_mapping)
-                d[k] = v
-            list_of_dict[index] = d
+
+            # validate,extract 的值包含了api variable的key中，不需要替换
+            for key in api_variables_key:
+                if isinstance(v, str):
+                    if key in v:
+                        is_need_parse = False
+                elif isinstance(v, list):
+                    # v[1]需要统一转换成str类型，否则v[1]是int类型就会报错
+                    if key in str(v[1]):
+                        is_need_parse = False
+
+            if is_need_parse is True:
+                d = parser.parse_data(d, variables_mapping=variables_mapping, functions_mapping=functions_mapping)
+                for k, v in d.items():
+                    v = parser.parse_string_functions(v, variables_mapping=variables_mapping,
+                                                      functions_mapping=functions_mapping)
+                    d[k] = v
+                list_of_dict[index] = d
         except (FunctionNotFound, VariableNotFound):
             continue
 
@@ -211,8 +233,9 @@ def parse_tests(testcases, debugtalk, name=None, config=None, project=None):
     for testcase in testcases:
         extract: list = testcase.get('extract', [])
         validate: list = testcase.get('validate', [])
-        parse_validate_and_extract(extract, variables_mapping, functions_mapping)
-        parse_validate_and_extract(validate, variables_mapping, functions_mapping)
+        api_variables: list = testcase.get('variables', [])
+        parse_validate_and_extract(extract, variables_mapping, functions_mapping, api_variables)
+        parse_validate_and_extract(validate, variables_mapping, functions_mapping, api_variables)
 
     return testset
 
