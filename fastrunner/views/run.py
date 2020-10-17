@@ -327,7 +327,8 @@ def run_test(request):
     if config:
         config = eval(models.Config.objects.get(project=project, name=config["name"]).body)
 
-    summary = loader.debug_api(parse_host(host, loader.load_test(body)), project, config=parse_host(host, config))
+    summary = loader.debug_api(parse_host(host, loader.load_test(body)), project, name=body.get('name', None),
+                               config=parse_host(host, config))
 
     return Response(summary)
 
