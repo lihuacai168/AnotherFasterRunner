@@ -4,7 +4,7 @@ import datetime
 
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework.decorators import api_view, authentication_classes
-from fastrunner.utils import loader
+from fastrunner.utils import loader, response
 from fastrunner import tasks
 from rest_framework.response import Response
 from fastrunner.utils.decorator import request_log
@@ -228,6 +228,8 @@ def run_testsuite_pk(request, **kwargs):
     project = request.query_params["project"]
     name = request.query_params["name"]
     host = request.query_params["host"]
+    back_async = request.query_params.get("async", False)
+
 
     test_case = []
     config = None
@@ -244,7 +246,12 @@ def run_testsuite_pk(request, **kwargs):
 
         test_case.append(parse_host(host, body))
 
-    summary = loader.debug_api(test_case, project, name=name, config=parse_host(host, config))
+    if back_async:
+        tasks.async_debug_api.delay(test_case, project, name=name, config=parse_host(host, config))
+        summary = response.TASK_RUN_SUCCESS
+
+    else:
+        summary = loader.debug_api(test_case, project, name=name, config=parse_host(host, config))
 
     return Response(summary)
 
