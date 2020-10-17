@@ -39,6 +39,9 @@ class VisitTimesMiddleware(MiddlewareMixin):
             for k, v in request.GET.items():
                 query_params += f'{k}={v}&'
             url += query_params[:-1]
+        else:
+            query_params = ''
 
-        Visit.objects.create(user=user, url=url, request_method=request.method, request_body=body, ip=ip)
+        Visit.objects.create(user=user, url=url, request_method=request.method, request_body=body, ip=ip,
+                             path=request.path, request_params=query_params[1:-1])
         return response

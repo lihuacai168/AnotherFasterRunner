@@ -209,12 +209,14 @@ class Visit(models.Model):
         ('OPTION', "OPTION"),
     )
 
-    user = models.CharField(max_length=100, verbose_name='访问url的用户名')
-    ip = models.CharField(max_length=20, verbose_name='用户的ip')
-    url = models.CharField(max_length=255, verbose_name='被访问的url')
-    request_method = models.CharField(max_length=7, verbose_name='请求方法', choices=METHODS)
+    user = models.CharField(max_length=100, verbose_name='访问url的用户名', db_index=True)
+    ip = models.CharField(max_length=20, verbose_name='用户的ip', db_index=True)
+    url = models.CharField(max_length=255, verbose_name='被访问的url', db_index=True)
+    path = models.CharField(max_length=100, verbose_name='被访问的接口路径', default='', db_index=True)
+    request_params = models.CharField(max_length=255, verbose_name='请求参数', default='', db_index=True)
+    request_method = models.CharField(max_length=7, verbose_name='请求方法', choices=METHODS, db_index=True)
     request_body = models.TextField(verbose_name='请求体')
-    create_time = models.DateTimeField('创建时间', auto_now_add=True)
+    create_time = models.DateTimeField('创建时间', auto_now_add=True, db_index=True)
 
     class Meta:
         db_table = 'visit'
