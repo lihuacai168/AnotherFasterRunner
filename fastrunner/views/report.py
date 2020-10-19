@@ -1,4 +1,5 @@
 import json
+import re
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import render
@@ -16,10 +17,17 @@ class ReportView(GenericViewSet):
     """
     报告视图
     """
-    authentication_classes = ()
     queryset = models.Report.objects
     serializer_class = serializers.ReportSerializer
     pagination_class = pagination.MyPageNumberPagination
+
+    def get_authenticators(self):
+        # 查看报告详情不需要鉴权
+        # self.request.path = '/api/fastrunner/reports/3053/'
+        pattern = re.compile(r'/api/fastrunner/reports/\d+/')
+        if self.request.method == 'GET' and re.search(pattern, self.request.path) is not None:
+            return []
+        return super().get_authenticators()
 
     @method_decorator(request_log(level='DEBUG'))
     def list(self, request):
