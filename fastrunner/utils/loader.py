@@ -263,7 +263,7 @@ def load_debugtalk(project):
         shutil.rmtree(os.path.dirname(file_path))
 
 
-def debug_suite(suite, project, obj, config=None, save=True):
+def debug_suite(suite, project, obj, config=None, save=True, user=''):
     """debug suite
            suite :list
            pk: int
@@ -299,7 +299,7 @@ def debug_suite(suite, project, obj, config=None, save=True):
         summary = parse_summary(runner.summary)
 
         if save:
-            save_summary("", summary, project, type=1)
+            save_summary(f"批量运行{len(test_sets)}条用例", summary, project, type=1, user=user)
         return summary
 
     except Exception as e:
@@ -309,7 +309,7 @@ def debug_suite(suite, project, obj, config=None, save=True):
         shutil.rmtree(os.path.dirname(debugtalk_path))
 
 
-def debug_api(api, project, name=None, config=None, save=True):
+def debug_api(api, project, name=None, config=None, save=True, user=''):
     """debug api
         api :dict or list
         project: int
@@ -367,7 +367,7 @@ def debug_api(api, project, name=None, config=None, save=True):
         summary = parse_summary(runner.summary)
 
         if save:
-            save_summary(name, summary, project, type=1)
+            save_summary(name, summary, project, type=1, user=user)
         return summary
     except Exception as e:
         raise SyntaxError(str(e))
@@ -450,7 +450,7 @@ def parse_summary(summary):
     return summary
 
 
-def save_summary(name, summary, project, type=2):
+def save_summary(name, summary, project, type=2, user=''):
     """保存报告信息
     """
     if "status" in summary.keys():
@@ -469,6 +469,7 @@ def save_summary(name, summary, project, type=2):
         "type": type,
         "status": summary['success'],
         "summary": json.dumps(summary, ensure_ascii=False),
+        "creator": user
     })
 
     models.ReportDetail.objects.create(summary_detail=summary_detail, report=report)
