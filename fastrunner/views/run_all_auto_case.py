@@ -14,6 +14,7 @@ from FasterRunner.mycelery import app
 from djcelery.models import PeriodicTask
 from fastrunner.views.timer_task import auto_run_testsuite_pk
 
+base_report_url = 'http://192.168.22.19:8000/api/fastrunner/reports'
 
 def run_all_auto_case(request):
     run_type = request.GET.get('run_type')
@@ -28,7 +29,7 @@ def run_all_auto_case(request):
         if report is None:
             models.Report.objects.filter(project_id=project).last()
         # 假设最后一条报告+1是刚刚执行的报告，有可能不准
-        report_url = f'http://192.168.22.19:8000/api/fastrunner/reports/{report.id + 1}/'
+        report_url = f'{base_report_url}/{report.id + 1}/'
 
     task_args_kwargs = query.values('args', 'kwargs')
     for i in task_args_kwargs:
@@ -39,6 +40,18 @@ def run_all_auto_case(request):
 
     return HttpResponse(report_url)
 
+
+def get_report_url(request):
+    """
+    获取项目最后一条部署类型的报告
+    """
+    project = request.GET.get('project')
+    # 默认报告类型是部署type=4
+    report = models.Report.objects.filter(project_id=project, type=4).last()
+    if report is None:
+        models.Report.objects.filter(project_id=project).last()
+    report_url = f'{base_report_url}/{report.id}/'
+    return HttpResponse(report_url)
 
 # def run_all_auto_case(request):
 #     # 运行方式 auto=定时执行 deploy=Jenkins部署执行

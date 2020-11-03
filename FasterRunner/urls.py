@@ -53,6 +53,8 @@ urlpatterns = [
 
     # 执行定时任务
     re_path(r'^run_all_auto_case/$', run_all_auto_case.run_all_auto_case, name='run_all_auto_case'),
+    re_path(r'^get_report_url/$', run_all_auto_case.get_report_url, name='get_report_url'),
+
 
     path('api_rig/<int:rig_id>/', api_rig.APIRigView.as_view({"patch": "update"})),
     path('api_rig/', api_rig.APIRigView.as_view({"post": "add"})),
