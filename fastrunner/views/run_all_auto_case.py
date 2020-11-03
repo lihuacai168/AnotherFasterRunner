@@ -23,17 +23,21 @@ def run_all_auto_case(request):
         enabled=1, task=task_name)
     if project:
         query = query.filter(description=project)
-    task_args_kwargs = query.values(
-        'args', 'kwargs')
+        # 默认报告类型是部署type=4
+        report = models.Report.objects.filter(project_id=project, type=4).last()
+        if report is None:
+            models.Report.objects.filter(project_id=project).last()
+        # 假设最后一条报告+1是刚刚执行的报告，有可能不准
+        report_url = f'http://192.168.22.19:8000/api/fastrunner/reports/{report.id + 1}/'
 
+    task_args_kwargs = query.values('args', 'kwargs')
     for i in task_args_kwargs:
         args = eval(i.get('args'))
         kwargs = eval(i.get('kwargs'))
         kwargs['run_type'] = run_type
         app.send_task(task_name, args=args, kwargs=kwargs)
-    ret = {"run tasks count": len(task_args_kwargs)}
 
-    return HttpResponse(json.dumps(ret))
+    return HttpResponse(report_url)
 
 
 # def run_all_auto_case(request):
