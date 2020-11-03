@@ -17,9 +17,13 @@ from fastrunner.views.timer_task import auto_run_testsuite_pk
 
 def run_all_auto_case(request):
     run_type = request.GET.get('run_type')
+    project = request.GET.get('project')
     task_name = 'fastrunner.tasks.schedule_debug_suite'
-    task_args_kwargs = PeriodicTask.objects.filter(
-        enabled=1, task=task_name).values(
+    query = PeriodicTask.objects.filter(
+        enabled=1, task=task_name)
+    if project:
+        query = query.filter(description=project)
+    task_args_kwargs = query.values(
         'args', 'kwargs')
 
     for i in task_args_kwargs:
