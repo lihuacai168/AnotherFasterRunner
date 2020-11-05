@@ -27,6 +27,8 @@ class VisitTimesMiddleware(MiddlewareMixin):
             user = request.user
 
         ip = request.META.get('HTTP_X_FORWARDED_FOR', request.META.get('REMOTE_ADDR'))
+        # 前端请求头没传project，就默认为0
+        project = request.META.get('HTTP_PROJECT', 0)
 
         url: str = request.path
         # 去除测试报告页字体相关的访问
@@ -43,5 +45,5 @@ class VisitTimesMiddleware(MiddlewareMixin):
             query_params = ''
 
         Visit.objects.create(user=user, url=url, request_method=request.method, request_body=body, ip=ip,
-                             path=request.path, request_params=query_params[1:-1])
+                             path=request.path, request_params=query_params[1:-1], project=project)
         return response

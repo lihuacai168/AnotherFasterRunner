@@ -192,6 +192,7 @@ CORS_ALLOW_HEADERS = (
     'user-agent',
     'x-csrftoken',
     'x-requested-with',
+    'Project'
 )
 MQ_USER = 'admin'
 MQ_PASSWORD = '111111'
