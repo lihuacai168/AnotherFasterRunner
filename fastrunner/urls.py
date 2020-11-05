@@ -18,6 +18,11 @@ from django.urls import path
 from fastrunner.views import project, api, config, schedule, run, suite, report
 
 urlpatterns = [
+    # 访问统计相关接口
+    path('visit/', project.VisitView.as_view({
+        "get": "list",
+    })),
+
     # 项目相关接口地址
     path('project/', project.ProjectView.as_view({
         "get": "list",

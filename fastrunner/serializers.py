@@ -17,6 +17,16 @@ class ProjectSerializer(serializers.ModelSerializer):
         fields = ['id', 'name', 'desc', 'responsible', 'update_time', 'creator', 'updater']
 
 
+class VisitSerializer(serializers.ModelSerializer):
+    """
+    访问统计序列化
+    """
+
+    class Meta:
+        model = models.Visit
+        fields = '__all__'
+
+
 class DebugTalkSerializer(serializers.ModelSerializer):
     """
     驱动代码序列化

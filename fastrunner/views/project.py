@@ -1,4 +1,5 @@
 from django.core.exceptions import ObjectDoesNotExist
+from django.db.models import Count
 from django.utils.decorators import method_decorator
 from rest_framework.views import APIView
 from rest_framework import status
@@ -8,6 +9,7 @@ from FasterRunner import pagination
 from rest_framework.response import Response
 from fastrunner.utils import response
 from fastrunner.utils import prepare
+from fastrunner.utils import day
 from fastrunner.utils.decorator import request_log
 from fastrunner.utils.runner import DebugCode
 from fastrunner.utils.tree import get_tree_max_id
@@ -171,6 +173,7 @@ class TreeView(APIView):
     """
     树形结构操作
     """
+
     # authentication_classes = [OnlyGetAuthenticator, ]
 
     @method_decorator(request_log(level='INFO'))
@@ -226,6 +229,28 @@ class TreeView(APIView):
 
         return Response(response.TREE_UPDATE_SUCCESS)
 
+
+class VisitView(GenericViewSet):
+    serializer_class = serializers.VisitSerializer
+    queryset = models.Visit.objects
+
+    def list(self, request):
+        project = request.query_params.get("project")
+        # 查询当前项目7天内的访问记录
+        # 根据日期分组
+        # 统计每天的条数
+        count_data = self.get_queryset()\
+            .filter(project=project, create_time__range=(day.get_day(-6), day.get_day(1)))\
+            .extra(select={"create_time": "DATE_FORMAT(create_time,'%%m-%%d')"})\
+            .values('create_time')\
+            .annotate(counts=Count('id')).values('create_time', 'counts')
+
+        create_time = []
+        count = []
+        for d in count_data:
+            create_time.append(d['create_time'])
+            count.append(d['counts'])
+        return Response({'create_time': create_time, 'count': count})
 #
 # class FileView(APIView):
 #
