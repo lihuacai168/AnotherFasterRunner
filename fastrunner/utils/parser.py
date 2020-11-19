@@ -217,6 +217,10 @@ class Parse(object):
 
         key = str(type(content).__name__)
 
+        # 黑魔法，为了兼容值是int，但又是$引用变量的情况
+        if key == 'str' and '$int' in content:
+            return var_type['int'], content
+
         if key in ["list", "dict"]:
             content = json.dumps(content, ensure_ascii=False)
         else:
