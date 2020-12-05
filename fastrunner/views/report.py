@@ -38,8 +38,13 @@ class ReportView(GenericViewSet):
         search = request.query_params["search"]
         report_type = request.query_params["reportType"]
         report_status = request.query_params["reportStatus"]
+        only_me = request.query_params["onlyMe"]
 
         queryset = self.get_queryset().filter(project__id=project).order_by('-update_time')
+
+        # 前端传过来是小写的字符串，不是python的True
+        if only_me == 'true':
+            queryset = queryset.filter(creator=request.user)
 
         if search != '':
             queryset = queryset.filter(name__contains=search)
