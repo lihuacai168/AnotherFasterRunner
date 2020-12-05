@@ -133,6 +133,26 @@ class APITemplateView(GenericViewSet):
         return Response(response.API_UPDATE_SUCCESS)
 
     @method_decorator(request_log(level='INFO'))
+    def move(self, request):
+        """
+        批量更新api relation
+        """
+        project: int = request.data.get('project')
+        relation: int = request.data.get('relation')
+        apis: list = request.data.get('api')
+        ids = [api['id'] for api in apis]
+
+        try:
+            models.API.objects.filter(
+                project=project,
+                id__in=ids).update(
+                relation=relation)
+        except ObjectDoesNotExist:
+            return Response(response.API_NOT_FOUND)
+
+        return Response(response.API_UPDATE_SUCCESS)
+
+    @method_decorator(request_log(level='INFO'))
     def copy(self, request, **kwargs):
         """
         pk int: test id

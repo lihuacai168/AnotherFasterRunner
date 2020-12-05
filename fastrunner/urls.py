@@ -74,6 +74,10 @@ urlpatterns = [
         "patch": "add_tag",  # api修改状态
     })),
 
+    path('api/move_api/', api.APITemplateView.as_view({
+        "patch": "move",  # api修改relation
+    })),
+
     path('api/sync/<int:pk>/', api.APITemplateView.as_view({
         "patch": "sync_case",  # api同步用例步骤
     })),
