@@ -3,7 +3,8 @@
 [![LICENSE](https://img.shields.io/github/license/HttpRunner/FasterRunner.svg)](https://github.com/HttpRunner/FasterRunner/blob/master/LICENSE) [![travis-ci](https://travis-ci.org/HttpRunner/FasterRunner.svg?branch=master)](https://travis-ci.org/HttpRunner/FasterRunner) ![pyversions](https://img.shields.io/pypi/pyversions/Django.svg)
 
 
-## Docker部署 
+## Docker部署
+- [安装docker](https://yeasy.gitbook.io/docker_practice/install/centos) 
 ### 1.拉取和运行MySQL
 - 拉取docker mysql镜像 `docker pull docker.io/mysql:5.7 `
 - 运行docker mysql容器
