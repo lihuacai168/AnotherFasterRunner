@@ -78,6 +78,10 @@ urlpatterns = [
         "patch": "move",  # api修改relation
     })),
 
+    path('test/move_case/', suite.TestCaseView.as_view({
+        "patch": "move",  # case修改relation
+    })),
+
     path('api/sync/<int:pk>/', api.APITemplateView.as_view({
         "patch": "sync_case",  # api同步用例步骤
     })),

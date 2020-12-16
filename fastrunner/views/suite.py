@@ -178,6 +178,22 @@ class TestCaseView(GenericViewSet):
         return Response(response.CASE_UPDATE_SUCCESS)
 
     @method_decorator(request_log(level='INFO'))
+    def move(self, request):
+        project: int = request.data.get('project')
+        relation: int = request.data.get('relation')
+        cases: list = request.data.get('case')
+        ids = [case['id'] for case in cases]
+        try:
+            models.Case.objects.filter(
+                project=project,
+                id__in=ids).update(
+                relation=relation)
+        except ObjectDoesNotExist:
+            return Response(response.CASE_NOT_EXISTS)
+
+        return Response(response.CASE_UPDATE_SUCCESS)
+
+    @method_decorator(request_log(level='INFO'))
     def post(self, request):
         """
         新增测试用例集
