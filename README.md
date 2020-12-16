@@ -27,7 +27,7 @@ CREATE USER 'faster'@'%' IDENTIFIED BY 'faster2019';
 ```
 ### 3.创建和授权数据库
 - 创建`db_faster`数据库
-`create database db_faster default charset utf8 collate utf8_general_ci;` 
+`create database db_faster default charset utf7 collate utf8_general_ci;` 
 - 授权给`faster`用户
 ```
 grant all privileges on db_faster.* to 'faster'@'localhost' identified by 'faster2019'; # 本地授权
