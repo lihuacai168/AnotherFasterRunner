@@ -2,6 +2,8 @@
 
 [![LICENSE](https://img.shields.io/github/license/HttpRunner/FasterRunner.svg)](https://github.com/HttpRunner/FasterRunner/blob/master/LICENSE) [![travis-ci](https://travis-ci.org/HttpRunner/FasterRunner.svg?branch=master)](https://travis-ci.org/HttpRunner/FasterRunner) ![pyversions](https://img.shields.io/pypi/pyversions/Django.svg)
 
+## 平台文档
+[点这里~](https://www.yuque.com/lihuacai/sggdx7/cn5ncg)
 
 ## Docker部署
 - [安装docker](https://yeasy.gitbook.io/docker_practice/install/centos) 
