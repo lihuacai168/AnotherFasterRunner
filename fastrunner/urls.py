@@ -137,7 +137,6 @@ urlpatterns = [
     path('run_test/', run.run_test),
     path('run_testsuite_pk/<int:pk>/', run.run_testsuite_pk),
     path('run_suite_tree/', run.run_suite_tree),
-    path('automation_test/', run.automation_test),
 
     # 报告地址
     path('reports/', report.ReportView.as_view({
