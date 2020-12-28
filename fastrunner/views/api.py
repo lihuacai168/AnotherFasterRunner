@@ -44,7 +44,8 @@ class APITemplateView(GenericViewSet):
     @method_decorator(request_log(level='DEBUG'))
     def list(self, request):
         """
-        API列表
+        api-获取api列表
+        
         """
         ser = serializers.AssertSerializer(data=request.query_params)
         if ser.is_valid():
@@ -85,7 +86,8 @@ class APITemplateView(GenericViewSet):
     @method_decorator(request_log(level='INFO'))
     def add(self, request):
         """
-        新增一个接口
+        api-新增一个api
+        
         """
 
         api = Format(request.data)
@@ -111,7 +113,8 @@ class APITemplateView(GenericViewSet):
     @method_decorator(request_log(level='INFO'))
     def update(self, request, **kwargs):
         """
-        更新接口
+        api-更新单个api
+        
         """
         pk = kwargs['pk']
         api = Format(request.data)
@@ -135,7 +138,8 @@ class APITemplateView(GenericViewSet):
     @method_decorator(request_log(level='INFO'))
     def move(self, request):
         """
-        批量更新api relation
+        api-批量更新api的目录
+
         """
         project: int = request.data.get('project')
         relation: int = request.data.get('relation')
@@ -155,10 +159,8 @@ class APITemplateView(GenericViewSet):
     @method_decorator(request_log(level='INFO'))
     def copy(self, request, **kwargs):
         """
-        pk int: test id
-        {
-            name: api name
-        }
+        api-复制api
+
         """
         pk = kwargs['pk']
         name = request.data['name']
@@ -176,11 +178,8 @@ class APITemplateView(GenericViewSet):
     @method_decorator(request_log(level='INFO'))
     def delete(self, request, **kwargs):
         """
-        删除一个接口 pk
-        删除多个
-        [{
-            id:int
-        }]
+        api-删除一个api
+
         """
 
         try:
@@ -200,11 +199,8 @@ class APITemplateView(GenericViewSet):
     @method_decorator(request_log(level='INFO'))
     def add_tag(self, request, **kwargs):
         """
-        更新接口的tag,暂时默认为调试成功
+        api-更新api的tag,暂时默认为调试成功
 
-        [{
-            id:int
-        }]
         """
 
         try:
@@ -220,6 +216,8 @@ class APITemplateView(GenericViewSet):
     @method_decorator(request_log(level='INFO'))
     def sync_case(self, request, **kwargs):
         """
+        api-同步api的到case_step
+
         1.根据api_id查出("name", "body", "url", "method")
         2.根据api_id更新case_step中的("name", "body", "url", "method", "updater")
         3.更新case的update_time, updater
@@ -236,7 +234,8 @@ class APITemplateView(GenericViewSet):
     @method_decorator(request_log(level='INFO'))
     def single(self, request, **kwargs):
         """
-        查询单个api，返回body信息
+        api-获取单个api详情，返回body信息
+
         """
         try:
             api = models.API.objects.get(id=kwargs['pk'])
