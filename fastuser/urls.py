@@ -19,7 +19,8 @@ from fastuser import views
 from fastrunner.views import timer_task
 
 urlpatterns = [
-    path('register/', views.RegisterView.as_view()),
+    # 关闭注册入口，改为django admin创建用户
+    # path('register/', views.RegisterView.as_view()),
     path('login/', views.LoginView.as_view()),
     re_path(r'^auto_run_testsuite_pk/$', timer_task.auto_run_testsuite_pk, name='auto_run_testsuite_pk'),
 ]

@@ -17,7 +17,7 @@ from django.contrib import admin
 from django.conf.urls import url
 from django.urls import path, include, re_path
 
-from fastrunner.views import timer_task, run_all_auto_case, api_rig, api_provide_to_nodejs
+from fastrunner.views import run_all_auto_case
 
 
 from rest_framework import permissions
@@ -48,17 +48,10 @@ urlpatterns = [
     path('api/user/', include('fastuser.urls')),
     path('api/fastrunner/', include('fastrunner.urls')),
 
-    # 已经废弃
-    # re_path(r'^auto_run_testsuite_pk/$', timer_task.auto_run_testsuite_pk, name='auto_run_testsuite_pk'),
-
     # 执行定时任务
     re_path(r'^run_all_auto_case/$', run_all_auto_case.run_all_auto_case, name='run_all_auto_case'),
     re_path(r'^get_report_url/$', run_all_auto_case.get_report_url, name='get_report_url'),
 
-
-    path('api_rig/<int:rig_id>/', api_rig.APIRigView.as_view({"patch": "update"})),
-    path('api_rig/', api_rig.APIRigView.as_view({"post": "add"})),
-    path('api_provide_to_nodejs/', api_provide_to_nodejs.APIRigView.as_view({"get": "list"})),
     # swagger
     url(r'^swagger(?P<format>\.json|\.yaml)$', schema_view.without_ui(cache_timeout=0), name='schema-json'),
     url(r'^swagger/$', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
