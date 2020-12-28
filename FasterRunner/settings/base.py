@@ -147,11 +147,12 @@ JWT_AUTH = {
 AUTH_USER_MODEL = 'fastuser.MyUser'
 
 SWAGGER_SETTINGS = {
+    'DEFAULT_AUTO_SCHEMA_CLASS': 'FasterRunner.swagger.CustomSwaggerAutoSchema',
     # 基础样式
     'SECURITY_DEFINITIONS': {
-        "basic":{
+        "basic": {
             'type': 'basic'
-        }
+        },
     },
     # 如果需要登录才能够查看接口文档, 登录的链接使用restframework自带的.
     # 'LOGIN_URL': 'rest_framework:login',
