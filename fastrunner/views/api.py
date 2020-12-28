@@ -45,7 +45,8 @@ class APITemplateView(GenericViewSet):
     def list(self, request):
         """
         api-获取api列表
-        
+
+        支持多种条件搜索
         """
         ser = serializers.AssertSerializer(data=request.query_params)
         if ser.is_valid():
@@ -87,7 +88,8 @@ class APITemplateView(GenericViewSet):
     def add(self, request):
         """
         api-新增一个api
-        
+
+        前端按照格式组装好，注意body
         """
 
         api = Format(request.data)
@@ -114,7 +116,8 @@ class APITemplateView(GenericViewSet):
     def update(self, request, **kwargs):
         """
         api-更新单个api
-        
+
+        更新单个api的内容
         """
         pk = kwargs['pk']
         api = Format(request.data)
@@ -140,6 +143,7 @@ class APITemplateView(GenericViewSet):
         """
         api-批量更新api的目录
 
+        移动api到指定目录
         """
         project: int = request.data.get('project')
         relation: int = request.data.get('relation')
@@ -161,6 +165,7 @@ class APITemplateView(GenericViewSet):
         """
         api-复制api
 
+        复制一个api
         """
         pk = kwargs['pk']
         name = request.data['name']
@@ -180,6 +185,7 @@ class APITemplateView(GenericViewSet):
         """
         api-删除一个api
 
+        软删除一个api
         """
 
         try:
@@ -201,6 +207,7 @@ class APITemplateView(GenericViewSet):
         """
         api-更新api的tag,暂时默认为调试成功
 
+        更新api的tag类型
         """
 
         try:
@@ -236,6 +243,7 @@ class APITemplateView(GenericViewSet):
         """
         api-获取单个api详情，返回body信息
 
+        获取单个api的详细情况
         """
         try:
             api = models.API.objects.get(id=kwargs['pk'])
