@@ -19,6 +19,9 @@ if find_dotenv():
     DB_NAME = environ.get('FASTER_DB_NAME')
     DB_USER = environ.get('FASTER_DB_USERNAME')
     DB_PASSWORD = environ.get('FASTER_DB_PASSWORD')
+    PLATFORM_NAME = environ.get('PLATFORM_NAME')
+    if PLATFORM_NAME:
+        IM_REPORT_SETTING.update({'platform_name': PLATFORM_NAME})
 
 DATABASES = {
     'default': {
