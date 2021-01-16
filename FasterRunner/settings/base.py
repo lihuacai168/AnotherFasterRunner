@@ -200,6 +200,11 @@ MQ_PASSWORD = '111111'
 HOST = 'localhost'
 DB_NAME = 'faster_db'
 
+IM_REPORT_SETTING = {
+    'base_url': 'http://192.168.22.19',
+    'port': 8000,
+    'report_title': '自动化测试报告'
+}
 
 djcelery.setup_loader()
 CELERY_ENABLE_UTC = True
