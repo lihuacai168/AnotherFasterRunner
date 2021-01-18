@@ -1,6 +1,7 @@
 import datetime
 
 from django.core.exceptions import ObjectDoesNotExist
+from django.db import transaction
 from django.db.models import Q
 from django.utils.decorators import method_decorator
 from rest_framework import status
@@ -226,11 +227,14 @@ class TestCaseView(GenericViewSet):
         body = request.data.pop('body')
 
         request.data['tag'] = self.tag_options[request.data['tag']]
-        case = models.Case.objects.create(**request.data, creator=request.user.username)
-        try:
-            prepare.generate_casestep(body, case, request.user.username)
-        except ObjectDoesNotExist:
-            return Response(response.CONFIG_MISSING)
+        with transaction.atomic():
+            save_point = transaction.savepoint()
+            case = models.Case.objects.create(**request.data, creator=request.user.username)
+            try:
+                prepare.generate_casestep(body, case, request.user.username)
+            except ObjectDoesNotExist:
+                transaction.savepoint_rollback(save_point)
+                return Response(response.CONFIG_MISSING)
         # 多余操作
         # case = models.Case.objects.filter(**request.data).first()
 
@@ -239,7 +243,7 @@ class TestCaseView(GenericViewSet):
         # api_ids: set = prepare.generate_casestep(body, case, request.user.username)
         # apis = models.API.objects.filter(pk__in=api_ids).all()
         # case.apis.add(*apis)
-
+        transaction.savepoint_commit(save_point)
         return Response(response.CASE_ADD_SUCCESS)
 
     @method_decorator(request_log(level='INFO'))
