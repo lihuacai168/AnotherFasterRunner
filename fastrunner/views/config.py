@@ -164,10 +164,21 @@ class ConfigView(GenericViewSet):
 
         try:
             if kwargs.get('pk'):  # 单个删除
-                models.Config.objects.get(id=kwargs['pk']).delete()
+                config_obj = models.Config.objects.get(id=kwargs['pk'])
+                if models.CaseStep.objects.filter(method="config", name=config_obj.name).exists():
+                    return Response(response.CONFIG_IS_USED)
+                config_obj.delete()
             else:
+                delete_item = 0
                 for content in request.data:
-                    models.Config.objects.get(id=content['id']).delete()
+                    config_obj = models.Config.objects.get(id=content['id'])
+                    if models.CaseStep.objects.filter(method="config", name=config_obj.name).exists():
+                        continue
+                    else:
+                        config_obj.delete()
+                        delete_item += 1
+                if delete_item == 0:
+                    return Response(response.CONFIG_IS_USED)
 
         except ObjectDoesNotExist:
             return Response(response.CONFIG_NOT_EXISTS)

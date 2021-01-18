@@ -201,6 +201,12 @@ CONFIG_MISSING = {
     "msg": "缺少配置文件"
 }
 
+CONFIG_IS_USED = {
+    "code": "0104",
+    "success": False,
+    "msg": "配置文件被用例使用中,无法删除"
+}
+
 REPORT_NOT_EXISTS = {
     "code": "0102",
     "success": False,
