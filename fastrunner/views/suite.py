@@ -227,8 +227,10 @@ class TestCaseView(GenericViewSet):
 
         request.data['tag'] = self.tag_options[request.data['tag']]
         case = models.Case.objects.create(**request.data, creator=request.user.username)
-        prepare.generate_casestep(body, case, request.user.username)
-
+        try:
+            prepare.generate_casestep(body, case, request.user.username)
+        except ObjectDoesNotExist:
+            return Response(response.CONFIG_MISSING)
         # 多余操作
         # case = models.Case.objects.filter(**request.data).first()
 

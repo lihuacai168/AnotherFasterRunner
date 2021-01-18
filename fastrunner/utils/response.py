@@ -195,6 +195,12 @@ CONFIG_NOT_EXISTS = {
     "msg": "指定的环境不存在"
 }
 
+CONFIG_MISSING = {
+    "code": "0103",
+    "success": False,
+    "msg": "缺少配置文件"
+}
+
 REPORT_NOT_EXISTS = {
     "code": "0102",
     "success": False,
