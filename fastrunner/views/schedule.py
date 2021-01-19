@@ -57,6 +57,19 @@ class ScheduleView(GenericViewSet):
         resp = task.update_task(kwargs['pk'])
         return Response(resp)
 
+    @method_decorator(request_log(level='INFO'))
+    def patch(self, request, **kwargs):
+        """更新任务的状态
+        :param request:
+        :param kwargs:
+        :return:
+        """
+        # {'pk': 22}
+        task_obj = self.get_queryset().get(pk=kwargs['pk'])
+        task_obj.enabled = request.data['switch']
+        task_obj.save()
+        return Response(response.TASK_UPDATE_SUCCESS)
+
     def delete(self, request, **kwargs):
         """删除任务
         """
