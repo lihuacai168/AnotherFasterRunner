@@ -1,6 +1,9 @@
 import json
-from abc import ABC
+import math
 
+import time
+
+from crontab import CronTab
 from rest_framework import serializers
 from fastrunner import models
 from fastrunner.utils.parser import Parse
@@ -212,6 +215,11 @@ class HostIPSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+def get_cron_next_execute_time(crontab_expr: str):
+    entry = CronTab(crontab_expr)
+    return math.ceil(entry.next(default_utc=False)+time.time())
+
+
 class PeriodicTaskSerializer(serializers.ModelSerializer):
     """
     定时任务信列表序列化
@@ -224,7 +232,10 @@ class PeriodicTaskSerializer(serializers.ModelSerializer):
         fields = ['id', 'name', 'args', 'kwargs', 'enabled', 'date_changed', 'enabled', 'description']
 
     def get_kwargs(self, obj):
-        return json.loads(obj.kwargs)
+        kwargs = json.loads(obj.kwargs)
+        if obj.enabled:
+            kwargs['next_execute_time'] = get_cron_next_execute_time(kwargs['crontab'])
+        return kwargs
 
     def get_args(self, obj):
         case_id_list = json.loads(obj.args)
