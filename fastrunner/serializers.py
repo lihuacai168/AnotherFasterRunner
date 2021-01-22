@@ -1,5 +1,4 @@
 import json
-import math
 
 import time
 
@@ -217,7 +216,7 @@ class HostIPSerializer(serializers.ModelSerializer):
 
 def get_cron_next_execute_time(crontab_expr: str):
     entry = CronTab(crontab_expr)
-    return math.ceil(entry.next(default_utc=False)+time.time())
+    return int(entry.next(default_utc=False)+time.time())
 
 
 class PeriodicTaskSerializer(serializers.ModelSerializer):
