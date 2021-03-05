@@ -1,3 +1,5 @@
+import json
+
 from django.utils.decorators import method_decorator
 from rest_framework.viewsets import GenericViewSet
 from djcelery import models
@@ -42,6 +44,7 @@ class ScheduleView(GenericViewSet):
             project: int
         }
         """
+        request.data.update({"creator": request.user.username})
         task = Task(**request.data)
         resp = task.add_task()
         return Response(resp)
@@ -67,6 +70,9 @@ class ScheduleView(GenericViewSet):
         # {'pk': 22}
         task_obj = self.get_queryset().get(pk=kwargs['pk'])
         task_obj.enabled = request.data['switch']
+        kwargs = json.loads(task_obj.kwargs)
+        kwargs['updater'] = request.user.username
+        task_obj.kwargs = json.dumps(kwargs, ensure_ascii=False)
         task_obj.save()
         return Response(response.TASK_UPDATE_SUCCESS)
 

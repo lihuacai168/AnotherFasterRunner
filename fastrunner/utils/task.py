@@ -21,12 +21,14 @@ class Task(object):
         self.__project = kwargs["project"]
         self.__email = {
             "strategy": kwargs["strategy"],
-            "mail_cc": kwargs["mail_cc"],
-            "receiver": kwargs["receiver"],
+            "mail_cc": kwargs.get("mail_cc"),
+            "receiver": kwargs.get("receiver"),
             "crontab": self.__crontab,
             "project": self.__project,
             "task_name": self.__name,
-            "webhook": kwargs["webhook"]
+            "webhook": kwargs["webhook"],
+            "updater": kwargs.get("updater"),
+            "creator": kwargs.get("creator"),
         }
         self.__crontab_time = None
 
@@ -60,7 +62,8 @@ class Task(object):
 
         if self.__email["strategy"] == '始终发送' or self.__email["strategy"] == '仅失败发送':
             if self.__email["receiver"] == '':
-                return response.TASK_EMAIL_ILLEGAL
+                # return response.TASK_EMAIL_ILLEGAL
+                pass
 
         resp = self.format_crontab()
         if resp["success"]:
