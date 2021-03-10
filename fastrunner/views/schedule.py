@@ -89,7 +89,7 @@ class ScheduleView(GenericViewSet):
         task = models.PeriodicTask.objects.get(id=kwargs["pk"])
         task_name = 'fastrunner.tasks.schedule_debug_suite'
         args = eval(task.args)
-        kwargs = eval(task.kwargs)
+        kwargs = json.loads(task.kwargs)
         app.send_task(name=task_name, args=args, kwargs=kwargs)
         return Response(response.TASK_RUN_SUCCESS)
 
