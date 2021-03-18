@@ -257,6 +257,9 @@ class APITemplateView(GenericViewSet):
             'id': api.id,
             'body': parse.testcase,
             'success': True,
+            'creator': api.creator,
+            'relation': api.relation,
+            'project': api.project.id,
         }
 
         return Response(resp)
