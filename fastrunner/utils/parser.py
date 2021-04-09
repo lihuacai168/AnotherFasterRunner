@@ -139,6 +139,9 @@ class Format(object):
             test["request"]["data"] = self.__data
         if self.__json:
             test["request"]["json"] = self.__json
+        # 兼容一些接口需要传空json
+        if self.__json == {}:
+            test["request"]["json"] = {}
         if self.__files:
             test["request"]["files"] = self.__files
         if self.__variables:
