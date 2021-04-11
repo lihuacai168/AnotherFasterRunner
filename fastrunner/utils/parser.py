@@ -714,7 +714,9 @@ class Yapi:
         category_id_name_mapping: dict = self.get_category_id_name_mapping()
         obj = models.Relation.objects.get(project_id=project_id, type=1)
         eval_tree: list = eval(obj.tree)
-        yapi_catids: list = [yapi_catid for yapi_catid in get_all_ycatid(eval_tree)]
+        yapi_catids: list = [yapi_catid for yapi_catid in get_all_ycatid(eval_tree, [])]
+        if category_id_name_mapping is None:
+            return
         for cat_id, cat_name in category_id_name_mapping.items():
             if cat_id not in yapi_catids:
                 tree_id = get_tree_max_id(eval_tree)
