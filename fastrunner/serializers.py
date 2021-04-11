@@ -16,7 +16,7 @@ class ProjectSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.Project
-        fields = ['id', 'name', 'desc', 'responsible', 'update_time', 'creator', 'updater']
+        fields = ['id', 'name', 'desc', 'responsible', 'update_time', 'creator', 'updater', 'yapi_openapi_token', 'yapi_base_url']
 
 
 class VisitSerializer(serializers.ModelSerializer):

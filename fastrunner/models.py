@@ -19,6 +19,8 @@ class Project(BaseTable):
     name = models.CharField("项目名称", unique=True, null=False, max_length=100)
     desc = models.CharField("简要介绍", max_length=100, null=False)
     responsible = models.CharField("创建人", max_length=20, null=False)
+    yapi_base_url = models.CharField("yapi的openapi url", max_length=100, null=False, default='')
+    yapi_openapi_token = models.CharField("yapi openapi的token", max_length=128, null=False, default='')
 
 
 class Debugtalk(BaseTable):
