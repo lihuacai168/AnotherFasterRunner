@@ -16,6 +16,62 @@ def get_tree_max_id(value, list_id=[]):
     return max(list_id)
 
 
+def get_all_ycatid(value, list_id=[]):
+    """
+    获取所有yapi的分组目录id
+    """
+    if not value:
+        return []  # the first node id
+
+    if isinstance(value, list):
+        for content in value:  # content -> dict
+            yapi_catid = content.get('yapi_catid')
+            if yapi_catid:
+                list_id.append(yapi_catid)
+
+            children = content.get('children')
+            if children:
+                get_all_ycatid(children)
+    return list_id
+
+
+def get_faster_id_by_ycatid(value, yapi_catid):
+    """
+    通过yapi的catid反向查找faster的api分组id
+    """
+
+    if not value:
+        return 0
+
+    if isinstance(value, list):
+        for content in value:  # content -> dict
+            if content.get('yapi_catid') == yapi_catid:
+                return content['id']
+            children = content.get('children')
+            if children:
+                get_faster_id_by_ycatid(children, yapi_catid)
+    return 0
+
+
+def get_tree_ycatid_mapping(value, mapping={}):
+    """
+    获取yapi分组id和faster api分组id的映射关系
+    {'yapi_catid': 'node_id'}
+    """
+    if not value:
+        return {}
+
+    if isinstance(value, list):
+        for content in value:  # content -> dict
+            yapi_catid = content.get('yapi_catid')
+            if yapi_catid:
+                mapping.update({yapi_catid: content.get('id')})
+            children = content.get('children')
+            if children:
+                get_tree_ycatid_mapping(children, mapping)
+    return mapping
+
+
 def get_file_size(size):
     """计算大小
     """

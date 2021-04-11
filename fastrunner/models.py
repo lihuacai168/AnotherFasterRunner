@@ -1,3 +1,4 @@
+from datetime import datetime
 from django.db import models
 
 # Create your models here.
@@ -79,6 +80,15 @@ class API(BaseTable):
     rig_id = models.IntegerField("网关API_id", null=True, db_index=True)
     rig_env = models.IntegerField("网关环境", choices=ENV_TYPE, default=0)
     tag = models.IntegerField("API标签", choices=TAG, default=0)
+    # yapi相关的
+    yapi_catid = models.IntegerField("yapi的分组id", null=True, default=0)
+    yapi_id = models.IntegerField("yapi的id", null=True, default=0)
+    ypai_add_time = models.CharField("yapi创建时间", null=True, default='', max_length=10)
+    ypai_up_time = models.CharField("yapi更新时间", null=True, default='', max_length=10)
+    ypai_username = models.CharField("yapi的原作者", null=True, default='', max_length=30)
+    # resp_sample = models.TextField("接口响应样例", default='{}', null=False)
+
+
 
 
 class Case(BaseTable):

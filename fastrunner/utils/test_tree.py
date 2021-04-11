@@ -7,7 +7,7 @@
 # @Email: lihuacai168@gmail.com
 # @Software: PyCharm
 from unittest import TestCase
-from .tree import get_tree_label
+from .tree import get_tree_label , get_all_ycatid , get_faster_id_by_ycatid , get_tree_ycatid_mapping
 
 
 class Test(TestCase):
@@ -34,3 +34,24 @@ class Test(TestCase):
 
     def test_get_tree_label_second_children(self):
         assert get_tree_label(self.tree, '个人中心') == 323
+
+
+class TestYAPITree(TestCase):
+    tree = [{'id': 1, 'yapi_catid': 100, 'label': '测试分组1',
+             'children': [{'id': 2, 'yapi_catid': 101, 'label': '聚合数据', 'children': []},
+            {'id': 3, 'label': 'eee', 'children': []}]}, {'id': 30, 'yapi_catid': 102, 'label': '222', 'children': []}]
+
+    def test_get_all_ycatid_default(self):
+        assert get_all_ycatid(self.tree) == [100, 101, 102]
+
+    def test_get_all_ycatid_empty(self):
+        assert get_all_ycatid([]) == []
+
+    def test_get_faster_id_by_ycatid_default(self):
+        assert get_faster_id_by_ycatid(self.tree, 102) == 30
+
+    def test_get_faster_id_by_ycatid_not_found(self):
+        assert get_faster_id_by_ycatid(self.tree, 103) == 0
+
+    def test_get_faster_id_by_ycatid_mapping_deleted(self):
+        assert get_tree_ycatid_mapping(self.tree) == {100: 1, 101: 2, 102: 30}

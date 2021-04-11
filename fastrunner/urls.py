@@ -15,7 +15,7 @@ Including another URLconf
 """
 
 from django.urls import path
-from fastrunner.views import project, api, config, schedule, run, suite, report
+from fastrunner.views import project, api, config, schedule, run, suite, report, yapi
 
 urlpatterns = [
     # 访问统计相关接口
@@ -53,6 +53,9 @@ urlpatterns = [
 
     # 二叉树接口地址
     path('tree/<int:pk>/', project.TreeView.as_view()),
+
+    # 导入yapi
+    path('yapi/<int:pk>/', yapi.YAPIView.as_view()),
 
     # 文件上传 修改 删除接口地址
     # path('file/', project.FileView.as_view()),
