@@ -75,6 +75,17 @@ FILE_EXISTS = {
     'success': False,
     'msg': '文件已存在,默认使用已有文件'
 }
+YAPI_ADD_SUCCESS = {
+    'code': '0001',
+    'success': True,
+    'msg': '导入YAPI接口添加成功'
+}
+
+YAPI_ADD_FAILED = {
+    'code': '0103',
+    'success': False,
+    'msg': '导入YAPI接口失败'
+}
 
 API_ADD_SUCCESS = {
     'code': '0001',

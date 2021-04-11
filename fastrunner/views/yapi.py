@@ -9,6 +9,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 
 from fastrunner.utils.parser import Yapi
+from fastrunner.utils import response
 from fastrunner import models
 
 
@@ -34,6 +35,12 @@ class YAPIView(APIView):
         objs = models.API.objects.bulk_create(objs=parsed_apis)
         parsed_apis_count = len(parsed_apis)
         saved_apis_count = len(objs)
-        return Response({"获取api个数": parsed_apis_count,
-                         "实际导入api个数": saved_apis_count,
-                         "失败api个数": parsed_apis_count-saved_apis_count})
+        failed_count = parsed_apis_count - saved_apis_count
+        resp = {"获取api个数": parsed_apis_count,
+                "实际导入api个数": saved_apis_count,
+                "失败api个数": failed_count}
+        if failed_count > 0:
+            resp.update(response.YAPI_ADD_FAILED)
+        else:
+            resp.update(response.YAPI_ADD_SUCCESS)
+        return Response(resp)
