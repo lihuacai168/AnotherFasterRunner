@@ -1,8 +1,17 @@
+import datetime
 import json
 
+import json5
 import time
+
+import requests
+from tornado import ioloop, httpclient
 from enum import Enum
+
+from loguru import logger
+
 from fastrunner import models
+from fastrunner.utils.tree import get_tree_max_id, get_all_ycatid, get_tree_ycatid_mapping
 
 
 class FileType(Enum):
@@ -397,6 +406,20 @@ def format_json(value):
     except BaseException:
         return value
 
+def yapi_properties2json(properties, req_json={}, variables=[], desc={}):
+    for field_name, field_value in properties.items():
+        value_type = field_value['type']
+        if not (value_type == 'array' or value_type == 'object'):
+            req_json[field_name] = f'${field_name}'
+            variables.append({field_name: field_value.get('default', '')})
+            desc[field_name] = field_value['description']
+        if value_type == 'array':
+            pass
+
+
+
+
+    pass
 
 def format_summary_to_ding(msg_type, summary, report_name=None):
     rows_count = summary['stat']['testsRun']
@@ -492,3 +515,356 @@ def format_summary_to_ding(msg_type, summary, report_name=None):
                       fail_detail)
 
     return (msg_markdown, fail_count) if msg_markdown else (msg, fail_count)
+
+
+# 特殊字段conditions
+def set_customized_variable(api_info_template, items):
+    if items['type'] == 'object':
+        properties: dict = items['properties']
+        attr_name: dict = properties['attributeName']
+        attribute_name_enum: list = attr_name.get('enum', [''])
+        if len(attribute_name_enum) == 0:
+            attribute_name_enum = ['']
+        target_value: list = [f'${value}' for value in attribute_name_enum]
+        # 查询条件字段默认模板
+        api_info_template['request']['json']['conditions'] = {
+            'attributeName': f'${attribute_name_enum[0]}',
+            "rangeType": "$rangeType",
+            "targetValue": target_value
+        }
+        for attr in attribute_name_enum:
+            api_info_template['variables']['variables'].append({attr: ''})
+            api_info_template['variables']['desc'][attr] = attr_name.get('description', '')
+
+        # 查询条件比较类型
+        range_type: dict = properties['rangeType']
+        range_type_enum: list = range_type.get('enum', [''])
+        api_info_template['variables']['variables'].append({'rangeType': range_type_enum[0]})
+        api_info_template['variables']['desc']['rangeType'] = f'条件匹配方式: {",".join(range_type_enum)}'
+
+        # 默认排序
+        api_info_template['request']['json']['orderBy'] = [
+            {
+                "attributeName": f'${attribute_name_enum[0]}',
+                "rankType": "DESC"
+            }
+        ]
+
+
+class Yapi:
+    def __init__(
+            self,
+            yapi_base_url: str,
+            token: str,
+            faster_project_id: int):
+        self.__yapi_base_url = yapi_base_url
+        self.__token = token
+        self.fast_project_id = faster_project_id
+        self.api_info: list = []
+        self.api_ids: list = []
+        self.category_info: list = []
+
+    def get_category_id_name_mapping(self):
+        """
+        获取yapi的分组信息
+        """
+
+        url = self.__yapi_base_url + '/api/interface/list_menu'
+        try:
+            res = requests.get(url, params={'token': self.__token}).json()
+            if res['errcode'] == 0:
+                """
+                {
+            "errcode": 0,
+            "errmsg": "成功！",
+            "data": [
+                {
+                "_id": 8409,
+                "name": "布行小程序",
+                "project_id": 395,
+                "desc": 'null',
+                "add_time": 1595317970,
+                "up_time": 1595317970,
+                "list": [
+                    {
+                        "edit_uid": 0,
+                        "status": "undone",
+                        "index": 0,
+                        "tag": [],
+                        "_id": 48205,
+                        "title": "查询用户布行信息",
+                        "catid": 8409,
+                        "path": "/mes/bh/user/listMyFabricStore",
+                        "method": "POST",
+                        "project_id": 395,
+                        "uid": 246,
+                        "add_time": 1595317919,
+                        "up_time": 1608537377
+                        }]
+                        }
+                    ]
+                }
+                """
+                # {'category_id': 'category_name'}
+                category_id_name_mapping = {}
+                for category_info in res['data']:
+                    # 排除为空的分组
+                    if category_info.get('list'):
+                        category_name = category_info.get('name')
+                        category_id = category_info.get('_id')
+                        category_id_name_mapping[category_id] = category_name
+                return category_id_name_mapping
+        except Exception as e:
+            logger.error(f"获取yapi的目录失败: {e}")
+
+    def get_api_ids(self):
+        """
+        获取yapi的api_ids
+        """
+        url = self.__yapi_base_url + '/api/interface/list'
+        try:
+            res = requests.get(
+                url,
+                params={
+                    'token': self.__token,
+                    'page': 1,
+                    'limit': 100000}).json()
+            if res['errcode'] == 0:
+                self.api_ids = [api['_id'] for api in res['data']['list']]
+        except Exception as e:
+            logger.error(f"获取api id的目录失败: {e}")
+
+    def get_api_info(self):
+        """
+        获取yapi的所有api的详细信息
+        """
+
+        api_info = []
+        token = self.__token
+
+        i = 0
+        url = self.__yapi_base_url + '/api/interface/get'
+        # yapi单个api的详情
+        """
+        {'query_path': {'path': '/mes/common/customer/retreive',
+        'params': []},
+        'edit_uid': 0,
+        'status': 'undone',
+        'type': 'static',
+        'req_body_is_json_schema': False,
+        'res_body_is_json_schema': True,
+        'api_opened': False, 'index': 0, 'tag': [],
+        '_id': 8850,
+        'method': 'POST',
+        'catid': 948,
+        'title': '查询客户详情',
+        'path': '/mes/common/customer/retreive',
+        'project_id': 395,
+        'res_body_type': 'json',
+        'desc': '', 'markdown': '', 'req_body_other': '',
+        'req_body_type': 'raw',
+        'res_body': '{"$schema":"http://json-schema.org/draft-04/schema#","type":"object","properties":{"result":{"type":"object","properties":{"customerNo":{"type":"string"},"factoryNo":{"type":"string"},"fullName":{"type":"string"},"abbrName":{"type":"string"},"province":{"type":"string"},"city":{"type":"string"},"area":{"type":"string"},"address":{"type":"string"},"contactName":{"type":"string"},"contactMobile":{"type":"string"},"description":{"type":"string"},"createTime":{"type":"string"},"createUser":{"type":"string"},"createSystem":{"type":"string"}}},"successful":{"type":"boolean"}}}',
+        'uid': 36,
+        'add_time': 1560820025,
+        'up_time': 1560820411,
+        'req_body_form': [], 'req_params': [],
+        'req_headers': [{'required': '1', '_id': '5d083abb0bdee900010a98b3', 'value': 'application/x-www-form-urlencoded', 'name': 'Content-Type'}, {'required': '1', '_id': '5d083abb0bdee900010a98b2', 'desc': '', 'example': '', 'value': '88F13DF0B2AA4E1188B38E1A5E909AF1', 'name': 'clientId'}, {'required': '1', '_id': '5d083abb0bdee900010a98b1', 'desc': '', 'example': '', 'value': 'AF4649FFA4674ADB873F0C92E7B00227', 'name': 'accessToken'}, {'required': '1', '_id': '5d083abb0bdee900010a98b0', 'desc': '', 'example': '', 'value': 'V2', 'name': 'authen-type'}, {'required': '1', '_id': '5d083abb0bdee900010a98af', 'desc': '', 'example': '', 'value': '74BDB6DA54524D8BAE9C34C04A476019', 'name': 'userId'}],
+        'req_query': [{'required': '1', '_id': '5d083abb0bdee900010a98ae', 'desc': '客户编号', 'name': 'customerNo'}], '__v': 0, 'username': 'liucanwen'}
+        """
+        api_info = []
+        err_info = set()
+
+        def handle_request(response):
+            try:
+                res = json.loads(response.body, encoding='utf-8')
+                api_info.append(res['data'])
+            except Exception as e:
+                err_info.add(e)
+            nonlocal i
+            i -= 1
+            if i <= 0:
+                ioloop.IOLoop.instance().stop()
+
+        http_client = httpclient.AsyncHTTPClient()
+        for api_id in self.api_ids:
+            i += 1
+            http_client.fetch(
+                f'{url}?token={token}&id={api_id}',
+                handle_request,
+                method='GET')
+        ioloop.IOLoop.instance().start()
+        self.api_info = api_info
+        if len(err_info) > 0:
+            for err in err_info:
+                logger.error(f'err message: {err}')
+
+    def get_variable_default_value(self, variable_type, variable_value):
+        if isinstance(variable_value, dict) is False:
+            return ''
+        variable_type = variable_type.lower()
+        if variable_type in ('integer', 'number', 'bigdecimal'):
+            return variable_value.get('default', 0)
+        elif variable_type == "date":
+            return datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        elif variable_type == "string":
+            return ""
+        return ""
+
+    def create_relation_id(self, project_id):
+        category_id_name_mapping: dict = self.get_category_id_name_mapping()
+        obj = models.Relation.objects.get(project_id=project_id, type=1)
+        eval_tree: list = eval(obj.tree)
+        yapi_catids: list = [yapi_catid for yapi_catid in get_all_ycatid(eval_tree)]
+        for cat_id, cat_name in category_id_name_mapping.items():
+            if cat_id not in yapi_catids:
+                tree_id = get_tree_max_id(eval_tree)
+                base_tree_node = {
+                    "id": tree_id+1,
+                    "yapi_catid": cat_id,
+                    "label": cat_name,
+                    "children": []
+                }
+                eval_tree.append(base_tree_node)
+        obj.tree = json.dumps(eval_tree, ensure_ascii=False)
+        obj.save()
+
+    def yapi2faster(self, source_api_info):
+        """
+        yapi单个api转成faster格式
+        """
+        api_info_template = {"header": {
+            "header": {"accessToken": "$accessToken"},
+            "desc": {"accessToken": "登录token"}
+        }, "request": {
+            "form": {
+                "data": {},
+                "desc": {}
+            },
+            "json": {},
+            "params": {
+                "params": {},
+                "desc": {}
+            },
+            "files": {
+                "files": {},
+                "desc": {}
+            }
+        }, "extract": {
+            "extract": [],
+            "desc": {}
+        }, "validate": {
+            "validate": []
+        }, "variables": {
+            "variables": [],
+            "desc": {}
+        }, "hooks": {
+            "setup_hooks": [],
+            "teardown_hooks": []
+        }, "url": "", "method": "", "name": "", "times": 1, "nodeId": 0, "project": self.fast_project_id,
+        }
+
+
+        api_info_template['name'] = source_api_info['title']
+        api_info_template['url'] = source_api_info['path']
+        api_info_template['method'] = source_api_info['method']
+
+        # yapi的分组id
+        api_info_template['yapi_catid'] = source_api_info['catid']
+        api_info_template['yapi_id'] = source_api_info['_id']
+        # 十位时间戳
+        api_info_template['ypai_add_time'] = source_api_info.get("add_time", "")
+        api_info_template['ypai_up_time'] = source_api_info.get("up_time", "")
+        # yapi原作者名
+        api_info_template['ypai_username'] = source_api_info.get("username", "")
+
+        req_body_type = source_api_info.get('req_body_type')
+        req_body_other = source_api_info.get('req_body_other', '')
+        if req_body_type == 'json' and req_body_other != '':
+            try:
+                req_body = json.loads(req_body_other, encoding='utf8')
+            except json.decoder.JSONDecodeError:
+                # 解析带注释的json
+                req_body = json5.loads(req_body_other, encoding='utf8')
+            except Exception as e:
+                logger.error(f'yapi: {source_api_info["_id"]}, req_body json loads failed: {source_api_info.get("req_body_other", e)}')
+            else:
+                # TODO: 递归遍历properties所有节点
+                if isinstance(req_body, dict):
+                    req_body_properties = req_body.get('properties')
+                    if isinstance(req_body_properties, dict):
+                        for field_name, field_value in req_body_properties.items():
+                            field_type = field_value['type']
+                            if not (field_type == 'array' or field_type == 'object'):
+                                self.set_ordinary_variable(api_info_template, field_name, field_type,
+                                                           field_value)
+                            if field_type == 'array':
+                                items: dict = field_value['items']
+
+                                # 特殊字段处理，通用的查询条件
+                                if field_name == 'conditions':
+                                    set_customized_variable(api_info_template, items)
+                                else:
+                                    if items['type'] != 'array' and items['type'] != 'object':
+                                        self.set_ordinary_variable(api_info_template, field_name, field_type,
+                                                                   field_value)
+                            if field_type == 'object':
+                                properties: dict = field_value.get('properties')
+                                if properties and isinstance(properties, dict):
+                                    for property_name, property_value in properties.items():
+                                        field_type = property_value['type']
+                                        if not (field_type == 'array' or field_type == 'object'):
+                                            self.set_ordinary_variable(api_info_template, property_name, field_type,
+                                                                       property_value)
+
+        req_query: list = source_api_info.get('req_query', [])
+        if req_query:
+            for param in req_query:
+                param_name = param['name']
+                param_desc = param.get('desc', '')
+                api_info_template['request']['params']['params'][param_name] = f"${param_name}"
+                api_info_template['request']['params']['desc'][param_name] = param_desc
+                api_info_template['variables']['variables'].append({param_name: ''})
+                api_info_template['variables']['desc'][param_name] = param_desc
+
+        return api_info_template
+
+    def set_ordinary_variable(self, api_info_template, field_name, field_type, field_value):
+        api_info_template['request']['json'][field_name] = f'${field_name}'
+        api_info_template['variables']['variables'].append(
+            {field_name: self.get_variable_default_value(field_type, field_value)})
+        api_info_template['variables']['desc'][field_name] = field_value.get(
+            'description', '')
+
+    def get_parsed_apis(self):
+        """
+        批量创建faster的api
+        """
+
+        apis = [self.yapi2faster(api) for api in self.api_info]
+        porj = models.Project.objects.get(id=self.fast_project_id)
+        obj = models.Relation.objects.get(project_id=self.fast_project_id, type=1)
+        eval_tree: list = eval(obj.tree)
+        tree_ycatid_mapping = get_tree_ycatid_mapping(eval_tree)
+        parsed_api = []
+        for api in apis:
+            format_api = Format(api)
+            format_api.parse()
+            yapi_catid: int = api['yapi_catid']
+            api_body = {
+                'name': format_api.name,
+                'body': format_api.testcase,
+                'url': format_api.url,
+                'method': format_api.method,
+                'project': porj,
+                'relation': tree_ycatid_mapping.get(yapi_catid, 0),
+                # 直接从yapi原来的api中获取
+                'yapi_catid': yapi_catid,
+                'yapi_id': api['yapi_id'],
+                'ypai_add_time': api['ypai_add_time'],
+                'ypai_up_time': api['ypai_up_time'],
+                'ypai_username': api['ypai_username'],
+                # 默认为yapi用户
+                'creator': 'yapi'
+            }
+            parsed_api.append(models.API(**api_body))
+        return parsed_api
