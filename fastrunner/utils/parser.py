@@ -694,6 +694,7 @@ class Yapi:
             http_client.fetch(
                 f'{url}?token={token}&id={api_id}',
                 handle_request,
+                request_timeout=3,
                 method='GET')
         ioloop.IOLoop.instance().start()
         self.api_info = api_info
@@ -873,3 +874,40 @@ class Yapi:
             }
             parsed_api.append(models.API(**api_body))
         return parsed_api
+
+
+    def merge_api(self, parsed_apis, imported_apis):
+        """
+        合并从yapi获取的api到已经导入测试平台的api
+        两种情况：
+        1、parsed_api.yapi_id不存在测试平台
+        2、yapi的id已经存在测试平台，新获取的parsed_api.ypai_up_time > imported_api.ypai_up_time
+        """
+        imported_apis_mapping = {api.yapi_id: api.ypai_up_time for api in imported_apis}
+        imported_apis_index = {api.yapi_id: index for index, api in enumerate(imported_apis)}
+
+        new_apis = []
+        update_apis = []
+        imported_apis_ids = set(imported_apis_mapping.keys())
+        for api in parsed_apis:
+            yapi_id = api.yapi_id
+            # 情况1
+            if yapi_id not in imported_apis_ids:
+                new_apis.append(api)
+            else:
+                # 情况2
+                imported_ypai_up_time = imported_apis_mapping[yapi_id]
+                if api.ypai_up_time > int(imported_ypai_up_time):
+                    index = imported_apis_index[yapi_id]
+                    imported_api = imported_apis[index]
+                    imported_api.method = api.method
+                    imported_api.name = api.name
+                    imported_api.url = api.url
+                    imported_api.body = api.body
+                    imported_api.ypai_up_time = api.ypai_up_time
+
+                    update_apis.append(imported_api)
+
+        return update_apis, new_apis
+
+
