@@ -370,6 +370,7 @@ def debug_api(api, project, name=None, config=None, save=True, user=''):
             save_summary(name, summary, project, type=1, user=user)
         return summary
     except Exception as e:
+        logger.error(f"debug_api error: {e}")
         raise SyntaxError(str(e))
     finally:
         os.chdir(BASE_DIR)
