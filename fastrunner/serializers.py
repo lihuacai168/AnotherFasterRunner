@@ -13,10 +13,18 @@ class ProjectSerializer(serializers.ModelSerializer):
     """
     项目信息序列化
     """
+    yapi_openapi_token = serializers.SerializerMethodField()
 
     class Meta:
         model = models.Project
         fields = ['id', 'name', 'desc', 'responsible', 'update_time', 'creator', 'updater', 'yapi_openapi_token', 'yapi_base_url']
+
+    def get_yapi_openapi_token(self, obj):
+        token = obj.yapi_openapi_token
+        if len(token) > 15:
+            return token[:5] + '*'*5 + token[-5:]
+        else:
+            return token
 
 
 class VisitSerializer(serializers.ModelSerializer):
