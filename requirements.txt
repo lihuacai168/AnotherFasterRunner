@@ -55,3 +55,4 @@ uWSGI==2.0.18
 django_mysql
 json5==0.9.5
 crontab~=0.22.9
+django_bulk_update==2.2.0
