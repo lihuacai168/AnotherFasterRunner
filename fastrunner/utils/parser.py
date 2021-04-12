@@ -694,7 +694,6 @@ class Yapi:
             http_client.fetch(
                 f'{url}?token={token}&id={api_id}',
                 handle_request,
-                request_timeout=3,
                 method='GET')
         ioloop.IOLoop.instance().start()
         self.api_info = api_info
