@@ -565,16 +565,84 @@ class Yapi:
         self.fast_project_id = faster_project_id
         self.api_info: list = []
         self.api_ids: list = []
-        self.category_info: list = []
+        # self.category_info: list = []
+        # api基础信息，不包含请求报文
+        self.api_list_url = self.__yapi_base_url + '/api/interface/list'
+        # api详情，包含详细的请求报文
+        self.api_detail_url = self.__yapi_base_url + '/api/interface/get'
+        # api所有分组目录, 也包含了api的基础信息
+        self.category_info_url = self.__yapi_base_url + '/api/interface/list_menu'
+
+    def get_category_info(self):
+        try:
+            res = requests.get(self.category_info_url, params={'token': self.__token}).json()
+        except Exception as e:
+            logger.error(f"获取yapi的目录失败: {e}")
+        finally:
+            # {
+            #     "errcode": 0 ,
+            #     "errmsg": "成功！" ,
+            #     "data": [
+            #         {
+            #             "index": 0 ,
+            #             "_id": 3945 ,
+            #             "name": "机台区域管理" ,
+            #             "project_id": 458 ,
+            #             "desc": "" ,
+            #             "uid": 950 ,
+            #             "add_time": 1588490260 ,
+            #             "up_time": 1588490260 ,
+            #             "__v": 0 ,
+            #             "list": [
+            #                 {
+            #                     "edit_uid": 0 ,
+            #                     "status": "done" ,
+            #                     "index": 0 ,
+            #                     "tag": [] ,
+            #                     "_id": 31573 ,
+            #                     "method": "GET" ,
+            #                     "catid": 3945 ,
+            #                     "title": "查询列表" ,
+            #                     "path": "/woven/base/equipmentArea/query" ,
+            #                     "project_id": 458 ,
+            #                     "uid": 950 ,
+            #                     "add_time": 1588490282 ,
+            #                     "up_time": 1588490541
+            #                 }
+            #             ]
+            #         }
+            #     ]
+            # }
+            if res['errcode'] == 0:
+                return res
+            else:
+                return {
+                    "errcode": 1,
+                    "errmsg": str(e),
+                    "data": []
+                }
+
+    def get_api_uptime_mapping(self):
+        """
+        yapi所有api的更新时间映射关系, {api_id: api_up_time}
+        """
+        category_info_list = self.get_category_info()
+        mapping = {}
+        for category_info in category_info_list['data']:
+            category_detail = category_info.get('list', [])
+            for category in category_detail:
+                api_id = category['_id']
+                up_time = category['up_time']
+                mapping[api_id] = up_time
+        return mapping
 
     def get_category_id_name_mapping(self):
         """
-        获取yapi的分组信息
+        获取yapi的分组信息映射关系, {category_id: category_name}
         """
 
-        url = self.__yapi_base_url + '/api/interface/list_menu'
         try:
-            res = requests.get(url, params={'token': self.__token}).json()
+            res = self.get_category_info()
             if res['errcode'] == 0:
                 """
                 {
@@ -620,24 +688,53 @@ class Yapi:
         except Exception as e:
             logger.error(f"获取yapi的目录失败: {e}")
 
-    def get_api_ids(self):
+    def get_api_info_list(self):
         """
-        获取yapi的api_ids
+        获取接口列表数据
         """
-        url = self.__yapi_base_url + '/api/interface/list'
         try:
             res = requests.get(
-                url,
+                self.api_list_url,
                 params={
                     'token': self.__token,
                     'page': 1,
                     'limit': 100000}).json()
             if res['errcode'] == 0:
-                self.api_ids = [api['_id'] for api in res['data']['list']]
+                """
+                {
+                    "errcode": 0,
+                    "errmsg": "成功！",
+                    "data": [
+                                'list': [
+                                    {
+                                         "_id": 4444,
+                                         "project_id": 299,
+                                         "catid": 1376,
+                                         "title": "/api/group/del",
+                                         "path": "/api/group/del",
+                                         "method": "POST",
+                                         "uid": 11,
+                                         "add_time": 1511431246,
+                                         "up_time": 1511751531,
+                                         "status": "undone",
+                                         "edit_uid": 0
+                                    }
+                                ]
+                            ]
+                }
+                """
+                return res
         except Exception as e:
-            logger.error(f"获取api id的目录失败: {e}")
+            logger.error(f"获取api list失败: {e}")
 
-    def get_api_info(self):
+    def get_api_ids(self):
+        """
+        获取yapi的api_ids
+        """
+        api_list = self.get_api_info_list()
+        return [api['_id'] for api in api_list['data']['list']]
+
+    def get_batch_api_detail(self, api_ids):
         """
         获取yapi的所有api的详细信息
         """
@@ -646,7 +743,7 @@ class Yapi:
         token = self.__token
 
         i = 0
-        url = self.__yapi_base_url + '/api/interface/get'
+
         # yapi单个api的详情
         """
         {'query_path': {'path': '/mes/common/customer/retreive',
@@ -689,17 +786,17 @@ class Yapi:
                 ioloop.IOLoop.instance().stop()
 
         http_client = httpclient.AsyncHTTPClient()
-        for api_id in self.api_ids:
+        for api_id in api_ids:
             i += 1
             http_client.fetch(
-                f'{url}?token={token}&id={api_id}',
+                f'{self.api_detail_url}?token={token}&id={api_id}',
                 handle_request,
                 method='GET')
         ioloop.IOLoop.instance().start()
-        self.api_info = api_info
         if len(err_info) > 0:
             for err in err_info:
                 logger.error(f'err message: {err}')
+        return api_info
 
     def get_variable_default_value(self, variable_type, variable_value):
         if isinstance(variable_value, dict) is False:
@@ -840,13 +937,13 @@ class Yapi:
         api_info_template['variables']['desc'][field_name] = field_value.get(
             'description', '')
 
-    def get_parsed_apis(self):
+    def get_parsed_apis(self, api_info):
         """
         批量创建faster的api
         """
 
-        apis = [self.yapi2faster(api) for api in self.api_info]
-        porj = models.Project.objects.get(id=self.fast_project_id)
+        apis = [self.yapi2faster(api) for api in api_info]
+        proj = models.Project.objects.get(id=self.fast_project_id)
         obj = models.Relation.objects.get(project_id=self.fast_project_id, type=1)
         eval_tree: list = eval(obj.tree)
         tree_ycatid_mapping = get_tree_ycatid_mapping(eval_tree)
@@ -860,7 +957,7 @@ class Yapi:
                 'body': format_api.testcase,
                 'url': format_api.url,
                 'method': format_api.method,
-                'project': porj,
+                'project': proj,
                 'relation': tree_ycatid_mapping.get(yapi_catid, 0),
                 # 直接从yapi原来的api中获取
                 'yapi_catid': yapi_catid,
@@ -909,4 +1006,26 @@ class Yapi:
 
         return update_apis, new_apis
 
+    def get_create_or_update_apis(self, imported_apis_mapping):
+        """
+        返回需要新增和更新的api_id
+        imported_apis_mapping: {yapi_id: ypai_up_time}
+        新增：
+            yapi_id不存在测试平台imported_apis_mapping中
+        更新：
+            yapi_id存在测试平台imported_apis_mapping, 且up_time大于测试平台的
+        """
+        api_uptime_mapping: dict = self.get_api_uptime_mapping()
 
+        create_ids = []
+        update_ids = []
+        for yapi_id, yapi_up_time in api_uptime_mapping.items():
+            imported_ypai_up_time = imported_apis_mapping.get(yapi_id)
+            if not imported_ypai_up_time:
+                # 新增
+                create_ids.append(yapi_id)
+            elif yapi_up_time > int(imported_ypai_up_time):
+                # 更新
+                update_ids.append(yapi_id)
+
+        return create_ids, update_ids

@@ -87,6 +87,12 @@ YAPI_ADD_FAILED = {
     'msg': '导入YAPI接口失败'
 }
 
+YAPI_NOT_NEED_CREATE_OR_UPDATE = {
+    'code': '0002',
+    'success': True,
+    'msg': '没有需要新增和更新的接口'
+}
+
 API_ADD_SUCCESS = {
     'code': '0001',
     'success': True,

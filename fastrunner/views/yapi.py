@@ -23,33 +23,33 @@ class YAPIView(APIView):
         token = obj.yapi_openapi_token
         yapi_base_url = obj.yapi_base_url
         yapi = Yapi(yapi_base_url=yapi_base_url, token=token, faster_project_id=faster_project_id)
-
+        imported_apis = models.API.objects.filter(project_id=faster_project_id, creator='yapi')
+        imported_apis_mapping = {api.yapi_id: api.ypai_up_time for api in imported_apis}
+        create_ids, update_ids = yapi.get_create_or_update_apis(imported_apis_mapping)
         try:
             # 获取yapi的分组，然后更新api tree
             yapi.create_relation_id(yapi.fast_project_id)
 
-            # 获取yapi所有的api的id
-            yapi.get_api_ids()
-
             # 通过id获取所有api的详情
-            yapi.get_api_info()
+            create_ids.extend(update_ids)
+            if len(create_ids) == 0:
+                return Response(response.YAPI_NOT_NEED_CREATE_OR_UPDATE)
+            api_info = yapi.get_batch_api_detail(create_ids)
         except Exception as e:
             logger.error(f'导入yapi失败： {e}')
             return Response(response.YAPI_ADD_FAILED)
 
         # 把yapi解析成符合faster的api格式
-        parsed_apis: list = yapi.get_parsed_apis()
-        imported_apis = models.API.objects.filter(project_id=faster_project_id, creator='yapi')
+        parsed_apis: list = yapi.get_parsed_apis(api_info)
         update_apis, new_apis = yapi.merge_api(parsed_apis, imported_apis)
         created_objs = models.API.objects.bulk_create(objs=new_apis)
         bulk_update(update_apis)
 
-        parsed_apis_count = len(parsed_apis)
         created_apis_count = len(created_objs)
         updated_apis_count = len(update_apis)
-        resp = {"获取api个数": parsed_apis_count,
-                "新增导入api个数": created_apis_count,
-                "更新api个数": updated_apis_count,
+        resp = {
+                "createdCount": created_apis_count,
+                "updatedCount": updated_apis_count,
         }
         resp.update(response.YAPI_ADD_SUCCESS)
         return Response(resp)
