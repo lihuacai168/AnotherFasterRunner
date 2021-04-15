@@ -120,3 +120,11 @@ class LoginView(APIView):
         response.LOGIN_SUCCESS["user"] = username
         response.LOGIN_SUCCESS["is_superuser"] = user.is_superuser
         return Response(response.LOGIN_SUCCESS)
+
+
+class UserView(APIView):
+
+    def get(self, request):
+        users = User.objects.filter(is_active=1)
+        ser = serializers.UserModelSerializer(instance=users, many=True)
+        return Response(ser.data)

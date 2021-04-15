@@ -1,5 +1,7 @@
 from rest_framework import serializers
 from fastuser import models
+from django.contrib.auth import get_user_model
+User = get_user_model()
 
 
 class UserInfoSerializer(serializers.Serializer):
@@ -32,3 +34,14 @@ class UserInfoSerializer(serializers.Serializer):
 class UserLoginSerialzer(serializers.Serializer):
     username = serializers.CharField(required=True)
     password = serializers.CharField(required=True)
+
+
+class UserModelSerializer(serializers.ModelSerializer):
+    """
+    访问统计序列化
+    """
+
+    class Meta:
+        model = User
+        fields = ['id', 'is_superuser', 'username', 'is_staff', 'is_active', 'groups']
+        depth = 1
