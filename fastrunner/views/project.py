@@ -75,6 +75,7 @@ class ProjectView(GenericViewSet):
         # 调用save方法update_time字段才会自动更新
         project.name = request.data['name']
         project.desc = request.data['desc']
+        project.responsible = request.data['responsible']
         project.yapi_base_url = request.data['yapi_base_url']
         project.yapi_openapi_token = request.data['yapi_openapi_token']
         project.save()
