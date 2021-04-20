@@ -54,6 +54,7 @@ class UserToken(BaseTable):
 
 class MyUser(AbstractUser):
     phone = models.CharField(verbose_name='手机号码', unique=True, null=True, max_length=11)
+    show_hosts = models.BooleanField(verbose_name='是否显示Hosts相关的信息', default=False, help_text='是否显示Hosts相关的信息')
 
     class Meta(AbstractUser.Meta):
         pass

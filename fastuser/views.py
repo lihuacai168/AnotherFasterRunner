@@ -119,6 +119,7 @@ class LoginView(APIView):
         response.LOGIN_SUCCESS["token"] = token
         response.LOGIN_SUCCESS["user"] = username
         response.LOGIN_SUCCESS["is_superuser"] = user.is_superuser
+        response.LOGIN_SUCCESS["show_hosts"] = user.show_hosts
         return Response(response.LOGIN_SUCCESS)
 
 
