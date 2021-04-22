@@ -8,6 +8,8 @@ from fastrunner import models
 from fastrunner.utils.parser import Parse
 from djcelery import models as celery_models
 
+from fastrunner.utils.tree import get_tree_relation_name
+
 
 class ProjectSerializer(serializers.ModelSerializer):
     """
@@ -124,12 +126,13 @@ class APISerializer(serializers.ModelSerializer):
     body = serializers.SerializerMethodField()
     tag_name = serializers.CharField(source="get_tag_display")
     cases = serializers.SerializerMethodField()
+    relation_name = serializers.SerializerMethodField()
 
     class Meta:
         model = models.API
         # fields = '__all__'
         fields = ['id', 'name', 'url', 'method', 'project', 'relation', 'body', 'rig_env', 'tag', 'tag_name',
-                  'update_time', 'delete', 'creator', 'updater', 'cases']
+                  'update_time', 'delete', 'creator', 'updater', 'cases', 'relation_name']
 
     def get_body(self, obj):
         parse = Parse(eval(obj.body))
@@ -140,6 +143,11 @@ class APISerializer(serializers.ModelSerializer):
         cases = models.CaseStep.objects.filter(source_api_id=obj.id)
         case_id = APIRelatedCaseSerializer(many=True, instance=cases)
         return case_id.data
+
+    def get_relation_name(self, obj):
+        relation_obj = models.Relation.objects.get(project_id=obj.project_id, type=1)
+        label = get_tree_relation_name(eval(relation_obj.tree), obj.relation)
+        return label
 
     # def get_cases(self, obj):
     #     cases = obj.api_case_relate.all()

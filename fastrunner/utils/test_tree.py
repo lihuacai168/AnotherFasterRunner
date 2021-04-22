@@ -7,7 +7,7 @@
 # @Email: lihuacai168@gmail.com
 # @Software: PyCharm
 from unittest import TestCase
-from .tree import get_tree_label , get_all_ycatid , get_faster_id_by_ycatid , get_tree_ycatid_mapping
+from .tree import get_tree_label , get_all_ycatid , get_faster_id_by_ycatid , get_tree_ycatid_mapping, get_tree_relation_name
 
 
 class Test(TestCase):
@@ -34,6 +34,12 @@ class Test(TestCase):
 
     def test_get_tree_label_second_children(self):
         assert get_tree_label(self.tree, '个人中心') == 323
+
+    def test_get_tree_relation_name_default(self):
+        assert get_tree_relation_name(self.tree, 1) == '默认分组'
+
+    def test_get_tree_relation_name_default(self):
+        assert get_tree_relation_name(self.tree, 11) == '首页'
 
 
 class TestYAPITree(TestCase):

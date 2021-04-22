@@ -111,4 +111,22 @@ def get_tree_label(value, search_label):
     return label_id
 
 
+label = ''
 
+
+def get_tree_relation_name(value, relation_id):
+    """
+    根据节点的id查找出节点的名字
+    """
+    global label
+    if not value:
+        return label
+
+    if isinstance(value, list):
+        for content in value:  # content -> dict
+            if content['id'] == relation_id:
+                label = content['label']
+            children = content.get('children')
+            if children:
+                get_tree_relation_name(children, relation_id)
+    return label
