@@ -35,7 +35,7 @@ class ProjectSerializer(serializers.ModelSerializer):
             return '0.00'
         if len(case_steps_unique) > len(api_unique):
             return '100.00'
-        return '%.2f' % (len(case_steps_unique) / len(api_unique) * 100)
+        return '%.2f' % (len(case_steps_unique & api_unique) / len(api_unique) * 100)
 
 
 class VisitSerializer(serializers.ModelSerializer):
