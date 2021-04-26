@@ -274,6 +274,11 @@ def run_suite_tree(request):
     back_async = request.data["async"]
     report = request.data["name"]
     host = request.data["host"]
+    config_id = request.data.get("config_id")
+    config = None
+    if config_id:
+        # 前端有指定config，会覆盖用例本身的config
+        config = eval(models.Config.objects.get(id=config_id).body)
 
     if host != "请选择":
         host = models.HostIP.objects.get(name=host, project=project).value.splitlines()
@@ -289,14 +294,12 @@ def run_suite_tree(request):
                 filter(case__id=content["id"]).order_by("step").values("body")
 
             testcase_list = []
-            config = None
             for content in test_list:
                 body = eval(content["body"])
-                if "base_url" in body["request"].keys():
+                if body["request"].get('url'):
+                    testcase_list.append(parse_host(host, body))
+                elif config is None and body["request"].get('base_url'):
                     config = eval(models.Config.objects.get(name=body["name"], project__id=project).body)
-                    continue
-                testcase_list.append(parse_host(host, body))
-            # [[{scripts}, {scripts}], [{scripts}, {scripts}]]
             config_list.append(parse_host(host, config))
             test_sets.append(testcase_list)
             suite_list = suite_list + suite
