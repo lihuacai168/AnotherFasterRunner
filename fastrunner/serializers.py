@@ -81,6 +81,7 @@ class AssertSerializer(serializers.Serializer):
     rigEnv = serializers.ChoiceField(choices=models.API.ENV_TYPE, default='')
     delete = serializers.ChoiceField(choices=(0, 1), default=0)
     onlyMe = serializers.BooleanField(default=False)
+    showYAPI = serializers.BooleanField(default=True)
 
 
 # 用例反序列化验证器

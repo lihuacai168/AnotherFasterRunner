@@ -57,11 +57,15 @@ class APITemplateView(GenericViewSet):
             rig_env = ser.validated_data.get('rigEnv')
             delete = ser.validated_data.get('delete')
             only_me = ser.validated_data.get('onlyMe')
+            showYAPI = ser.validated_data.get('showYAPI')
 
             queryset = self.get_queryset().filter(project__id=project, delete=delete).order_by('-update_time')
 
             if only_me is True:
                 queryset = queryset.filter(creator=request.user)
+
+            if showYAPI is False:
+                queryset = queryset.filter(~Q(creator='yapi'))
 
             if search != '':
                 search: list = search.split()
