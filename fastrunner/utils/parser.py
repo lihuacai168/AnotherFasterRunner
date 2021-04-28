@@ -409,6 +409,7 @@ def format_json(value):
     except BaseException:
         return value
 
+
 def yapi_properties2json(properties, req_json={}, variables=[], desc={}):
     for field_name, field_value in properties.items():
         value_type = field_value['type']
@@ -419,10 +420,8 @@ def yapi_properties2json(properties, req_json={}, variables=[], desc={}):
         if value_type == 'array':
             pass
 
-
-
-
     pass
+
 
 def format_summary_to_ding(msg_type, summary, report_name=None):
     rows_count = summary['stat']['testsRun']
@@ -580,33 +579,33 @@ class Yapi:
             logger.error(f"获取yapi的目录失败: {e}")
         finally:
             # {
-            #     "errcode": 0 ,
-            #     "errmsg": "成功！" ,
+            #     "errcode": 0,
+            #     "errmsg": "成功！",
             #     "data": [
             #         {
-            #             "index": 0 ,
-            #             "_id": 3945 ,
-            #             "name": "机台区域管理" ,
-            #             "project_id": 458 ,
-            #             "desc": "" ,
-            #             "uid": 950 ,
-            #             "add_time": 1588490260 ,
-            #             "up_time": 1588490260 ,
-            #             "__v": 0 ,
+            #             "index": 0,
+            #             "_id": 3945,
+            #             "name": "机台区域管理",
+            #             "project_id": 458,
+            #             "desc": "",
+            #             "uid": 950,
+            #             "add_time": 1588490260,
+            #             "up_time": 1588490260,
+            #             "__v": 0,
             #             "list": [
             #                 {
-            #                     "edit_uid": 0 ,
-            #                     "status": "done" ,
-            #                     "index": 0 ,
-            #                     "tag": [] ,
-            #                     "_id": 31573 ,
-            #                     "method": "GET" ,
-            #                     "catid": 3945 ,
-            #                     "title": "查询列表" ,
-            #                     "path": "/woven/base/equipmentArea/query" ,
-            #                     "project_id": 458 ,
-            #                     "uid": 950 ,
-            #                     "add_time": 1588490282 ,
+            #                     "edit_uid": 0,
+            #                     "status": "done",
+            #                     "index": 0,
+            #                     "tag": [],
+            #                     "_id": 31573,
+            #                     "method": "GET",
+            #                     "catid": 3945,
+            #                     "title": "查询列表",
+            #                     "path": "/woven/base/equipmentArea/query",
+            #                     "project_id": 458,
+            #                     "uid": 950,
+            #                     "add_time": 1588490282,
             #                     "up_time": 1588490541
             #                 }
             #             ]
@@ -821,7 +820,7 @@ class Yapi:
             if cat_id not in yapi_catids:
                 tree_id = get_tree_max_id(eval_tree)
                 base_tree_node = {
-                    "id": tree_id+1,
+                    "id": tree_id + 1,
                     "yapi_catid": cat_id,
                     "label": cat_name,
                     "children": []
@@ -834,40 +833,47 @@ class Yapi:
         """
         yapi单个api转成faster格式
         """
-        api_info_template = {"header": {
-            "header": {"accessToken": "$accessToken"},
-            "desc": {"accessToken": "登录token"}
-        }, "request": {
-            "form": {
-                "data": {},
+        api_info_template = {
+            "header": {
+                "header": {},
                 "desc": {}
             },
-            "json": {},
-            "params": {
-                "params": {},
+            "request": {
+                "form": {
+                    "data": {},
+                    "desc": {}
+                },
+                "json": {},
+                "params": {
+                    "params": {},
+                    "desc": {}
+                },
+                "files": {
+                    "files": {},
+                    "desc": {}
+                }
+            }, "extract": {
+                "extract": [],
                 "desc": {}
-            },
-            "files": {
-                "files": {},
+            }, "validate": {
+                "validate": []
+            }, "variables": {
+                "variables": [],
                 "desc": {}
-            }
-        }, "extract": {
-            "extract": [],
-            "desc": {}
-        }, "validate": {
-            "validate": []
-        }, "variables": {
-            "variables": [],
-            "desc": {}
-        }, "hooks": {
-            "setup_hooks": [],
-            "teardown_hooks": []
-        }, "url": "", "method": "", "name": "", "times": 1, "nodeId": 0, "project": self.fast_project_id,
+            }, "hooks": {
+                "setup_hooks": [],
+                "teardown_hooks": []
+            }, "url": "", "method": "", "name": "", "times": 1, "nodeId": 0, "project": self.fast_project_id,
         }
-
-
+        default_header = {"accessToken": "$accessToken"}
+        default_header_desc = {"accessToken": "登录token"}
+        api_info_template['header']['header'].update(default_header)
+        api_info_template['header']['desc'].update(default_header_desc)
+        default_validator = {'equals': ['content.successful', True]}
+        api_info_template['validate']['validate'].append(default_validator)
         api_info_template['name'] = source_api_info['title']
-        api_info_template['url'] = source_api_info['path']
+        # path中{var}替换成$var格式
+        api_info_template['url'] = source_api_info['path'].replace('{', '$').replace('}', '')
         api_info_template['method'] = source_api_info['method']
 
         # yapi的分组id
@@ -888,7 +894,8 @@ class Yapi:
                 # 解析带注释的json
                 req_body = json5.loads(req_body_other, encoding='utf8')
             except Exception as e:
-                logger.error(f'yapi: {source_api_info["_id"]}, req_body json loads failed: {source_api_info.get("req_body_other", e)}')
+                logger.error(
+                    f'yapi: {source_api_info["_id"]}, req_body json loads failed: {source_api_info.get("req_body_other", e)}')
             else:
                 # TODO: 递归遍历properties所有节点
                 if isinstance(req_body, dict):
@@ -926,6 +933,21 @@ class Yapi:
                 api_info_template['request']['params']['params'][param_name] = f"${param_name}"
                 api_info_template['request']['params']['desc'][param_name] = param_desc
                 api_info_template['variables']['variables'].append({param_name: ''})
+                api_info_template['variables']['desc'][param_name] = param_desc
+
+        req_params: list = source_api_info.get('req_params', [])
+        if req_params:
+            for param in req_params:
+                # {
+                #     "_id": "600155566e7043643b6f1ae2",
+                #     "name": "namespace",
+                #     "example": "abc123",
+                #     "desc": "命名空间"
+                # }
+                param_name = param['name']
+                param_desc = param.get('desc', '')
+                param_example = param.get('example', '')
+                api_info_template['variables']['variables'].append({param_name: param_example})
                 api_info_template['variables']['desc'][param_name] = param_desc
 
         return api_info_template
@@ -970,7 +992,6 @@ class Yapi:
             }
             parsed_api.append(models.API(**api_body))
         return parsed_api
-
 
     def merge_api(self, parsed_apis, imported_apis):
         """

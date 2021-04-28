@@ -23,7 +23,7 @@ class YAPIView(APIView):
         token = obj.yapi_openapi_token
         yapi_base_url = obj.yapi_base_url
         yapi = Yapi(yapi_base_url=yapi_base_url, token=token, faster_project_id=faster_project_id)
-        imported_apis = models.API.objects.filter(project_id=faster_project_id, creator='yapi')
+        imported_apis = models.API.objects.filter(project_id=faster_project_id, creator='yapi', delete=0)
         imported_apis_mapping = {api.yapi_id: api.ypai_up_time for api in imported_apis}
         create_ids, update_ids = yapi.get_create_or_update_apis(imported_apis_mapping)
         try:
