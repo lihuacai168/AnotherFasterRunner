@@ -7,7 +7,7 @@
 # @Email: lihuacai168@gmail.com
 # @Software: PyCharm
 from unittest import TestCase
-from .tree import get_tree_label , get_all_ycatid , get_faster_id_by_ycatid , get_tree_ycatid_mapping, get_tree_relation_name
+from .tree import get_tree_label , get_all_ycatid , get_faster_id_by_ycatid , get_tree_ycatid_mapping, get_tree_relation_name, get_tree_max_id, get_tree_max_id_old
 
 
 class Test(TestCase):
@@ -22,6 +22,15 @@ class Test(TestCase):
                                                        {'id': 13, 'label': '商品详情', 'children': []},
                                                        {'id': 15, 'label': '启动页', 'children': []}]},
             {'id': 30, 'label': 'M站', 'children': []}, {'id': 34, 'label': '注册', 'children': []}]
+
+    def test_get_tree_max_id(self):
+        assert get_tree_max_id(self.tree) == 323
+
+    def test_get_tree_max_id_old(self):
+        assert get_tree_max_id_old(self.tree) == 323
+
+    def test_get_tree_max_id_empty(self):
+        assert get_tree_max_id([]) == 0
 
     def test_get_tree_label_default(self):
         assert get_tree_label(self.tree, '默认分组') == 1

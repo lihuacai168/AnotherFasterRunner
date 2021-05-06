@@ -1,4 +1,7 @@
-def get_tree_max_id(value, list_id=[]):
+import collections
+
+
+def get_tree_max_id_old(value, list_id=[]):
     """
     得到最大Tree max id
     """
@@ -9,11 +12,29 @@ def get_tree_max_id(value, list_id=[]):
         for content in value:  # content -> dict
             children = content.get('children')
             if children:
-                get_tree_max_id(children)
+                get_tree_max_id_old(children)
 
             list_id.append(content['id'])
 
     return max(list_id)
+
+
+def get_tree_max_id(tree: list):
+    """
+    广度优先遍历树, 得到最大Tree max id
+    """
+    queue = collections.deque()
+    queue.append(tree)
+    max_id = 0
+    while len(queue) != 0:
+        sub_tree: list = queue.popleft()
+        for node in sub_tree:
+            children: list = node.get('children')
+            max_id = max(max_id, node['id'])
+            # 有子节点
+            if len(children) > 0:
+                queue.append(children)
+    return max_id
 
 
 def get_all_ycatid(value, list_id=[]):
