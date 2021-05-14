@@ -17,11 +17,11 @@ def async_debug_api(api, project, name, config=None):
 
 
 @shared_task
-def async_debug_suite(suite, project, obj, report, config):
+def async_debug_suite(suite, project, obj, report, config, user=''):
     """异步执行suite
     """
-    summary = debug_suite(suite, project, obj, config=config, save=False)
-    save_summary(report, summary, project)
+    summary, _ = debug_suite(suite, project, obj, config=config, save=False)
+    save_summary(report, summary, project, user)
 
 
 @shared_task
@@ -61,18 +61,16 @@ def schedule_debug_suite(*args, **kwargs):
         config_list.append(config)
         test_sets.append(testcase_list)
 
-    summary = debug_suite(test_sets, project, suite, config_list, save=False)
+    summary, _ = debug_suite(test_sets, project, suite, config_list, save=False)
     task_name = kwargs["task_name"]
 
     if kwargs.get('run_type') == 'deploy':
         task_name = '部署_' + task_name
-        run_type = 'deploy'
         report_type = 4
     else:
-        run_type = 'auto'
         report_type = 3
 
-    save_summary(task_name, summary, project, type=report_type)
+    save_summary(task_name, summary, project, type=report_type, user=kwargs.get('user', ''))
 
     strategy = kwargs["strategy"]
     if strategy == '始终发送' or (

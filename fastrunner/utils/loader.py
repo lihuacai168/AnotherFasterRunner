@@ -263,11 +263,13 @@ def load_debugtalk(project):
         shutil.rmtree(os.path.dirname(file_path))
 
 
-def debug_suite(suite, project, obj, config=None, save=True, user=''):
+def debug_suite(suite, project, obj, config=None, save=True, user='', report_type=1):
     """debug suite
            suite :list
            pk: int
            project: int
+           report_type: int
+           obj: dict {'case_id': int 'case_name': str}
     """
     if len(suite) == 0:
         return TEST_NOT_EXISTS
@@ -297,10 +299,10 @@ def debug_suite(suite, project, obj, config=None, save=True, user=''):
         runner = HttpRunner(**kwargs)
         runner.run(test_sets)
         summary = parse_summary(runner.summary)
-
+        report_id = 0
         if save:
-            save_summary(f"批量运行{len(test_sets)}条用例", summary, project, type=1, user=user)
-        return summary
+            report_id = save_summary(f"批量运行{len(test_sets)}条用例", summary, project, type=report_type, user=user)
+        return summary, report_id
 
     except Exception as e:
         raise SyntaxError(str(e))
@@ -474,6 +476,7 @@ def save_summary(name, summary, project, type=2, user=''):
     })
 
     models.ReportDetail.objects.create(summary_detail=summary_detail, report=report)
+    return report.id
 
 
 @back_async
@@ -488,5 +491,5 @@ def async_debug_api(api, project, name, config=None):
 def async_debug_suite(suite, project, report, obj, config=None):
     """异步执行suite
     """
-    summary = debug_suite(suite, project, obj, config=config, save=False)
+    summary, _ = debug_suite(suite, project, obj, config=config, save=False)
     save_summary(report, summary, project)

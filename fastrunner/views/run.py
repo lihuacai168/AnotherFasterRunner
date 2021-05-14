@@ -309,7 +309,7 @@ def run_suite_tree(request):
         summary = loader.TEST_NOT_EXISTS
         summary["msg"] = "用例运行中，请稍后查看报告"
     else:
-        summary = loader.debug_suite(test_sets, project, suite_list, config_list, save=True, user=request.user)
+        summary, _ = loader.debug_suite(test_sets, project, suite_list, config_list, save=True, user=request.user)
 
     return Response(summary)
 
