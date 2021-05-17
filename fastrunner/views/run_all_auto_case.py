@@ -37,6 +37,7 @@ def run_all_auto_case(request):
         kwargs = json.loads(i.get('kwargs'))
         kwargs['run_type'] = run_type
         kwargs['user'] = user
+        kwargs['task_id'] = i.get('task_id')
         app.send_task(task_name, args=args, kwargs=kwargs)
     return JsonResponse({'success': True, "run_tasks": len(query)})
 

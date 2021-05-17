@@ -90,6 +90,7 @@ class ScheduleView(GenericViewSet):
         task_name = 'fastrunner.tasks.schedule_debug_suite'
         args = eval(task.args)
         kwargs = json.loads(task.kwargs)
+        kwargs['task_id'] = task.id
         app.send_task(name=task_name, args=args, kwargs=kwargs)
         return Response(response.TASK_RUN_SUCCESS)
 

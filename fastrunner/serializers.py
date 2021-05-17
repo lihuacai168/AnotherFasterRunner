@@ -1,4 +1,6 @@
+import datetime
 import json
+from typing import Union
 
 import time
 
@@ -251,10 +253,10 @@ class PeriodicTaskSerializer(serializers.ModelSerializer):
     """
     kwargs = serializers.SerializerMethodField()
     args = serializers.SerializerMethodField()
-
+    last_run_at = serializers.SerializerMethodField()
     class Meta:
         model = celery_models.PeriodicTask
-        fields = ['id', 'name', 'args', 'kwargs', 'enabled', 'date_changed', 'enabled', 'description']
+        fields = ['id', 'name', 'args', 'kwargs', 'enabled', 'date_changed', 'enabled', 'description', 'total_run_count', 'last_run_at']
 
     def get_kwargs(self, obj):
         kwargs = json.loads(obj.kwargs)
@@ -266,3 +268,8 @@ class PeriodicTaskSerializer(serializers.ModelSerializer):
         case_id_list = json.loads(obj.args)
         # 数据格式,list of dict : [{"id":case_id,"name":case_name}]
         return list(models.Case.objects.filter(pk__in=case_id_list).values('id', 'name'))
+
+    def get_last_run_at(self, obj) -> Union[str, int]:
+        if obj.last_run_at:
+            return int(obj.last_run_at.timestamp())
+        return ''
