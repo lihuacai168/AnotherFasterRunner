@@ -174,7 +174,7 @@ CASE_DELETE_SUCCESS = {
 CASE_UPDATE_SUCCESS = {
     'code': '0002',
     'success': True,
-    'msg': '用例集更新成功'
+    'msg': '用例更新成功'
 }
 
 CASE_STEP_SYNC_SUCCESS = {
