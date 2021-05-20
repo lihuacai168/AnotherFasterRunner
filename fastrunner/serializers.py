@@ -101,6 +101,7 @@ class CaseSerializer(serializers.ModelSerializer):
     用例信息序列化
     """
     tag = serializers.CharField(source="get_tag_display")
+    tasks = serializers.ListField(read_only=True)  # 包含用例的定时任务
 
     class Meta:
         model = models.Case

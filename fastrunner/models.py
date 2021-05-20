@@ -1,6 +1,6 @@
 from datetime import datetime
 from django.db import models
-
+from djcelery.models import PeriodicTask
 # Create your models here.
 from model_utils import Choices
 
@@ -113,6 +113,11 @@ class Case(BaseTable):
     length = models.IntegerField("API个数", null=False)
     tag = models.IntegerField("用例标签", choices=tag, default=2)
     # apis = models.ManyToManyField(API, db_table='api_case', related_name='api_case_relate')
+
+    @property
+    def tasks(self):
+        task_objs = PeriodicTask.objects.filter(description=self.project.id).values('id', 'name', 'args')
+        return filter(lambda task: self.id in eval(task.pop('args')), task_objs)
 
 
 class CaseStep(BaseTable):
