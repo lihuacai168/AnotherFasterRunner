@@ -15,6 +15,8 @@ from drf_yasg.utils import swagger_auto_schema
 
 from fastrunner import models
 from fastrunner.utils import loader
+from fastrunner.utils.decorator import request_log
+from django.utils.decorators import method_decorator
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
@@ -99,6 +101,7 @@ class CIView(GenericViewSet):
     pagination_class = None
 
     @swagger_auto_schema(operation_summary='gitlab-ci触发自动化用例运行')
+    @method_decorator(request_log(level='DEBUG'))
     def run_ci_tests(self, request):
         ser = CISerializer(data=request.data)
         if ser.is_valid():
