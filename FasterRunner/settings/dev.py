@@ -25,3 +25,9 @@ BROKER_URL = 'amqp://username:password@localhost:5672//'
 BROKER_URL = 'amqp://admin:111111@192.168.22.19:5672/fast_dev'
 
 BASE_REPORT_URL = 'http://localhost:8000/api/fastrunner/reports'
+
+IM_REPORT_SETTING = {
+    'base_url': 'http://localhost',
+    'port': 8000,
+    'report_title': '自动化测试报告'
+}

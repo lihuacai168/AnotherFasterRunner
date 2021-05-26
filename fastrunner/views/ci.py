@@ -14,7 +14,7 @@ from djcelery.models import PeriodicTask
 from drf_yasg.utils import swagger_auto_schema
 
 from fastrunner import models
-from fastrunner.utils import loader
+from fastrunner.utils import loader , lark_message
 from fastrunner.utils.decorator import request_log
 from django.utils.decorators import method_decorator
 from rest_framework import status
@@ -33,8 +33,8 @@ def summary2junit(summary: dict) -> dict:
                 "failures": 0,
                 "hostname": "",
                 "name": "",
-                "skipped": "0",
-                "tests": "0",
+                "skipped": 0,
+                "tests": 0,
                 "time": "0",
                 "timestamp": "20210524T18:04:50.941913",
                 "testcase": []
@@ -42,13 +42,13 @@ def summary2junit(summary: dict) -> dict:
         }
     }
 
-    time_info = summary.pop('time')
-    res["testsuites"]["testsuite"]["time"] = time_info.pop('duration')
-    start_at: str = time_info.pop('start_at')
+    time_info = summary.get('time')
+    res["testsuites"]["testsuite"]["time"] = time_info.get('duration')
+    start_at: str = time_info.get('start_at')
     datetime_str = datetime.datetime.fromtimestamp(int(float(start_at))).strftime('%Y-%m-%dT%H:%M:%S.%f')
     res["testsuites"]["testsuite"]["timestamp"] = datetime_str
 
-    details = summary.pop('details', [])
+    details = summary.get('details', [])
     res["testsuites"]["testsuite"]["tests"] = len(details)
     for detail in details:
         test_case = {
@@ -58,12 +58,12 @@ def summary2junit(summary: dict) -> dict:
                         "name": "",
                         "time": ""
                     }
-        name = detail.pop('name')
+        name = detail.get('name')
         test_case['classname'] = name  # 对应junit的Suite
-        records = detail.pop('records')
+        records = detail.get('records')
         test_case['line'] = len(records)
         test_case['time'] = detail['time']['duration']
-        result = detail.pop('success')
+        result = detail.get('success')
         step_names = []
         for index, record in enumerate(records):
             step_names.append(f"{index}-{record['name']}")
@@ -74,9 +74,9 @@ def summary2junit(summary: dict) -> dict:
         if result is False:
             failure_details = []
             for index, record in enumerate(records):
-                step_status = record.pop('status')
+                step_status = record.get('status')
                 if step_status == 'failure':
-                    failure_details.append(f"{index}-{record['name']}" + '\n' + record.pop('attachment') + '\n' + '*' * 68)
+                    failure_details.append(f"{index}-{record['name']}" + '\n' + record.get('attachment') + '\n' + '*' * 68)
                 elif step_status == 'error':
                     case_error = True
             else:
@@ -106,15 +106,15 @@ class CIView(GenericViewSet):
         ser = CISerializer(data=request.data)
         if ser.is_valid():
             task_name = 'fastrunner.tasks.schedule_debug_suite'
-            project: int = ser.validated_data.pop('project')
-            task_ids: str = ser.validated_data.pop('task_ids')
+            project: int = ser.validated_data.get('project')
+            task_ids: str = ser.validated_data.get('task_ids')
             query = PeriodicTask.objects.filter(
                 enabled=1, task=task_name, description=project)
             enabled_task_ids = []
             if task_ids == '':
                 task_ids_list: list = query.values('id')
                 for task_id in task_ids_list:
-                    enabled_task_ids.append(task_id.pop('id'))
+                    enabled_task_ids.append(task_id.get('id'))
             else:
                 enabled_task_ids: list = task_ids.split(',')
             test_sets = []
@@ -122,10 +122,12 @@ class CIView(GenericViewSet):
             config_list = []
             host = "请选择"
             config = None
+            webhook_set = set()
             for task_id in enabled_task_ids:
                 task_obj: str = query.filter(id=task_id).first()
                 if task_obj:
                     case_id = task_obj.args
+                    webhook_set.add(eval(task_obj.kwargs).get('webhook'))
                 else:
                     continue
                 suite = list(models.Case.objects.filter(pk__in=eval(case_id)).order_by('id').values('id', 'name'))
@@ -149,9 +151,15 @@ class CIView(GenericViewSet):
             ci_job_id = ser.validated_data['ci_job_id']
             summary['name'] = f"{ci_project_namespace}_{ci_project_name}_{ci_job_id}"
 
-            save_summary(summary.pop('name'), summary, project, type=4, user=ser.validated_data['start_job_user'], ci_metadata=ser.validated_data)
+            save_summary(summary.get('name'), summary, project, type=4, user=ser.validated_data['start_job_user'], ci_metadata=ser.validated_data)
             junit_results = summary2junit(summary)
             xml_data = xmltodict.unparse(junit_results)
+            summary['task_name'] = 'gitlab-ci_' + summary.get('name')
+            for webhook in webhook_set:
+                lark_message.send_message(summary=summary, webhook=webhook,
+                                          ci_job_url=ser.validated_data['ci_job_url'],
+                                          ci_pipeline_url=ser.validated_data['ci_pipeline_url'],
+                                          case_count=junit_results['testsuites']['testsuite']['tests'])
             return HttpResponse(xml_data, content_type='text/xml')
         else:
             return Response(ser.errors, status=status.HTTP_400_BAD_REQUEST)

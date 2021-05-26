@@ -101,4 +101,4 @@ def schedule_debug_suite(*args, **kwargs):
         webhook = kwargs.get("webhook", "")
         if webhook:
             summary["task_name"] = task_name
-            lark_message.send_message(summary=summary, webhook=webhook)
+            lark_message.send_message(summary=summary, webhook=webhook, case_count=len(args))

@@ -9,6 +9,8 @@ import json
 from fastrunner import models
 from django.conf import settings
 
+from fastrunner.utils.loader import back_async
+
 
 def get_base_post_content():
     return {
@@ -25,7 +27,7 @@ def get_base_post_content():
     }
 
 
-def parse_message(summary: dict, msg_type: str):
+def parse_message(summary: dict, msg_type: str, **kwargs):
     task_name = summary["task_name"]
     rows_count = summary['stat']['testsRun']
     pass_count = summary['stat']['successes']
@@ -48,6 +50,17 @@ def parse_message(summary: dict, msg_type: str):
                    [{'text': f'失败接口: {fail_count}'}],
                    [{'text': f'失败比例: {fail_rate}'}],
                    [{'text': f'查看详情: {report_url}'}]]
+        ci_job_url: str = kwargs.get('ci_job_url')
+        if ci_job_url:
+            content.append([{'text': f'ci_job: {ci_job_url}'}])
+        ci_pipeline_url: str = kwargs.get('ci_pipeline_url')
+        if ci_pipeline_url:
+            content.append([{'text': f'ci_pipeline: {ci_pipeline_url}'}])
+
+        case_count = kwargs.get('case_count')
+        if case_count:
+            content.insert(2, [{'text': f'用例个数: {case_count}'}])
+
         for d in content:
             d[0].update({'tag': 'text'})
         msg_template['content']['post']['zh_cn']['content'] = content
@@ -56,7 +69,8 @@ def parse_message(summary: dict, msg_type: str):
     return text
 
 
-def send_message(summary: dict, webhook: str):
+@back_async
+def send_message(summary: dict, webhook: str, **kwargs):
     """
 
     """
@@ -68,7 +82,7 @@ def send_message(summary: dict, webhook: str):
         title = platform_name + title
     version = webhook[37:39]
     if version == 'v2':
-        msg = parse_message(summary=summary, msg_type='post')
+        msg = parse_message(summary=summary, msg_type='post', **kwargs)
         msg['content']['post']['zh_cn']['title'] = title
         data = msg
     else:

@@ -299,6 +299,20 @@ def debug_suite(suite, project, obj, config=None, save=True, user='', report_typ
         runner = HttpRunner(**kwargs)
         runner.run(test_sets)
         summary = parse_summary(runner.summary)
+        # 统计用例级别的数据
+        details: list = summary['details']
+        failure_case_config_mapping_list = []
+        for index, details in enumerate(details):
+            if details['success'] is False:
+                failure_case_config_mapping_list.append(obj[index])
+        case_count = len(test_sets)
+        case_fail_rate = '{:.2%}'.format(len(failure_case_config_mapping_list) / case_count)
+        summary['stat'].update({
+            'failure_case_config_mapping_list': failure_case_config_mapping_list,
+            'case_count': case_count,
+            'case_fail_rate': case_fail_rate,
+            'project': project
+        })
         report_id = 0
         if save:
             report_id = save_summary(f"批量运行{len(test_sets)}条用例", summary, project, type=report_type, user=user)
