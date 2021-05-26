@@ -287,9 +287,9 @@ def run_suite_tree(request):
     suite_list = []
     config_list = []
     for relation_id in relation:
-        suite = list(models.Case.objects.filter(project__id=project,
+        case_name_id_mapping_list = list(models.Case.objects.filter(project__id=project,
                                                 relation=relation_id).order_by('id').values('id', 'name'))
-        for content in suite:
+        for content in case_name_id_mapping_list:
             test_list = models.CaseStep.objects. \
                 filter(case__id=content["id"]).order_by("step").values("body")
 
@@ -302,7 +302,8 @@ def run_suite_tree(request):
                     config = eval(models.Config.objects.get(name=body["name"], project__id=project).body)
             config_list.append(parse_host(host, config))
             test_sets.append(testcase_list)
-            suite_list = suite_list + suite
+            suite_list.extend(case_name_id_mapping_list)
+            config = None
 
     if back_async:
         tasks.async_debug_suite.delay(test_sets, project, suite_list, report, config_list)
