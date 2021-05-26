@@ -160,7 +160,7 @@ class CIView(GenericViewSet):
             ci_job_id = ser.validated_data['ci_job_id']
             report_obj = models.Report.objects.filter(ci_job_id=ci_job_id).first()
             if report_obj:
-                report_url = f'{settings.BASE_REPORT_URL}/{report_obj.report_id}/'
+                report_url = f'{settings.BASE_REPORT_URL}/{report_obj.id}/'
             else:
                 return Response(data=f'查找的ci_job_id: {ci_job_id}不存在')
             return Response(data=report_url)
