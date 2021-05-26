@@ -23,21 +23,36 @@ class ProjectSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.Project
-        fields = ['id', 'name', 'desc', 'responsible', 'update_time', 'creator', 'updater', 'yapi_openapi_token', 'yapi_base_url', 'api_cover_rate']
+        fields = [
+            'id',
+            'name',
+            'desc',
+            'responsible',
+            'update_time',
+            'creator',
+            'updater',
+            'yapi_openapi_token',
+            'yapi_base_url',
+            'api_cover_rate']
 
     def get_api_cover_rate(self, obj):
         """
         接口覆盖率，百分比后去两位小数点
         """
-        apis = models.API.objects.filter(project_id=obj.id, delete=0).values('url', 'method')
+        apis = models.API.objects.filter(
+            project_id=obj.id, delete=0).values(
+            'url', 'method')
         api_unique = {f'{api["url"]}_{api["method"]}' for api in apis}
-        case_steps = models.CaseStep.objects.filter(case__project_id=obj.id).filter(~Q(method='config')).values('url', 'method')
-        case_steps_unique = {f'{case_step["url"]}_{case_step["method"]}' for case_step in case_steps}
+        case_steps = models.CaseStep.objects.filter(case__project_id=obj.id).filter(
+            ~Q(method='config')).values('url', 'method')
+        case_steps_unique = {
+            f'{case_step["url"]}_{case_step["method"]}' for case_step in case_steps}
         if len(api_unique) == 0:
             return '0.00'
         if len(case_steps_unique) > len(api_unique):
             return '100.00'
-        return '%.2f' % (len(case_steps_unique & api_unique) / len(api_unique) * 100)
+        return '%.2f' % (len(case_steps_unique & api_unique) /
+                         len(api_unique) * 100)
 
 
 class VisitSerializer(serializers.ModelSerializer):
@@ -116,7 +131,16 @@ class CaseStepSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.CaseStep
-        fields = ['id', 'name', 'url', 'method', 'body', 'case', 'source_api_id', 'creator', 'updater']
+        fields = [
+            'id',
+            'name',
+            'url',
+            'method',
+            'body',
+            'case',
+            'source_api_id',
+            'creator',
+            'updater']
         depth = 1
 
     def get_body(self, obj):
@@ -130,6 +154,27 @@ class CaseStepSerializer(serializers.ModelSerializer):
             parse = Parse(eval(obj.body))
             parse.parse_http()
             return parse.testcase
+
+
+class CIReportSerializer(serializers.Serializer):
+    ci_job_id = serializers.IntegerField(
+        required=True, min_value=1, help_text='gitlab-ci job id')
+
+
+class CISerializer(serializers.Serializer):
+    project = serializers.IntegerField(
+        required=True, min_value=1, help_text='测试平台中某个项目的id')
+    task_ids = serializers.CharField(required=True, max_length=200, allow_blank=True)
+    ci_job_id = serializers.IntegerField(
+        required=True, min_value=1, help_text='gitlab-ci job id')
+    ci_job_url = serializers.CharField(required=True, max_length=500)
+    ci_pipeline_id = serializers.IntegerField(required=True)
+    ci_pipeline_url = serializers.CharField(required=True, max_length=500)
+    ci_project_id = serializers.IntegerField(required=True, min_value=1)
+    ci_project_name = serializers.CharField(required=True, max_length=100)
+    ci_project_namespace = serializers.CharField(required=True, max_length=100)
+    start_job_user = serializers.CharField(
+        required=True, max_length=100, help_text='GITLAB_USER_NAME')
 
 
 class APIRelatedCaseSerializer(serializers.Serializer):
@@ -152,8 +197,23 @@ class APISerializer(serializers.ModelSerializer):
     class Meta:
         model = models.API
         # fields = '__all__'
-        fields = ['id', 'name', 'url', 'method', 'project', 'relation', 'body', 'rig_env', 'tag', 'tag_name',
-                  'update_time', 'delete', 'creator', 'updater', 'cases', 'relation_name']
+        fields = [
+            'id',
+            'name',
+            'url',
+            'method',
+            'project',
+            'relation',
+            'body',
+            'rig_env',
+            'tag',
+            'tag_name',
+            'update_time',
+            'delete',
+            'creator',
+            'updater',
+            'cases',
+            'relation_name']
 
     def get_body(self, obj):
         parse = Parse(eval(obj.body))
@@ -166,7 +226,8 @@ class APISerializer(serializers.ModelSerializer):
         return case_id.data
 
     def get_relation_name(self, obj):
-        relation_obj = models.Relation.objects.get(project_id=obj.project_id, type=1)
+        relation_obj = models.Relation.objects.get(
+            project_id=obj.project_id, type=1)
         label = get_tree_relation_name(eval(relation_obj.tree), obj.relation)
         return label
 
@@ -184,7 +245,15 @@ class ConfigSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.Config
-        fields = ['id', 'base_url', 'body', 'name', 'update_time', 'is_default', 'creator', 'updater']
+        fields = [
+            'id',
+            'base_url',
+            'body',
+            'name',
+            'update_time',
+            'is_default',
+            'creator',
+            'updater']
         depth = 1
 
     def get_body(self, obj):
@@ -202,10 +271,22 @@ class ReportSerializer(serializers.ModelSerializer):
     stat = serializers.SerializerMethodField()
     platform = serializers.SerializerMethodField()
     success = serializers.SerializerMethodField()
+    ci_job_url = serializers.CharField()
 
     class Meta:
         model = models.Report
-        fields = ["id", "name", "type", "time", "stat", "platform", "success", 'creator', 'updater']
+        fields = [
+            "id",
+            "name",
+            "type",
+            "time",
+            "stat",
+            "platform",
+            "success",
+            'creator',
+            'updater',
+            'ci_job_url'
+        ]
 
     def get_time(self, obj):
         return json.loads(obj.summary)["time"]
@@ -224,7 +305,10 @@ class VariablesSerializer(serializers.ModelSerializer):
     """
     变量信息序列化
     """
-    key = serializers.CharField(allow_null=False, max_length=100, required=True)
+    key = serializers.CharField(
+        allow_null=False,
+        max_length=100,
+        required=True)
     value = serializers.CharField(allow_null=False, max_length=1024)
     description = serializers.CharField(required=False, allow_blank=True)
 
@@ -245,7 +329,7 @@ class HostIPSerializer(serializers.ModelSerializer):
 
 def get_cron_next_execute_time(crontab_expr: str):
     entry = CronTab(crontab_expr)
-    return int(entry.next(default_utc=False)+time.time())
+    return int(entry.next(default_utc=False) + time.time())
 
 
 class PeriodicTaskSerializer(serializers.ModelSerializer):
@@ -255,20 +339,36 @@ class PeriodicTaskSerializer(serializers.ModelSerializer):
     kwargs = serializers.SerializerMethodField()
     args = serializers.SerializerMethodField()
     last_run_at = serializers.SerializerMethodField()
+
     class Meta:
         model = celery_models.PeriodicTask
-        fields = ['id', 'name', 'args', 'kwargs', 'enabled', 'date_changed', 'enabled', 'description', 'total_run_count', 'last_run_at']
+        fields = [
+            'id',
+            'name',
+            'args',
+            'kwargs',
+            'enabled',
+            'date_changed',
+            'enabled',
+            'description',
+            'total_run_count',
+            'last_run_at']
 
     def get_kwargs(self, obj):
         kwargs = json.loads(obj.kwargs)
         if obj.enabled:
-            kwargs['next_execute_time'] = get_cron_next_execute_time(kwargs['crontab'])
+            kwargs['next_execute_time'] = get_cron_next_execute_time(
+                kwargs['crontab'])
         return kwargs
 
     def get_args(self, obj):
         case_id_list = json.loads(obj.args)
         # 数据格式,list of dict : [{"id":case_id,"name":case_name}]
-        return list(models.Case.objects.filter(pk__in=case_id_list).values('id', 'name'))
+        return list(
+            models.Case.objects.filter(
+                pk__in=case_id_list).values(
+                'id',
+                'name'))
 
     def get_last_run_at(self, obj) -> Union[str, int]:
         if obj.last_run_at:

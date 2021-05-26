@@ -1,4 +1,5 @@
 from datetime import datetime
+import jsonfield
 from django.db import models
 from djcelery.models import PeriodicTask
 # Create your models here.
@@ -191,6 +192,15 @@ class Report(BaseTable):
     status = models.BooleanField("报告状态", choices=report_status, blank=True)
     summary = models.TextField("报告基础信息", null=False)
     project = models.ForeignKey(Project, on_delete=models.CASCADE, db_constraint=False)
+    ci_metadata = jsonfield.JSONField()
+    ci_project_id = models.IntegerField('gitlab的项目id', default=0, null=True, db_index=True)
+    ci_job_id = models.CharField('gitlab的项目id', unique=True, null=True, default=None, db_index=True, max_length=15)
+
+    @property
+    def ci_job_url(self):
+        if self.ci_metadata:
+            return self.ci_metadata.get('ci_job_url')
+        return ''
 
 
 class ReportDetail(models.Model):

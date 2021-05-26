@@ -15,13 +15,15 @@ Including another URLconf
 """
 
 from django.urls import path
-from fastrunner.views import project, api, config, schedule, run, suite, report, yapi
+from fastrunner.views import project, api, config, schedule, run, suite, report, yapi, ci
 
 urlpatterns = [
     # 访问统计相关接口
     path('visit/', project.VisitView.as_view({
         "get": "list",
     })),
+
+    path('gitlab-ci/', ci.CIView.as_view({'post': 'run_ci_tests', 'get': 'get_ci_report_url'})),
 
     # 项目相关接口地址
     path('project/', project.ProjectView.as_view({

@@ -8,6 +8,7 @@
 # @Software: PyCharm
 
 from django.http import HttpResponse, JsonResponse
+from django.conf import settings
 import json
 from fastrunner import models
 from FasterRunner.mycelery import app
@@ -15,7 +16,6 @@ from djcelery.models import PeriodicTask
 
 from fastrunner.utils.host import parse_host
 
-base_report_url = 'http://192.168.22.19:8000/api/fastrunner/reports'
 
 
 def run_all_auto_case(request):
@@ -80,7 +80,7 @@ def get_report_url(request):
     report = models.Report.objects.filter(project_id=project, type=4).last()
     if report is None:
         models.Report.objects.filter(project_id=project).last()
-    report_url = f'{base_report_url}/{report.id}/'
+    report_url = f'{settings.BASE_REPORT_URL}/{report.id}/'
     return HttpResponse(report_url)
 
 # def run_all_auto_case(request):

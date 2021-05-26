@@ -56,3 +56,5 @@ django_mysql
 json5==0.9.5
 crontab~=0.22.9
 django_bulk_update==2.2.0
+xmltodict~=0.12.0
+django-jsonfield==1.4.0

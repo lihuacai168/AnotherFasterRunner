@@ -264,12 +264,12 @@ def load_debugtalk(project):
 
 
 def debug_suite(suite, project, obj, config=None, save=True, user='', report_type=1):
-    """debug suite
-           suite :list
-           pk: int
-           project: int
-           report_type: int
-           obj: dict {'case_id': int 'case_name': str}
+    """
+            suite : list[list[dict]], 用例列表
+            project: int, 项目id
+            obj: dict {'case_id': int 'case_name': str}, 用例的名称和id
+            config: list[dict], 每个用例运行的配置
+            report_type: int, 默认类型是调试
     """
     if len(suite) == 0:
         return TEST_NOT_EXISTS
@@ -453,7 +453,7 @@ def parse_summary(summary):
     return summary
 
 
-def save_summary(name, summary, project, type=2, user=''):
+def save_summary(name, summary, project, type=2, user='', ci_metadata={}):
     """保存报告信息
     """
     if "status" in summary.keys():
@@ -472,7 +472,10 @@ def save_summary(name, summary, project, type=2, user=''):
         "type": type,
         "status": summary['success'],
         "summary": json.dumps(summary, ensure_ascii=False),
-        "creator": user
+        "creator": user,
+        "ci_metadata": ci_metadata,
+        'ci_project_id': ci_metadata.get('ci_project_id'),
+        'ci_job_id': ci_metadata.get('ci_job_id', None)
     })
 
     models.ReportDetail.objects.create(summary_detail=summary_detail, report=report)
