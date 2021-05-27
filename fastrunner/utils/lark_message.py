@@ -69,7 +69,6 @@ def parse_message(summary: dict, msg_type: str, **kwargs):
     return text
 
 
-@back_async
 def send_message(summary: dict, webhook: str, **kwargs):
     """
 
