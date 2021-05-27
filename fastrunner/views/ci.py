@@ -149,7 +149,7 @@ class CIView(GenericViewSet):
             ci_project_namespace = ser.validated_data['ci_project_namespace']
             ci_project_name = ser.validated_data['ci_project_name']
             ci_job_id = ser.validated_data['ci_job_id']
-            summary['name'] = f"{ci_project_namespace}_{ci_project_name}_{ci_job_id}"
+            summary['name'] = f"{ci_project_namespace}_{ci_project_name}_job{ci_job_id}"
 
             save_summary(summary.get('name'), summary, project, type=4, user=ser.validated_data['start_job_user'], ci_metadata=ser.validated_data)
             junit_results = summary2junit(summary)
