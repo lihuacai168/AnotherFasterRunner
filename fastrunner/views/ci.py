@@ -6,6 +6,8 @@
 # @Time : 2021/5/25 15:51
 # @Email: lihuacai168@gmail.com
 import datetime
+import json
+import re
 
 import xmltodict
 from django.http import HttpResponse
@@ -14,7 +16,7 @@ from djcelery.models import PeriodicTask
 from drf_yasg.utils import swagger_auto_schema
 
 from fastrunner import models
-from fastrunner.utils import loader , lark_message
+from fastrunner.utils import loader, lark_message
 from fastrunner.utils.decorator import request_log
 from django.utils.decorators import method_decorator
 from rest_framework import status
@@ -127,7 +129,10 @@ class CIView(GenericViewSet):
                 task_obj: str = query.filter(id=task_id).first()
                 if task_obj:
                     case_id = task_obj.args
-                    webhook_set.add(eval(task_obj.kwargs).get('webhook'))
+                    url = json.loads(task_obj.kwargs).get('webhook')
+                    url_pattern = r'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+'
+                    if re.match(url_pattern, url):
+                        webhook_set.add(url)
                 else:
                     continue
                 suite = list(models.Case.objects.filter(pk__in=eval(case_id)).order_by('id').values('id', 'name'))
