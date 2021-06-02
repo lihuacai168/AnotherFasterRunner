@@ -108,17 +108,27 @@ class CIView(GenericViewSet):
         ser = CISerializer(data=request.data)
         if ser.is_valid():
             task_name = 'fastrunner.tasks.schedule_debug_suite'
-            project: int = ser.validated_data.get('project')
-            task_ids: str = ser.validated_data.get('task_ids')
+            ci_project_id: int = ser.validated_data.get('ci_project_id')
+
             query = PeriodicTask.objects.filter(
-                enabled=1, task=task_name, description=project)
+                enabled=1, task=task_name)
+            pk_kwargs_list = query.values('pk', 'kwargs', 'description')
             enabled_task_ids = []
-            if task_ids == '':
-                task_ids_list: list = query.values('id')
-                for task_id in task_ids_list:
-                    enabled_task_ids.append(task_id.get('id'))
-            else:
-                enabled_task_ids: list = task_ids.split(',')
+            project = None
+            for pk_kwargs in pk_kwargs_list:
+                pk: int = pk_kwargs['pk']
+                kwargs: dict = json.loads(pk_kwargs['kwargs'])
+                ci_project_ids: list = eval(kwargs.get('ci_project_ids') or '[]')
+                if isinstance(ci_project_ids, int):
+                    ci_project_ids = [ci_project_ids]
+
+                if ci_project_id in ci_project_ids:
+                    enabled_task_ids.append(pk)
+                    project = pk_kwargs['description']
+
+            if not enabled_task_ids:
+                return Response({'msg': '没有找到匹配的用例', 'request_data': ser.validated_data})
+
             test_sets = []
             suite_list = []
             config_list = []

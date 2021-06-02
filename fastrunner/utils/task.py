@@ -29,6 +29,7 @@ class Task(object):
             "webhook": kwargs["webhook"],
             "updater": kwargs.get("updater"),
             "creator": kwargs.get("creator"),
+            "ci_project_ids": kwargs.get("ci_project_ids", []),
         }
         self.__crontab_time = None
 

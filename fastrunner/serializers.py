@@ -162,9 +162,9 @@ class CIReportSerializer(serializers.Serializer):
 
 
 class CISerializer(serializers.Serializer):
-    project = serializers.IntegerField(
-        required=True, min_value=1, help_text='测试平台中某个项目的id')
-    task_ids = serializers.CharField(required=True, max_length=200, allow_blank=True)
+    # project = serializers.IntegerField(
+    #     required=True, min_value=1, help_text='测试平台中某个项目的id')
+    # task_ids = serializers.CharField(required=True, max_length=200, allow_blank=True)
     ci_job_id = serializers.IntegerField(
         required=True, min_value=1, help_text='gitlab-ci job id')
     ci_job_url = serializers.CharField(required=True, max_length=500)
@@ -359,6 +359,9 @@ class PeriodicTaskSerializer(serializers.ModelSerializer):
         if obj.enabled:
             kwargs['next_execute_time'] = get_cron_next_execute_time(
                 kwargs['crontab'])
+        # ci_project_ids = eval(kwargs.get('ci_project_ids', '[]'))
+        # kwargs['ci_project_ids'] = ','.join(map(lambda x: str(x), ci_project_ids))
+        kwargs['ci_project_ids'] = kwargs.get('ci_project_ids', "")
         return kwargs
 
     def get_args(self, obj):
