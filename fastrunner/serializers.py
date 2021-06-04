@@ -6,6 +6,7 @@ import time
 
 from crontab import CronTab
 from django.db.models import Q
+from djcelery.models import PeriodicTask
 from rest_framework import serializers
 from fastrunner import models
 from fastrunner.utils.parser import Parse
@@ -377,3 +378,39 @@ class PeriodicTaskSerializer(serializers.ModelSerializer):
         if obj.last_run_at:
             return int(obj.last_run_at.timestamp())
         return ''
+
+
+class ScheduleDeSerializer(serializers.Serializer):
+    """
+    定时任务反序列
+    """
+    switch = serializers.BooleanField(required=True, help_text="定时任务开关")
+    crontab = serializers.CharField(required=True, help_text="定时任务表达式", max_length=100, allow_blank=True)
+    ci_project_ids = serializers.CharField(required=True, allow_blank=True,
+                                           help_text="Gitlab的项目id，多个用逗号分开，一个项目id对应多个task，但只能在同一个项目中")
+    strategy = serializers.CharField(required=True, help_text="发送通知策略", max_length=20)
+    receiver = serializers.CharField(required=True, help_text="邮件接收者，暂时用不上", allow_blank=True, max_length=100)
+    mail_cc = serializers.CharField(required=True, help_text="邮件抄送列表，暂时用不上", allow_blank=True, max_length=100)
+    name = serializers.CharField(required=True, help_text="定时任务的名字", max_length=100)
+    webhook = serializers.URLField(required=True, help_text="飞书webhook url", allow_blank=True, max_length=200)
+    updater = serializers.CharField(required=False, help_text="更新人", max_length=20)
+    creator = serializers.CharField(required=False, help_text="创建人", max_length=20)
+    data = serializers.ListField(required=True, help_text="用例id")
+    project = serializers.IntegerField(required=True, help_text="测试平台的项目id", min_value=1)
+
+    def validate_ci_project_ids(self, ci_project_ids):
+        if ci_project_ids:
+            not_allowed_project_ids = set()
+            kwargs_list = PeriodicTask.objects.filter(~Q(description=self.initial_data['project'])).values('kwargs')
+            for kwargs in kwargs_list:
+                not_allowed_project_id: str = json.loads(kwargs['kwargs']).get('ci_project_ids', "")
+                if not_allowed_project_id:
+                    not_allowed_project_ids.update(not_allowed_project_id.split(','))
+
+            validation_errors = set()
+            for ci_project_id in ci_project_ids.split(','):
+                if ci_project_id in not_allowed_project_ids:
+                    validation_errors.add(ci_project_id)
+
+            if validation_errors:
+                raise serializers.ValidationError(f"{','.join(validation_errors)} 已经在其他项目存在")

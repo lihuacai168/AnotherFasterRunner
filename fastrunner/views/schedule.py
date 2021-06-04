@@ -44,10 +44,15 @@ class ScheduleView(GenericViewSet):
             project: int
         }
         """
-        request.data.update({"creator": request.user.username})
-        task = Task(**request.data)
-        resp = task.add_task()
-        return Response(resp)
+
+        ser = serializers.ScheduleDeSerializer(data=request.data)
+        if ser.is_valid():
+            request.data.update({"creator": request.user.username})
+            task = Task(**request.data)
+            resp = task.add_task()
+            return Response(resp)
+        else:
+            return Response(ser.errors)
 
     @method_decorator(request_log(level='INFO'))
     def update(self, request, **kwargs):
@@ -56,9 +61,13 @@ class ScheduleView(GenericViewSet):
         :param kwargs:
         :return:
         """
-        task = Task(**request.data)
-        resp = task.update_task(kwargs['pk'])
-        return Response(resp)
+        ser = serializers.ScheduleDeSerializer(data=request.data)
+        if ser.is_valid():
+            task = Task(**request.data)
+            resp = task.update_task(kwargs['pk'])
+            return Response(resp)
+        else:
+            return Response(response.TASK_CI_PROJECT_IDS_EXIST)
 
     @method_decorator(request_log(level='INFO'))
     def patch(self, request, **kwargs):

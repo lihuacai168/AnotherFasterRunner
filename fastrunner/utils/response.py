@@ -272,6 +272,12 @@ TASK_HAS_EXISTS = {
     "msg": "定时任务已存在"
 }
 
+TASK_CI_PROJECT_IDS_EXIST = {
+    "code": "0103",
+    "success": False,
+    "msg": "Gitlab项目id已存在其他项目"
+}
+
 TASK_EMAIL_ILLEGAL = {
     "code": "0102",
     "success": False,
