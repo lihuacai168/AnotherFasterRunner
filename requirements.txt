@@ -24,7 +24,7 @@ djangorestframework~=3.8.2
 djangorestframework-jwt==1.11.0
 drf-yasg==1.17.1
 har2case==0.3.1
-HttpRunner==1.5.15
+# HttpRunner==1.5.15
 idna==2.8
 immutables==0.14
 inflection==0.5.0
