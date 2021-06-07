@@ -393,8 +393,8 @@ class ScheduleDeSerializer(serializers.Serializer):
     mail_cc = serializers.CharField(required=True, help_text="邮件抄送列表，暂时用不上", allow_blank=True, max_length=100)
     name = serializers.CharField(required=True, help_text="定时任务的名字", max_length=100)
     webhook = serializers.URLField(required=True, help_text="飞书webhook url", allow_blank=True, max_length=200)
-    updater = serializers.CharField(required=False, help_text="更新人", max_length=20)
-    creator = serializers.CharField(required=False, help_text="创建人", max_length=20)
+    updater = serializers.CharField(required=False, help_text="更新人", max_length=20, allow_null=True, allow_blank=True)
+    creator = serializers.CharField(required=False, help_text="创建人", max_length=20, allow_null=True, allow_blank=True)
     data = serializers.ListField(required=True, help_text="用例id")
     project = serializers.IntegerField(required=True, help_text="测试平台的项目id", min_value=1)
 
