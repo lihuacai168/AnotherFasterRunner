@@ -1,5 +1,5 @@
 # encoding: utf-8
-
+import time
 from unittest.case import SkipTest
 
 from httprunner import exceptions, logger, response, utils
@@ -170,7 +170,14 @@ class Runner(object):
         # setup hooks
         setup_hooks = teststep_dict.get("setup_hooks", [])
         setup_hooks.insert(0, "${setup_hook_prepare_kwargs($request)}")
+        setup_hooks_start = time.time()
         self.do_hook_actions(setup_hooks)
+        # 计算前置setup_hooks消耗的时间
+        setup_hooks_duration = 0
+        self.http_client_session.meta_data['request']['setup_hooks_start'] = setup_hooks_start
+        if len(setup_hooks) > 1:
+            setup_hooks_duration = time.time() - setup_hooks_start
+        self.http_client_session.meta_data['request']['setup_hooks_duration'] = setup_hooks_duration
 
         try:
             url = parsed_request.pop('url')
@@ -201,10 +208,16 @@ class Runner(object):
 
         # teardown hooks
         teardown_hooks = teststep_dict.get("teardown_hooks", [])
+        # 计算teardown_hooks消耗的时间
+        teardown_hooks_duration = 0
+        teardown_hooks_start = time.time()
         if teardown_hooks:
             logger.log_info("start to run teardown hooks")
             self.context.update_teststep_variables_mapping("response", resp_obj)
             self.do_hook_actions(teardown_hooks)
+            teardown_hooks_duration = time.time() - teardown_hooks_start
+        self.http_client_session.meta_data['response']['teardown_hooks_start'] = teardown_hooks_start
+        self.http_client_session.meta_data['response']['teardown_hooks_duration'] = teardown_hooks_duration
 
         # extract
         extracted_variables_mapping = resp_obj.extract_response(extractors)

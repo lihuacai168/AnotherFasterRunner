@@ -50,7 +50,9 @@ def get_summary(result):
     if getattr(result, "records", None):
         summary["time"] = {
             'start_at': result.start_at,
-            'duration': result.duration
+            'setup_hooks_duration': result.setup_hooks_duration,
+            'teardown_hooks_duration': result.teardown_hooks_duration,
+            'duration': result.duration,
         }
         summary["records"] = result.records
     else:
@@ -233,4 +235,25 @@ class HtmlTestResult(unittest.TextTestResult):
 
     @property
     def duration(self):
-        return time.time() - self.start_at
+        case_elapsed = 0
+        for record in self.records:
+            case_elapsed += record['meta_data']['response']['elapsed_ms']
+        # 毫秒转秒级，保留三位
+        total_duration = case_elapsed / 1000 + self.setup_hooks_duration + self.teardown_hooks_duration
+        return round(total_duration, 3)
+
+    @property
+    def setup_hooks_duration(self):
+        # 整个case的前置函数消耗时间
+        res = 0
+        for record in self.records:
+            res += record['meta_data']['request']['setup_hooks_duration']
+        return res
+
+    @property
+    def teardown_hooks_duration(self):
+        # 整个case的后置函数消耗时间
+        res = 0
+        for record in self.records:
+            res += record['meta_data']['response']['teardown_hooks_duration']
+        return res
