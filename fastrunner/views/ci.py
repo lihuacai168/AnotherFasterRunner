@@ -8,6 +8,7 @@
 import datetime
 import json
 import re
+import time
 
 import xmltodict
 from django.http import HttpResponse
@@ -54,12 +55,12 @@ def summary2junit(summary: dict) -> dict:
     res["testsuites"]["testsuite"]["tests"] = len(details)
     for detail in details:
         test_case = {
-                        "classname": "",
-                        "file": "",
-                        "line": "",
-                        "name": "",
-                        "time": ""
-                    }
+            "classname": "",
+            "file": "",
+            "line": "",
+            "name": "",
+            "time": ""
+        }
         name = detail.get('name')
         test_case['classname'] = name  # 对应junit的Suite
         records = detail.get('records')
@@ -78,7 +79,8 @@ def summary2junit(summary: dict) -> dict:
             for index, record in enumerate(records):
                 step_status = record.get('status')
                 if step_status == 'failure':
-                    failure_details.append(f"{index}-{record['name']}" + '\n' + record.get('attachment') + '\n' + '*' * 68)
+                    failure_details.append(
+                        f"{index}-{record['name']}" + '\n' + record.get('attachment') + '\n' + '*' * 68)
                 elif step_status == 'error':
                     case_error = True
             else:
@@ -89,7 +91,7 @@ def summary2junit(summary: dict) -> dict:
                     res["testsuites"]["testsuite"]["failures"] += 1
 
             failure = {
-               "message": "断言或者抽取失败",
+                "message": "断言或者抽取失败",
                 "#text": '\n'.join(failure_details)
             }
             test_case['failure'] = failure
@@ -127,7 +129,25 @@ class CIView(GenericViewSet):
                     project = pk_kwargs['description']
 
             if not enabled_task_ids:
-                return Response({'msg': '没有找到匹配的用例', 'request_data': ser.validated_data})
+                datetime_str = datetime.datetime.fromtimestamp(int(time.time())).strftime('%Y-%m-%dT%H:%M:%S.%f')
+                not_found_case_res = {
+                    "testsuites": {
+                        "testsuite": {
+                            "errors": 0,
+                            "failures": 0,
+                            "hostname": "",
+                            "name": "没有找到匹配的用例",
+                            "skipped": 0,
+                            "tests": 0,
+                            "time": "0",
+                            "timestamp": datetime_str,
+                            "testcase": []
+                        }
+                    }
+                }
+
+                xml_data = xmltodict.unparse(not_found_case_res)
+                return HttpResponse(xml_data, content_type='text/xml')
 
             test_sets = []
             suite_list = []
@@ -166,7 +186,8 @@ class CIView(GenericViewSet):
             ci_job_id = ser.validated_data['ci_job_id']
             summary['name'] = f"{ci_project_namespace}_{ci_project_name}_job{ci_job_id}"
 
-            save_summary(summary.get('name'), summary, project, type=4, user=ser.validated_data['start_job_user'], ci_metadata=ser.validated_data)
+            save_summary(summary.get('name'), summary, project, type=4, user=ser.validated_data['start_job_user'],
+                         ci_metadata=ser.validated_data)
             junit_results = summary2junit(summary)
             xml_data = xmltodict.unparse(junit_results)
             summary['task_name'] = 'gitlab-ci_' + summary.get('name')
@@ -192,5 +213,3 @@ class CIView(GenericViewSet):
             return Response(data=report_url)
         else:
             return Response(data=ser.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
