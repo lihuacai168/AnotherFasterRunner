@@ -871,7 +871,8 @@ class Yapi:
         api_info_template['header']['desc'].update(default_header_desc)
         default_validator = {'equals': ['content.successful', True]}
         api_info_template['validate']['validate'].append(default_validator)
-        api_info_template['name'] = source_api_info['title']
+        # 限制api的名称最大长度，避免溢出
+        api_info_template['name'] = source_api_info['title'][:100]
         # path中{var}替换成$var格式
         api_info_template['url'] = source_api_info['path'].replace('{', '$').replace('}', '')
         api_info_template['method'] = source_api_info['method']
