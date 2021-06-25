@@ -316,6 +316,12 @@ def debug_suite(suite, project, obj, config=None, save=True, user='', report_typ
         report_id = 0
         if save:
             report_id = save_summary(f"批量运行{len(test_sets)}条用例", summary, project, type=report_type, user=user)
+        # 复制一份response的json
+        for details in summary.get('details', []):
+            for record in details.get('records', []):
+                json_data = record['meta_data']['response'].pop('json', {})
+                if json_data:
+                    record['meta_data']['response']['jsonCopy'] = json_data
         return summary, report_id
 
     except Exception as e:
