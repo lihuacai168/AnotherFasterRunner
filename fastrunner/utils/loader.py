@@ -384,6 +384,13 @@ def debug_api(api, project, name=None, config=None, save=True, user=''):
 
         if save:
             save_summary(name, summary, project, type=1, user=user)
+
+        # 复制一份response的json
+        for details in summary.get('details', []):
+            for record in details.get('records', []):
+                json_data = record['meta_data']['response'].pop('json', {})
+                if json_data:
+                    record['meta_data']['response']['jsonCopy'] = json_data
         return summary
     except Exception as e:
         logger.log_error(f"debug_api error: {e}")
