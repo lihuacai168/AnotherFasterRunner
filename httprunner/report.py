@@ -247,7 +247,9 @@ class HtmlTestResult(unittest.TextTestResult):
         # 整个case的前置函数消耗时间
         res = 0
         for record in self.records:
-            res += record['meta_data']['request']['setup_hooks_duration']
+            setup_hooks_duration = record['meta_data']['request'].get('setup_hooks_duration')
+            if setup_hooks_duration:
+                res += setup_hooks_duration
         return res
 
     @property
@@ -255,5 +257,7 @@ class HtmlTestResult(unittest.TextTestResult):
         # 整个case的后置函数消耗时间
         res = 0
         for record in self.records:
-            res += record['meta_data']['response']['teardown_hooks_duration']
+            teardown_hooks_duration = record['meta_data']['response'].get('teardown_hooks_duration')
+            if teardown_hooks_duration:
+                res += teardown_hooks_duration
         return res
