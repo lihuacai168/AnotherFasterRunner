@@ -237,7 +237,9 @@ class HtmlTestResult(unittest.TextTestResult):
     def duration(self):
         case_elapsed = 0
         for record in self.records:
-            case_elapsed += record['meta_data']['response']['elapsed_ms']
+            elapsed_ms = record['meta_data']['response']['elapsed_ms']
+            if isinstance(elapsed_ms, (int, float)):
+                case_elapsed += record['meta_data']['response']['elapsed_ms']
         # 毫秒转秒级，保留三位
         total_duration = case_elapsed / 1000 + self.setup_hooks_duration + self.teardown_hooks_duration
         return round(total_duration, 3)
