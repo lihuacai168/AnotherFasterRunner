@@ -116,9 +116,12 @@ class FileLoader(object):
             "variables": {},
             "functions": {}
         }
-
+        debugtalk_module_name = 'debugtalk'
+        # 修复切换项目后，debugtalk有缓存
+        if sys.modules.get(debugtalk_module_name):
+            del sys.modules[debugtalk_module_name]
         sys.path.insert(0, file_path)
-        module = importlib.import_module("debugtalk")
+        module = importlib.import_module(debugtalk_module_name)
         # 修复重载bug
         importlib.reload(module)
         sys.path.pop(0)
