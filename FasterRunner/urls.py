@@ -49,7 +49,8 @@ urlpatterns = [
     path('api/fastrunner/', include('fastrunner.urls')),
 
     # 执行定时任务
-    re_path(r'^run_all_auto_case/$', run_all_auto_case.run_all_auto_case, name='run_all_auto_case'),
+    # TODO 需要增加触发检验，暂时关闭触发入口
+    # re_path(r'^run_all_auto_case/$', run_all_auto_case.run_all_auto_case, name='run_all_auto_case'),
     re_path(r'^get_report_url/$', run_all_auto_case.get_report_url, name='get_report_url'),
 
     # swagger
