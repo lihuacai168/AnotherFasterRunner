@@ -55,23 +55,29 @@ class Format(object):
             self.name = body.pop('name')
 
             self.__headers = body['header'].pop('header')
-            self.__params = body['request']['params'].pop('params')
-            self.__data = body['request']['form'].pop('data')
-            self.__json = body['request'].pop('json')
-            self.__files = body['request']['files'].pop('files')
+            if level == 'test':
+                # 配置移除request参数
+                self.__params = body['request']['params'].pop('params')
+                self.__data = body['request']['form'].pop('data')
+                self.__json = body['request'].pop('json')
+                self.__files = body['request']['files'].pop('files')
+            else:
+                self.__params = {}
+                self.__data = {}
+                self.__json = {}
+                self.__files = {}
             self.__variables = body['variables'].pop('variables')
             self.__setup_hooks = body['hooks'].pop('setup_hooks')
             self.__teardown_hooks = body['hooks'].pop('teardown_hooks')
 
-            self.__desc = {
-                "header": body['header'].pop('desc'),
-                "data": body['request']['form'].pop('desc'),
-                "files": body['request']['files'].pop('desc'),
-                "params": body['request']['params'].pop('desc'),
-                "variables": body['variables'].pop('desc'),
-            }
-
             if level == 'test':
+                self.__desc = {
+                    "header": body['header'].pop('desc'),
+                    "data": body['request']['form'].pop('desc'),
+                    "files": body['request']['files'].pop('desc'),
+                    "params": body['request']['params'].pop('desc'),
+                    "variables": body['variables'].pop('desc'),
+                }
                 self.url = body.pop('url')
                 self.method = body.pop('method')
 
@@ -81,6 +87,11 @@ class Format(object):
                 self.__desc['extract'] = body['extract'].pop('desc')
 
             elif level == 'config':
+                self.__desc = {
+                    "header": body['header'].pop('desc'),
+                    "variables": body['variables'].pop('desc'),
+                }
+
                 self.base_url = body.pop('base_url')
                 self.is_default = body.pop('is_default')
                 self.__parameters = body['parameters'].pop('parameters')
