@@ -40,7 +40,7 @@ class ConfigView(GenericViewSet):
         pk = kwargs["pk"]
 
         queryset = self.get_queryset().filter(project__id=pk). \
-            order_by('-update_time').values("id", "name", "is_default")
+            order_by('-update_time').values("id", "name", "is_default", "base_url")
 
         return Response(queryset)
 
