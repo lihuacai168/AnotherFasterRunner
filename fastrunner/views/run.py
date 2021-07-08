@@ -46,7 +46,8 @@ def run_api(request):
         host = models.HostIP.objects.get(name=host, project__id=api.project).value.splitlines()
         api.testcase = parse_host(host, api.testcase)
 
-    summary = loader.debug_api(api.testcase, api.project, name=api.name, config=parse_host(host, config), user=request.user)
+    summary = loader.debug_api(api.testcase, api.project, name=api.name, config=parse_host(host, config),
+                               user=request.user)
 
     return Response(summary)
 
@@ -66,7 +67,8 @@ def run_api_pk(request, **kwargs):
         host = models.HostIP.objects.get(name=host, project=api.project).value.splitlines()
         test_case = parse_host(host, test_case)
 
-    summary = loader.debug_api(test_case, api.project.id, name=api.name, config=parse_host(host, config), user=request.user)
+    summary = loader.debug_api(test_case, api.project.id, name=api.name, config=parse_host(host, config),
+                               user=request.user)
     return Response(summary)
 
 
@@ -171,7 +173,8 @@ def run_api_tree(request):
         summary = loader.TEST_NOT_EXISTS
         summary["msg"] = "接口运行中，请稍后查看报告"
     else:
-        summary = loader.debug_api(test_case, project, name=f'批量运行{len(test_case)}条API', config=parse_host(host, config), user=request.user)
+        summary = loader.debug_api(test_case, project, name=f'批量运行{len(test_case)}条API',
+                                   config=parse_host(host, config), user=request.user)
 
     return Response(summary)
 
@@ -230,7 +233,6 @@ def run_testsuite_pk(request, **kwargs):
     host = request.query_params["host"]
     back_async = request.query_params.get("async", False)
 
-
     test_case = []
     config = None
 
@@ -288,7 +290,8 @@ def run_suite_tree(request):
     config_list = []
     for relation_id in relation:
         case_name_id_mapping_list = list(models.Case.objects.filter(project__id=project,
-                                                relation=relation_id).order_by('id').values('id', 'name'))
+                                                                    relation=relation_id).order_by('id').values('id',
+                                                                                                                'name'))
         for content in case_name_id_mapping_list:
             test_list = models.CaseStep.objects. \
                 filter(case__id=content["id"]).order_by("step").values("body")
@@ -311,6 +314,66 @@ def run_suite_tree(request):
         summary["msg"] = "用例运行中，请稍后查看报告"
     else:
         summary, _ = loader.debug_suite(test_sets, project, suite_list, config_list, save=True, user=request.user)
+
+    return Response(summary)
+
+
+@api_view(['POST'])
+@request_log(level='INFO')
+def run_multi_tests(request):
+    """
+    通过指定id，运行多个指定用例
+    {
+    "name": "批量运行2条用例", # 报告名
+    "project": 11,
+    "case_config_mapping_list": [
+        {
+            "config_name": "config_name1",
+            "id": 153, # 用例id
+            "name": "case_name1" # 用例名
+        },
+        ]
+    }
+    """
+    project = request.data['project']
+    report_name = request.data["name"]
+    # 默认同步运行用例
+    back_async = request.data.get("async") or False
+    case_config_mapping_list = request.data["case_config_mapping_list"]
+    config_body_mapping = {}
+    # 解析用例列表中的配置
+    for config in case_config_mapping_list:
+        config_name = config['config_name']
+        if not config_body_mapping.get(config_name):
+            config_body_mapping[config_name] = eval(
+                models.Config.objects.get(name=config['config_name'], project__id=project).body)
+    test_sets = []
+    suite_list = []
+    config_list = []
+    for case_config_mapping in case_config_mapping_list:
+        case_id = case_config_mapping['id']
+        config_name = case_config_mapping['config_name']
+        # 获取用例的所有步骤
+        case_step_list = models.CaseStep.objects.filter(case__id=case_id).order_by("step").values("body")
+        parsed_case_step_list = []
+        for case_step in case_step_list:
+            body = eval(case_step['body'])
+            if body["request"].get('url'):
+                parsed_case_step_list.append(body)
+        config_body = config_body_mapping[config_name]
+        # 记录当前用例的配置信息
+        config_list.append(config_body)
+        # 记录已经解析好的用例
+        test_sets.append(parsed_case_step_list)
+        # 用例和配置的映射关系，奇怪的操作
+        suite_list.extend(case_config_mapping_list)
+
+    if back_async:
+        tasks.async_debug_suite.delay(test_sets, project, suite_list, report_name, config_list)
+        summary = loader.TEST_NOT_EXISTS
+        summary["msg"] = "用例运行中，请稍后查看报告"
+    else:
+        summary, _ = loader.debug_suite(test_sets, project, suite_list, config_list, save=True, user=request.user, report_name=report_name)
 
     return Response(summary)
 
@@ -342,4 +405,3 @@ def run_test(request):
                                config=parse_host(host, config), user=request.user)
 
     return Response(summary)
-

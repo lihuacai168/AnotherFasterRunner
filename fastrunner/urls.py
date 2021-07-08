@@ -142,6 +142,7 @@ urlpatterns = [
     path('run_test/', run.run_test),
     path('run_testsuite_pk/<int:pk>/', run.run_testsuite_pk),
     path('run_suite_tree/', run.run_suite_tree),
+    path('run_multi_tests/', run.run_multi_tests),
 
     # 报告地址
     path('reports/', report.ReportView.as_view({

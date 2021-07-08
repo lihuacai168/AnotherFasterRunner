@@ -266,7 +266,7 @@ def load_debugtalk(project):
         shutil.rmtree(os.path.dirname(file_path))
 
 
-def debug_suite(suite, project, obj, config=None, save=True, user='', report_type=1):
+def debug_suite(suite, project, obj, config=None, save=True, user='', report_type=1, report_name=""):
     """
             suite : list[list[dict]], 用例列表
             project: int, 项目id
@@ -282,6 +282,8 @@ def debug_suite(suite, project, obj, config=None, save=True, user='', report_typ
     debugtalk_path = debugtalk[1]
     os.chdir(os.path.dirname(debugtalk_path))
     test_sets = []
+    # 先记录配置的名称，parse_tests会改变config
+    config_name_list = [d['name']for d in config]
     try:
         for index in range(len(suite)):
             # copy.deepcopy 修复引用bug
@@ -307,7 +309,12 @@ def debug_suite(suite, project, obj, config=None, save=True, user='', report_typ
         failure_case_config_mapping_list = []
         for index, details in enumerate(details):
             if details['success'] is False:
-                failure_case_config_mapping_list.append(obj[index])
+                # 用例失败时,记录用例执行的配置
+                failure_case_config = {
+                    'config_name': config_name_list[index]
+                }
+                failure_case_config.update(obj[index])
+                failure_case_config_mapping_list.append(failure_case_config)
         case_count = len(test_sets)
         case_fail_rate = '{:.2%}'.format(len(failure_case_config_mapping_list) / case_count)
         summary['stat'].update({
@@ -318,7 +325,7 @@ def debug_suite(suite, project, obj, config=None, save=True, user='', report_typ
         })
         report_id = 0
         if save:
-            report_id = save_summary(f"批量运行{len(test_sets)}条用例", summary, project, type=report_type, user=user)
+            report_id = save_summary(report_name or f"批量运行{len(test_sets)}条用例", summary, project, type=report_type, user=user)
         # 复制一份response的json
         for details in summary.get('details', []):
             for record in details.get('records', []):
