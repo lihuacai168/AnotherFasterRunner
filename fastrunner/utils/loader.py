@@ -498,8 +498,6 @@ def save_summary(name, summary, project, type=2, user='', ci_metadata={}):
     if name == "" or name is None:
         name = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
-    # 　删除用不到的属性
-    summary['details'][0].pop('in_out')
     # 需要先复制一份,不然会把影响到debug_api返回给前端的报告
     summary = copy.copy(summary)
     summary_detail = summary.pop('details')
