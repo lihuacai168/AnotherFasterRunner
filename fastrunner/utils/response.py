@@ -260,6 +260,18 @@ TASK_UPDATE_SUCCESS = {
     "msg": "定时任务更新成功"
 }
 
+TASK_COPY_SUCCESS = {
+    "code": "0003",
+    "success": True,
+    "msg": "定时任务复制成功"
+}
+
+TASK_COPY_FAILURE = {
+    "code": "0103",
+    "success": False,
+    "msg": "复制失败，任务名重复了"
+}
+
 TASK_TIME_ILLEGAL = {
     "code": "0101",
     "success": False,

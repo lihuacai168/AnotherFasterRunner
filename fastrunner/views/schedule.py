@@ -26,7 +26,13 @@ class ScheduleView(GenericViewSet):
         查询项目信息
         """
         project = request.query_params.get("project")
+        task_name = request.query_params.get("task_name")
+        creator = request.query_params.get("creator")
         schedule = self.get_queryset().filter(description=project).order_by('-date_changed')
+        if task_name:
+            schedule = schedule.filter(name__contains=task_name)
+        if creator:
+            schedule = schedule.filter(kwargs__contains=f'"creator": "{creator}"')
         page_schedule = self.paginate_queryset(schedule)
         serializer = self.get_serializer(page_schedule, many=True)
         return self.get_paginated_response(serializer.data)
@@ -53,6 +59,23 @@ class ScheduleView(GenericViewSet):
             return Response(resp)
         else:
             return Response(ser.errors)
+
+    @method_decorator(request_log(level='INFO'))
+    def copy(self, request, **kwargs):
+        """复制定时任务
+        """
+        task_obj = self.get_queryset().get(pk=kwargs['pk'])
+        if task_obj.name == request.data['name']:
+            return Response(response.TASK_COPY_FAILURE)
+        task_obj.id = None
+        task_obj.name = request.data['name']
+        task_obj.total_run_count = 0
+        kwargs = json.loads(task_obj.kwargs)
+        kwargs['creator'] = request.user.username
+        kwargs['updater'] = ""
+        task_obj.kwargs = json.dumps(kwargs, ensure_ascii=False)
+        task_obj.save()
+        return Response(response.TASK_COPY_SUCCESS)
 
     @method_decorator(request_log(level='INFO'))
     def update(self, request, **kwargs):

@@ -43,7 +43,8 @@ urlpatterns = [
     path('schedule/<int:pk>/', schedule.ScheduleView.as_view({
         "get": "run",
         "delete": "delete",
-        "put": "update"
+        "put": "update",
+        "post": "copy"
     })),
 
     # debugtalk.py相关接口地址
