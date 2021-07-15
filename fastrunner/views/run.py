@@ -305,8 +305,8 @@ def run_suite_tree(request):
                     config = eval(models.Config.objects.get(name=body["name"], project__id=project).body)
             config_list.append(parse_host(host, config))
             test_sets.append(testcase_list)
-            suite_list.extend(case_name_id_mapping_list)
             config = None
+        suite_list.extend(case_name_id_mapping_list)
 
     if back_async:
         tasks.async_debug_suite.delay(test_sets, project, suite_list, report, config_list)
@@ -365,8 +365,8 @@ def run_multi_tests(request):
         config_list.append(config_body)
         # 记录已经解析好的用例
         test_sets.append(parsed_case_step_list)
-        # 用例和配置的映射关系，奇怪的操作
-        suite_list.extend(case_config_mapping_list)
+    # 用例和配置的映射关系
+    suite_list.extend(case_config_mapping_list)
 
     if back_async:
         tasks.async_debug_suite.delay(test_sets, project, suite_list, report_name, config_list)

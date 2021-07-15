@@ -30,6 +30,8 @@ class Task(object):
             "updater": kwargs.get("updater"),
             "creator": kwargs.get("creator"),
             "ci_project_ids": kwargs.get("ci_project_ids", []),
+            "ci_env": kwargs.get("ci_env", "请选择"),
+            "config": kwargs.get("config", "请选择"),
         }
         self.__crontab_time = None
 

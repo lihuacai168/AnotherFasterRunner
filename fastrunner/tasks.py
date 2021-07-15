@@ -63,6 +63,10 @@ def schedule_debug_suite(*args, **kwargs):
             })
         except ObjectDoesNotExist:
             pass
+    override_config = kwargs.get('config', "")
+    override_config_body = None
+    if override_config and override_config != "请选择":
+        override_config_body = eval(models.Config.objects.get(name=override_config, project__id=project).body)
 
     for content in suite:
         test_list = models.CaseStep.objects. \
@@ -73,6 +77,9 @@ def schedule_debug_suite(*args, **kwargs):
         for content in test_list:
             body = eval(content["body"])
             if "base_url" in body["request"].keys():
+                if override_config_body:
+                    config = override_config_body
+                    continue
                 config = eval(
                     models.Config.objects.get(
                         name=body["name"],

@@ -107,10 +107,15 @@ class CIView(GenericViewSet):
     @swagger_auto_schema(operation_summary='gitlab-ci触发自动化用例运行')
     @method_decorator(request_log(level='DEBUG'))
     def run_ci_tests(self, request):
+        """
+        gitlab-ci发起请求
+        测试平台解析参数，定时任务中的ci_project_id和ci_env同时匹配时，才会触发执行任务
+        """
         ser = CISerializer(data=request.data)
         if ser.is_valid():
             task_name = 'fastrunner.tasks.schedule_debug_suite'
             ci_project_id: int = ser.validated_data.get('ci_project_id')
+            ci_env: str = ser.validated_data.get('ci_env')
 
             query = PeriodicTask.objects.filter(
                 enabled=1, task=task_name)
@@ -124,10 +129,12 @@ class CIView(GenericViewSet):
                 if isinstance(ci_project_ids, int):
                     ci_project_ids = [ci_project_ids]
 
-                if ci_project_id in ci_project_ids:
+                # 定时任务中的ci_project_id和ci_env同时匹配
+                if ci_project_id in ci_project_ids and ci_env and ci_env == kwargs.get('ci_env'):
                     enabled_task_ids.append(pk)
                     project = pk_kwargs['description']
 
+            # 没有匹配用例，直接返回
             if not enabled_task_ids:
                 datetime_str = datetime.datetime.fromtimestamp(int(time.time())).strftime('%Y-%m-%dT%H:%M:%S.%f')
                 not_found_case_res = {
@@ -155,17 +162,26 @@ class CIView(GenericViewSet):
             host = "请选择"
             config = None
             webhook_set = set()
+            override_config_body = None
             for task_id in enabled_task_ids:
                 task_obj: str = query.filter(id=task_id).first()
+                # 如果task中存在重载配置，就覆盖用例中的配置
+                override_config = json.loads(task_obj.kwargs).get('config')
+                if override_config_body is None and override_config and override_config != "请选择":
+                    override_config_body = eval(
+                        models.Config.objects.get(name=override_config, project__id=project).body)
+
                 if task_obj:
-                    case_id = task_obj.args
+                    # 判断webhook是否合法
+                    case_ids: str = task_obj.args
                     url = json.loads(task_obj.kwargs).get('webhook')
                     url_pattern = r'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+'
                     if re.match(url_pattern, url):
                         webhook_set.add(url)
                 else:
                     continue
-                suite = list(models.Case.objects.filter(pk__in=eval(case_id)).order_by('id').values('id', 'name'))
+                # 反查出一个task中包含的所有用例
+                suite = list(models.Case.objects.filter(pk__in=eval(case_ids)).order_by('id').values('id', 'name'))
                 for case in suite:
                     case_step_list = models.CaseStep.objects. \
                         filter(case__id=case["id"]).order_by("step").values("body")
@@ -175,11 +191,18 @@ class CIView(GenericViewSet):
                         if body["request"].get('url'):
                             testcase_list.append(parse_host(host, body))
                         elif config is None and body["request"].get('base_url'):
-                            config = eval(models.Config.objects.get(name=body["name"], project__id=project).body)
+                            # 当前步骤是配置
+                            # 如果task中存在重载配置，就覆盖用例中的配置
+                            if override_config_body:
+                                config = override_config_body
+                            else:
+                                config = eval(models.Config.objects.get(name=body["name"], project__id=project).body)
                     config_list.append(parse_host(host, config))
                     test_sets.append(testcase_list)
-                    suite_list.extend(suite)
                     config = None
+                suite_list.extend(suite)
+                override_config_body = None
+            # 同步运行用例
             summary, _ = loader.debug_suite(test_sets, project, suite_list, config_list, save=False)
             ci_project_namespace = ser.validated_data['ci_project_namespace']
             ci_project_name = ser.validated_data['ci_project_name']
