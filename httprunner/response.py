@@ -3,6 +3,7 @@
 import json
 import re
 
+import pydash
 from httprunner import exceptions, logger, utils
 from httprunner.compat import OrderedDict, basestring, is_py2
 from requests.models import PreparedRequest
@@ -61,14 +62,34 @@ class ResponseObject(object):
             "content"
             "headers.content-type"
             "content.person.name.first_name"
+
+        support request body
+        e.g.
+            "request.body"
+            "request.body.key"
         """
         # string.split(sep=None, maxsplit=-1) -> list of strings
         # e.g. "content.person.name" => ["content", "person.name"]
+
         try:
             top_query, sub_query = field.split('.', 1)
         except ValueError:
             top_query = field
             sub_query = None
+
+        # request
+        if top_query == 'request' and sub_query is not None:
+            req = self.resp_obj.request
+            if hasattr(req, 'body'):
+                body = json.loads(req.body)
+                if sub_query == 'body':
+                    return body
+                query_path = sub_query.replace('body.', '', 1)
+                err_msg = f"request body not found: {field}"
+                res = pydash.get(body, query_path, exceptions.ExtractFailure(err_msg))
+                if isinstance(res, exceptions.ExtractFailure):
+                    raise res
+                return res
 
         # status_code
         if top_query in ["status_code", "encoding", "ok", "reason", "url"]:
