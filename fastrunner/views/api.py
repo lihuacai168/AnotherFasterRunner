@@ -58,11 +58,15 @@ class APITemplateView(GenericViewSet):
             delete = ser.validated_data.get('delete')
             only_me = ser.validated_data.get('onlyMe')
             showYAPI = ser.validated_data.get('showYAPI')
+            creator = ser.validated_data.get('creator')
 
             queryset = self.get_queryset().filter(project__id=project, delete=delete).order_by('-update_time')
 
             if only_me is True:
                 queryset = queryset.filter(creator=request.user)
+
+            if creator:
+                queryset = queryset.filter(creator=creator)
 
             if showYAPI is False:
                 queryset = queryset.filter(~Q(creator='yapi'))
