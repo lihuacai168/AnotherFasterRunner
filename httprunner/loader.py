@@ -7,7 +7,7 @@ import os
 import sys
 
 import yaml
-from httprunner import built_in, exceptions, logger, parser, utils, validator
+from httprunner import builtin, exceptions, logger, parser, utils, validator
 from httprunner.compat import OrderedDict
 
 
@@ -256,7 +256,7 @@ def load_python_module(module):
 def load_builtin_module():
     """ load built_in module
     """
-    built_in_module = load_python_module(built_in)
+    built_in_module = load_python_module(builtin)
     return built_in_module
 
 
