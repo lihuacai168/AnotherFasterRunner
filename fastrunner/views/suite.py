@@ -54,7 +54,7 @@ class TestCaseView(GenericViewSet):
             only_me = ser.validated_data.get("onlyMe")
     
             # update_time 降序排列
-            queryset = self.get_queryset().filter(project__id=project).order_by('-update_time')
+            queryset = self.get_queryset().filter(project__id=project).order_by('-create_time')
     
             if only_me is True:
                 queryset = queryset.filter(creator=request.user)
