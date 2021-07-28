@@ -162,10 +162,11 @@ class TestCaseView(GenericViewSet):
         body = request.data.pop('body')
         relation = request.data.pop("relation")
 
-        if models.Case.objects.exclude(id=pk). \
-                filter(name=request.data['name'],
-                       project__id=project,
-                       relation=relation).first():
+        is_exist_case_obj = models.Case.objects.exclude(id=pk).filter(name=request.data['name'], project__id=project)
+        if relation:
+            # 兼容新建用例时，保存用例步骤就提交修改
+            is_exist_case_obj = is_exist_case_obj.filter(relation=relation)
+        if is_exist_case_obj.first():
             return Response(response.CASE_EXISTS)
 
         case = models.Case.objects.get(id=pk)
@@ -244,7 +245,9 @@ class TestCaseView(GenericViewSet):
         # apis = models.API.objects.filter(pk__in=api_ids).all()
         # case.apis.add(*apis)
         transaction.savepoint_commit(save_point)
-        return Response(response.CASE_ADD_SUCCESS)
+        res = {'test_id': case.id}
+        res.update(response.CASE_ADD_SUCCESS)
+        return Response(res)
 
     @method_decorator(request_log(level='INFO'))
     def delete(self, request, **kwargs):
