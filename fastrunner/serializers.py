@@ -175,7 +175,7 @@ class CISerializer(serializers.Serializer):
     ci_project_id = serializers.IntegerField(required=True, min_value=1)
     ci_project_name = serializers.CharField(required=True, max_length=100)
     ci_project_namespace = serializers.CharField(required=True, max_length=100)
-    ci_env = serializers.CharField(required=False, max_length=100)
+    env = serializers.CharField(required=False, max_length=100)
     start_job_user = serializers.CharField(
         required=True, max_length=100, help_text='GITLAB_USER_NAME')
 

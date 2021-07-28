@@ -115,7 +115,7 @@ class CIView(GenericViewSet):
         if ser.is_valid():
             task_name = 'fastrunner.tasks.schedule_debug_suite'
             ci_project_id: int = ser.validated_data.get('ci_project_id')
-            ci_env: str = ser.validated_data.get('ci_env')
+            ci_env: str = ser.validated_data.get('env')
 
             query = PeriodicTask.objects.filter(
                 enabled=1, task=task_name)
