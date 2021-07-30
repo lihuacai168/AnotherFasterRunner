@@ -14,6 +14,8 @@ Built-in dependent functions used in YAML/JSON testcases.
 
 import re
 
+import pydash
+
 from httprunner.compat import basestring, builtin_str, integer_types
 
 """
@@ -82,6 +84,53 @@ def contains(check_value, expect_value):
 def contained_by(check_value, expect_value):
     assert isinstance(expect_value, (list, tuple, dict, basestring))
     assert check_value in expect_value
+
+
+def _get_expression(item, expression, expect_value, jsonpath):
+    parsed_expression = None
+    if isinstance(item, dict):
+        item_value = pydash.get(item, jsonpath)
+
+        if isinstance(item_value, (int, float, list, dict, bool, type(None))):
+            parsed_expression = f"{item_value} {expression} {expect_value}"
+        else:
+            parsed_expression = f"'{pydash.get(item, jsonpath)}' {expression} '{expect_value}'"
+
+    if isinstance(item, str):
+        parsed_expression = f"{item} {expression} {expect_value}"
+
+    if parsed_expression is None:
+        raise AssertionError(f"list的元素只能是dict或者string")
+
+    return parsed_expression
+
+
+def list_any_item_contains(check_value: list, jsonpath_expression_value):
+    assert isinstance(check_value, list)
+    jsonpath, expression, expect_value = jsonpath_expression_value.split(' ')
+    for item in check_value:
+        parsed_expression = _get_expression(item=item, expression=expression, expect_value=expect_value,
+                                            jsonpath=jsonpath)
+        try:
+            if eval(parsed_expression) is True:
+                break
+        except Exception as e:
+            raise e
+    else:
+        raise AssertionError(f"{check_value} {expression} {expect_value}")
+
+
+def list_all_item_contains(check_value: list, jsonpath_expression_value):
+    assert isinstance(check_value, list)
+    jsonpath, expression, expect_value = jsonpath_expression_value.split(' ')
+    for item in check_value:
+        parsed_expression = _get_expression(item=item, expression=expression, expect_value=expect_value,
+                                            jsonpath=jsonpath)
+        try:
+            if eval(parsed_expression) is False:
+                raise AssertionError(f"{check_value} {expression} {expect_value}")
+        except Exception as e:
+            raise e
 
 
 def type_match(check_value, expect_value):

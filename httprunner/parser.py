@@ -188,6 +188,12 @@ def parse_validator(validator):
         if not isinstance(compare_values, list) or len(compare_values) != 2:
             raise exceptions.ParamsError("invalid validator: {}".format(validator))
 
+        if comparator in ('list_any_item_contains', 'list_all_item_contains'):
+            # list item比较器特殊检查
+            if len(compare_values[1].split(' ')) != 3:
+                msg = f"{compare_values} 是错误的表达式, 正确的期望值表达式比如:k = v,等号前后要有空格符"
+                raise exceptions.ExpectValueParseFailure(msg)
+
         check_item, expect_value = compare_values
 
     else:
