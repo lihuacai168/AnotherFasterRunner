@@ -14,7 +14,8 @@ class Context(object):
         """ init Context with testcase variables and functions.
         """
         # testcase level context
-        ## TESTCASE_SHARED_VARIABLES_MAPPING and TESTCASE_SHARED_FUNCTIONS_MAPPING are unchangeable.
+        # TESTCASE_SHARED_FUNCTIONS_MAPPING are unchangeable.
+        # TESTCASE_SHARED_VARIABLES_MAPPING may change by Hrun.set_config
         if isinstance(variables, list):
             self.TESTCASE_SHARED_VARIABLES_MAPPING = utils.convert_mappinglist_to_orderdict(variables)
         else:

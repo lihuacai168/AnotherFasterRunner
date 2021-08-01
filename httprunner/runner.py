@@ -1,4 +1,6 @@
 # encoding: utf-8
+import threading
+
 import time
 from unittest.case import SkipTest
 
@@ -9,6 +11,8 @@ from httprunner.context import Context
 
 
 class Runner(object):
+    # 每个线程对应Runner类的实例
+    instances = {}
 
     def __init__(self, config_dict=None, http_client_session=None):
         """
@@ -31,6 +35,8 @@ class Runner(object):
 
         if testcase_setup_hooks:
             self.do_hook_actions(testcase_setup_hooks)
+
+        Runner.instances[threading.current_thread().name] = self
 
     def __del__(self):
         if self.testcase_teardown_hooks:
@@ -260,3 +266,28 @@ class Runner(object):
             output[variable] = variables_mapping[variable]
 
         return output
+
+
+class Hrun(object):
+    """
+    特殊关键字，提供给驱动函数中使用
+    可以在驱动函数中，修改配置变量和用例步骤运行时变量
+    """
+
+    @staticmethod
+    def get_current_context():
+        current_thread = threading.current_thread().name
+        current_context = Runner.instances[current_thread].context
+        return current_context
+
+    @staticmethod
+    def set_config(name, value):
+        # 在运行时修改配置变量
+        # 比如: 用例中需要切换账号，账号信息在配置中已经写死，需要在某个步骤重新设置变量的值，则可使用这个方法
+        current_context = Hrun.get_current_context()
+        current_context.TESTCASE_SHARED_VARIABLES_MAPPING[name] = value
+
+    @staticmethod
+    def set_step_var(name, value):
+        current_context = Hrun.get_current_context()
+        current_context.testcase_runtime_variables_mapping[name] = value
