@@ -11,7 +11,8 @@ from FasterRunner.settings.base import BASE_DIR
 EXEC = sys.executable
 
 if 'uwsgi' in EXEC:
-    EXEC = "/usr/bin/python3"
+    # 修复虚拟环境下，用uwsgi执行时，PYTHONPATH还是用了系统默认的
+    EXEC = EXEC.replace("uwsgi", 'python')
 
 
 class DebugCode(object):
@@ -28,7 +29,11 @@ class DebugCode(object):
             os.chdir(self.temp)
             file_path = os.path.join(self.temp, "debugtalk.py")
             loader.FileLoader.dump_python_file(file_path, self.__code)
-            self.resp = decode(subprocess.check_output([EXEC, file_path], stderr=subprocess.STDOUT, timeout=60))
+            # 修复驱动代码运行时，找不到内置httprunner包
+            run_path = [BASE_DIR]
+            run_path.extend(sys.path)
+            env = {'PYTHONPATH': ':'.join(run_path)}
+            self.resp = decode(subprocess.check_output([EXEC, file_path], stderr=subprocess.STDOUT, timeout=60, env=env))
 
         except subprocess.CalledProcessError as e:
             self.resp = decode(e.output)
