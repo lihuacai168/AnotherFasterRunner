@@ -7,6 +7,8 @@
 # @Email: lihuacai168@gmail.com
 import threading
 
+import pydash
+
 from httprunner.runner import Runner
 
 
@@ -19,8 +21,9 @@ class Hrun(object):
     @staticmethod
     def get_current_context():
         current_thread = threading.current_thread().name
-        current_context = Runner.instances[current_thread].context
-        return current_context
+        if Runner.instances.get(current_thread):
+            return Runner.instances[current_thread].context
+        return Runner().context
 
     @staticmethod
     def set_config_var(name, value):
@@ -33,7 +36,7 @@ class Hrun(object):
         # 在运行时修改配置中请求头的信息
         # 比如: 用例中需要切换账号，实现同时请求头中token和userId
         current_context = Hrun.get_current_context()
-        current_context.TESTCASE_SHARED_REQUEST_MAPPING['headers'][name] = value
+        pydash.set_(current_context.TESTCASE_SHARED_REQUEST_MAPPING, f'headers.{name}', value)
 
     @staticmethod
     def set_step_var(name, value):
