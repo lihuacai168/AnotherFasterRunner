@@ -158,7 +158,8 @@ def update_casestep(body, case, username):
             "step": index,
             "source_api_id": source_api_id
         }
-        if 'case' in test.keys():
+        # is_copy is True表示用例步骤是复制的
+        if 'case' in test.keys() and test.pop("is_copy", False) is False:
             models.CaseStep.objects.filter(id=test['id']).update(**kwargs, updater=username)
             step_list.remove({"id": test['id']})
         else:
