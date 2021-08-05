@@ -204,6 +204,10 @@ class Runner(object):
         logger.log_info("{method} {url}".format(method=method, url=url))
         logger.log_debug("request kwargs(raw): {kwargs}".format(kwargs=parsed_request))
 
+        user_timeout: str = str(pydash.get(parsed_request, 'headers.timeout'))
+        if user_timeout and user_timeout.isdigit():
+            parsed_request['timeout'] = int(user_timeout)
+
         # request
         resp = self.http_client_session.request(
             method,
