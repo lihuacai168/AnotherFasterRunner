@@ -548,6 +548,10 @@ def parse_data(content, variables_mapping=None, functions_mapping=None):
         return parsed_content
 
     if isinstance(content, basestring):
+        # # replace $$ notation with $ and consider it as normal char.
+        if '$$' in content:
+            return content.replace("$$", "$")
+
         # content is in string format here
         variables_mapping = variables_mapping or {}
         functions_mapping = functions_mapping or {}
