@@ -4,12 +4,21 @@ import ast
 import os
 import re
 
+from loguru import logger
+
 from httprunner import exceptions, utils
 from httprunner.compat import basestring, builtin_str, numeric_types, str
 
 variable_regexp = r"\$([\w_]+)"
 function_regexp = r"\$\{([\w_]+\([\$\w\.\-/_ =,]*\))\}"
 function_regexp_compile = re.compile(r"^([\w_]+)\(([\$\w\.\-/_ =,]*)\)$")
+
+# use $$ to escape $ notation
+dolloar_regex_compile = re.compile(r"\$\$")
+# variable notation, e.g. ${var} or $var
+variable_regex_compile = re.compile(r"\$\{(\w+)\}|\$(\w+)")
+# function notation, e.g. ${func1($var_1, $var_3)}
+function_regex_compile = re.compile(r"\$\{(\w+)\(([\$\w\.\-/\s=,]*)\)\}")
 
 
 def parse_string_value(str_value):
@@ -500,6 +509,147 @@ def parse_string_variables(content, variables_mapping):
     return content
 
 
+def parse_function_params(params) -> dict:
+    """ parse function params to args and kwargs.
+    Args:
+        params (str): function param in string
+    Returns:
+        dict: function meta dict
+            {
+                "args": [],
+                "kwargs": {}
+            }
+    Examples:
+        >>> parse_function_params("")
+        {'args': [], 'kwargs': {}}
+        >>> parse_function_params("5")
+        {'args': [5], 'kwargs': {}}
+        >>> parse_function_params("1, 2")
+        {'args': [1, 2], 'kwargs': {}}
+        >>> parse_function_params("a=1, b=2")
+        {'args': [], 'kwargs': {'a': 1, 'b': 2}}
+        >>> parse_function_params("1, 2, a=3, b=4")
+        {'args': [1, 2], 'kwargs': {'a':3, 'b':4}}
+    """
+    function_meta = {"args": [], "kwargs": {}}
+
+    params_str = params.strip()
+    if params_str == "":
+        return function_meta
+
+    args_list = params_str.split(",")
+    for arg in args_list:
+        arg = arg.strip()
+        if "=" in arg:
+            key, value = arg.split("=")
+            function_meta["kwargs"][key.strip()] = parse_string_value(value.strip())
+        else:
+            function_meta["args"].append(parse_string_value(arg))
+
+    return function_meta
+
+def parse_string(
+    raw_string,
+    variables_mapping,
+    functions_mapping,
+):
+    """ parse string content with variables and functions mapping.
+    Args:
+        raw_string: raw string content to be parsed.
+        variables_mapping: variables mapping.
+        functions_mapping: functions mapping.
+    Returns:
+        str: parsed string content.
+    Examples:
+        >>> raw_string = "abc${add_one($num)}def"
+        >>> variables_mapping = {"num": 3}
+        >>> functions_mapping = {"add_one": lambda x: x + 1}
+        >>> parse_string(raw_string, variables_mapping, functions_mapping)
+            "abc4def"
+    """
+    try:
+        match_start_position = raw_string.index("$", 0)
+        parsed_string = raw_string[0:match_start_position]
+    except ValueError:
+        parsed_string = raw_string
+        return parsed_string
+
+    while match_start_position < len(raw_string):
+
+        # Notice: notation priority
+        # $$ > ${func($a, $b)} > $var
+
+        # search $$
+        dollar_match = dolloar_regex_compile.match(raw_string, match_start_position)
+        if dollar_match:
+            match_start_position = dollar_match.end()
+            parsed_string += "$"
+            continue
+
+        # search function like ${func($a, $b)}
+        func_match = function_regex_compile.match(raw_string, match_start_position)
+        if func_match:
+            func_name = func_match.group(1)
+            func = get_mapping_function(func_name, functions_mapping)
+
+            func_params_str = func_match.group(2)
+            function_meta = parse_function_params(func_params_str)
+            args = function_meta["args"]
+            kwargs = function_meta["kwargs"]
+            parsed_args = parse_data(args, variables_mapping, functions_mapping)
+            parsed_kwargs = parse_data(kwargs, variables_mapping, functions_mapping)
+
+            try:
+                func_eval_value = func(*parsed_args, **parsed_kwargs)
+            except Exception as ex:
+                logger.error(
+                    f"call function error:\n"
+                    f"func_name: {func_name}\n"
+                    f"args: {parsed_args}\n"
+                    f"kwargs: {parsed_kwargs}\n"
+                    f"{type(ex).__name__}: {ex}"
+                )
+                raise
+
+            func_raw_str = "${" + func_name + f"({func_params_str})" + "}"
+            if func_raw_str == raw_string:
+                # raw_string is a function, e.g. "${add_one(3)}", return its eval value directly
+                return func_eval_value
+
+            # raw_string contains one or many functions, e.g. "abc${add_one(3)}def"
+            parsed_string += str(func_eval_value)
+            match_start_position = func_match.end()
+            continue
+
+        # search variable like ${var} or $var
+        var_match = variable_regex_compile.match(raw_string, match_start_position)
+        if var_match:
+            var_name = var_match.group(1) or var_match.group(2)
+            var_value = get_mapping_variable(var_name, variables_mapping)
+
+            if f"${var_name}" == raw_string or "${" + var_name + "}" == raw_string:
+                # raw_string is a variable, $var or ${var}, return its value directly
+                return var_value
+
+            # raw_string contains one or many variables, e.g. "abc${var}def"
+            parsed_string += str(var_value)
+            match_start_position = var_match.end()
+            continue
+
+        curr_position = match_start_position
+        try:
+            # find next $ location
+            match_start_position = raw_string.index("$", curr_position + 1)
+            remain_string = raw_string[curr_position:match_start_position]
+        except ValueError:
+            remain_string = raw_string[curr_position:]
+            # break while loop
+            match_start_position = len(raw_string)
+
+        parsed_string += remain_string
+
+    return parsed_string
+
 def parse_data(content, variables_mapping=None, functions_mapping=None):
     """ parse content with variables mapping
 
@@ -548,17 +698,25 @@ def parse_data(content, variables_mapping=None, functions_mapping=None):
         return parsed_content
 
     if isinstance(content, basestring):
-        # content is in string format here
         variables_mapping = variables_mapping or {}
         functions_mapping = functions_mapping or {}
-        content = content.strip()
+        content = parse_string(content, variables_mapping, functions_mapping)
 
-        # replace functions with evaluated value
-        # Notice: _eval_content_functions must be called before _eval_content_variables
-        content = parse_string_functions(content, variables_mapping, functions_mapping)
+        # replace $$ notation with $ and consider it as normal char.
+        # if '$$' in content:
+        #     return content.replace("$$", "$")
 
-        # replace variables with binding value
-        content = parse_string_variables(content, variables_mapping)
+        # content is in string format here
+        # variables_mapping = variables_mapping or {}
+        # functions_mapping = functions_mapping or {}
+        # content = content.strip()
+
+        # # replace functions with evaluated value
+        # # Notice: _eval_content_functions must be called before _eval_content_variables
+        # content = parse_string_functions(content, variables_mapping, functions_mapping)
+        #
+        # # replace variables with binding value
+        # content = parse_string_variables(content, variables_mapping)
 
     return content
 
