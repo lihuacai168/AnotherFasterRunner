@@ -1,3 +1,4 @@
+import concurrent
 import copy
 import datetime
 import functools
@@ -6,6 +7,9 @@ import io
 import json
 import os
 import shutil
+import time
+from concurrent.futures import ThreadPoolExecutor
+
 import sys
 import tempfile
 import types
@@ -14,7 +18,9 @@ from threading import Thread
 import requests
 import yaml
 from bs4 import BeautifulSoup
-from httprunner import HttpRunner, logger, parser
+from loguru import logger
+
+from httprunner import HttpRunner, parser
 from httprunner.exceptions import FunctionNotFound, VariableNotFound
 from requests.cookies import RequestsCookieJar
 from requests_toolbelt import MultipartEncoder
@@ -23,7 +29,6 @@ from fastrunner import models
 from fastrunner.utils.parser import Format
 from FasterRunner.settings.base import BASE_DIR
 
-logger.setup_logger('DEBUG')
 
 TEST_NOT_EXISTS = {
     "code": "0102",
@@ -266,7 +271,51 @@ def load_debugtalk(project):
         shutil.rmtree(os.path.dirname(file_path))
 
 
-def debug_suite(suite, project, obj, config=None, save=True, user='', report_type=1, report_name=""):
+def merge_parallel_result(results: list, duration):
+    """合并并行的结果，保持和串行运行结果一样
+    """
+    base_result: dict = results.pop()
+    for result in results:
+        base_result['success'] = result["success"] and base_result["success"]
+        for k, v in base_result['stat'].items():
+            base_result['stat'][k] = v + result['stat'][k]
+
+        for k, v in base_result['time'].items():
+            if k == 'start_at':
+                base_result['time'][k] = min(v, result['time'][k])
+            else:
+                base_result['time'][k] = v + result['time'][k]
+        base_result['details'].extend(result['details'])
+    base_result['time']['duration'] = duration
+
+    # 删除多余的key
+    keys = list(base_result.keys())
+    for k in keys:
+        if k not in ('success', 'stat', 'time', 'platform', 'details'):
+            base_result.pop(k)
+    return base_result
+
+
+def debug_suite_parallel(test_sets: list):
+    """并行运行用例
+    """
+    def run_test(test_set: dict):
+        kwargs = {
+            "failfast": False
+        }
+        runner = HttpRunner(**kwargs)
+        runner.run([test_set])
+        return parse_summary(runner.summary)
+    start = time.time()
+    with ThreadPoolExecutor(max_workers=len(test_sets)) as executor:
+        futures = {executor.submit(run_test, t): t for t in test_sets}
+        results = [future.result() for future in concurrent.futures.as_completed(futures)]
+
+    duration = time.time() - start
+    return merge_parallel_result(results, duration)
+
+
+def debug_suite(suite, project, obj, config=None, save=True, user='', report_type=1, report_name="", allow_parallel=False):
     """
             suite : list[list[dict]], 用例列表
             project: int, 项目id
@@ -298,12 +347,15 @@ def debug_suite(suite, project, obj, config=None, save=True, user='', report_typ
                 ))
             test_sets.append(testcases)
 
-        kwargs = {
-            "failfast": False
-        }
-        runner = HttpRunner(**kwargs)
-        runner.run(test_sets)
-        summary = parse_summary(runner.summary)
+        if allow_parallel:
+            summary = debug_suite_parallel(test_sets)
+        else:
+            kwargs = {
+                "failfast": False
+            }
+            runner = HttpRunner(**kwargs)
+            runner.run(test_sets)
+            summary = parse_summary(runner.summary)
         # 统计用例级别的数据
         details: list = summary['details']
         failure_case_config_mapping_list = []
@@ -409,7 +461,7 @@ def debug_api(api, project, name=None, config=None, save=True, user=''):
                     record['meta_data']['response']['jsonCopy'] = json_data
         return summary
     except Exception as e:
-        logger.log_error(f"debug_api error: {e}")
+        logger.error(f"debug_api error: {e}")
         raise SyntaxError(str(e))
     finally:
         os.chdir(BASE_DIR)
