@@ -307,7 +307,9 @@ def debug_suite_parallel(test_sets: list):
         runner.run([test_set])
         return parse_summary(runner.summary)
     start = time.time()
-    with ThreadPoolExecutor(max_workers=len(test_sets)) as executor:
+    # 限制最多10个线程
+    workers = min(len(test_sets), 10)
+    with ThreadPoolExecutor(max_workers=workers) as executor:
         futures = {executor.submit(run_test, t): t for t in test_sets}
         results = [future.result() for future in concurrent.futures.as_completed(futures)]
 
