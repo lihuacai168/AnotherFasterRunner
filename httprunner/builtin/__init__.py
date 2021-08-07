@@ -10,3 +10,4 @@ from httprunner.builtin.comparators import *
 from httprunner.builtin.common_util import *
 from httprunner.builtin.time_helper import *
 from httprunner.builtin.request_helper import *
+from httprunner.builtin.faker_helper import *
