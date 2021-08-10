@@ -367,6 +367,8 @@ class PeriodicTaskSerializer(serializers.ModelSerializer):
         kwargs['ci_project_ids'] = kwargs.get('ci_project_ids', "")
         kwargs['ci_env'] = kwargs.get('ci_env', "请选择")
         kwargs['config'] = kwargs.get('config', "请选择")
+        # False:串行, True:并行
+        kwargs['is_parallel'] = kwargs.get('is_parallel', False)
         return kwargs
 
     def get_args(self, obj):

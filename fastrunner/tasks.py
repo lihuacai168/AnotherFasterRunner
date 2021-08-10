@@ -89,7 +89,8 @@ def schedule_debug_suite(*args, **kwargs):
         config_list.append(config)
         test_sets.append(testcase_list)
 
-    summary, _ = debug_suite(test_sets, project, suite, config_list, save=False)
+    is_parallel = kwargs.get("is_parallel", False)
+    summary, _ = debug_suite(test_sets, project, suite, config_list, save=False, allow_parallel=is_parallel)
     task_name = kwargs["task_name"]
 
     if kwargs.get('run_type') == 'deploy':

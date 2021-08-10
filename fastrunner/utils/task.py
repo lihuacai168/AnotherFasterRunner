@@ -31,6 +31,7 @@ class Task(object):
             "creator": kwargs.get("creator"),
             "ci_project_ids": kwargs.get("ci_project_ids", []),
             "ci_env": kwargs.get("ci_env", "请选择"),
+            "is_parallel": kwargs.get("is_parallel", False),
             "config": kwargs.get("config", "请选择"),
         }
         self.__crontab_time = None
