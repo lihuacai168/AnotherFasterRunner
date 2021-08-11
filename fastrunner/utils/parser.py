@@ -236,6 +236,7 @@ class Parse(object):
             "bool": 4,
             "list": 5,
             "dict": 6,
+            "NoneType": 7
         }
 
         key = str(type(content).__name__)
@@ -243,6 +244,9 @@ class Parse(object):
         # 黑魔法，为了兼容值是int，但又是$引用变量的情况
         if key == 'str' and '$int' in content:
             return var_type['int'], content
+
+        if key == "NoneType":
+            return var_type['NoneType'], content
 
         if key in ["list", "dict"]:
             content = json.dumps(content, ensure_ascii=False)

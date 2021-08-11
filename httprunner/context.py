@@ -196,7 +196,7 @@ class Context(object):
         expect_value = validator_dict["expect"]
 
         if (check_value is None or expect_value is None) \
-            and comparator not in ["is", "eq", "equals", "=="]:
+            and comparator not in ["is", "eq", "equals", "not_equals", "=="]:
             raise exceptions.ParamsError("Null value can only be compared with comparator: eq/equals/==")
 
         validate_msg = "validate: {} {} {}({})".format(
