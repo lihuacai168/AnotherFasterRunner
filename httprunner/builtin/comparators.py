@@ -81,6 +81,11 @@ def contains(check_value, expect_value):
     assert expect_value in check_value
 
 
+def not_contains(check_value, expect_value):
+    assert isinstance(check_value, (list, tuple, dict, basestring))
+    assert check_value not in expect_value
+
+
 def contained_by(check_value, expect_value):
     assert isinstance(expect_value, (list, tuple, dict, basestring))
     assert check_value in expect_value
