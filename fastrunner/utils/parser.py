@@ -538,7 +538,7 @@ def format_summary_to_ding(msg_type, summary, report_name=None):
 def set_customized_variable(api_info_template, items):
     if items['type'] == 'object':
         properties: dict = items['properties']
-        attr_name: dict = properties['attributeName']
+        attr_name: dict = properties.get('attributeName', {})
         attribute_name_enum: list = attr_name.get('enum', [''])
         if len(attribute_name_enum) == 0:
             attribute_name_enum = ['']
@@ -554,7 +554,7 @@ def set_customized_variable(api_info_template, items):
             api_info_template['variables']['desc'][attr] = attr_name.get('description', '')
 
         # 查询条件比较类型
-        range_type: dict = properties['rangeType']
+        range_type: dict = properties.get('rangeType', {})
         range_type_enum: list = range_type.get('enum', [''])
         api_info_template['variables']['variables'].append({'rangeType': range_type_enum[0]})
         api_info_template['variables']['desc']['rangeType'] = f'条件匹配方式: {",".join(range_type_enum)}'
