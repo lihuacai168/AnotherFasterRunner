@@ -12,3 +12,4 @@ from httprunner.builtin.time_helper import *
 from httprunner.builtin.request_helper import *
 from httprunner.builtin.faker_helper import *
 from httprunner.builtin.rand_helper import *
+from httprunner.builtin.login_helper import *
