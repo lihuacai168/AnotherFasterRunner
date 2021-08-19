@@ -1,5 +1,8 @@
-from django.db.models import Sum
+from django.db.models import Sum, Count, Q
+from django.db.models.functions import Concat
+
 from fastrunner import models
+from fastrunner.utils.day import get_day
 from fastrunner.utils.parser import Format
 from djcelery import models as celery_models
 
@@ -21,10 +24,112 @@ def report_status_count(pk):
     return report_fail, report_success
 
 
+def get_project_api_cover(project_id):
+    """"""
+    case_steps = models.CaseStep.objects.filter(case__project_id=project_id).filter(
+        ~Q(method='config')).values('url', 'method').annotate(url_method=Concat('url', 'method'))
+    return case_steps.aggregate(Count('url_method', distinct=True))
+
+
+def get_project_apis(project_id) -> dict:
+    """统计项目中手动创建和从yapi导入的接口数量
+    """
+    query = models.API.objects
+    if project_id:
+        query = query.filter(project_id=project_id)
+
+    project_api_map: dict = query.aggregate(用户创建=Count('pk', filter=~Q(creator='yapi')),
+                                            yapi导入=Count('pk', filter=Q(creator='yapi')))
+    return project_api_map.keys(), project_api_map.values()
+
+
+def aggregate_case_by_tag(project_id):
+    """按照分类统计项目中的用例"""
+    query = models.Case.objects
+    if project_id:
+        query = query.filter(project_id=project_id)
+    case_count: dict = query.aggregate(冒烟用例=Count('pk', filter=Q(tag=1)),
+                                       集成用例=Count('pk', filter=Q(tag=2)),
+                                       监控脚本=Count('pk', filter=Q(tag=3)),
+                                       )
+    return case_count.keys(), case_count.values()
+
+
+def aggregate_reports_by_type(project_id):
+    """按照类型统计项目中的报告"""
+    query = models.Report.objects
+    if project_id:
+        query = query.filter(project_id=project_id)
+    report_count: dict = query.aggregate(调试=Count('pk', filter=Q(type=1)),
+                                         异步=Count('pk', filter=Q(type=2)),
+                                         定时=Count('pk', filter=Q(type=3)),
+                                         部署=Count('pk', filter=Q(type=4)),
+                                         )
+    return report_count.keys(), report_count.values()
+
+
+def get_daily_count(project_id, model_name, start, end):
+    # 生成日期list, ['08-12', '08-13', ...]
+    recent_days = [get_day(n)[5:] for n in range(start, end)]
+    models_mapping = {
+        'api': models.API,
+        'case': models.Case,
+        'report': models.Report
+    }
+    model = models_mapping[model_name]
+    # 统计给定日期范围内，每天创建的条数
+    count_data: list = model.objects.filter(project_id=project_id, create_time__range=[get_day(start), get_day(end)]) \
+        .extra(select={"create_time": "DATE_FORMAT(create_time,'%%m-%%d')"}) \
+        .values('create_time') \
+        .annotate(counts=Count('id')) \
+        .values('create_time', 'counts')
+    # list转dict, key是日期, value是统计数
+    create_time_count_mapping = {data['create_time']: data["counts"] for data in count_data}
+
+    # 日期为空的key，补0
+    count = [create_time_count_mapping.get(d, 0) for d in recent_days]
+    return {'days': recent_days, 'count': count}
+
+
+def get_project_daily_create(project_id):
+    """项目每天创建的api, case, report"""
+    start = -6
+    end = 1
+    count_mapping = {}
+    for model in ('api', 'case', 'report'):
+        count_mapping[model] = get_daily_count(project_id, model, start, end)
+    return count_mapping
+
+
+def get_project_detail_v2(pk):
+    """统计项目api, case, report总数和每日创建"""
+    api_create_type, api_create_type_count = get_project_apis(pk)
+    case_tag, case_tag_count = aggregate_case_by_tag(pk)
+    report_type, report_type_count = aggregate_reports_by_type(pk)
+    daily_create_count = get_project_daily_create(pk)
+    res = {
+        "api_count_by_create_type": {
+            "type": api_create_type,
+            "count": api_create_type_count
+        },
+        "case_count_by_tag": {
+            "tag": case_tag,
+            "count": case_tag_count
+        },
+        "report_count_by_type": {
+            'type': report_type,
+            'count': report_type_count
+        },
+        "daily_create_count": daily_create_count
+    }
+    return res
+
+
 def get_project_detail(pk):
     """
     项目详细统计信息
     """
+
     api_count = get_counter(models.API, pk=pk)
     case_count = get_counter(models.Case, pk=pk)
     config_count = get_counter(models.Config, pk=pk)
@@ -228,6 +333,7 @@ def generate_casestep(body, case, username):
         case_step = models.CaseStep(**kwargs)
         case_steps.append(case_step)
     models.CaseStep.objects.bulk_create(objs=case_steps)
+
 
 def case_end(pk):
     """

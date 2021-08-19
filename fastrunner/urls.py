@@ -33,6 +33,7 @@ urlpatterns = [
         "delete": "delete"
     })),
     path('project/<int:pk>/', project.ProjectView.as_view({"get": "single"})),
+    path('project/yapi/<int:pk>/', project.ProjectView.as_view({"get": "yapi_info"})),
 
     # 定时任务相关接口
     path('schedule/', schedule.ScheduleView.as_view({

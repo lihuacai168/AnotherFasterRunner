@@ -113,10 +113,17 @@ class ProjectView(GenericViewSet):
 
         serializer = self.get_serializer(queryset, many=False)
 
-        project_info = prepare.get_project_detail(pk)
+        project_info = prepare.get_project_detail_v2(pk)
         project_info.update(serializer.data)
 
         return Response(project_info)
+
+    def yapi_info(self, request, **kwargs):
+        """获取项目的yapi地址和token"""
+        pk = kwargs.pop('pk')
+        obj = models.Project.objects.get(id=pk)
+        ser = self.get_serializer(obj, many=False)
+        return Response(ser.data)
 
 
 class DebugTalkView(GenericViewSet):
@@ -239,21 +246,21 @@ class VisitView(GenericViewSet):
 
     def list(self, request):
         project = request.query_params.get("project")
-        # 查询当前项目7天内的访问记录
+        # 查询项目前7天的访问记录
         # 根据日期分组
         # 统计每天的条数
+        recent7days = [day.get_day(d)[5:] for d in range(-5, 0)]
         count_data = self.get_queryset()\
-            .filter(project=project, create_time__range=(day.get_day(-6), day.get_day(1)))\
+            .filter(project=project, create_time__range=(day.get_day(-5), day.get_day()))\
             .extra(select={"create_time": "DATE_FORMAT(create_time,'%%m-%%d')"})\
             .values('create_time')\
-            .annotate(counts=Count('id')).values('create_time', 'counts')
+            .annotate(counts=Count('id'))\
+            .values('create_time', 'counts')
 
-        create_time = []
-        count = []
-        for d in count_data:
-            create_time.append(d['create_time'])
-            count.append(d['counts'])
-        return Response({'create_time': create_time, 'count': count})
+        create_time_report_map = {data['create_time']: data["counts"] for data in count_data}
+        report_count = [create_time_report_map.get(d, 0) for d in recent7days]
+
+        return Response({'recent7days': recent7days, 'report_count': report_count})
 #
 # class FileView(APIView):
 #
