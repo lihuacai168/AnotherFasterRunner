@@ -10,6 +10,7 @@ from rest_framework.response import Response
 from fastrunner.utils import response
 from fastrunner.utils import prepare
 from fastrunner.utils import day
+from fastrunner.utils.day import get_day, get_month_format, get_week_format
 from fastrunner.utils.decorator import request_log
 from fastrunner.utils.runner import DebugCode
 from fastrunner.utils.tree import get_tree_max_id
@@ -118,12 +119,68 @@ class ProjectView(GenericViewSet):
 
         return Response(project_info)
 
+    @method_decorator(request_log(level='INFO'))
     def yapi_info(self, request, **kwargs):
         """获取项目的yapi地址和token"""
         pk = kwargs.pop('pk')
         obj = models.Project.objects.get(id=pk)
         ser = self.get_serializer(obj, many=False)
         return Response(ser.data)
+
+
+class DashBoardView(GenericViewSet):
+    """项目看板"""
+
+    @method_decorator(request_log(level='INFO'))
+    def get(self, request):
+        _, report_status = prepare.aggregate_reports_by_status(0)
+        _, report_type = prepare.aggregate_reports_by_type(0)
+        report_day = prepare.aggregate_reports_or_case_bydate('day', models.Report)
+        report_week = prepare.aggregate_reports_or_case_bydate('week', models.Report)
+        report_month = prepare.aggregate_reports_or_case_bydate('month', models.Report)
+
+        api_day = prepare.aggregate_apis_bydate('day')
+        api_week = prepare.aggregate_apis_bydate('week')
+        api_month = prepare.aggregate_apis_bydate('month')
+
+        yapi_day = prepare.aggregate_apis_bydate('day', True)
+        yapi_week = prepare.aggregate_apis_bydate('week', True)
+        yapi_month = prepare.aggregate_apis_bydate('month', True)
+
+        case_day = prepare.aggregate_reports_or_case_bydate('day', models.Case)
+        case_week = prepare.aggregate_reports_or_case_bydate('week', models.Case)
+        case_month = prepare.aggregate_reports_or_case_bydate('month', models.Case)
+
+        res = {
+            'report': {
+                'status': report_status,
+                'type': report_type,
+                'week': report_week,
+                'month': report_month,
+                'day': report_day
+            },
+            'case': {
+                'week': case_week,
+                'month': case_month,
+                'day': case_day
+            },
+            'api': {
+                'week': api_week,
+                'month': api_month,
+                'day': api_day
+            },
+            'yapi': {
+                'week': yapi_week,
+                'month': yapi_month,
+                'day': yapi_day
+            },
+            # 包含今天的前6天
+            'recent_days': [get_day(n)[5:] for n in range(-5, 1)],
+            'recent_months': [get_month_format(n) for n in range(-5, 1)],
+            'recent_weeks': [get_week_format(n) for n in range(-5, 1)],
+
+        }
+        return Response(res)
 
 
 class DebugTalkView(GenericViewSet):
@@ -250,11 +307,11 @@ class VisitView(GenericViewSet):
         # 根据日期分组
         # 统计每天的条数
         recent7days = [day.get_day(d)[5:] for d in range(-5, 0)]
-        count_data = self.get_queryset()\
-            .filter(project=project, create_time__range=(day.get_day(-5), day.get_day()))\
-            .extra(select={"create_time": "DATE_FORMAT(create_time,'%%m-%%d')"})\
-            .values('create_time')\
-            .annotate(counts=Count('id'))\
+        count_data = self.get_queryset() \
+            .filter(project=project, create_time__range=(day.get_day(-5), day.get_day())) \
+            .extra(select={"create_time": "DATE_FORMAT(create_time,'%%m-%%d')"}) \
+            .values('create_time') \
+            .annotate(counts=Count('id')) \
             .values('create_time', 'counts')
 
         create_time_report_map = {data['create_time']: data["counts"] for data in count_data}
@@ -262,6 +319,7 @@ class VisitView(GenericViewSet):
 
         return Response({'recent7days': recent7days, 'report_count': report_count})
 #
+
 # class FileView(APIView):
 #
 #     def post(self, request):

@@ -35,6 +35,8 @@ urlpatterns = [
     path('project/<int:pk>/', project.ProjectView.as_view({"get": "single"})),
     path('project/yapi/<int:pk>/', project.ProjectView.as_view({"get": "yapi_info"})),
 
+    path('dashboard/', project.DashBoardView.as_view({'get': 'get'})),
+
     # 定时任务相关接口
     path('schedule/', schedule.ScheduleView.as_view({
         "get": "list",

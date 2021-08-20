@@ -1,8 +1,9 @@
+from django.core.cache import cache
 from django.db.models import Sum, Count, Q
 from django.db.models.functions import Concat
 
 from fastrunner import models
-from fastrunner.utils.day import get_day
+from fastrunner.utils.day import get_day, get_week, get_month
 from fastrunner.utils.parser import Format
 from djcelery import models as celery_models
 
@@ -24,6 +25,42 @@ def report_status_count(pk):
     return report_fail, report_success
 
 
+def get_recent_date(date_type):
+    if date_type == "day":
+        return [get_day(n) for n in range(-5, 1)]
+    elif date_type == "week":
+        return [get_week(n) for n in range(-5, 1)]
+    elif date_type == "month":
+        return [get_month(n) for n in range(-5, 1)]
+
+
+def list2dict(arr):
+    keys = []
+    values = []
+    for d in arr:
+        keys.append(str(d.get('create_time')))
+        values.append(d.get('counts'))
+    return dict(zip(keys, values))
+
+
+def complete_list(arr, date_type):
+    # {日期: 数量}
+    mapping = list2dict(arr)
+    date_list = get_recent_date(date_type)
+    count = [mapping.get(d, 0) for d in date_list]
+    return count
+
+
+def get_sql_dateformat(date_type):
+    if date_type == "week":
+        create_time = "YEARWEEK(create_time,'%%Y-%%m-%%d')"
+    elif date_type == "month":
+        create_time = "DATE_FORMAT(create_time,'%%Y%%m')"
+    elif date_type == "day":
+        create_time = "DATE_FORMAT(create_time,'%%Y-%%m-%%d')"
+    return create_time
+
+
 def get_project_api_cover(project_id):
     """"""
     case_steps = models.CaseStep.objects.filter(case__project_id=project_id).filter(
@@ -34,13 +71,37 @@ def get_project_api_cover(project_id):
 def get_project_apis(project_id) -> dict:
     """统计项目中手动创建和从yapi导入的接口数量
     """
-    query = models.API.objects
+    query = models.API.objects.filter(delete=0)
     if project_id:
         query = query.filter(project_id=project_id)
 
     project_api_map: dict = query.aggregate(用户创建=Count('pk', filter=~Q(creator='yapi')),
                                             yapi导入=Count('pk', filter=Q(creator='yapi')))
-    return project_api_map.keys(), project_api_map.values()
+    return list(project_api_map.keys()), list(project_api_map.values())
+
+
+def aggregate_apis_bydate(date_type, is_yapi=False) -> dict:
+    """按照日，周，月统计项目中手动创建和从yapi导入的接口数量
+    """
+    create_time = get_sql_dateformat(date_type)
+
+    query = models.API.objects.filter()
+    if is_yapi:
+        query = query.filter(creator='yapi')
+    else:
+        query = query.filter(~Q(creator='yapi'))
+
+    count_data: dict = query.extra(select={"create_time": create_time}) \
+        .values('create_time', ) \
+        .annotate(counts=Count('id')) \
+        .values('create_time', 'counts')
+
+
+    # 查询结果是按照时间升序，取最后6条
+    # 没有的补0
+    count = complete_list(count_data, date_type)
+
+    return count
 
 
 def aggregate_case_by_tag(project_id):
@@ -52,7 +113,7 @@ def aggregate_case_by_tag(project_id):
                                        集成用例=Count('pk', filter=Q(tag=2)),
                                        监控脚本=Count('pk', filter=Q(tag=3)),
                                        )
-    return case_count.keys(), case_count.values()
+    return list(case_count.keys()), list(case_count.values())
 
 
 def aggregate_reports_by_type(project_id):
@@ -65,7 +126,36 @@ def aggregate_reports_by_type(project_id):
                                          定时=Count('pk', filter=Q(type=3)),
                                          部署=Count('pk', filter=Q(type=4)),
                                          )
-    return report_count.keys(), report_count.values()
+    return list(report_count.keys()), list(report_count.values())
+
+
+def aggregate_reports_by_status(project_id):
+    """按照状态统计项目中的报告"""
+    query = models.Report.objects
+    if project_id:
+        query = query.filter(project_id=project_id)
+    report_count: dict = query.aggregate(失败=Count('pk', filter=Q(status=0)),
+                                         成功=Count('pk', filter=Q(status=1)),
+                                         )
+    return list(report_count.keys()), list(report_count.values())
+
+
+def aggregate_reports_or_case_bydate(date_type, model):
+    """按月和周统计报告创建数量"""
+    create_time = get_sql_dateformat(date_type)
+    qs = model.objects.extra(select={"create_time": create_time}) \
+        .values('create_time', ) \
+        .annotate(counts=Count('id')) \
+        .values('create_time', 'counts')
+
+    qs = list(qs)
+    complete_list(qs, date_type)
+
+    # 查询结果是按照时间升序，取最后6条
+    # 没有的补0
+    values = complete_list(qs, date_type)
+
+    return values
 
 
 def get_daily_count(project_id, model_name, start, end):
