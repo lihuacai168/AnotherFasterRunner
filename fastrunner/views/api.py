@@ -238,12 +238,19 @@ class APITemplateView(GenericViewSet):
         3.更新case的update_time, updater
         """
         pk = kwargs['pk']
-        source_api = models.API.objects.filter(pk=pk).values("name", "body", "url", "method").first()
-        case_steps = models.CaseStep.objects.filter(source_api_id=pk)
+        source_api = models.API.objects.filter(pk=pk).values("name", "body", "url", "method", "project").first()
+        # 根据api反向查出project
+        project = source_api.pop("project")
+
+        project_case_ids = models.Case.objects.filter(project=project).values_list('id', flat=True)
+        # 限制case_step只在当前项目
+        case_steps = models.CaseStep.objects.filter(source_api_id=pk, case_id__in=project_case_ids)
+
         case_steps.update(**source_api, updater=request.user.username, update_time=datetime.datetime.now())
-        case_ids = case_steps.values('case')
-        models.Case.objects.filter(pk__in=case_ids).update(update_time=datetime.datetime.now(),
-                                                           updater=request.user.username)
+        case_ids = case_steps.values_list('case', flat=True)
+        # 限制case只在当前项目
+        models.Case.objects.filter(pk__in=list(case_ids), project=project).update(update_time=datetime.datetime.now(),
+                                                                                  updater=request.user.username)
         return Response(response.CASE_STEP_SYNC_SUCCESS)
 
     @method_decorator(request_log(level='INFO'))
