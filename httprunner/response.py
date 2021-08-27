@@ -5,11 +5,11 @@ import re
 
 import pydash
 from httprunner import exceptions, logger, utils
+from loguru import logger as log
 from httprunner.compat import OrderedDict, basestring, is_py2
-from requests.models import PreparedRequest
-from requests.structures import CaseInsensitiveDict
 
 text_extractor_regexp_compile = re.compile(r".*\(.*\).*")
+list_condition_extractor_regexp_compile = re.compile(r'^for#\w+.*#\w.*')
 
 
 class ResponseObject(object):
@@ -25,7 +25,7 @@ class ResponseObject(object):
             if key == "json":
                 value = self.resp_obj.json()
             else:
-                value =  getattr(self.resp_obj, key)
+                value = getattr(self.resp_obj, key)
 
             self.__dict__[key] = value
             return value
@@ -203,6 +203,61 @@ class ResponseObject(object):
             logger.log_error(err_msg)
             raise exceptions.ParamsError(err_msg)
 
+    def _extract_with_condition(self, field: str):
+        """ condition extract
+         for#content.res.list,id==1#content.a
+        """
+        field = field.replace(" ", "")
+        separator = '#'
+        keyword, valuepath_and_expression, extract_path = field.split(separator)
+
+        if keyword == 'for':
+            try:
+                content = self.json
+            except exceptions.JSONDecodeError:
+                err_msg = "按条件提取只支持json格式的响应"
+                log.error(err_msg)
+                raise exceptions.ExtractFailure(err_msg)
+
+            condition_list_path, expression = valuepath_and_expression.split(",")
+            # 取值的时候，需要移除content.前缀
+            condition_list = pydash.get(content,  condition_list_path.replace('content.', "", 1), None)
+
+            err_msg = ""
+            if not condition_list:
+                err_msg = f'抽取条件:{condition_list_path}取值不存在'
+            elif isinstance(condition_list, list) is False:
+                err_msg = f'抽取条件的值只能是list类型，实际是{type(condition_list)}'
+
+            if err_msg:
+                log.error(err_msg)
+                raise exceptions.ExtractFailure(err_msg)
+
+            try:
+                expect_path, expect_value = expression.split("==")
+            except ValueError:
+                err_msg = '抽取条件的表达式错误，正确写法如：id==1'
+                log.error(err_msg)
+                raise exceptions.ExtractFailure(err_msg)
+
+            extract_value = None
+            for d in condition_list:
+                if expect_value == str(pydash.get(d, expect_path, "")):
+                    # 当抽取条件满足时
+                    # 如果抽取路径以content.开头，就从整个json取
+                    # 否则,从当前的对象取
+                    if extract_path.startswith('content.'):
+                        extract_value = pydash.get(content, extract_path.replace('content.', "", 1))
+                    else:
+                        extract_value = pydash.get(d, extract_path)
+                    break
+
+            if not extract_value:
+                err_msg = '抽取结果不存在'
+                log.error(err_msg)
+                raise exceptions.ExtractFailure(err_msg)
+            return extract_value
+
     def extract_field(self, field):
         """ extract value from requests.Response.
         """
@@ -215,6 +270,8 @@ class ResponseObject(object):
 
         if text_extractor_regexp_compile.match(field):
             value = self._extract_field_with_regex(field)
+        elif list_condition_extractor_regexp_compile.match(field.replace(" ", "")):
+            value = self._extract_with_condition(field)
         else:
             value = self._extract_field_with_delimiter(field)
 
