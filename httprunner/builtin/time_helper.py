@@ -114,7 +114,7 @@ def get_ts(interval: int = 0, t=None):
         elif t.count(":") == 2 and len(t.split()) == 1:
             time_format = time_format + "%H:%M:%S"
         time_arr = time.strptime(get_day(interval) + t, time_format)
-        return int(time.mktime(time_arr))
+        return str(int(time.mktime(time_arr)))
 
 
 def get_ts_int(interval: int = 0, t=None) -> int:
