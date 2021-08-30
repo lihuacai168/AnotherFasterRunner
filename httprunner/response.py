@@ -4,6 +4,7 @@ import json
 import re
 
 import pydash
+import jsonpath
 from httprunner import exceptions, logger, utils
 from loguru import logger as log
 from httprunner.compat import OrderedDict, basestring, is_py2
@@ -160,6 +161,9 @@ class ResponseObject(object):
                 # extract response body
                 return body
 
+            # 当body是dict时，使用jsonpath替换原有的取值方式
+            return self._extract_with_jsonpath(body, field)
+
             if isinstance(body, (dict, list)):
                 # content = {"xxx": 123}, content.xxx
                 return utils.query_json(body, sub_query)
@@ -258,6 +262,17 @@ class ResponseObject(object):
                 raise exceptions.ExtractFailure(err_msg)
             return extract_value
 
+    @staticmethod
+    def _extract_with_jsonpath(obj: dict, field: str):
+        path = field.replace("content", "$", 1)
+        res: list = jsonpath.jsonpath(obj, path)
+        if not res:
+            err_msg = u"Failed to extract attribute from response body! => {}\n".format(field)
+            err_msg += u"response body: {}\n".format(obj)
+            raise exceptions.ExtractFailure(err_msg)
+        else:
+            return res[0]
+
     def extract_field(self, field):
         """ extract value from requests.Response.
         """
@@ -268,7 +283,7 @@ class ResponseObject(object):
 
         msg = "extract: {}".format(field)
 
-        if text_extractor_regexp_compile.match(field):
+        if text_extractor_regexp_compile.match(field) and field.startswith("content.") is False:
             value = self._extract_field_with_regex(field)
         elif list_condition_extractor_regexp_compile.match(field.replace(" ", "")):
             value = self._extract_with_condition(field)
