@@ -160,6 +160,11 @@ class Context(object):
             or parser.extract_functions(check_item):
             # format 1/2/3
             check_value = self.eval_content(check_item)
+
+            # convert content.json.0.$k > content.json.0.k
+            # extract with content.json.0.k
+            if isinstance(check_value, str) and check_value.startswith("content."):
+                check_value = resp_obj.extract_field(check_value)
         else:
             # format 4/5
             check_value = resp_obj.extract_field(check_item)
