@@ -848,6 +848,7 @@ class Yapi:
         """
         yapi单个api转成faster格式
         """
+        logger.info(f"正在处理yapi的接口id是{source_api_info.get('_id')}")
         api_info_template = {
             "header": {
                 "header": {},
@@ -887,10 +888,10 @@ class Yapi:
         default_validator = {'equals': ['content.successful', True]}
         api_info_template['validate']['validate'].append(default_validator)
         # 限制api的名称最大长度，避免溢出
-        api_info_template['name'] = source_api_info['title'][:100]
+        api_info_template['name'] = source_api_info.get('title', "默认api名称")[:100]
         # path中{var}替换成$var格式
-        api_info_template['url'] = source_api_info['path'].replace('{', '$').replace('}', '')
-        api_info_template['method'] = source_api_info['method']
+        api_info_template['url'] = source_api_info.get('path', "").replace('{', '$').replace('}', '')
+        api_info_template['method'] = source_api_info.get('method', "GET")
 
         # yapi的分组id
         api_info_template['yapi_catid'] = source_api_info['catid']
@@ -918,6 +919,8 @@ class Yapi:
                     req_body_properties = req_body.get('properties')
                     if isinstance(req_body_properties, dict):
                         for field_name, field_value in req_body_properties.items():
+                            if isinstance(field_value, dict) is False:
+                                continue
                             field_type = field_value['type']
                             if not (field_type == 'array' or field_type == 'object'):
                                 self.set_ordinary_variable(api_info_template, field_name, field_type,
@@ -980,7 +983,7 @@ class Yapi:
         批量创建faster的api
         """
 
-        apis = [self.yapi2faster(api) for api in api_info]
+        apis = [self.yapi2faster(api) for api in api_info if isinstance(api, dict) is True]
         proj = models.Project.objects.get(id=self.fast_project_id)
         obj = models.Relation.objects.get(project_id=self.fast_project_id, type=1)
         eval_tree: list = eval(obj.tree)
