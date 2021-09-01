@@ -298,7 +298,7 @@ class ResponseObject(object):
 
         return value
 
-    def extract_response(self, extractors):
+    def extract_response(self, extractors, context):
         """ extract value from requests.Response and store in OrderedDict.
         @param (list) extractors
             [
@@ -317,6 +317,8 @@ class ResponseObject(object):
         extract_binds_order_dict = utils.convert_mappinglist_to_orderdict(extractors)
 
         for key, field in extract_binds_order_dict.items():
+            if '$' in field:
+                field = context.eval_content(field)
             extracted_variables_mapping[key] = self.extract_field(field)
 
         return extracted_variables_mapping

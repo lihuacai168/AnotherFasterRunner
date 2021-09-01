@@ -231,7 +231,7 @@ class Runner(object):
         self.http_client_session.meta_data['response']['teardown_hooks_duration'] = teardown_hooks_duration
 
         # extract
-        extracted_variables_mapping = resp_obj.extract_response(extractors)
+        extracted_variables_mapping = resp_obj.extract_response(extractors, self.context)
         self.context.update_testcase_runtime_variables_mapping(extracted_variables_mapping)
 
         # validate
