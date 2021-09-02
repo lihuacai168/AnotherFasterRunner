@@ -71,7 +71,8 @@ class API(BaseTable):
         (0, "未知"),
         (1, "成功"),
         (2, "失败"),
-        (3, "自动成功")
+        (3, "自动成功"),
+        (4, "废弃"),
     )
     name = models.CharField("接口名称", null=False, max_length=100, db_index=True)
     body = models.TextField("主体信息", null=False)

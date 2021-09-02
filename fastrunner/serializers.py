@@ -41,7 +41,7 @@ class ProjectSerializer(serializers.ModelSerializer):
         接口覆盖率，百分比后去两位小数点
         """
         apis = models.API.objects.filter(
-            project_id=obj.id, delete=0).values(
+            project_id=obj.id, delete=0).filter(~Q(tag=4)).values(
             'url', 'method')
         api_unique = {f'{api["url"]}_{api["method"]}' for api in apis}
         case_steps = models.CaseStep.objects.filter(case__project_id=obj.id).filter(

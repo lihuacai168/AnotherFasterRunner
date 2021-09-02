@@ -71,7 +71,7 @@ def get_project_api_cover(project_id):
 def get_project_apis(project_id) -> dict:
     """统计项目中手动创建和从yapi导入的接口数量
     """
-    query = models.API.objects.filter(delete=0)
+    query = models.API.objects.filter(delete=0).filter(~Q(tag=4))
     if project_id:
         query = query.filter(project_id=project_id)
 
@@ -85,7 +85,7 @@ def aggregate_apis_bydate(date_type, is_yapi=False) -> dict:
     """
     create_time = get_sql_dateformat(date_type)
 
-    query = models.API.objects.filter()
+    query = models.API.objects.filter(~Q(tag=4))
     if is_yapi:
         query = query.filter(creator='yapi')
     else:
@@ -167,8 +167,12 @@ def get_daily_count(project_id, model_name, start, end):
         'report': models.Report
     }
     model = models_mapping[model_name]
+    query = model.objects
+    if model_name == 'api':
+        query = query.filter(~Q(tag=4))
+
     # 统计给定日期范围内，每天创建的条数
-    count_data: list = model.objects.filter(project_id=project_id, create_time__range=[get_day(start), get_day(end)]) \
+    count_data: list = query.filter(project_id=project_id, create_time__range=[get_day(start), get_day(end)]) \
         .extra(select={"create_time": "DATE_FORMAT(create_time,'%%m-%%d')"}) \
         .values('create_time') \
         .annotate(counts=Count('id')) \

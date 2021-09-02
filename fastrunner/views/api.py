@@ -37,7 +37,7 @@ class APITemplateView(GenericViewSet):
     API操作视图
     """
     serializer_class = serializers.APISerializer
-    queryset = models.API.objects
+    queryset = models.API.objects.filter(~Q(tag=4))
     schema = APITemplateViewSchema()
 
     @swagger_auto_schema(query_serializer=serializers.AssertSerializer)
@@ -217,10 +217,10 @@ class APITemplateView(GenericViewSet):
 
         更新api的tag类型
         """
-
+        api_ids: list = request.data.get('api_ids', [])
         try:
-            if kwargs.get('pk'):
-                models.API.objects.filter(id=kwargs['pk']).update(tag=request.data['tag'],
+            if api_ids:
+                models.API.objects.filter(pk__in=api_ids).update(tag=request.data['tag'],
                                                                   update_time=datetime.datetime.now(),
                                                                   updater=request.user.username)
         except ObjectDoesNotExist:

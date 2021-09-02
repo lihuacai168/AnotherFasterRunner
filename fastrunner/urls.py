@@ -79,7 +79,7 @@ urlpatterns = [
         "post": "copy"
     })),
 
-    path('api/tag/<int:pk>/', api.APITemplateView.as_view({
+    path('api/tag/', api.APITemplateView.as_view({
         "patch": "add_tag",  # api修改状态
     })),
 
