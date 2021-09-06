@@ -6,6 +6,9 @@
 # @Software: PyCharm
 import requests
 import json
+
+from loguru import logger
+
 from fastrunner import models
 from django.conf import settings
 
@@ -79,15 +82,21 @@ def send_message(summary: dict, webhook: str, **kwargs):
     platform_name = settings.IM_REPORT_SETTING.get('platform_name', 'FasterRunner测试平台')
     if platform_name:
         title = platform_name + title
-    version = webhook[37:39]
-    if version == 'v2':
-        msg = parse_message(summary=summary, msg_type='post', **kwargs)
-        msg['content']['post']['zh_cn']['title'] = title
-        data = msg
-    else:
-        msg = parse_message(summary=summary, msg_type=None)
-        data = {
-            "title": title,
-            "text": msg
-        }
-    requests.post(url=webhook, data=json.dumps(data).encode("utf-8"))
+    webhooks = webhook.split('\n')
+    for webhook in webhooks:
+        version = webhook[37:39]
+        if version == 'v2':
+            msg = parse_message(summary=summary, msg_type='post', **kwargs)
+            msg['content']['post']['zh_cn']['title'] = title
+            data = msg
+        else:
+            msg = parse_message(summary=summary, msg_type=None)
+            data = {
+                "title": title,
+                "text": msg
+            }
+        res = requests.post(url=webhook, data=json.dumps(data).encode("utf-8")).json()
+        if res.get('StatusCode') == 0:
+            logger.info(f"发送通知成功，请求的webhook是: {webhook}")
+        else:
+            logger.error(f"发送通知失败，请求的webhook是: {webhook}， 响应是：{res}")
