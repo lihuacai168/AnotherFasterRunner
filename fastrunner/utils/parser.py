@@ -314,11 +314,16 @@ class Parse(object):
                 for content in self.__validate:
                     for key, value in content.items():
                         obj = Parse.__get_type(value[1])
+                        # 兼容旧的断言
+                        desc = ''
+                        if len(value) >= 3:
+                            desc = value[2]
                         test["validate"].append({
                             "expect": obj[1],
                             "actual": value[0],
                             "comparator": key,
-                            "type": obj[0]
+                            "type": obj[0],
+                            "desc": desc
                         })
 
         elif self.__level == "config":

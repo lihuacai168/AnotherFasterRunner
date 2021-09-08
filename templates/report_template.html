@@ -8198,7 +8198,7 @@
                                                 <td class='timestamp'>Validators</td>
                                                 <td class='step-details'>
                                                     {% for validator in record.meta_data.validators %}
-                                                        <pre class="code-block">check:{{ validator.check }} -{{ validator.comparator }}:[{{ validator.expect }},&nbsp;{{ validator.check_value }}]</pre>
+                                                        <pre class="code-block">check-{{ validator.desc }}: {{ validator.check }} - {{ validator.comparator }}:[{{ validator.expect }},&nbsp;{{ validator.check_value }}]</pre>
                                                     {% endfor %}
                                                 </td>
                                             </tr>
