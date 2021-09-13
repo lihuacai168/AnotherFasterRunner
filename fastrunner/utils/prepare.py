@@ -1,6 +1,11 @@
+import json
+
+import pydash
+import requests
 from django.core.cache import cache
 from django.db.models import Sum, Count, Q
 from django.db.models.functions import Concat
+from loguru import logger
 
 from fastrunner import models
 from fastrunner.utils.day import get_day, get_week, get_month
@@ -96,7 +101,6 @@ def aggregate_apis_bydate(date_type, is_yapi=False) -> dict:
         .annotate(counts=Count('id')) \
         .values('create_time', 'counts')
 
-
     # 查询结果是按照时间升序，取最后6条
     # 没有的补0
     count = complete_list(count_data, date_type)
@@ -112,6 +116,7 @@ def aggregate_case_by_tag(project_id):
     case_count: dict = query.aggregate(冒烟用例=Count('pk', filter=Q(tag=1)),
                                        集成用例=Count('pk', filter=Q(tag=2)),
                                        监控脚本=Count('pk', filter=Q(tag=3)),
+                                       核心用例=Count('pk', filter=Q(tag=4)),
                                        )
     return list(case_count.keys()), list(case_count.values())
 
@@ -217,6 +222,51 @@ def get_project_detail_v2(pk):
         "daily_create_count": daily_create_count
     }
     return res
+
+
+def get_jira_core_case_cover_rate(pk) -> dict:
+    project_obj = models.Project.objects.get(pk=pk)
+    jira_cases = []
+    if project_obj.jira_bearer_token == '' or project_obj.jira_project_key == '':
+        logger.info('jira token或者jira project key没配置')
+    else:
+        base_url = 'https://jira.szzhijing.com/rest/api/latest/search'
+        data = {
+            "jql": f"project = {project_obj.jira_project_key} AND issuetype = '测试用例'",
+            "maxResults": -1
+        }
+        headers = {
+            'Authorization': f'Bearer {project_obj.jira_bearer_token}',
+            'Content-Type': 'application/json',
+        }
+        try:
+            # TODO 分页查找所有的核心case
+            res = requests.post(url=base_url, headers=headers, data=json.dumps(data)).json()
+            err = res.get('errorMessages')
+            if err:
+                logger.error(err)
+            else:
+                jira_cases.extend(res['issues'])
+        except Exception as e:
+            logger.error(str(e))
+
+    jira_core_case_count = 0
+    for case in jira_cases:
+        if pydash.get(case, 'fields.customfield_11400.value') == '是':
+            jira_core_case_count += 1
+
+    covered_case_count = len(models.Case.objects.filter(project=pk, tag=4))
+
+    if jira_core_case_count == 0:
+        core_case_cover_rate = '0.00'
+    else:
+        core_case_cover_rate = '%.2f' % ((covered_case_count / jira_core_case_count) * 100)
+
+    return {
+        'jira_core_case_count': jira_core_case_count,
+        'core_case_count': covered_case_count,
+        'core_case_cover_rate':  core_case_cover_rate
+    }
 
 
 def get_project_detail(pk):

@@ -34,7 +34,10 @@ class ProjectSerializer(serializers.ModelSerializer):
             'updater',
             'yapi_openapi_token',
             'yapi_base_url',
-            'api_cover_rate']
+            'api_cover_rate',
+            'jira_project_key',
+            'jira_bearer_token',
+        ]
 
     def get_api_cover_rate(self, obj):
         """

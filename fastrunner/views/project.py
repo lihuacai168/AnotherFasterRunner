@@ -79,6 +79,8 @@ class ProjectView(GenericViewSet):
         project.responsible = request.data['responsible']
         project.yapi_base_url = request.data['yapi_base_url']
         project.yapi_openapi_token = request.data['yapi_openapi_token']
+        project.jira_project_key = request.data['jira_project_key']
+        project.jira_bearer_token = request.data['jira_bearer_token']
         project.save()
 
         return Response(response.PROJECT_UPDATE_SUCCESS)
@@ -115,6 +117,8 @@ class ProjectView(GenericViewSet):
         serializer = self.get_serializer(queryset, many=False)
 
         project_info = prepare.get_project_detail_v2(pk)
+        jira_core_case_cover_rate: dict = prepare.get_jira_core_case_cover_rate(pk)
+        project_info.update(jira_core_case_cover_rate)
         project_info.update(serializer.data)
 
         return Response(project_info)

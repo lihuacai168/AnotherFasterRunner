@@ -22,6 +22,9 @@ class Project(BaseTable):
     responsible = models.CharField("创建人", max_length=20, null=False)
     yapi_base_url = models.CharField("yapi的openapi url", max_length=100, null=False, default='', blank=True)
     yapi_openapi_token = models.CharField("yapi openapi的token", max_length=128, null=False, default='', blank=True)
+    # jira相关的
+    jira_project_key = models.CharField('jira项目key', null=False, default='', max_length=30, blank=True)
+    jira_bearer_token = models.CharField('jira bearer_token', null=False, default='', max_length=45, blank=True)
 
 
 class Debugtalk(BaseTable):
@@ -107,7 +110,8 @@ class Case(BaseTable):
     tag = (
         (1, "冒烟用例"),
         (2, "集成用例"),
-        (3, "监控脚本")
+        (3, "监控脚本"),
+        (4, "核心用例"),
     )
     name = models.CharField("用例名称", null=False, max_length=100)
     project = models.ForeignKey(Project, on_delete=models.CASCADE, db_constraint=False)
