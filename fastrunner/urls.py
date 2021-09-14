@@ -91,6 +91,10 @@ urlpatterns = [
         "patch": "move",  # case修改relation
     })),
 
+    path('test/tag/', suite.TestCaseView.as_view({
+        "patch": "update_tag",  # case修改tag
+    })),
+
     path('api/sync/<int:pk>/', api.APITemplateView.as_view({
         "patch": "sync_case",  # api同步用例步骤
     })),

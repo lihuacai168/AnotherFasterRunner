@@ -21,7 +21,8 @@ class TestCaseView(GenericViewSet):
     tag_options = {
         "冒烟用例": 1,
         "集成用例": 2,
-        "监控脚本": 3
+        "监控脚本": 3,
+        "核心用例": 4,
     }
 
     @staticmethod
@@ -294,6 +295,15 @@ class TestCaseView(GenericViewSet):
         models.Case.objects.filter(pk=pk).update(update_time=datetime.datetime.now())
         return Response(response.CASE_STEP_SYNC_SUCCESS)
 
+    def update_tag(self, request):
+        """
+        批量更新用例类型
+        """
+        case_ids: list = request.data.get('case_ids', [])
+        project_id: list = request.data.get('project_id', 0)
+        tag: list = request.data.get('tag')
+        models.Case.objects.filter(project_id=project_id, pk__in=case_ids).update(tag=tag)
+        return Response(response.CASE_UPDATE_SUCCESS)
 
 class CaseStepView(APIView):
     """
