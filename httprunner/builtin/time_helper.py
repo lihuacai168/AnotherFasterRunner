@@ -30,10 +30,14 @@ def get_day(days: int = 0, **kwargs):
 
     >>> get_day(h=9,m=15,s=30)
     20210807 9:15:30 # 今天的9时15分30秒
+
+    >>> get_day(sep='-', h=9,m=15,s=30)
+    2021-08-07 9:15:30 # 今天的9时15分30秒, 日期分隔符是-
     """
     d = datetime.timedelta(days)
     n = datetime.datetime.now()
-    fmt = f"%Y%m%d"
+    sep: str = kwargs.get('sep', '')
+    fmt = sep.join(['%Y', '%m', '%d'])
     if kwargs:
         h = kwargs.get("h", "00")
         m = kwargs.get("m", "00")
