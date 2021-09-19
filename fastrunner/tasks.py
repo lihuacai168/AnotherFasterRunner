@@ -99,7 +99,7 @@ def schedule_debug_suite(*args, **kwargs):
     else:
         report_type = 3
 
-    save_summary(task_name, summary, project, type=report_type, user=kwargs.get('user', ''))
+    report_id = save_summary(task_name, summary, project, type=report_type, user=kwargs.get('user', ''))
 
     strategy = kwargs["strategy"]
     if strategy == '始终发送' or (
@@ -109,4 +109,5 @@ def schedule_debug_suite(*args, **kwargs):
         webhook = kwargs.get("webhook", "")
         if webhook:
             summary["task_name"] = task_name
+            summary["report_id"] = report_id
             lark_message.send_message(summary=summary, webhook=webhook, case_count=len(args))

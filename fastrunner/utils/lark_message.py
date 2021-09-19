@@ -37,7 +37,7 @@ def parse_message(summary: dict, msg_type: str, **kwargs):
     fail_count = summary['stat']['failures']
     error_count = summary['stat']['errors']
     duration = '%.2fs' % summary['time']['duration']
-    report_id = models.Report.objects.last().id
+    report_id = summary['report_id']
     base_url = settings.IM_REPORT_SETTING.get('base_url')
     port = settings.IM_REPORT_SETTING.get('port')
     report_url = f'{base_url}:{port}/api/fastrunner/reports/{report_id}/'
