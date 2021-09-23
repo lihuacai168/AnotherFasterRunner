@@ -317,7 +317,8 @@ class Parse(object):
                         # 兼容旧的断言
                         desc = ''
                         if len(value) >= 3:
-                            desc = value[2]
+                            # value[2]为None时，设置为''
+                            desc = value[2] or ''
                         test["validate"].append({
                             "expect": obj[1],
                             "actual": value[0],
