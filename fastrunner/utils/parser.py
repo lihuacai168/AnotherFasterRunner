@@ -887,11 +887,8 @@ class Yapi:
                 "teardown_hooks": []
             }, "url": "", "method": "", "name": "", "times": 1, "nodeId": 0, "project": self.fast_project_id,
         }
-        default_header = {"accessToken": "$accessToken"}
-        default_header_desc = {"accessToken": "登录token"}
-        api_info_template['header']['header'].update(default_header)
-        api_info_template['header']['desc'].update(default_header_desc)
-        default_validator = {'equals': ['content.successful', True]}
+
+        default_validator = {'equals': ['status_code', 200]}
         api_info_template['validate']['validate'].append(default_validator)
         # 限制api的名称最大长度，避免溢出
         api_info_template['name'] = source_api_info.get('title', "默认api名称")[:100]
