@@ -938,9 +938,9 @@ class Yapi:
                                 if field_name == 'conditions':
                                     set_customized_variable(api_info_template, items)
                                 else:
-                                    if items['type'] != 'array' and items['type'] != 'object':
-                                        self.set_ordinary_variable(api_info_template, field_name, field_type,
-                                                                   field_value)
+                                    items_type: str = items.get('type')
+                                    if items_type != 'array' and items_type != 'object':
+                                        self.set_ordinary_variable(api_info_template, field_name, field_type, field_value)
                             if field_type == 'object':
                                 properties: dict = field_value.get('properties')
                                 if properties and isinstance(properties, dict):
