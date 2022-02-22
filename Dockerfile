@@ -1,21 +1,27 @@
-FROM rikasai/ubuntu16.04_python3.6_faster_env:latest
+FROM python:3.6-alpine as Base
 
-MAINTAINER lihuacai
+COPY requirements.txt .
+RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
+RUN apk add --no-cache mariadb-connector-c-dev
+RUN apk update &&  \
+    apk add python3-dev mariadb-dev build-base netcat-openbsd linux-headers pcre-dev && \
+    pip  install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple && \
+    apk del python3-dev mariadb-dev build-base linux-headers pcre-dev
 
-WORKDIR /opt/workspace/FasterRunner/
+#COPY requirements.txt .
+#RUN pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
 
-COPY ["start.sh", "manage.py", "uwsgi_docker.ini" ,"requirements.txt", "nginx.conf", "./"]
+FROM python:3.6-alpine
+ENV TZ=Asia/Shanghai
+RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories \
+    && apk --no-cache add tzdata mariadb-connector-c-dev \
+    && ln -snf /usr/share/zoneinfo/$TZ /etc/localtime \
+    && echo $TZ > /etc/timezone && rm -rf /var/cache/apk/*
 
+COPY --from=Base /usr/local/lib/python3.6/site-packages /usr/local/lib/python3.6/site-packages
+WORKDIR /app
+COPY . /app
+RUN chmod +x /app/start.sh
+CMD ["uwsgi", "--ini", "/app/uwsgi_docker.ini"]
 
-RUN  pip3 install -r ./requirements.txt -i \
-    https://mirrors.aliyun.com/pypi/simple \
-    --default-timeout=100 && \
-    mkdir -p /opt/workspace/logs && \
-    mkdir -p /opt/workspace/FasterRunner/static && \
-    ln -s /opt/workspace/FasterRunner/nginx.conf /etc/nginx/sites-enabled/
-
-EXPOSE 8000
-
-CMD bash ./start.sh
-
-
+#CMD ["gunicorn", "--bind", ":8000", "--workers", "3", "FasterRunner.wsgi_docker"]
