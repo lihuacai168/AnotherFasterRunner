@@ -41,6 +41,7 @@ services:
     entrypoint: /bin/sh
     command: -c "/app/start.sh celery-worker"
     depends_on:
+      - db
       - mq
 
   celery-beat:
@@ -54,6 +55,7 @@ services:
     command: -c "/app/start.sh celery-beat"
     depends_on:
       - mq
+      - db
 
   nginx:
     build: ./nginx

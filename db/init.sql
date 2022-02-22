@@ -1,20 +1,22 @@
 /*
  Navicat Premium Data Transfer
 
- Source Server         : localhost3307
+ Source Server         : localhost-13306
  Source Server Type    : MySQL
  Source Server Version : 80021
- Source Host           : localhost:3307
+ Source Host           : localhost:13306
  Source Schema         : fast_db
 
  Target Server Type    : MySQL
  Target Server Version : 80021
  File Encoding         : 65001
 
- Date: 22/02/2022 01:13:36
+ Date: 22/02/2022 21:49:47
 */
+
 create database if not exists fast_db default charset utf8 collate utf8_general_ci;
 use fast_db;
+
 
 SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
@@ -419,29 +421,6 @@ INSERT INTO `auth_permission` VALUES (112, 'Can view visit', 'view_visit', 28);
 COMMIT;
 
 -- ----------------------------
--- Table structure for cache_table
--- ----------------------------
-DROP TABLE IF EXISTS `cache_table`;
-CREATE TABLE `cache_table` (
-  `cache_key` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `value` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `expires` datetime(6) NOT NULL,
-  PRIMARY KEY (`cache_key`) USING BTREE,
-  KEY `cache_table_expires` (`expires`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- ----------------------------
--- Records of cache_table
--- ----------------------------
-BEGIN;
-INSERT INTO `cache_table` VALUES (':1:d', 'gASVCgAAAAAAAAB9lIwBYZRLAXMu', '2021-08-19 11:09:58.000000');
-INSERT INTO `cache_table` VALUES (':1:k', 'gASVBQAAAAAAAACMAXaULg==', '2021-08-19 11:09:38.000000');
-INSERT INTO `cache_table` VALUES (':1:project_detail_v2:2021-08-19', 'gASVQAIAAAAAAAB9lCiMGGFwaV9jb3VudF9ieV9jcmVhdGVfdHlwZZR9lCiMBHR5cGWUXZQojAznlKjmiLfliJvlu7qUjAp5YXBp5a+85YWllGWMBWNvdW50lF2UKEuhSwBldYwRY2FzZV9jb3VudF9ieV90YWeUfZQojAN0YWeUXZQojAzlhpLng5/nlKjkvouUjAzpm4bmiJDnlKjkvouUjAznm5HmjqfohJrmnKyUZWgHXZQoSwVLIEsGZXWMFHJlcG9ydF9jb3VudF9ieV90eXBllH2UKGgDXZQojAbosIPor5WUjAblvILmraWUjAblrprml7aUjAbpg6jnvbKUZWgHXZQoTbADSwFLxUteZXWMEmRhaWx5X2NyZWF0ZV9jb3VudJR9lCiMA2FwaZR9lCiMBGRheXOUXZQojAUwOC0xM5SMBTA4LTE0lIwFMDgtMTWUjAUwOC0xNpSMBTA4LTE3lIwFMDgtMTiUjAUwOC0xOZRlaAddlChLAEsASwBLAEsASwJLA2V1jARjYXNllH2UKGgdXZQojAUwOC0xM5SMBTA4LTE0lIwFMDgtMTWUjAUwOC0xNpSMBTA4LTE3lIwFMDgtMTiUjAUwOC0xOZRlaAddlChLAEsASwBLAEsASwFLAGV1jAZyZXBvcnSUfZQoaB1dlCiMBTA4LTEzlIwFMDgtMTSUjAUwOC0xNZSMBTA4LTE2lIwFMDgtMTeUjAUwOC0xOJSMBTA4LTE5lGVoB12UKEsASwBLAEsASwBLAUsCZXV1dS4=', '2021-08-20 11:12:58.000000');
-INSERT INTO `cache_table` VALUES (':1:project_detail_v2:2021-08-20', 'gASVQAIAAAAAAAB9lCiMGGFwaV9jb3VudF9ieV9jcmVhdGVfdHlwZZR9lCiMBHR5cGWUXZQojAznlKjmiLfliJvlu7qUjAp5YXBp5a+85YWllGWMBWNvdW50lF2UKEujSwBldYwRY2FzZV9jb3VudF9ieV90YWeUfZQojAN0YWeUXZQojAzlhpLng5/nlKjkvouUjAzpm4bmiJDnlKjkvouUjAznm5HmjqfohJrmnKyUZWgHXZQoSwVLIEsGZXWMFHJlcG9ydF9jb3VudF9ieV90eXBllH2UKGgDXZQojAbosIPor5WUjAblvILmraWUjAblrprml7aUjAbpg6jnvbKUZWgHXZQoTbADSwFLxUteZXWMEmRhaWx5X2NyZWF0ZV9jb3VudJR9lCiMA2FwaZR9lCiMBGRheXOUXZQojAUwOC0xNJSMBTA4LTE1lIwFMDgtMTaUjAUwOC0xN5SMBTA4LTE4lIwFMDgtMTmUjAUwOC0yMJRlaAddlChLAEsASwBLAEsCSwVLAGV1jARjYXNllH2UKGgdXZQojAUwOC0xNJSMBTA4LTE1lIwFMDgtMTaUjAUwOC0xN5SMBTA4LTE4lIwFMDgtMTmUjAUwOC0yMJRlaAddlChLAEsASwBLAEsBSwBLAGV1jAZyZXBvcnSUfZQoaB1dlCiMBTA4LTE0lIwFMDgtMTWUjAUwOC0xNpSMBTA4LTE3lIwFMDgtMTiUjAUwOC0xOZSMBTA4LTIwlGVoB12UKEsASwBLAEsASwFLAksAZXV1dS4=', '2021-08-21 18:50:15.000000');
-INSERT INTO `cache_table` VALUES (':1:project_detail_v2:2021-08-21', 'gASVQAIAAAAAAAB9lCiMGGFwaV9jb3VudF9ieV9jcmVhdGVfdHlwZZR9lCiMBHR5cGWUXZQojAznlKjmiLfliJvlu7qUjAp5YXBp5a+85YWllGWMBWNvdW50lF2UKEuNSwBldYwRY2FzZV9jb3VudF9ieV90YWeUfZQojAN0YWeUXZQojAzlhpLng5/nlKjkvouUjAzpm4bmiJDnlKjkvouUjAznm5HmjqfohJrmnKyUZWgHXZQoSwVLIEsGZXWMFHJlcG9ydF9jb3VudF9ieV90eXBllH2UKGgDXZQojAbosIPor5WUjAblvILmraWUjAblrprml7aUjAbpg6jnvbKUZWgHXZQoTbADSwFLxUteZXWMEmRhaWx5X2NyZWF0ZV9jb3VudJR9lCiMA2FwaZR9lCiMBGRheXOUXZQojAUwOC0xNZSMBTA4LTE2lIwFMDgtMTeUjAUwOC0xOJSMBTA4LTE5lIwFMDgtMjCUjAUwOC0yMZRlaAddlChLAEsASwBLAksFSwBLAGV1jARjYXNllH2UKGgdXZQojAUwOC0xNZSMBTA4LTE2lIwFMDgtMTeUjAUwOC0xOJSMBTA4LTE5lIwFMDgtMjCUjAUwOC0yMZRlaAddlChLAEsASwBLAUsASwBLAGV1jAZyZXBvcnSUfZQoaB1dlCiMBTA4LTE1lIwFMDgtMTaUjAUwOC0xN5SMBTA4LTE4lIwFMDgtMTmUjAUwOC0yMJSMBTA4LTIxlGVoB12UKEsASwBLAEsBSwJLAEsAZXV1dS4=', '2021-08-22 12:54:21.000000');
-COMMIT;
-
--- ----------------------------
 -- Table structure for case
 -- ----------------------------
 DROP TABLE IF EXISTS `case`;
@@ -607,44 +586,6 @@ INSERT INTO `case_step` VALUES (551, '2022-01-11 18:59:01.687527', '2022-01-11 1
 COMMIT;
 
 -- ----------------------------
--- Table structure for casestep
--- ----------------------------
-DROP TABLE IF EXISTS `casestep`;
-CREATE TABLE `casestep` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `create_time` datetime(6) NOT NULL,
-  `update_time` datetime(6) NOT NULL,
-  `name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `body` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `url` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `method` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `step` int NOT NULL,
-  `case_id` int NOT NULL,
-  PRIMARY KEY (`id`) USING BTREE,
-  KEY `CaseStep_case_id_7a6ec54f_fk_Case_id` (`case_id`) USING BTREE,
-  CONSTRAINT `casestep_ibfk_1` FOREIGN KEY (`case_id`) REFERENCES `case` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE=InnoDB AUTO_INCREMENT=38 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- ----------------------------
--- Records of casestep
--- ----------------------------
-BEGIN;
-INSERT INTO `casestep` VALUES (1, '2019-11-19 11:30:41.814675', '2020-01-21 14:00:40.426115', '框架本身', '{\'name\': \'框架本身\', \'request\': {\'base_url\': \'http://119.23.50.82:8000\', \'headers\': {\'Content-Type\': \'application/json;charset=utf-8\'}}, \'desc\': {\'header\': {\'Content-Type\': \'\'}, \'data\': {}, \'files\': {}, \'params\': {}, \'variables\': {}, \'parameters\': {}}}', '', 'config', 0, 122);
-INSERT INTO `casestep` VALUES (2, '2019-11-19 11:30:41.846493', '2019-11-19 11:30:41.846533', '登录', '{\'name\': \'登录\', \'rig_id\': None, \'times\': 1, \'request\': {\'url\': \'/api/user/login/\', \'method\': \'POST\', \'verify\': False, \'json\': {\'username\': \'test\', \'password\': \'test123\'}}, \'desc\': {\'header\': {}, \'data\': {}, \'files\': {}, \'params\': {}, \'variables\': {}, \'extract\': {}}, \'validate\': [{\'equals\': [\'content.code\', \'0001\']}]}', '/api/user/login/', 'POST', 1, 122);
-INSERT INTO `casestep` VALUES (27, '2019-12-25 11:38:51.130813', '2019-12-25 11:38:51.130882', '登录-用户未注册', '{\'name\': \'登录-用户未注册\', \'rig_id\': None, \'times\': 1, \'request\': {\'url\': \'/api/user/login/\', \'method\': \'POST\', \'verify\': False, \'json\': {\'username\': \'test1\', \'password\': \'test123\'}}, \'desc\': {\'header\': {}, \'data\': {}, \'files\': {}, \'params\': {}, \'variables\': {}, \'extract\': {}}, \'validate\': [{\'equals\': [\'content.code\', \'0104\']}, {\'equals\': [\'content.msg\', \'该用户未注册\']}]}', '/api/user/login/', 'POST', 2, 122);
-INSERT INTO `casestep` VALUES (28, '2019-12-25 11:38:51.157869', '2019-12-25 11:38:51.157921', '登录-密码错误', '{\'name\': \'登录-密码错误\', \'rig_id\': None, \'times\': 1, \'request\': {\'url\': \'/api/user/login/\', \'method\': \'POST\', \'verify\': False, \'json\': {\'username\': \'test\', \'password\': \'test1233\'}}, \'desc\': {\'header\': {}, \'data\': {}, \'files\': {}, \'params\': {}, \'variables\': {}, \'extract\': {}}, \'validate\': [{\'equals\': [\'content.code\', \'0103\']}, {\'equals\': [\'content.msg\', \'用户名或密码错误\']}]}', '/api/user/login/', 'POST', 3, 122);
-INSERT INTO `casestep` VALUES (29, '2019-12-25 11:48:33.055095', '2020-01-21 14:00:40.437402', '框架本身', '{\'name\': \'框架本身\', \'request\': {\'base_url\': \'http://119.23.50.82:8000\', \'headers\': {\'Content-Type\': \'application/json;charset=utf-8\'}}, \'desc\': {\'header\': {\'Content-Type\': \'\'}, \'data\': {}, \'files\': {}, \'params\': {}, \'variables\': {}, \'parameters\': {}}}', '', 'config', 0, 135);
-INSERT INTO `casestep` VALUES (30, '2019-12-25 11:48:33.073585', '2019-12-25 11:48:33.073628', ' 搜索用例-搜索条件为空,返回前11条', '{\'name\': \' 搜索用例-搜索条件为空,返回前11条\', \'rig_id\': None, \'times\': 1, \'request\': {\'url\': \'/api/fastrunner/test/\', \'method\': \'GET\', \'verify\': False, \'params\': {\'token\': \'$token\', \'node\': \' \', \'project\': \'7\', \'search\': \'\', \'caseNameOrUrl\': \'\'}}, \'desc\': {\'header\': {}, \'data\': {}, \'files\': {}, \'params\': {\'token\': \'通过$token引用全局变量token\', \'node\': \'\', \'project\': \'\', \'search\': \'\', \'caseNameOrUrl\': \'\'}, \'variables\': {}, \'extract\': {}}, \'validate\': [{\'equals\': [\'content.results.0.project\', 7]}]}', '/api/fastrunner/test/', 'GET', 2, 135);
-INSERT INTO `casestep` VALUES (31, '2019-12-25 11:48:33.087780', '2019-12-25 11:48:33.087828', '搜索用例-用例不存在', '{\'name\': \'搜索用例-用例不存在\', \'rig_id\': None, \'times\': 1, \'request\': {\'url\': \'/api/fastrunner/test/\', \'method\': \'GET\', \'verify\': False, \'params\': {\'token\': \'$token\', \'node\': \' \', \'project\': \'7\', \'search\': \'$case_name\', \'caseNameOrUrl\': \'\'}}, \'desc\': {\'header\': {}, \'data\': {}, \'files\': {}, \'params\': {\'token\': \'通过$token引用全局变量token\', \'node\': \'\', \'project\': \'\', \'search\': \'\', \'caseNameOrUrl\': \'\'}, \'variables\': {\'case_name\': \'\'}, \'extract\': {}}, \'validate\': [{\'equals\': [\'content.results\', []]}, {\'equals\': [\'content.count\', 0]}], \'variables\': [{\'case_name\': \'注册\'}]}', '/api/fastrunner/test/', 'GET', 3, 135);
-INSERT INTO `casestep` VALUES (32, '2019-12-25 11:48:33.101472', '2019-12-25 11:48:33.101509', '搜索用例-用例名存在', '{\'name\': \'搜索用例-用例名存在\', \'rig_id\': None, \'times\': 1, \'request\': {\'url\': \'/api/fastrunner/test/\', \'method\': \'GET\', \'verify\': False, \'params\': {\'token\': \'$token\', \'node\': \' \', \'project\': \'7\', \'search\': \'$case_name\', \'caseNameOrUrl\': \'\'}}, \'desc\': {\'header\': {}, \'data\': {}, \'files\': {}, \'params\': {\'token\': \'通过$token引用全局变量token\', \'node\': \'\', \'project\': \'\', \'search\': \'\', \'caseNameOrUrl\': \'\'}, \'variables\': {\'case_name\': \'\'}, \'extract\': {}}, \'validate\': [{\'equals\': [\'content.results.0.project\', 7]}, {\'equals\': [\'content.results.0.name\', \'$case_name\']}], \'variables\': [{\'case_name\': \'登录hook\'}]}', '/api/fastrunner/test/', 'GET', 4, 135);
-INSERT INTO `casestep` VALUES (33, '2019-12-25 13:56:28.457484', '2019-12-25 13:56:28.457526', '登录-成功', '{\'name\': \'登录-成功\', \'rig_id\': None, \'times\': 1, \'request\': {\'url\': \'/api/user/login/\', \'method\': \'POST\', \'verify\': False, \'json\': {\'username\': \'test\', \'password\': \'test123\'}}, \'desc\': {\'header\': {}, \'data\': {}, \'files\': {}, \'params\': {}, \'variables\': {}, \'extract\': {\'token\': \'\'}}, \'extract\': [{\'token\': \'content.token\'}], \'validate\': [{\'equals\': [\'content.code\', \'0001\']}, {\'equals\': [\'content.user\', \'test\']}]}', '/api/user/login/', 'POST', 1, 135);
-INSERT INTO `casestep` VALUES (34, '2019-12-30 00:13:11.204972', '2019-12-30 00:13:11.205010', '登录-成功-teardown-修改返回结果', '{\'name\': \'登录-成功-teardown-修改返回结果\', \'rig_id\': None, \'times\': 1, \'request\': {\'url\': \'/api/user/login/\', \'method\': \'POST\', \'verify\': False, \'json\': {\'username\': \'test\', \'password\': \'test123\'}}, \'desc\': {\'header\': {}, \'data\': {}, \'files\': {}, \'params\': {}, \'variables\': {}, \'extract\': {\'token\': \'抽取默认的返回token\', \'mytoken\': \'\'}}, \'extract\': [{\'token\': \'content.token\'}, {\'mytoken\': \'teardown.mytoken\'}], \'validate\': [{\'equals\': [\'content.code\', \'0001\']}, {\'equals\': [\'content.user\', \'test\']}, {\'equals\': [\'$mytoken\', \'$token\']}], \'teardown_hooks\': [\'${teardown($response)}\']}', '/api/user/login/', 'POST', 4, 122);
-INSERT INTO `casestep` VALUES (35, '2019-12-30 00:13:11.216440', '2019-12-30 00:13:11.216466', '登录-成功-teardown-修改返回结果', '{\'name\': \'登录-成功-teardown-修改返回结果\', \'rig_id\': None, \'times\': 1, \'request\': {\'url\': \'/api/user/login/\', \'method\': \'POST\', \'verify\': False, \'json\': {\'username\': \'test\', \'password\': \'test123\'}}, \'desc\': {\'header\': {}, \'data\': {}, \'files\': {}, \'params\': {}, \'variables\': {}, \'extract\': {\'token\': \'抽取默认的返回token\', \'mytoken\': \'\'}}, \'extract\': [{\'token\': \'content.token\'}, {\'mytoken\': \'teardown.mytoken\'}], \'validate\': [{\'equals\': [\'content.code\', \'0001\']}, {\'equals\': [\'content.user\', \'test\']}, {\'equals\': [\'$mytoken\', \'$token\']}], \'teardown_hooks\': [\'${teardown($response)}\']}', '/api/user/login/', 'POST', 5, 122);
-INSERT INTO `casestep` VALUES (36, '2019-12-30 01:23:33.418851', '2019-12-30 01:23:33.418878', '框架本身-参数化', '{\'name\': \'框架本身-参数化\', \'request\': {\'base_url\': \'http://119.23.50.82:8000\', \'headers\': {\'Content-Type\': \'application/json;charset=utf-8\'}}, \'desc\': {\'header\': {\'Content-Type\': \'\'}, \'data\': {}, \'files\': {}, \'params\': {}, \'variables\': {}, \'parameters\': {\'username\': \'\', \'password\': \'\'}}, \'parameters\': [{\'username\': \'${param_username()}\'}, {\'password\': \'${param_password()}\'}]}', 'http://119.23.50.82:8000', 'config', 0, 136);
-INSERT INTO `casestep` VALUES (37, '2019-12-30 01:23:33.433242', '2019-12-30 01:23:33.433266', '登录-失败-参数化', '{\'name\': \'登录-失败-参数化\', \'rig_id\': None, \'times\': 1, \'request\': {\'url\': \'/api/user/login/\', \'method\': \'POST\', \'verify\': False, \'json\': {\'username\': \'$username\', \'password\': \'$password\'}}, \'desc\': {\'header\': {}, \'data\': {}, \'files\': {}, \'params\': {}, \'variables\': {\'msg\': \'\'}, \'extract\': {}}, \'validate\': [{\'startswith\': [\'content.code\', \'01\']}], \'variables\': [{\'msg\': \'${param_msg()}\'}]}', '/api/user/login/', 'POST', 1, 136);
-COMMIT;
-
--- ----------------------------
 -- Table structure for celery_taskmeta
 -- ----------------------------
 DROP TABLE IF EXISTS `celery_taskmeta`;
@@ -660,46 +601,12 @@ CREATE TABLE `celery_taskmeta` (
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE KEY `task_id` (`task_id`) USING BTREE,
   KEY `celery_taskmeta_hidden_23fd02dc` (`hidden`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=65057 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- ----------------------------
 -- Records of celery_taskmeta
 -- ----------------------------
 BEGIN;
-INSERT INTO `celery_taskmeta` VALUES (65023, '6a0c1793-b543-42af-bfa7-42de69d7d65a', 'SUCCESS', NULL, '2022-02-21 04:00:00.020553', NULL, 0, 'eJxrYKotZIjgYGBgSM7IzEkpSs0rZIwtZCrWAwBWnQb9');
-INSERT INTO `celery_taskmeta` VALUES (65024, '1ea2ae81-18d4-4fdc-b1e3-8ebec6c3adc1', 'SUCCESS', NULL, '2022-02-21 08:20:00.054146', NULL, 0, 'eJxrYKotZIjgYGBgSM7IzEkpSs0rZIwtZCrWAwBWnQb9');
-INSERT INTO `celery_taskmeta` VALUES (65025, '68208bbe-5df3-41df-819e-863b2a894bba', 'FAILURE', 'gAJ9cQAoWAgAAABleGNfdHlwZXEBWAoAAABWYWx1ZUVycm9ycQJYCwAAAGV4Y19tZXNzYWdlcQNYJgAAAHRvbyBtYW55IHZhbHVlcyB0byB1bnBhY2sgKGV4cGVjdGVkIDIpcQR1Lg==', '2022-02-21 08:30:00.012124', 'Traceback (most recent call last):\n  File \"/root/.virtualenvs/fast/lib/python3.6/site-packages/celery/app/trace.py\", line 240, in trace_task\n    R = retval = fun(*args, **kwargs)\n  File \"/root/.virtualenvs/fast/lib/python3.6/site-packages/celery/app/trace.py\", line 438, in __protected_call__\n    return self.run(*args, **kwargs)\n  File \"/root/code/FasterRunner/fastrunner/tasks.py\", line 93, in schedule_debug_suite\n    summary, _ = debug_suite(test_sets, project, suite, config_list, save=False, allow_parallel=is_parallel)\nValueError: too many values to unpack (expected 2)\n', 0, 'eJxrYKotZIjgYGBgSM7IzEkpSs0rZIwtZCrWAwBWnQb9');
-INSERT INTO `celery_taskmeta` VALUES (65026, '50599d89-a1dd-47ad-a922-5bc4b0353f29', 'SUCCESS', NULL, '2022-02-21 09:20:00.047259', NULL, 0, 'eJxrYKotZIjgYGBgSM7IzEkpSs0rZIwtZCrWAwBWnQb9');
-INSERT INTO `celery_taskmeta` VALUES (65027, '5f87418a-fead-4ba3-9c75-a60cd0aa2560', 'FAILURE', 'gAJ9cQAoWAgAAABleGNfdHlwZXEBWAoAAABWYWx1ZUVycm9ycQJYCwAAAGV4Y19tZXNzYWdlcQNYJgAAAHRvbyBtYW55IHZhbHVlcyB0byB1bnBhY2sgKGV4cGVjdGVkIDIpcQR1Lg==', '2022-02-21 09:30:00.012133', 'Traceback (most recent call last):\n  File \"/root/.virtualenvs/fast/lib/python3.6/site-packages/celery/app/trace.py\", line 240, in trace_task\n    R = retval = fun(*args, **kwargs)\n  File \"/root/.virtualenvs/fast/lib/python3.6/site-packages/celery/app/trace.py\", line 438, in __protected_call__\n    return self.run(*args, **kwargs)\n  File \"/root/code/FasterRunner/fastrunner/tasks.py\", line 93, in schedule_debug_suite\n    summary, _ = debug_suite(test_sets, project, suite, config_list, save=False, allow_parallel=is_parallel)\nValueError: too many values to unpack (expected 2)\n', 0, 'eJxrYKotZIjgYGBgSM7IzEkpSs0rZIwtZCrWAwBWnQb9');
-INSERT INTO `celery_taskmeta` VALUES (65028, 'd66be6bf-81e9-4632-8ba5-d584cfd1c856', 'SUCCESS', NULL, '2022-02-21 10:20:00.064208', NULL, 0, 'eJxrYKotZIjgYGBgSM7IzEkpSs0rZIwtZCrWAwBWnQb9');
-INSERT INTO `celery_taskmeta` VALUES (65029, 'ece64ef9-c1e2-4eae-9c3b-7f586c354b29', 'FAILURE', 'gAJ9cQAoWAgAAABleGNfdHlwZXEBWAoAAABWYWx1ZUVycm9ycQJYCwAAAGV4Y19tZXNzYWdlcQNYJgAAAHRvbyBtYW55IHZhbHVlcyB0byB1bnBhY2sgKGV4cGVjdGVkIDIpcQR1Lg==', '2022-02-21 10:30:00.012379', 'Traceback (most recent call last):\n  File \"/root/.virtualenvs/fast/lib/python3.6/site-packages/celery/app/trace.py\", line 240, in trace_task\n    R = retval = fun(*args, **kwargs)\n  File \"/root/.virtualenvs/fast/lib/python3.6/site-packages/celery/app/trace.py\", line 438, in __protected_call__\n    return self.run(*args, **kwargs)\n  File \"/root/code/FasterRunner/fastrunner/tasks.py\", line 93, in schedule_debug_suite\n    summary, _ = debug_suite(test_sets, project, suite, config_list, save=False, allow_parallel=is_parallel)\nValueError: too many values to unpack (expected 2)\n', 0, 'eJxrYKotZIjgYGBgSM7IzEkpSs0rZIwtZCrWAwBWnQb9');
-INSERT INTO `celery_taskmeta` VALUES (65030, 'bee1d906-ef56-46de-a9b2-ed0a1554358d', 'SUCCESS', NULL, '2022-02-21 11:20:00.048973', NULL, 0, 'eJxrYKotZIjgYGBgSM7IzEkpSs0rZIwtZCrWAwBWnQb9');
-INSERT INTO `celery_taskmeta` VALUES (65031, '2f6a456a-bc96-4a29-be71-4bdc7ed21388', 'FAILURE', 'gAJ9cQAoWAgAAABleGNfdHlwZXEBWAoAAABWYWx1ZUVycm9ycQJYCwAAAGV4Y19tZXNzYWdlcQNYJgAAAHRvbyBtYW55IHZhbHVlcyB0byB1bnBhY2sgKGV4cGVjdGVkIDIpcQR1Lg==', '2022-02-21 11:30:00.011807', 'Traceback (most recent call last):\n  File \"/root/.virtualenvs/fast/lib/python3.6/site-packages/celery/app/trace.py\", line 240, in trace_task\n    R = retval = fun(*args, **kwargs)\n  File \"/root/.virtualenvs/fast/lib/python3.6/site-packages/celery/app/trace.py\", line 438, in __protected_call__\n    return self.run(*args, **kwargs)\n  File \"/root/code/FasterRunner/fastrunner/tasks.py\", line 93, in schedule_debug_suite\n    summary, _ = debug_suite(test_sets, project, suite, config_list, save=False, allow_parallel=is_parallel)\nValueError: too many values to unpack (expected 2)\n', 0, 'eJxrYKotZIjgYGBgSM7IzEkpSs0rZIwtZCrWAwBWnQb9');
-INSERT INTO `celery_taskmeta` VALUES (65032, 'bf94c38a-9949-4704-9e46-4f5b2f3294a9', 'SUCCESS', NULL, '2022-02-21 12:20:00.049693', NULL, 0, 'eJxrYKotZIjgYGBgSM7IzEkpSs0rZIwtZCrWAwBWnQb9');
-INSERT INTO `celery_taskmeta` VALUES (65033, 'be40a028-4672-416d-b168-bcbb76d919a5', 'FAILURE', 'gAJ9cQAoWAgAAABleGNfdHlwZXEBWAoAAABWYWx1ZUVycm9ycQJYCwAAAGV4Y19tZXNzYWdlcQNYJgAAAHRvbyBtYW55IHZhbHVlcyB0byB1bnBhY2sgKGV4cGVjdGVkIDIpcQR1Lg==', '2022-02-21 12:30:00.012622', 'Traceback (most recent call last):\n  File \"/root/.virtualenvs/fast/lib/python3.6/site-packages/celery/app/trace.py\", line 240, in trace_task\n    R = retval = fun(*args, **kwargs)\n  File \"/root/.virtualenvs/fast/lib/python3.6/site-packages/celery/app/trace.py\", line 438, in __protected_call__\n    return self.run(*args, **kwargs)\n  File \"/root/code/FasterRunner/fastrunner/tasks.py\", line 93, in schedule_debug_suite\n    summary, _ = debug_suite(test_sets, project, suite, config_list, save=False, allow_parallel=is_parallel)\nValueError: too many values to unpack (expected 2)\n', 0, 'eJxrYKotZIjgYGBgSM7IzEkpSs0rZIwtZCrWAwBWnQb9');
-INSERT INTO `celery_taskmeta` VALUES (65034, '7ecaea31-0ba9-4b37-9729-93a4a8b639aa', 'SUCCESS', NULL, '2022-02-21 13:20:00.047957', NULL, 0, 'eJxrYKotZIjgYGBgSM7IzEkpSs0rZIwtZCrWAwBWnQb9');
-INSERT INTO `celery_taskmeta` VALUES (65035, '89f02fb4-9476-400e-ae9b-5664aa7dc79c', 'FAILURE', 'gAJ9cQAoWAgAAABleGNfdHlwZXEBWAoAAABWYWx1ZUVycm9ycQJYCwAAAGV4Y19tZXNzYWdlcQNYJgAAAHRvbyBtYW55IHZhbHVlcyB0byB1bnBhY2sgKGV4cGVjdGVkIDIpcQR1Lg==', '2022-02-21 13:30:00.012611', 'Traceback (most recent call last):\n  File \"/root/.virtualenvs/fast/lib/python3.6/site-packages/celery/app/trace.py\", line 240, in trace_task\n    R = retval = fun(*args, **kwargs)\n  File \"/root/.virtualenvs/fast/lib/python3.6/site-packages/celery/app/trace.py\", line 438, in __protected_call__\n    return self.run(*args, **kwargs)\n  File \"/root/code/FasterRunner/fastrunner/tasks.py\", line 93, in schedule_debug_suite\n    summary, _ = debug_suite(test_sets, project, suite, config_list, save=False, allow_parallel=is_parallel)\nValueError: too many values to unpack (expected 2)\n', 0, 'eJxrYKotZIjgYGBgSM7IzEkpSs0rZIwtZCrWAwBWnQb9');
-INSERT INTO `celery_taskmeta` VALUES (65036, '8f2ed025-9e0b-4c29-8562-a3bfa76f49fa', 'SUCCESS', NULL, '2022-02-21 14:20:00.049621', NULL, 0, 'eJxrYKotZIjgYGBgSM7IzEkpSs0rZIwtZCrWAwBWnQb9');
-INSERT INTO `celery_taskmeta` VALUES (65037, '51e65c88-7ea1-4d4a-8168-b5e2e955ed1f', 'FAILURE', 'gAJ9cQAoWAgAAABleGNfdHlwZXEBWAoAAABWYWx1ZUVycm9ycQJYCwAAAGV4Y19tZXNzYWdlcQNYJgAAAHRvbyBtYW55IHZhbHVlcyB0byB1bnBhY2sgKGV4cGVjdGVkIDIpcQR1Lg==', '2022-02-21 14:30:00.020589', 'Traceback (most recent call last):\n  File \"/root/.virtualenvs/fast/lib/python3.6/site-packages/celery/app/trace.py\", line 240, in trace_task\n    R = retval = fun(*args, **kwargs)\n  File \"/root/.virtualenvs/fast/lib/python3.6/site-packages/celery/app/trace.py\", line 438, in __protected_call__\n    return self.run(*args, **kwargs)\n  File \"/root/code/FasterRunner/fastrunner/tasks.py\", line 93, in schedule_debug_suite\n    summary, _ = debug_suite(test_sets, project, suite, config_list, save=False, allow_parallel=is_parallel)\nValueError: too many values to unpack (expected 2)\n', 0, 'eJxrYKotZIjgYGBgSM7IzEkpSs0rZIwtZCrWAwBWnQb9');
-INSERT INTO `celery_taskmeta` VALUES (65038, '41d4c6cc-4331-471d-a613-e87740853761', 'SUCCESS', NULL, '2022-02-21 15:20:00.054782', NULL, 0, 'eJxrYKotZIjgYGBgSM7IzEkpSs0rZIwtZCrWAwBWnQb9');
-INSERT INTO `celery_taskmeta` VALUES (65039, '95a2ae1b-f801-43f4-8044-3264e328bbad', 'FAILURE', 'gAJ9cQAoWAgAAABleGNfdHlwZXEBWAoAAABWYWx1ZUVycm9ycQJYCwAAAGV4Y19tZXNzYWdlcQNYJgAAAHRvbyBtYW55IHZhbHVlcyB0byB1bnBhY2sgKGV4cGVjdGVkIDIpcQR1Lg==', '2022-02-21 15:30:00.012865', 'Traceback (most recent call last):\n  File \"/root/.virtualenvs/fast/lib/python3.6/site-packages/celery/app/trace.py\", line 240, in trace_task\n    R = retval = fun(*args, **kwargs)\n  File \"/root/.virtualenvs/fast/lib/python3.6/site-packages/celery/app/trace.py\", line 438, in __protected_call__\n    return self.run(*args, **kwargs)\n  File \"/root/code/FasterRunner/fastrunner/tasks.py\", line 93, in schedule_debug_suite\n    summary, _ = debug_suite(test_sets, project, suite, config_list, save=False, allow_parallel=is_parallel)\nValueError: too many values to unpack (expected 2)\n', 0, 'eJxrYKotZIjgYGBgSM7IzEkpSs0rZIwtZCrWAwBWnQb9');
-INSERT INTO `celery_taskmeta` VALUES (65040, 'e50a6323-0474-4720-89f8-4bc5cea13690', 'SUCCESS', NULL, '2022-02-21 16:20:00.062458', NULL, 0, 'eJxrYKotZIjgYGBgSM7IzEkpSs0rZIwtZCrWAwBWnQb9');
-INSERT INTO `celery_taskmeta` VALUES (65041, '0d120c10-c118-466e-b8ab-ab3d06636ace', 'FAILURE', 'gAJ9cQAoWAgAAABleGNfdHlwZXEBWAoAAABWYWx1ZUVycm9ycQJYCwAAAGV4Y19tZXNzYWdlcQNYJgAAAHRvbyBtYW55IHZhbHVlcyB0byB1bnBhY2sgKGV4cGVjdGVkIDIpcQR1Lg==', '2022-02-21 16:30:00.014440', 'Traceback (most recent call last):\n  File \"/root/.virtualenvs/fast/lib/python3.6/site-packages/celery/app/trace.py\", line 240, in trace_task\n    R = retval = fun(*args, **kwargs)\n  File \"/root/.virtualenvs/fast/lib/python3.6/site-packages/celery/app/trace.py\", line 438, in __protected_call__\n    return self.run(*args, **kwargs)\n  File \"/root/code/FasterRunner/fastrunner/tasks.py\", line 93, in schedule_debug_suite\n    summary, _ = debug_suite(test_sets, project, suite, config_list, save=False, allow_parallel=is_parallel)\nValueError: too many values to unpack (expected 2)\n', 0, 'eJxrYKotZIjgYGBgSM7IzEkpSs0rZIwtZCrWAwBWnQb9');
-INSERT INTO `celery_taskmeta` VALUES (65042, 'b08e09b2-79b3-4c61-bd59-b75499966476', 'SUCCESS', NULL, '2022-02-21 17:20:00.047445', NULL, 0, 'eJxrYKotZIjgYGBgSM7IzEkpSs0rZIwtZCrWAwBWnQb9');
-INSERT INTO `celery_taskmeta` VALUES (65043, '19709884-f58e-4004-91a0-66579d294165', 'FAILURE', 'gAJ9cQAoWAgAAABleGNfdHlwZXEBWAoAAABWYWx1ZUVycm9ycQJYCwAAAGV4Y19tZXNzYWdlcQNYJgAAAHRvbyBtYW55IHZhbHVlcyB0byB1bnBhY2sgKGV4cGVjdGVkIDIpcQR1Lg==', '2022-02-21 17:30:00.012025', 'Traceback (most recent call last):\n  File \"/root/.virtualenvs/fast/lib/python3.6/site-packages/celery/app/trace.py\", line 240, in trace_task\n    R = retval = fun(*args, **kwargs)\n  File \"/root/.virtualenvs/fast/lib/python3.6/site-packages/celery/app/trace.py\", line 438, in __protected_call__\n    return self.run(*args, **kwargs)\n  File \"/root/code/FasterRunner/fastrunner/tasks.py\", line 93, in schedule_debug_suite\n    summary, _ = debug_suite(test_sets, project, suite, config_list, save=False, allow_parallel=is_parallel)\nValueError: too many values to unpack (expected 2)\n', 0, 'eJxrYKotZIjgYGBgSM7IzEkpSs0rZIwtZCrWAwBWnQb9');
-INSERT INTO `celery_taskmeta` VALUES (65044, '9f7f4800-54d7-4eae-b5ca-c3c384cb9624', 'SUCCESS', NULL, '2022-02-21 18:20:00.048132', NULL, 0, 'eJxrYKotZIjgYGBgSM7IzEkpSs0rZIwtZCrWAwBWnQb9');
-INSERT INTO `celery_taskmeta` VALUES (65045, '44db3614-3352-487c-95bc-a0f09c191432', 'FAILURE', 'gAJ9cQAoWAgAAABleGNfdHlwZXEBWAoAAABWYWx1ZUVycm9ycQJYCwAAAGV4Y19tZXNzYWdlcQNYJgAAAHRvbyBtYW55IHZhbHVlcyB0byB1bnBhY2sgKGV4cGVjdGVkIDIpcQR1Lg==', '2022-02-21 18:30:00.013519', 'Traceback (most recent call last):\n  File \"/root/.virtualenvs/fast/lib/python3.6/site-packages/celery/app/trace.py\", line 240, in trace_task\n    R = retval = fun(*args, **kwargs)\n  File \"/root/.virtualenvs/fast/lib/python3.6/site-packages/celery/app/trace.py\", line 438, in __protected_call__\n    return self.run(*args, **kwargs)\n  File \"/root/code/FasterRunner/fastrunner/tasks.py\", line 93, in schedule_debug_suite\n    summary, _ = debug_suite(test_sets, project, suite, config_list, save=False, allow_parallel=is_parallel)\nValueError: too many values to unpack (expected 2)\n', 0, 'eJxrYKotZIjgYGBgSM7IzEkpSs0rZIwtZCrWAwBWnQb9');
-INSERT INTO `celery_taskmeta` VALUES (65046, '25c3db52-768f-4895-8f5f-ded7152e824b', 'SUCCESS', NULL, '2022-02-21 19:20:00.050455', NULL, 0, 'eJxrYKotZIjgYGBgSM7IzEkpSs0rZIwtZCrWAwBWnQb9');
-INSERT INTO `celery_taskmeta` VALUES (65047, 'a62463df-1648-458c-bbdd-de4647f3aa04', 'FAILURE', 'gAJ9cQAoWAgAAABleGNfdHlwZXEBWAoAAABWYWx1ZUVycm9ycQJYCwAAAGV4Y19tZXNzYWdlcQNYJgAAAHRvbyBtYW55IHZhbHVlcyB0byB1bnBhY2sgKGV4cGVjdGVkIDIpcQR1Lg==', '2022-02-21 19:30:00.011943', 'Traceback (most recent call last):\n  File \"/root/.virtualenvs/fast/lib/python3.6/site-packages/celery/app/trace.py\", line 240, in trace_task\n    R = retval = fun(*args, **kwargs)\n  File \"/root/.virtualenvs/fast/lib/python3.6/site-packages/celery/app/trace.py\", line 438, in __protected_call__\n    return self.run(*args, **kwargs)\n  File \"/root/code/FasterRunner/fastrunner/tasks.py\", line 93, in schedule_debug_suite\n    summary, _ = debug_suite(test_sets, project, suite, config_list, save=False, allow_parallel=is_parallel)\nValueError: too many values to unpack (expected 2)\n', 0, 'eJxrYKotZIjgYGBgSM7IzEkpSs0rZIwtZCrWAwBWnQb9');
-INSERT INTO `celery_taskmeta` VALUES (65048, '93cc3db3-71cd-48f8-860a-ac99d77d388e', 'SUCCESS', NULL, '2022-02-21 20:20:00.048974', NULL, 0, 'eJxrYKotZIjgYGBgSM7IzEkpSs0rZIwtZCrWAwBWnQb9');
-INSERT INTO `celery_taskmeta` VALUES (65049, '04973c84-6712-45f3-9a13-c6ef7ff02734', 'FAILURE', 'gAJ9cQAoWAgAAABleGNfdHlwZXEBWAoAAABWYWx1ZUVycm9ycQJYCwAAAGV4Y19tZXNzYWdlcQNYJgAAAHRvbyBtYW55IHZhbHVlcyB0byB1bnBhY2sgKGV4cGVjdGVkIDIpcQR1Lg==', '2022-02-21 20:30:00.012594', 'Traceback (most recent call last):\n  File \"/root/.virtualenvs/fast/lib/python3.6/site-packages/celery/app/trace.py\", line 240, in trace_task\n    R = retval = fun(*args, **kwargs)\n  File \"/root/.virtualenvs/fast/lib/python3.6/site-packages/celery/app/trace.py\", line 438, in __protected_call__\n    return self.run(*args, **kwargs)\n  File \"/root/code/FasterRunner/fastrunner/tasks.py\", line 93, in schedule_debug_suite\n    summary, _ = debug_suite(test_sets, project, suite, config_list, save=False, allow_parallel=is_parallel)\nValueError: too many values to unpack (expected 2)\n', 0, 'eJxrYKotZIjgYGBgSM7IzEkpSs0rZIwtZCrWAwBWnQb9');
-INSERT INTO `celery_taskmeta` VALUES (65050, '010c6591-a9ee-467a-a6e0-ebf04b9e793f', 'SUCCESS', NULL, '2022-02-21 21:20:00.058549', NULL, 0, 'eJxrYKotZIjgYGBgSM7IzEkpSs0rZIwtZCrWAwBWnQb9');
-INSERT INTO `celery_taskmeta` VALUES (65051, '6342fe44-9b61-4da1-a1c0-38b99aba9042', 'FAILURE', 'gAJ9cQAoWAgAAABleGNfdHlwZXEBWAoAAABWYWx1ZUVycm9ycQJYCwAAAGV4Y19tZXNzYWdlcQNYJgAAAHRvbyBtYW55IHZhbHVlcyB0byB1bnBhY2sgKGV4cGVjdGVkIDIpcQR1Lg==', '2022-02-21 21:30:00.011574', 'Traceback (most recent call last):\n  File \"/root/.virtualenvs/fast/lib/python3.6/site-packages/celery/app/trace.py\", line 240, in trace_task\n    R = retval = fun(*args, **kwargs)\n  File \"/root/.virtualenvs/fast/lib/python3.6/site-packages/celery/app/trace.py\", line 438, in __protected_call__\n    return self.run(*args, **kwargs)\n  File \"/root/code/FasterRunner/fastrunner/tasks.py\", line 93, in schedule_debug_suite\n    summary, _ = debug_suite(test_sets, project, suite, config_list, save=False, allow_parallel=is_parallel)\nValueError: too many values to unpack (expected 2)\n', 0, 'eJxrYKotZIjgYGBgSM7IzEkpSs0rZIwtZCrWAwBWnQb9');
-INSERT INTO `celery_taskmeta` VALUES (65052, '6142e399-3d25-4964-896a-eb281dfb23c8', 'SUCCESS', NULL, '2022-02-21 22:20:00.048046', NULL, 0, 'eJxrYKotZIjgYGBgSM7IzEkpSs0rZIwtZCrWAwBWnQb9');
-INSERT INTO `celery_taskmeta` VALUES (65053, '61e7d0b1-8b19-4b32-a3d0-f7d68666fc19', 'FAILURE', 'gAJ9cQAoWAgAAABleGNfdHlwZXEBWAoAAABWYWx1ZUVycm9ycQJYCwAAAGV4Y19tZXNzYWdlcQNYJgAAAHRvbyBtYW55IHZhbHVlcyB0byB1bnBhY2sgKGV4cGVjdGVkIDIpcQR1Lg==', '2022-02-21 22:30:00.012354', 'Traceback (most recent call last):\n  File \"/root/.virtualenvs/fast/lib/python3.6/site-packages/celery/app/trace.py\", line 240, in trace_task\n    R = retval = fun(*args, **kwargs)\n  File \"/root/.virtualenvs/fast/lib/python3.6/site-packages/celery/app/trace.py\", line 438, in __protected_call__\n    return self.run(*args, **kwargs)\n  File \"/root/code/FasterRunner/fastrunner/tasks.py\", line 93, in schedule_debug_suite\n    summary, _ = debug_suite(test_sets, project, suite, config_list, save=False, allow_parallel=is_parallel)\nValueError: too many values to unpack (expected 2)\n', 0, 'eJxrYKotZIjgYGBgSM7IzEkpSs0rZIwtZCrWAwBWnQb9');
-INSERT INTO `celery_taskmeta` VALUES (65054, '9dfcab8d-2e40-41f0-80b4-c82bf95421f4', 'SUCCESS', NULL, '2022-02-21 23:20:00.047223', NULL, 0, 'eJxrYKotZIjgYGBgSM7IzEkpSs0rZIwtZCrWAwBWnQb9');
-INSERT INTO `celery_taskmeta` VALUES (65055, 'f0e224fe-767a-4b4b-92f6-b59110c3e9b0', 'FAILURE', 'gAJ9cQAoWAgAAABleGNfdHlwZXEBWAoAAABWYWx1ZUVycm9ycQJYCwAAAGV4Y19tZXNzYWdlcQNYJgAAAHRvbyBtYW55IHZhbHVlcyB0byB1bnBhY2sgKGV4cGVjdGVkIDIpcQR1Lg==', '2022-02-21 23:30:00.012464', 'Traceback (most recent call last):\n  File \"/root/.virtualenvs/fast/lib/python3.6/site-packages/celery/app/trace.py\", line 240, in trace_task\n    R = retval = fun(*args, **kwargs)\n  File \"/root/.virtualenvs/fast/lib/python3.6/site-packages/celery/app/trace.py\", line 438, in __protected_call__\n    return self.run(*args, **kwargs)\n  File \"/root/code/FasterRunner/fastrunner/tasks.py\", line 93, in schedule_debug_suite\n    summary, _ = debug_suite(test_sets, project, suite, config_list, save=False, allow_parallel=is_parallel)\nValueError: too many values to unpack (expected 2)\n', 0, 'eJxrYKotZIjgYGBgSM7IzEkpSs0rZIwtZCrWAwBWnQb9');
-INSERT INTO `celery_taskmeta` VALUES (65056, 'cba95681-6000-4bab-bfd8-514ee7e62f51', 'FAILURE', 'gAJ9cQAoWAgAAABleGNfdHlwZXEBWAoAAABWYWx1ZUVycm9ycQJYCwAAAGV4Y19tZXNzYWdlcQNYJgAAAHRvbyBtYW55IHZhbHVlcyB0byB1bnBhY2sgKGV4cGVjdGVkIDIpcQR1Lg==', '2022-02-22 01:01:00.009523', 'Traceback (most recent call last):\n  File \"/root/.virtualenvs/fast/lib/python3.6/site-packages/celery/app/trace.py\", line 240, in trace_task\n    R = retval = fun(*args, **kwargs)\n  File \"/root/.virtualenvs/fast/lib/python3.6/site-packages/celery/app/trace.py\", line 438, in __protected_call__\n    return self.run(*args, **kwargs)\n  File \"/root/code/FasterRunner/fastrunner/tasks.py\", line 93, in schedule_debug_suite\n    summary, _ = debug_suite(test_sets, project, suite, config_list, save=False, allow_parallel=is_parallel)\nValueError: too many values to unpack (expected 2)\n', 0, 'eJxrYKotZIjgYGBgSM7IzEkpSs0rZIwtZCrWAwBWnQb9');
 COMMIT;
 
 -- ----------------------------
@@ -759,29 +666,6 @@ INSERT INTO `config` VALUES (59, '2022-01-20 13:59:36.392038', '2022-01-20 14:02
 COMMIT;
 
 -- ----------------------------
--- Table structure for database
--- ----------------------------
-DROP TABLE IF EXISTS `database`;
-CREATE TABLE `database` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `create_time` datetime(6) NOT NULL,
-  `update_time` datetime(6) NOT NULL,
-  `name` varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
-  `server` varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
-  `account` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
-  `password` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
-  `type` int NOT NULL,
-  `desc` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
-  PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
--- ----------------------------
--- Records of database
--- ----------------------------
-BEGIN;
-COMMIT;
-
--- ----------------------------
 -- Table structure for debugtalk
 -- ----------------------------
 DROP TABLE IF EXISTS `debugtalk`;
@@ -823,86 +707,12 @@ CREATE TABLE `django_admin_log` (
   KEY `django_admin_log_user_id_c564eba6_fk_fastuser_myuser_id` (`user_id`) USING BTREE,
   CONSTRAINT `django_admin_log_ibfk_1` FOREIGN KEY (`content_type_id`) REFERENCES `django_content_type` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
   CONSTRAINT `django_admin_log_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `fastuser_myuser` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE=InnoDB AUTO_INCREMENT=77 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- ----------------------------
 -- Records of django_admin_log
 -- ----------------------------
 BEGIN;
-INSERT INTO `django_admin_log` VALUES (1, '2020-05-06 11:53:36.879758', '2', 'test', 2, '[{\"changed\": {\"fields\": [\"password\"]}}]', 17, 1);
-INSERT INTO `django_admin_log` VALUES (2, '2020-05-06 11:55:28.424364', '2', 'test', 2, '[{\"changed\": {\"fields\": [\"password\"]}}]', 17, 1);
-INSERT INTO `django_admin_log` VALUES (3, '2020-07-01 17:46:12.086272', '5', 'qa1', 1, '[{\"added\": {}}]', 17, 4);
-INSERT INTO `django_admin_log` VALUES (4, '2020-07-01 17:53:06.451738', '5', 'qa1', 2, '[{\"changed\": {\"fields\": [\"password\"]}}]', 17, 4);
-INSERT INTO `django_admin_log` VALUES (5, '2020-08-16 10:15:55.147624', '6', 'test', 1, '[{\"added\": {}}]', 17, 4);
-INSERT INTO `django_admin_log` VALUES (6, '2020-08-16 23:24:44.427763', '7', '李华才', 1, '[{\"added\": {}}]', 17, 4);
-INSERT INTO `django_admin_log` VALUES (7, '2020-08-16 23:27:24.146882', '8', '李健峰', 1, '[{\"added\": {}}]', 17, 4);
-INSERT INTO `django_admin_log` VALUES (8, '2020-08-17 09:52:33.595145', '5', 'qa1', 2, '[{\"changed\": {\"fields\": [\"is_active\", \"is_staff\"]}}]', 17, 4);
-INSERT INTO `django_admin_log` VALUES (9, '2020-08-17 09:53:31.329486', '7', '李华才', 2, '[{\"changed\": {\"fields\": [\"is_superuser\", \"last_login\"]}}]', 17, 4);
-INSERT INTO `django_admin_log` VALUES (11, '2020-08-18 17:13:48.672659', '9', '吴惠', 1, '[{\"added\": {}}]', 17, 4);
-INSERT INTO `django_admin_log` VALUES (12, '2020-08-18 17:14:58.645595', '9', '吴惠', 2, '[]', 17, 4);
-INSERT INTO `django_admin_log` VALUES (13, '2020-08-18 17:15:23.938374', '9', '吴惠', 2, '[{\"changed\": {\"fields\": [\"is_staff\"]}}]', 17, 4);
-INSERT INTO `django_admin_log` VALUES (14, '2020-08-18 17:18:14.116849', '9', '吴惠', 2, '[{\"changed\": {\"fields\": [\"password\"]}}]', 17, 4);
-INSERT INTO `django_admin_log` VALUES (15, '2020-08-18 17:22:02.585999', '9', '吴惠', 2, '[{\"changed\": {\"fields\": [\"email\"]}}]', 17, 4);
-INSERT INTO `django_admin_log` VALUES (16, '2020-08-18 17:22:46.163979', '9', '吴惠', 2, '[{\"changed\": {\"fields\": [\"password\"]}}]', 17, 4);
-INSERT INTO `django_admin_log` VALUES (17, '2020-09-14 22:14:13.925541', '10', 'test1', 1, '[{\"added\": {}}]', 17, 4);
-INSERT INTO `django_admin_log` VALUES (18, '2020-09-14 22:23:20.126463', '11', '小菜菜', 1, '[{\"added\": {}}]', 17, 4);
-INSERT INTO `django_admin_log` VALUES (19, '2020-09-14 22:34:51.720273', '10', 'test1', 2, '[{\"changed\": {\"fields\": [\"is_active\"]}}]', 17, 4);
-INSERT INTO `django_admin_log` VALUES (20, '2020-10-13 17:58:31.692955', '12', 'qa2', 1, '[{\"added\": {}}]', 17, 4);
-INSERT INTO `django_admin_log` VALUES (21, '2021-03-23 22:03:03.582733', '1', '测试组', 1, '[{\"added\": {}}]', 3, 4);
-INSERT INTO `django_admin_log` VALUES (22, '2021-03-23 22:12:03.246978', '4', 'admin', 2, '[{\"changed\": {\"fields\": [\"groups\", \"last_login\"]}}]', 17, 4);
-INSERT INTO `django_admin_log` VALUES (23, '2021-03-23 23:12:48.990139', '1', '测试组1', 2, '[{\"changed\": {\"fields\": [\"name\"]}}]', 3, 4);
-INSERT INTO `django_admin_log` VALUES (24, '2021-03-23 23:13:35.528048', '1', '测试组1', 2, '[]', 3, 4);
-INSERT INTO `django_admin_log` VALUES (25, '2021-03-23 23:14:03.858704', '2', '开发组', 1, '[{\"added\": {}}]', 3, 4);
-INSERT INTO `django_admin_log` VALUES (26, '2021-03-23 23:15:04.015785', '13', 'dev', 1, '[{\"added\": {}}]', 17, 4);
-INSERT INTO `django_admin_log` VALUES (27, '2021-03-23 23:15:42.133168', '11', '小菜菜', 2, '[{\"changed\": {\"fields\": [\"password\"]}}]', 17, 4);
-INSERT INTO `django_admin_log` VALUES (28, '2021-03-23 23:15:49.089125', '11', '小菜菜', 2, '[{\"changed\": {\"fields\": [\"groups\"]}}]', 17, 4);
-INSERT INTO `django_admin_log` VALUES (29, '2021-03-23 23:16:52.284994', '3', '超级管理员', 1, '[{\"added\": {}}]', 3, 4);
-INSERT INTO `django_admin_log` VALUES (30, '2021-03-23 23:17:18.160713', '5', 'qa1', 2, '[{\"changed\": {\"fields\": [\"password\"]}}]', 17, 4);
-INSERT INTO `django_admin_log` VALUES (31, '2021-03-23 23:17:22.456822', '5', 'qa1', 2, '[{\"changed\": {\"fields\": [\"groups\"]}}]', 17, 4);
-INSERT INTO `django_admin_log` VALUES (32, '2021-03-23 23:37:08.290324', '14', 'dev1', 1, '[{\"added\": {}}]', 17, 4);
-INSERT INTO `django_admin_log` VALUES (33, '2021-03-23 23:40:03.053529', '14', 'dev1', 2, '[{\"changed\": {\"fields\": [\"password\"]}}]', 17, 4);
-INSERT INTO `django_admin_log` VALUES (34, '2021-03-23 23:41:12.486788', '14', 'dev1', 2, '[{\"changed\": {\"fields\": [\"password\"]}}]', 17, 4);
-INSERT INTO `django_admin_log` VALUES (35, '2021-03-23 23:41:59.349770', '14', 'dev1', 2, '[{\"changed\": {\"fields\": [\"password\"]}}]', 17, 4);
-INSERT INTO `django_admin_log` VALUES (36, '2021-03-23 23:43:51.858814', '5', 'qa1', 2, '[{\"changed\": {\"fields\": [\"password\"]}}]', 17, 4);
-INSERT INTO `django_admin_log` VALUES (37, '2021-03-23 23:44:33.310687', '5', 'qa1', 2, '[{\"changed\": {\"fields\": [\"is_staff\"]}}]', 17, 4);
-INSERT INTO `django_admin_log` VALUES (38, '2021-03-23 23:45:10.725502', '5', 'qa1', 2, '[{\"changed\": {\"fields\": [\"is_active\"]}}]', 17, 4);
-INSERT INTO `django_admin_log` VALUES (39, '2021-03-23 23:45:36.940335', '5', 'qa1', 2, '[{\"changed\": {\"fields\": [\"is_active\"]}}]', 17, 4);
-INSERT INTO `django_admin_log` VALUES (40, '2021-03-23 23:45:52.040259', '5', 'qa1', 2, '[{\"changed\": {\"fields\": [\"is_staff\"]}}]', 17, 4);
-INSERT INTO `django_admin_log` VALUES (41, '2021-03-23 23:46:21.457567', '14', 'dev1', 2, '[{\"changed\": {\"fields\": [\"is_staff\"]}}]', 17, 4);
-INSERT INTO `django_admin_log` VALUES (42, '2021-03-23 23:47:13.152897', '2', '开发组', 2, '[{\"changed\": {\"fields\": [\"permissions\"]}}]', 3, 4);
-INSERT INTO `django_admin_log` VALUES (43, '2021-03-23 23:47:43.655246', '2', '开发组', 2, '[{\"changed\": {\"fields\": [\"permissions\"]}}]', 3, 4);
-INSERT INTO `django_admin_log` VALUES (44, '2021-03-23 23:48:24.121474', '2', '开发组', 2, '[{\"changed\": {\"fields\": [\"permissions\"]}}]', 3, 4);
-INSERT INTO `django_admin_log` VALUES (46, '2021-03-23 23:49:16.735139', '2', '开发组', 2, '[{\"changed\": {\"fields\": [\"permissions\"]}}]', 3, 4);
-INSERT INTO `django_admin_log` VALUES (47, '2021-03-23 23:49:41.894020', '2', '开发组', 2, '[{\"changed\": {\"fields\": [\"permissions\"]}}]', 3, 4);
-INSERT INTO `django_admin_log` VALUES (48, '2021-03-25 17:07:46.166414', '2', '开发组', 2, '[{\"changed\": {\"fields\": [\"users\"]}}]', 3, 4);
-INSERT INTO `django_admin_log` VALUES (49, '2021-03-25 17:08:19.201589', '4', 'g1', 1, '[{\"added\": {}}]', 3, 4);
-INSERT INTO `django_admin_log` VALUES (50, '2021-03-25 17:15:21.261914', '4', 'g1', 2, '[{\"changed\": {\"fields\": [\"users\"]}}]', 3, 4);
-INSERT INTO `django_admin_log` VALUES (51, '2021-03-25 17:33:14.083419', '4', 'g1', 2, '[{\"changed\": {\"fields\": [\"users\"]}}]', 3, 4);
-INSERT INTO `django_admin_log` VALUES (52, '2021-03-25 17:33:39.944257', '5', '11', 1, '[{\"added\": {}}]', 3, 4);
-INSERT INTO `django_admin_log` VALUES (53, '2021-03-25 17:34:13.458049', '4', 'g1', 2, '[{\"changed\": {\"fields\": [\"users\"]}}]', 3, 4);
-INSERT INTO `django_admin_log` VALUES (54, '2021-03-25 17:34:39.114668', '4', 'g1', 2, '[{\"changed\": {\"fields\": [\"users\"]}}]', 3, 4);
-INSERT INTO `django_admin_log` VALUES (55, '2021-03-25 17:41:05.837976', '6', '2', 1, '[{\"added\": {}}]', 3, 4);
-INSERT INTO `django_admin_log` VALUES (56, '2021-03-25 17:49:21.294553', '6', '2', 3, '', 3, 4);
-INSERT INTO `django_admin_log` VALUES (57, '2021-03-25 17:50:43.729457', '5', '11', 3, '', 3, 4);
-INSERT INTO `django_admin_log` VALUES (58, '2021-03-25 17:52:18.241353', '4', 'g1', 2, '[{\"changed\": {\"fields\": [\"users\"]}}]', 3, 4);
-INSERT INTO `django_admin_log` VALUES (59, '2021-03-25 17:53:17.188876', '4', 'g1', 2, '[{\"changed\": {\"fields\": [\"users\"]}}]', 3, 4);
-INSERT INTO `django_admin_log` VALUES (60, '2021-03-25 17:54:27.291611', '4', 'g1', 2, '[]', 3, 4);
-INSERT INTO `django_admin_log` VALUES (61, '2021-03-25 18:00:24.248930', '4', 'g1', 2, '[{\"changed\": {\"fields\": [\"users\"]}}]', 3, 4);
-INSERT INTO `django_admin_log` VALUES (62, '2021-03-25 18:24:23.557128', '4', 'g1', 2, '[{\"changed\": {\"fields\": [\"users\"]}}]', 3, 4);
-INSERT INTO `django_admin_log` VALUES (63, '2021-05-25 21:55:33.299651', '5', 'qa1', 2, '[{\"changed\": {\"fields\": [\"password\"]}}]', 17, 4);
-INSERT INTO `django_admin_log` VALUES (64, '2021-07-02 15:57:14.698870', '15', '林苏', 1, '[{\"added\": {}}]', 17, 4);
-INSERT INTO `django_admin_log` VALUES (65, '2021-10-28 02:28:35.840414', '13', 'dev', 3, '', 17, 4);
-INSERT INTO `django_admin_log` VALUES (66, '2021-10-28 02:28:35.845007', '14', 'dev1', 3, '', 17, 4);
-INSERT INTO `django_admin_log` VALUES (67, '2021-10-28 02:28:35.849345', '5', 'qa1', 3, '', 17, 4);
-INSERT INTO `django_admin_log` VALUES (68, '2021-10-28 02:28:35.853698', '12', 'qa2', 3, '', 17, 4);
-INSERT INTO `django_admin_log` VALUES (69, '2021-10-28 02:28:35.858184', '10', 'test1', 3, '', 17, 4);
-INSERT INTO `django_admin_log` VALUES (70, '2021-10-28 02:28:35.862459', '9', '吴惠', 3, '', 17, 4);
-INSERT INTO `django_admin_log` VALUES (71, '2021-10-28 02:28:35.866783', '11', '小菜菜', 3, '', 17, 4);
-INSERT INTO `django_admin_log` VALUES (72, '2021-10-28 02:28:35.871911', '8', '李健峰', 3, '', 17, 4);
-INSERT INTO `django_admin_log` VALUES (73, '2021-10-28 02:28:35.876211', '7', '李华才', 3, '', 17, 4);
-INSERT INTO `django_admin_log` VALUES (74, '2021-10-28 02:28:35.880544', '15', '林苏', 3, '', 17, 4);
-INSERT INTO `django_admin_log` VALUES (75, '2021-10-28 02:28:53.650903', '6', 'test', 2, '[{\"changed\": {\"fields\": [\"password\"]}}]', 17, 4);
-INSERT INTO `django_admin_log` VALUES (76, '2022-01-13 16:26:32.859426', '4', 'admin', 2, '[{\"changed\": {\"fields\": [\"password\"]}}]', 17, 7);
 COMMIT;
 
 -- ----------------------------
@@ -1037,6 +847,7 @@ CREATE TABLE `django_session` (
 -- ----------------------------
 BEGIN;
 INSERT INTO `django_session` VALUES ('2vc66mq73oiksygcxxq3av9d9lu4kd4j', 'ZDU4NzczNmM0YzM1NmYzNDhmMmY1ODM2MWVlODk1NWYzODA1ZDYwMDp7Il9hdXRoX3VzZXJfaWQiOiI0IiwiX2F1dGhfdXNlcl9iYWNrZW5kIjoiZGphbmdvLmNvbnRyaWIuYXV0aC5iYWNrZW5kcy5Nb2RlbEJhY2tlbmQiLCJfYXV0aF91c2VyX2hhc2giOiJhMzhhYzIwNmU2MWNjYTU2MjM0NzFlZDE2NTEzMTk2NWFlNTQ2NjBlIn0=', '2020-09-28 22:09:47.554236');
+INSERT INTO `django_session` VALUES ('66ptafjgjo7776axz4u4a9w2gnxeo0tj', 'YzBlNjUzNzQ0OGRhYTJmMDI0NDI5MmM4NjczNWVkMDlhODI3NzU3Nzp7Il9hdXRoX3VzZXJfaWQiOiI0IiwiX2F1dGhfdXNlcl9iYWNrZW5kIjoiZGphbmdvLmNvbnRyaWIuYXV0aC5iYWNrZW5kcy5Nb2RlbEJhY2tlbmQiLCJfYXV0aF91c2VyX2hhc2giOiI3MDI2YWQwYzRlZmVlZmM2NWI3ZDQyN2Q5ZWY2NTIzMGQ1OTJjM2EyIn0=', '2022-03-08 21:28:48.243051');
 INSERT INTO `django_session` VALUES ('6g7ncgk5apmb7145ba22j02hy6y3f9k7', 'ZDU4NzczNmM0YzM1NmYzNDhmMmY1ODM2MWVlODk1NWYzODA1ZDYwMDp7Il9hdXRoX3VzZXJfaWQiOiI0IiwiX2F1dGhfdXNlcl9iYWNrZW5kIjoiZGphbmdvLmNvbnRyaWIuYXV0aC5iYWNrZW5kcy5Nb2RlbEJhY2tlbmQiLCJfYXV0aF91c2VyX2hhc2giOiJhMzhhYzIwNmU2MWNjYTU2MjM0NzFlZDE2NTEzMTk2NWFlNTQ2NjBlIn0=', '2021-07-16 15:56:49.389057');
 INSERT INTO `django_session` VALUES ('7qts8m8w4ctt69een4gbtsscocyvurx5', 'ZjQ0ODBlN2M0YmQzYjM4NzRlYTkzZjFiM2E0NDI2N2Y4YTc3YmViYjp7Il9hdXRoX3VzZXJfaWQiOiI3IiwiX2F1dGhfdXNlcl9iYWNrZW5kIjoiZGphbmdvLmNvbnRyaWIuYXV0aC5iYWNrZW5kcy5Nb2RlbEJhY2tlbmQiLCJfYXV0aF91c2VyX2hhc2giOiI3YWVhNmQwNzg5MTEwOTg1MGM0OTAwYTUxN2M1YzBkZTllN2VmZTY1In0=', '2022-01-27 16:26:32.883009');
 INSERT INTO `django_session` VALUES ('93vmt65w4mq6xsl6u8r5ixv4dvzr797g', 'OWNhMmJiOTg4ODZiN2QyZDcwMzdjZDczZjc5MjQ0MDdhZmNiODAwZTp7Il9hdXRoX3VzZXJfaWQiOiI0IiwiX2F1dGhfdXNlcl9iYWNrZW5kIjoiZGphbmdvLmNvbnRyaWIuYXV0aC5iYWNrZW5kcy5Nb2RlbEJhY2tlbmQiLCJfYXV0aF91c2VyX2hhc2giOiI5N2RkOGVjZTI4MzNjZTY5MWZmOTQ4M2RmMjQyNzljYTM4MTQ4NWUwIn0=', '2020-07-15 17:53:06.459884');
@@ -1073,38 +884,6 @@ CREATE TABLE `djcelery_crontabschedule` (
 -- Records of djcelery_crontabschedule
 -- ----------------------------
 BEGIN;
-INSERT INTO `djcelery_crontabschedule` VALUES (17, '0', '4', '*', '*', '*');
-INSERT INTO `djcelery_crontabschedule` VALUES (18, '*/1', '*/1', '*', '*', '*');
-INSERT INTO `djcelery_crontabschedule` VALUES (19, '*', '*/1', '*', '*', '*');
-INSERT INTO `djcelery_crontabschedule` VALUES (20, '0', '*/1', '*', '*', '*');
-INSERT INTO `djcelery_crontabschedule` VALUES (21, '*/1', '*', '*', '*', '*');
-INSERT INTO `djcelery_crontabschedule` VALUES (22, '4', '*', '*', '*', '*');
-INSERT INTO `djcelery_crontabschedule` VALUES (23, '*', '1', '*', '*', '*');
-INSERT INTO `djcelery_crontabschedule` VALUES (24, '*/30', '*', '*', '*', '*');
-INSERT INTO `djcelery_crontabschedule` VALUES (25, '*/60', '*', '*', '*', '*');
-INSERT INTO `djcelery_crontabschedule` VALUES (26, '30', '8-23/1', '*', '*', '*');
-INSERT INTO `djcelery_crontabschedule` VALUES (27, '*/1', '8-23/1', '*', '*', '*');
-INSERT INTO `djcelery_crontabschedule` VALUES (28, '20', '8-23/1', '*', '*', '*');
-INSERT INTO `djcelery_crontabschedule` VALUES (29, '*', '8-23/1', '*', '*', '*');
-INSERT INTO `djcelery_crontabschedule` VALUES (30, '*', '0', '*', '*', '*');
-INSERT INTO `djcelery_crontabschedule` VALUES (31, '1', '0', '*', '*', '*');
-INSERT INTO `djcelery_crontabschedule` VALUES (32, '*/1', '11', '*', '*', '*');
-INSERT INTO `djcelery_crontabschedule` VALUES (33, '1', '1', '*', '*', '*');
-INSERT INTO `djcelery_crontabschedule` VALUES (34, '3', '0', '*', '*', '*');
-INSERT INTO `djcelery_crontabschedule` VALUES (35, '1', '8-23/1', '*', '*', '*');
-INSERT INTO `djcelery_crontabschedule` VALUES (36, '*', '*', '*', '*', '*');
-INSERT INTO `djcelery_crontabschedule` VALUES (37, '1', '*', '*', '*', '*');
-INSERT INTO `djcelery_crontabschedule` VALUES (38, '1', '8-23/1', '*', '1-2', '*');
-INSERT INTO `djcelery_crontabschedule` VALUES (39, '1', '8-23/1', '*', '2', '*');
-INSERT INTO `djcelery_crontabschedule` VALUES (40, '1', '8-23', '*', '*/2', '*');
-INSERT INTO `djcelery_crontabschedule` VALUES (41, '0', '0', '*', '*/2', '*');
-INSERT INTO `djcelery_crontabschedule` VALUES (42, '0', '0', '*', '*', '*');
-INSERT INTO `djcelery_crontabschedule` VALUES (43, '1', '2', '*', '*', '*');
-INSERT INTO `djcelery_crontabschedule` VALUES (44, '*', '*', '1', '*', '1');
-INSERT INTO `djcelery_crontabschedule` VALUES (45, '2', '1', '*', '*', '*');
-INSERT INTO `djcelery_crontabschedule` VALUES (46, '3', '3', '*', '*', '*');
-INSERT INTO `djcelery_crontabschedule` VALUES (47, '2', '12', '*', '*', '*');
-INSERT INTO `djcelery_crontabschedule` VALUES (48, '1', '*/1', '*', '*', '*');
 COMMIT;
 
 -- ----------------------------
@@ -1151,40 +930,12 @@ CREATE TABLE `djcelery_periodictask` (
   KEY `djcelery_periodictas_interval_id_b426ab02_fk_djcelery_` (`interval_id`) USING BTREE,
   CONSTRAINT `djcelery_periodictask_ibfk_1` FOREIGN KEY (`crontab_id`) REFERENCES `djcelery_crontabschedule` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
   CONSTRAINT `djcelery_periodictask_ibfk_2` FOREIGN KEY (`interval_id`) REFERENCES `djcelery_intervalschedule` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE=InnoDB AUTO_INCREMENT=53 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- ----------------------------
 -- Records of djcelery_periodictask
 -- ----------------------------
 BEGIN;
-INSERT INTO `djcelery_periodictask` VALUES (19, 'celery.backend_cleanup', 'celery.backend_cleanup', '[]', '{}', NULL, NULL, NULL, NULL, 1, '2022-02-20 20:00:00.001365', 360, '2022-02-21 04:01:59.895941', '', 17, NULL);
-INSERT INTO `djcelery_periodictask` VALUES (20, '每小时1次', 'fastrunner.tasks.schedule_debug_suite', '[122]', '{\"strategy\": \"从不发送\", \"mail_cc\": \"lihuacai168@foxmail.com\", \"receiver\": \"lihuacai168@foxmail.com\", \"crontab\": \"1 */1 * * *\", \"project\": 7, \"task_name\": \"每小时1次\", \"webhook\": \"\", \"updater\": \"test\", \"creator\": null, \"ci_project_ids\": \"12071\", \"ci_env\": \"请选择\", \"is_parallel\": false, \"config\": \"请选择\"}', NULL, NULL, NULL, NULL, 0, NULL, 148, '2021-11-04 02:17:18.032737', '7', 48, NULL);
-INSERT INTO `djcelery_periodictask` VALUES (22, '1小时/次-测试', 'fastrunner.tasks.schedule_debug_suite', '[206]', '{\"strategy\": \"从不发送\", \"mail_cc\": \"\", \"receiver\": \"lihuacai168@foxmail.com\", \"crontab\": \"20 8-23/1 * * *\", \"project\": \"7\", \"task_name\": \"1小时/次-测试\", \"webhook\": \"\", \"updater\": \"test\", \"creator\": null, \"ci_project_ids\": \"\", \"ci_env\": \"请选择\", \"is_parallel\": false, \"config\": \"请选择\"}', NULL, NULL, NULL, NULL, 1, '2022-02-21 15:20:00.000524', 9165, '2022-02-21 23:21:39.892002', '7', 28, NULL);
-INSERT INTO `djcelery_periodictask` VALUES (24, '上海大屏接口测试', 'fastrunner.tasks.schedule_debug_suite', '[137, 138, 139, 140, 141]', '{\"strategy\": \"始终发送\", \"mail_cc\": \"\", \"receiver\": \"1@qq.com\", \"crontab\": \"30 8-23/1 * * *\", \"project\": \"12\", \"task_name\": \"上海大屏接口测试\", \"webhook\": \"https://open.feishu.cn/open-apis/bot/hook/49898a83-3e2a-4a2e-8202-93c61b49d0ba\"}', NULL, NULL, NULL, NULL, 1, '2022-02-21 15:30:00.000708', 2335, '2022-02-21 23:30:49.968941', '12', 26, NULL);
-INSERT INTO `djcelery_periodictask` VALUES (25, '采集器排班', 'fastrunner.tasks.schedule_debug_suite', '[149]', '{\"strategy\": \"始终发送\", \"mail_cc\": \"11363769@qq.com\", \"receiver\": \"11363769@qq.com\", \"crontab\": \"0 */1 * * *\", \"project\": \"11\", \"task_name\": \"采集器排班\", \"webhook\": \"https://open.feishu.cn/open-apis/bot/v2/hook/1e03ab87-ca19-4d8b-ba1c-449c88ccdc25\", \"updater\": \"admin\"}', NULL, NULL, NULL, NULL, 0, NULL, 119, '2021-05-17 16:24:18.589376', '11', 20, NULL);
-INSERT INTO `djcelery_periodictask` VALUES (26, '梭织mes相关', 'fastrunner.tasks.schedule_debug_suite', '[144]', '{\"strategy\": \"始终发送\", \"mail_cc\": \"11363769@qq.com\", \"receiver\": \"11363769@qq.com\", \"crontab\": \"0 0 */2 * *\", \"project\": \"11\", \"task_name\": \"梭织mes相关\", \"webhook\": \"https://open.feishu.cn/open-apis/bot/hook/fe614f38-2c18-4a24-909e-68a46f76c4dc\", \"updater\": \"admin\", \"creator\": null, \"ci_project_ids\": \"\"}', NULL, NULL, NULL, NULL, 0, NULL, 90, '2021-06-07 23:04:54.523540', '11', 41, NULL);
-INSERT INTO `djcelery_periodictask` VALUES (27, 'bot-v1', 'fastrunner.tasks.schedule_debug_suite', '[149]', '{\"strategy\": \"始终发送\", \"mail_cc\": \"lihuacai168@foxmail.com\", \"receiver\": \"lihuacai168@foxmail.com\", \"crontab\": \"1 * * * *\", \"project\": 11, \"task_name\": \"bot-v1\", \"webhook\": \"https://open.feishu.cn/open-apis/bot/hook/fe614f38-2c18-4a24-909e-68a46f76c4dc\", \"updater\": \"李华才\"}', NULL, NULL, NULL, NULL, 0, NULL, 2, '2021-03-06 02:08:08.715473', '11', 37, NULL);
-INSERT INTO `djcelery_periodictask` VALUES (28, 'd', 'fastrunner.tasks.schedule_debug_suite', '[150]', '{\"strategy\": \"始终发送\", \"mail_cc\": \"s\", \"receiver\": \"s\", \"crontab\": \"0 */1 * * *\", \"project\": 11, \"task_name\": \"d\", \"webhook\": \"\", \"updater\": \"admin\", \"creator\": null}', NULL, NULL, NULL, NULL, 0, NULL, 0, '2021-05-14 10:58:24.090123', '11', 20, NULL);
-INSERT INTO `djcelery_periodictask` VALUES (29, 'ee', 'fastrunner.tasks.schedule_debug_suite', '[163]', '{\"strategy\": \"始终发送\", \"mail_cc\": \"d\", \"receiver\": \"l\", \"crontab\": \"0 */1 * * *\", \"project\": \"11\", \"task_name\": \"ee\", \"webhook\": \"\", \"updater\": \"admin\", \"creator\": \"ddddd\"}', NULL, NULL, NULL, NULL, 0, NULL, 0, '2021-05-14 10:58:26.646815', '11', 20, NULL);
-INSERT INTO `djcelery_periodictask` VALUES (30, 's', 'fastrunner.tasks.schedule_debug_suite', '[165]', '{\"strategy\": \"始终发送\", \"mail_cc\": \"\", \"receiver\": \"\", \"crontab\": \"0 */1 * * *\", \"project\": \"11\", \"task_name\": \"s\", \"webhook\": \"\", \"updater\": \"admin\", \"creator\": \"李华才\"}', NULL, NULL, NULL, NULL, 0, NULL, 1, '2021-05-17 16:23:42.685263', '11', 20, NULL);
-INSERT INTO `djcelery_periodictask` VALUES (31, '测试不保存报告', 'fastrunner.tasks.schedule_debug_suite', '[150, 189, 198, 199]', '{\"strategy\": \"从不发送\", \"mail_cc\": \"\", \"receiver\": \"\", \"crontab\": \"0 0 * * *\", \"project\": \"11\", \"task_name\": \"测试不保存报告\", \"webhook\": \"\", \"updater\": \"李华才\", \"creator\": \"admin\"}', NULL, NULL, NULL, NULL, 0, NULL, 144, '2021-08-10 18:40:32.136914', '11', 42, NULL);
-INSERT INTO `djcelery_periodictask` VALUES (32, '运行成功的任务', 'fastrunner.tasks.schedule_debug_suite', '[198, 199]', '{\"strategy\": \"始终发送\", \"mail_cc\": \"\", \"receiver\": \"\", \"crontab\": \"1 1 * * *\", \"project\": \"11\", \"task_name\": \"运行成功的任务\", \"webhook\": \"https://open.feishu.cn/open-apis/bot/v2/hook/c79c1caf-de46-4518-8e79-391f2804dcdb\", \"updater\": \"李华才\", \"creator\": \"admin\", \"ci_project_ids\": \"1207\"}', NULL, NULL, NULL, NULL, 0, NULL, 5, '2021-07-13 18:06:22.625140', '11', 33, NULL);
-INSERT INTO `djcelery_periodictask` VALUES (33, 'webhook为空1', 'fastrunner.tasks.schedule_debug_suite', '[198, 199]', '{\"strategy\": \"始终发送\", \"mail_cc\": \"\", \"receiver\": \"\", \"crontab\": \"1 2 * * *\", \"project\": \"11\", \"task_name\": \"webhook为空1\", \"webhook\": \"\", \"updater\": \"李华才\", \"creator\": \"李华才\", \"ci_project_ids\": \"\"}', NULL, NULL, NULL, NULL, 0, NULL, 9, '2021-08-10 18:40:32.167723', '11', 43, NULL);
-INSERT INTO `djcelery_periodictask` VALUES (34, 'x', 'fastrunner.tasks.schedule_debug_suite', '[150, 200]', '{\"strategy\": \"从不发送\", \"mail_cc\": \"\", \"receiver\": \"\", \"crontab\": \"1 1 * * *\", \"project\": \"11\", \"task_name\": \"x\", \"webhook\": \"\", \"updater\": \"李华才\", \"creator\": \"李华才\", \"ci_project_ids\": \"1207\"}', NULL, NULL, NULL, NULL, 0, NULL, 4, '2021-08-10 18:40:32.212514', '11', 33, NULL);
-INSERT INTO `djcelery_periodictask` VALUES (35, 'dd', 'fastrunner.tasks.schedule_debug_suite', '[150]', '{\"strategy\": \"从不发送\", \"mail_cc\": \"\", \"receiver\": \"\", \"crontab\": \"* * * 1 1\", \"project\": 11, \"task_name\": \"dd\", \"webhook\": \"https://open.feishu.cn/open-apis/bot/v2/hook/c79c1caf-de46-4518-8e79-391f2804dcdb\", \"updater\": \"李华才\", \"creator\": \"admin\", \"ci_project_ids\": \"1\"}', NULL, NULL, NULL, NULL, 0, NULL, 0, '2021-08-10 18:40:43.016925', '11', 44, NULL);
-INSERT INTO `djcelery_periodictask` VALUES (36, 'x33', 'fastrunner.tasks.schedule_debug_suite', '[140]', '{\"strategy\": \"从不发送\", \"mail_cc\": \"\", \"receiver\": \"\", \"crontab\": \"1 * * * *\", \"project\": 12, \"task_name\": \"x33\", \"webhook\": \"\", \"updater\": \"admin\", \"creator\": \"admin\", \"ci_project_ids\": \"3\"}', NULL, NULL, NULL, NULL, 0, NULL, 0, '2021-06-04 15:38:08.754985', '12', 37, NULL);
-INSERT INTO `djcelery_periodictask` VALUES (37, '4433', 'fastrunner.tasks.schedule_debug_suite', '[141]', '{\"strategy\": \"从不发送\", \"mail_cc\": \"\", \"receiver\": \"\", \"crontab\": \"1 1 * * *\", \"project\": \"12\", \"task_name\": \"4433\", \"webhook\": \"\", \"updater\": \"admin\", \"creator\": \"admin\", \"ci_project_ids\": \"4\"}', NULL, NULL, NULL, NULL, 1, '2022-02-21 17:01:00.001055', 116, '2022-02-22 01:03:14.868367', '12', 33, NULL);
-INSERT INTO `djcelery_periodictask` VALUES (38, 'ddg244', 'fastrunner.tasks.schedule_debug_suite', '[198]', '{\"strategy\": \"始终发送\", \"mail_cc\": \"\", \"receiver\": \"\", \"crontab\": \"2 1 * * *\", \"project\": \"11\", \"task_name\": \"ddg244\", \"webhook\": \"\", \"updater\": \"李华才\", \"creator\": \"admin\", \"ci_project_ids\": \"\"}', NULL, NULL, NULL, NULL, 0, NULL, 4, '2021-08-10 18:40:34.075409', '11', 45, NULL);
-INSERT INTO `djcelery_periodictask` VALUES (39, 'webhook为空12', 'fastrunner.tasks.schedule_debug_suite', '[198, 199]', '{\"strategy\": \"始终发送\", \"mail_cc\": \"\", \"receiver\": \"\", \"crontab\": \"1 2 * * *\", \"project\": \"11\", \"task_name\": \"webhook为空1\", \"webhook\": \"\", \"updater\": \"李华才\", \"creator\": \"李华才\", \"ci_project_ids\": \"\"}', NULL, NULL, NULL, NULL, 0, NULL, 5, '2021-08-10 18:40:37.744473', '11', 43, NULL);
-INSERT INTO `djcelery_periodictask` VALUES (42, '测试不保存报告-1', 'fastrunner.tasks.schedule_debug_suite', '[150, 189, 198, 199]', '{\"strategy\": \"从不发送\", \"mail_cc\": \"\", \"receiver\": \"\", \"crontab\": \"0 0 * * *\", \"project\": \"11\", \"task_name\": \"测试不保存报告-1\", \"webhook\": \"\", \"updater\": \"李华才\", \"creator\": \"李华才\", \"ci_project_ids\": \"\", \"ci_env\": \"qa\", \"is_parallel\": true, \"config\": \"数据工厂-yapi-mock\"}', NULL, NULL, NULL, NULL, 0, NULL, 7, '2021-08-10 18:40:33.253389', '11', 42, NULL);
-INSERT INTO `djcelery_periodictask` VALUES (43, 'x1-重围yapi-mock', 'fastrunner.tasks.schedule_debug_suite', '[221, 222]', '{\"strategy\": \"从不发送\", \"mail_cc\": \"\", \"receiver\": \"\", \"crontab\": \"1 1 * * *\", \"project\": \"11\", \"task_name\": \"x1-重围yapi-mock\", \"webhook\": \"\", \"updater\": \"李华才\", \"creator\": \"李华才\", \"ci_project_ids\": \"1207\", \"ci_env\": \"dev\", \"config\": \"数据工厂-yapi-mock\"}', NULL, NULL, NULL, NULL, 0, NULL, 5, '2021-08-10 18:40:38.710249', '11', 33, NULL);
-INSERT INTO `djcelery_periodictask` VALUES (44, 'x1-3-不重载配置', 'fastrunner.tasks.schedule_debug_suite', '[221, 223]', '{\"strategy\": \"从不发送\", \"mail_cc\": \"\", \"receiver\": \"\", \"crontab\": \"1 1 * * *\", \"project\": \"11\", \"task_name\": \"x1-3-不重载配置\", \"webhook\": \"\", \"updater\": \"李华才\", \"creator\": \"李华才\", \"ci_project_ids\": \"1207\", \"ci_env\": \"dev\", \"config\": \"请选择\"}', NULL, NULL, NULL, NULL, 0, NULL, 6, '2021-08-10 18:40:36.747290', '11', 33, NULL);
-INSERT INTO `djcelery_periodictask` VALUES (47, '正常发送1', 'fastrunner.tasks.schedule_debug_suite', '[221]', '{\"strategy\": \"始终发送\", \"mail_cc\": \"\", \"receiver\": \"\", \"crontab\": \"*/1 * * * *\", \"project\": \"11\", \"task_name\": \"正常发送1\", \"webhook\": \"\", \"updater\": \"李华才\", \"creator\": \"李华才\", \"ci_project_ids\": \"\", \"ci_env\": \"dev\", \"config\": \"newsz\"}', NULL, NULL, NULL, NULL, 0, NULL, 5, '2021-07-15 10:45:54.089563', '11', 21, NULL);
-INSERT INTO `djcelery_periodictask` VALUES (48, '写来了', 'fastrunner.tasks.schedule_debug_suite', '[243, 244]', '{\"strategy\": \"始终发送\", \"mail_cc\": \"\", \"receiver\": \"\", \"crontab\": \"2 12 * * *\", \"project\": \"11\", \"task_name\": \"写来了\", \"webhook\": \"\", \"updater\": \"李华才\", \"creator\": \"李华才\", \"ci_project_ids\": \"1347\", \"ci_env\": \"qa\", \"is_parallel\": true, \"config\": \"数据工厂-yapi-mock\"}', NULL, NULL, NULL, NULL, 0, NULL, 13, '2021-08-10 18:42:55.219716', '11', 47, NULL);
-INSERT INTO `djcelery_periodictask` VALUES (49, 'x1-3-不重载配置2', 'fastrunner.tasks.schedule_debug_suite', '[221, 223]', '{\"strategy\": \"从不发送\", \"mail_cc\": \"\", \"receiver\": \"\", \"crontab\": \"1 1 * * *\", \"project\": \"11\", \"task_name\": \"x1-3-不重载配置\", \"webhook\": \"\", \"updater\": \"李华才\", \"creator\": \"李华才\", \"ci_project_ids\": \"1207\", \"ci_env\": \"dev\", \"config\": \"请选择\"}', NULL, NULL, NULL, NULL, 0, NULL, 3, '2021-08-10 18:40:39.626485', '11', 33, NULL);
-INSERT INTO `djcelery_periodictask` VALUES (50, 'x1-3-不重载配置3', 'fastrunner.tasks.schedule_debug_suite', '[221, 223]', '{\"strategy\": \"从不发送\", \"mail_cc\": \"\", \"receiver\": \"\", \"crontab\": \"1 1 * * *\", \"project\": \"11\", \"task_name\": \"x1-3-不重载配置\", \"webhook\": \"\", \"updater\": \"李华才\", \"creator\": \"李华才\", \"ci_project_ids\": \"1207\", \"ci_env\": \"dev\", \"config\": \"请选择\"}', NULL, NULL, NULL, NULL, 0, NULL, 3, '2021-08-10 18:40:32.100584', '11', 33, NULL);
-INSERT INTO `djcelery_periodictask` VALUES (51, 'x1-3-不重载配置4', 'fastrunner.tasks.schedule_debug_suite', '[221, 223]', '{\"strategy\": \"从不发送\", \"mail_cc\": \"\", \"receiver\": \"\", \"crontab\": \"1 1 * * *\", \"project\": \"11\", \"task_name\": \"x1-3-不重载配置\", \"webhook\": \"\", \"updater\": \"李华才\", \"creator\": \"李华才\", \"ci_project_ids\": \"1207\", \"ci_env\": \"dev\", \"config\": \"请选择\"}', NULL, NULL, NULL, NULL, 0, NULL, 3, '2021-08-10 18:40:32.269859', '11', 33, NULL);
-INSERT INTO `djcelery_periodictask` VALUES (52, '1小时/次-登录,搜索用例414', 'fastrunner.tasks.schedule_debug_suite', '[122]', '{\"strategy\": \"从不发送\", \"mail_cc\": \"\", \"receiver\": \"lihuacai168@foxmail.com\", \"crontab\": \"20 8-23/1 * * *\", \"project\": 7, \"task_name\": \"1小时/次-登录,搜索用例414\", \"webhook\": \"\", \"updater\": \"test\", \"creator\": \"test\", \"ci_project_ids\": \"\", \"ci_env\": \"请选择\", \"is_parallel\": false, \"config\": \"请选择\"}', NULL, NULL, NULL, NULL, 0, NULL, 7, '2021-11-04 02:15:11.247247', '7', 28, NULL);
 COMMIT;
 
 -- ----------------------------
@@ -1201,7 +952,6 @@ CREATE TABLE `djcelery_periodictasks` (
 -- Records of djcelery_periodictasks
 -- ----------------------------
 BEGIN;
-INSERT INTO `djcelery_periodictasks` VALUES (1, '2022-01-10 15:14:32.156197');
 COMMIT;
 
 -- ----------------------------
@@ -1286,7 +1036,7 @@ CREATE TABLE `fastuser_myuser` (
 -- Records of fastuser_myuser
 -- ----------------------------
 BEGIN;
-INSERT INTO `fastuser_myuser` VALUES (4, 'pbkdf2_sha256$150000$2ZQUTmy2m73w$Dj8Tqyz6g+7Z80aDXPOdrSB98GyCCp/kT4gZspD/YA8=', '2021-10-28 02:28:15.685227', 1, 'admin', '', '', 'lihuacai168@gmail.com', 1, 1, '2020-07-01 17:30:00.000000', '', 0);
+INSERT INTO `fastuser_myuser` VALUES (4, 'pbkdf2_sha256$150000$2ZQUTmy2m73w$Dj8Tqyz6g+7Z80aDXPOdrSB98GyCCp/kT4gZspD/YA8=', '2022-02-22 21:28:48.233250', 1, 'admin', '', '', 'lihuacai168@gmail.com', 1, 1, '2020-07-01 17:30:00.000000', '', 0);
 INSERT INTO `fastuser_myuser` VALUES (6, 'pbkdf2_sha256$150000$8fDo70qQ8rKS$FNqsIQDIfVFjVWlxZOYsBb3Gb7NcLX6cZly64r7PWUo=', NULL, 0, 'test', '', '', 'test@baibu.la', 0, 1, '2020-08-16 10:15:54.984186', '18666123456', 0);
 INSERT INTO `fastuser_myuser` VALUES (7, 'pbkdf2_sha256$150000$LnzEtAW5ysrS$HfU2o2B6QFhzTp7lDO6nxjz6vAlX45WkvtHccy6iTvo=', '2022-01-13 16:25:57.113112', 1, 'root', '', '', '', 1, 1, '2022-01-13 16:11:30.737809', NULL, 0);
 COMMIT;
@@ -1353,27 +1103,6 @@ CREATE TABLE `host_ip` (
 
 -- ----------------------------
 -- Records of host_ip
--- ----------------------------
-BEGIN;
-COMMIT;
-
--- ----------------------------
--- Table structure for hostip
--- ----------------------------
-DROP TABLE IF EXISTS `hostip`;
-CREATE TABLE `hostip` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `create_time` datetime(6) NOT NULL,
-  `update_time` datetime(6) NOT NULL,
-  `name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `value` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `project_id` int NOT NULL,
-  PRIMARY KEY (`id`) USING BTREE,
-  KEY `HostIP_project_id_56f26232_fk_Project_id` (`project_id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- ----------------------------
--- Records of hostip
 -- ----------------------------
 BEGIN;
 COMMIT;
@@ -1581,12 +1310,15 @@ CREATE TABLE `visit` (
   KEY `visit_url_35d78337` (`url`) USING BTREE,
   KEY `visit_user_8de779fe` (`user`) USING BTREE,
   KEY `visit_project_41603a2f` (`project`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ----------------------------
 -- Records of visit
 -- ----------------------------
 BEGIN;
+INSERT INTO `visit` VALUES (1, 'admin', '/admin/', 'GET', '2022-02-22 21:49:21.296817', '', '192.168.80.1', '/admin/', '', '0');
+INSERT INTO `visit` VALUES (2, 'admin', '/admin/', 'GET', '2022-02-22 21:49:23.492589', '', '192.168.80.1', '/admin/', '', '0');
+INSERT INTO `visit` VALUES (3, 'admin', '/admin/', 'GET', '2022-02-22 21:49:24.512008', '', '192.168.80.1', '/admin/', '', '0');
 COMMIT;
 
 SET FOREIGN_KEY_CHECKS = 1;
