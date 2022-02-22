@@ -29,11 +29,11 @@ fi
 
 if [ $1 = "celery-worker" ]; then
     echo "start celery"
-    /usr/local/bin/python manage.py celery -A FasterRunner.mycelery worker -l info -P solo --settings=FasterRunner.settings.docker --logfile=./logs/worker.log
+    /usr/local/bin/python manage.py celery -A FasterRunner.mycelery worker -l info --settings=FasterRunner.settings.docker --logfile=./logs/worker.log
 fi
 
 
 if [ $1 = "celery-beat" ]; then
     echo "start celery beat"
-    python manage.py celery -A FasterRunner.mycelery beat -l info --settings=FasterRunner.settings.docker
+    python manage.py celery -A FasterRunner.mycelery beat -l info --settings=FasterRunner.settings.docker --logfile=./logs/beat.log
 fi
