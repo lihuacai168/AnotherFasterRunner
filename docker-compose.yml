@@ -14,7 +14,6 @@ services:
     ports:
       - "3307:3306"
     restart: always
-    # 容器开机启动命令
     command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
 
 
@@ -22,9 +21,11 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    environment:
+      - RABBITMQ_DEFAULT_USER=${RABBITMQ_DEFAULT_USER}
+      - RABBITMQ_DEFAULT_PASS=${RABBITMQ_DEFAULT_PASS}
     entrypoint: /bin/sh
     command: -c "/app/start.sh app"
-#    command: gunicorn FasterRunner.wsgi_docker -b 0.0.0.0 -w 4
     depends_on:
       - db
     ports:
@@ -39,7 +40,6 @@ services:
       - RABBITMQ_DEFAULT_PASS=${RABBITMQ_DEFAULT_PASS}
     entrypoint: /bin/sh
     command: -c "/app/start.sh celery-worker"
-    #    command: gunicorn FasterRunner.wsgi_docker -b 0.0.0.0 -w 4
     depends_on:
       - mq
 
@@ -64,17 +64,6 @@ services:
       - "80:80"
     depends_on:
       - app
-
-#  web:
-#    image: nginx:latest
-#    container_name: fasterweb
-#    privileged: true
-#    volumes:
-#      - /root/code/FasterWeb/dist:/usr/share/nginx/html
-#      - /root/code/default.conf:/etc/nginx/conf.d/default.conf
-#    ports:
-#      - "80:8080"
-#    restart: always
 
   mq:
     image: rabbitmq:management-alpine
