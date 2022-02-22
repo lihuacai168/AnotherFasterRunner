@@ -30,6 +30,7 @@ services:
       - db
     ports:
       - "8000:8000"
+    restart: always
 
   celery-worker:
     build:
@@ -40,6 +41,7 @@ services:
       - RABBITMQ_DEFAULT_PASS=${RABBITMQ_DEFAULT_PASS}
     entrypoint: /bin/sh
     command: -c "/app/start.sh celery-worker"
+    restart: always
     depends_on:
       - db
       - mq
@@ -53,6 +55,7 @@ services:
       - RABBITMQ_DEFAULT_PASS=${RABBITMQ_DEFAULT_PASS}
     entrypoint: /bin/sh
     command: -c "/app/start.sh celery-beat"
+    restart: always
     depends_on:
       - mq
       - db
@@ -66,6 +69,7 @@ services:
       - "80:80"
     depends_on:
       - app
+    restart: always
 
   mq:
     image: rabbitmq:management-alpine
