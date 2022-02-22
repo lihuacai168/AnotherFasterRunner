@@ -8,11 +8,11 @@ services:
       - MYSQL_ROOT_PASSWORD=root
     volumes:
 #      - "/var/lib/mysql:/var/lib/mysql" # 挂载宿主机的mysql数据到docker中
-#      - "./FasterRunner/docker_mysql.cnf:/etc/mysql/mysql.conf.d/mysqld.cnf"  # 映射出mysql的配置文件
+      - ./db/my.cnf:/etc/mysql/mysql.conf.d/mysqld.cnf
       - ./db:/docker-entrypoint-initdb.d/:ro
     # 端口映射,格式 宿主机端口:容器端口
     ports:
-      - "3307:3306"
+      - "13306:3306"
     restart: always
     command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
 

@@ -13,7 +13,7 @@
 
  Date: 22/02/2022 01:13:36
 */
-create database fast_db default charset utf8 collate utf8_general_ci;
+create database if not exists fast_db default charset utf8 collate utf8_general_ci;
 use fast_db;
 
 SET NAMES utf8mb4;

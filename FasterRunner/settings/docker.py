@@ -4,7 +4,7 @@
 from .base import *
 from os import environ
 
-DEBUG = True
+DEBUG = False
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
@@ -16,13 +16,11 @@ DATABASES = {
         'OPTIONS': {'charset': 'utf8mb4'},
     }
 }
-# IM_REPORT_SETTING.update({'platform_name': '银河飞梭测试平台'})
+
 mq_user = environ.get('RABBITMQ_DEFAULT_USER')
 mq_password = environ.get('RABBITMQ_DEFAULT_PASS')
 BROKER_URL = f'amqp://{mq_user}:{mq_password}@mq:5672//'
 
-# 需要先在RabbitMQ上创建fast_dev这个vhost
-# BROKER_URL = 'amqp://admin:111111@192.168.22.19:5672/fast_dev'
 
 BASE_REPORT_URL = 'http://localhost:8000/api/fastrunner/reports'
 
