@@ -7,11 +7,10 @@ import {Message} from 'element-ui';
 export let baseUrl = "http://localhost:8000";
 // export let baseUrl = "http://192.168.22.19:8000";
 
-if( process.env.NODE_ENV === "production" ){
-    baseUrl = "http://192.168.22.19:8000";
+if (process.env.NODE_ENV === "production") {
+    baseUrl = "http://119.91.147.215:8000";
 }
 
-// export const baseUrl = "http://10.0.3.57:8000";
 axios.defaults.withCredentials = true;
 axios.defaults.baseURL = baseUrl;
 
@@ -312,7 +311,12 @@ export const updateVariables = (url, params) => {
 };
 
 export const updateTask = (url, params, data) => {
-    return axios({url: '/api/fastrunner/schedule/' + url + '/', method: 'PUT', params: params, data: data}).then(res => res.data)
+    return axios({
+        url: '/api/fastrunner/schedule/' + url + '/',
+        method: 'PUT',
+        params: params,
+        data: data
+    }).then(res => res.data)
 };
 
 export const patchTask = (url, params) => {

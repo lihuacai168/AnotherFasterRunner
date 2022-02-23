@@ -66,10 +66,19 @@ services:
       - ./templates:/www/FasterRunner/templates
       - ./static:/www/FasterRunner/static
     ports:
-      - "80:80"
+      - "8080:80"
     depends_on:
       - app
     restart: always
+
+  web:
+    build:
+      context: ./web
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+    volumes:
+      - ./web/dist:/usr/share/nginx/html
 
   mq:
     image: rabbitmq:management-alpine
