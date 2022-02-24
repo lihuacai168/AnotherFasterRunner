@@ -14,6 +14,13 @@
 # [使用文档](https://www.yuque.com/lihuacai/sggdx7/cn5ncg)
 
 # Quick Start
+## 构建前端静态文件
+```shell
+cd ./web
+yarn install
+npm run build
+```
+## 启动所有服务
 ```shell
 docker-compose up --build -d
 ```
