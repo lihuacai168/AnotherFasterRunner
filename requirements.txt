@@ -51,14 +51,14 @@ sqlparse==0.3.1
 tornado==4.5.3
 uritemplate==3.0.1
 urllib3==1.25.7
-uWSGI==2.0.18
+# uWSGI==2.0.18
 django_mysql
 json5==0.9.5
 crontab~=0.22.9
 django_bulk_update==2.2.0
 xmltodict~=0.12.0
 django-jsonfield==1.4.0
-genson~=1.2.2
+#genson~=1.2.2
 Faker~=7.0.1
 curlify~=2.2.1
 pydash~=5.0.1
