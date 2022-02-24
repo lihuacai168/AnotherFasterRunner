@@ -62,9 +62,6 @@ services:
 
   nginx:
     build: ./nginx
-    volumes:
-      - ./templates:/www/FasterRunner/templates
-      - ./static:/www/FasterRunner/static
     ports:
       - "8080:80"
     depends_on:

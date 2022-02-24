@@ -21,6 +21,7 @@ mq_user = environ.get('RABBITMQ_DEFAULT_USER')
 mq_password = environ.get('RABBITMQ_DEFAULT_PASS')
 BROKER_URL = f'amqp://{mq_user}:{mq_password}@mq:5672//'
 
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 BASE_REPORT_URL = 'http://localhost:8000/api/fastrunner/reports'
 
