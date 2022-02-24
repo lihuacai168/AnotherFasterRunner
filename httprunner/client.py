@@ -185,15 +185,6 @@ class HttpSession(requests.Session):
                 )
             )
 
-        self.meta_data["curl"] = ""
-        try:
-            # request请求转成curl命令
-            curl = curlify.to_curl(response.request, compressed=True)
-        except Exception as e:
-            logger.log_error(f"request转curl失败 {str(e)}")
-        else:
-            self.meta_data["curl"] = curl
-
         return response
 
     def _send_request_safe_mode(self, method, url, **kwargs):
