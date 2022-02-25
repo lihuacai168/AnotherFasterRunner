@@ -1,16 +1,38 @@
 import json
 import re
 
+import curlify
 from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import render
 from django.utils.decorators import method_decorator
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
-
 from FasterRunner import pagination
 from fastrunner import models, serializers
 from fastrunner.utils import response
 from fastrunner.utils.decorator import request_log
+
+
+class Report2Curl(object):
+    @staticmethod
+    def to_curl(request_meta_dict: dict):
+        class RequestMeta(object):
+            ...
+        req = RequestMeta()
+        setattr(req, 'method', request_meta_dict['method'])
+        setattr(req, 'url', request_meta_dict['url'])
+        setattr(req, 'headers', request_meta_dict['headers'])
+        body = request_meta_dict.get('body') or request_meta_dict.get('data')
+        setattr(req, 'body', body)
+        return curlify.to_curl(req, compressed=True, verify=False)
+
+    @classmethod
+    def generate_curl(cls, report_details):
+        for detail in report_details:
+            for record in detail['records']:
+                meta_data = record['meta_data']
+                curl = cls.to_curl(meta_data['request'])
+                record['meta_data']['curl'] = curl
 
 
 class ReportView(GenericViewSet):
@@ -91,9 +113,11 @@ class ReportView(GenericViewSet):
         report_detail = models.ReportDetail.objects.get(report_id=pk)
         summary = json.loads(report.summary, encoding="utf-8")
         summary['details'] = eval(report_detail.summary_detail)
+        Report2Curl.generate_curl(summary['details'])
         summary["html_report_name"] = report.name
         # return render_to_response('report_template.html', summary)
-        return render(request,template_name='report_template.html',context=summary)
+
+        return render(request, template_name='report_template.html', context=summary)
 
     def download(self, request, **kwargs):
         """下载报告

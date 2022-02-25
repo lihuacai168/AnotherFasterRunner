@@ -63,3 +63,4 @@ Faker~=7.0.1
 curlify~=2.2.1
 pydash~=5.0.1
 jsonpath~=0.82
+gunicorn

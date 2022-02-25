@@ -1,72 +1,90 @@
-version: '3'
+version: '3.8'
 services:
   db:
-    image: docker.io/mysql:5.7
-    container_name: mysql
+    image: mysql:8.0.21
     privileged: true
-    env_file:
-      - "/root/.env"
     environment:
       # 设置默认数据库和root默认密码,如果宿主机中/var/lib/mysql已经存在,这两个设置都不会生效
-      - MYSQL_DATABASE="${FASTER_DB_NAME}"
-      - MYSQL_USER="${FASTER_DB_USERNAME}"
-      - MYSQL_ROOT_PASSWORD="${FASTER_DB_ROOT_PASSWORD}"
+      - MYSQL_ROOT_PASSWORD=root
     volumes:
-      - "/var/lib/mysql:/var/lib/mysql" # 挂载宿主机的mysql数据到docker中
-      - "./FasterRunner/docker_mysql.cnf:/etc/mysql/mysql.conf.d/mysqld.cnf"  # 映射出mysql的配置文件
+#      - "/var/lib/mysql:/var/lib/mysql" # 挂载宿主机的mysql数据到docker中
+      - ./db/my.cnf:/etc/mysql/mysql.conf.d/mysqld.cnf
+      - ./db:/docker-entrypoint-initdb.d/:ro
     # 端口映射,格式 宿主机端口:容器端口
     ports:
-      - "3306:3306"
+      - "13306:3306"
     restart: always
-    # 容器开机启动命令
     command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
-    networks:
-      - fasterrunner
 
 
-  server:
-    image: fasterrunner:latest
-    container_name: fasterrunner
-    privileged: true
-    volumes:
-      - ./FasterRunner:/opt/workspace/FasterRunner
-      - ./FasterRunner/nginx.conf:/etc/nginx/sites-enabled/nginx.conf
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - RABBITMQ_DEFAULT_USER=${RABBITMQ_DEFAULT_USER}
+      - RABBITMQ_DEFAULT_PASS=${RABBITMQ_DEFAULT_PASS}
+    entrypoint: /bin/sh
+    command: -c "/app/start.sh app"
+    depends_on:
+      - db
     ports:
       - "8000:8000"
     restart: always
-    networks:
-      - fasterrunner
+
+  celery-worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - RABBITMQ_DEFAULT_USER=${RABBITMQ_DEFAULT_USER}
+      - RABBITMQ_DEFAULT_PASS=${RABBITMQ_DEFAULT_PASS}
+    entrypoint: /bin/sh
+    command: -c "/app/start.sh celery-worker"
+    restart: always
+    depends_on:
+      - db
+      - mq
+
+  celery-beat:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - RABBITMQ_DEFAULT_USER=${RABBITMQ_DEFAULT_USER}
+      - RABBITMQ_DEFAULT_PASS=${RABBITMQ_DEFAULT_PASS}
+    entrypoint: /bin/sh
+    command: -c "/app/start.sh celery-beat"
+    restart: always
+    depends_on:
+      - mq
+      - db
+
+  nginx:
+    build: ./nginx
+    ports:
+      - "8080:80"
+    depends_on:
+      - app
+    restart: always
 
   web:
-    image: nginx:latest
-    container_name: fasterweb
-    privileged: true
-    volumes:
-      - /root/code/FasterWeb/dist:/usr/share/nginx/html
-      - /root/code/default.conf:/etc/nginx/conf.d/default.conf
+    build:
+      context: ./web
+      dockerfile: Dockerfile
     ports:
-      - "80:8080"
-    restart: always
-    networks:
-      - fasterrunner
+      - "80:80"
+    volumes:
+      - ./web/dist:/usr/share/nginx/html
 
   mq:
     image: rabbitmq:management-alpine
-    container_name: rabbitmq
-    env_file:
-      - "/root/.env"
     environment:
-      # mq的环境变量不能用""
-      - RABBITMQ_DEFAULT_USER=${FASTER_MQ_USER}
-      - RABBITMQ_DEFAULT_PASS=${FASTER_MQ_PASSWORD}
+      - RABBITMQ_DEFAULT_USER=${RABBITMQ_DEFAULT_USER}
+      - RABBITMQ_DEFAULT_PASS=${RABBITMQ_DEFAULT_PASS}
     restart: always
     ports:
       - "15672:15672"
       - "5672:5672"
-    networks:
-      - fasterrunner
 
-networks:  # 指定了内网，可以在配置文件中直接使用容器名字，但是需要先在宿主机创建网络
-  fasterrunner:
-    external: true
 
