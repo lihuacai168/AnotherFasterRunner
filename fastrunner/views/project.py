@@ -242,7 +242,7 @@ class DebugTalkView(GenericViewSet):
 
 class TreeView(APIView):
     """
-    树形结构操作
+    tree curd
     """
 
     # authentication_classes = [OnlyGetAuthenticator, ]
@@ -250,23 +250,24 @@ class TreeView(APIView):
     @method_decorator(request_log(level='INFO'))
     def get(self, request, **kwargs):
         """
-        返回树形结构
-        当前最带节点ID
+        get tree
+        create a default tree when it not exists
         """
 
-        try:
-            tree_type = request.query_params['type']
-            tree = models.Relation.objects.get(project__id=kwargs['pk'], type=tree_type)
-        except KeyError:
-            return Response(response.KEY_MISS)
-
-        except ObjectDoesNotExist:
-            return Response(response.SYSTEM_ERROR)
-
-        body = eval(tree.tree)  # list
+        tree_type = request.query_params['type']
+        project_id = kwargs.pop('pk')
+        default_tree = [{'id': 1, 'label': 'default node', 'children': []}]
+        tree_obj, created = models.Relation.objects.get_or_create(project__id=project_id,
+                                                                  type=tree_type,
+                                                                  defaults={
+                                                                      'tree': default_tree,
+                                                                      'project_id': project_id
+                                                                  }
+                                                                  )
+        body = eval(tree_obj.tree)  # list
         tree = {
             "tree": body,
-            "id": tree.id,
+            "id": tree_obj.id,
             "success": True,
             "max": get_tree_max_id(body)
         }
