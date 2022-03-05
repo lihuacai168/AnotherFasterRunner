@@ -303,7 +303,7 @@
 
                         <el-table-column
                             label="创建人"
-                            width="70"
+                            width="100"
 
                         >
                             <template slot-scope="scope">
@@ -314,7 +314,7 @@
 
                         <el-table-column
                             label="更新人"
-                            width="70"
+                            width="100"
 
                         >
                             <template slot-scope="scope">
