@@ -1,7 +1,7 @@
 import json
 import re
+from shlex import quote
 
-import curlify
 from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import render
 from django.utils.decorators import method_decorator
@@ -9,30 +9,97 @@ from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 from FasterRunner import pagination
 from fastrunner import models, serializers
-from fastrunner.utils import response
+from fastrunner.utils import response, convert2hrp
+from fastrunner.utils.convert2hrp import Hrp
+from fastrunner.utils.convert2boomer import Boomer, BoomerExtendCmd
 from fastrunner.utils.decorator import request_log
 
 
-class Report2Curl(object):
-    @staticmethod
-    def to_curl(request_meta_dict: dict):
+class ConvertRequest(object):
+    @classmethod
+    def _to_curl(cls, request, compressed=False, verify=True):
+        """
+        Returns string with curl command by provided request object
+
+        Parameters
+        ----------
+        compressed : bool
+            If `True` then `--compressed` argument will be added to result
+        """
+        parts = [
+            ('curl', None),
+            ('-X', request.method),
+        ]
+        parts += [(None, request.url), ]
+
+        for k, v in sorted(request.headers.items()):
+            parts += [('-H', "{0}: {1}".format(k, v))]
+
+        if request.body:
+            body = request.body
+            if isinstance(body, bytes):
+                body = body.decode('utf-8')
+            if isinstance(body, dict):
+                body = json.dumps(body)
+            parts += [('-d', body)]
+
+        if compressed:
+            parts += [('--compressed', None)]
+
+        if not verify:
+            parts += [('--insecure', None)]
+
+        flat_parts = []
+        for k, v in parts:
+            if k:
+                flat_parts.append(quote(k))
+            if v:
+                flat_parts.append(quote(v))
+
+                if k == '-H':
+                    flat_parts.append(' \\\n')
+        return ' '.join(flat_parts)
+
+    @classmethod
+    def _make_fake_req(cls, request_meta_dict):
         class RequestMeta(object):
             ...
+
         req = RequestMeta()
         setattr(req, 'method', request_meta_dict['method'])
         setattr(req, 'url', request_meta_dict['url'])
         setattr(req, 'headers', request_meta_dict['headers'])
         body = request_meta_dict.get('body') or request_meta_dict.get('data')
         setattr(req, 'body', body)
-        return curlify.to_curl(req, compressed=True, verify=False)
+        return req
 
     @classmethod
-    def generate_curl(cls, report_details):
+    def to_curl(cls, req: dict) -> str:
+        _req = cls._make_fake_req(req)
+        return cls._to_curl(_req, compressed=True, verify=False)
+
+    @classmethod
+    def to_hrp(cls, req: dict) -> dict:
+        hrp = Hrp(faster_req_json=req)
+        return hrp.get_testcase().dict()
+
+    @classmethod
+    def to_boomer(cls, req: dict) -> str:
+        hrp = convert2hrp.Hrp(faster_req_json=req)
+        extend_cmd = BoomerExtendCmd(replace_str_index={'$shop_id': 0})
+        b = Boomer(hrp, extend_cmd)
+        return b.to_boomer_cmd()
+
+    @classmethod
+    def generate_curl(cls, report_details, convert_type=('curl',)):
         for detail in report_details:
             for record in detail['records']:
                 meta_data = record['meta_data']
-                curl = cls.to_curl(meta_data['request'])
-                record['meta_data']['curl'] = curl
+                for t in convert_type:
+                    req = meta_data['request']
+                    method_name = f'to_{t}'
+                    method = getattr(ConvertRequest, method_name)
+                    record['meta_data'][t] = method(req)
 
 
 class ReportView(GenericViewSet):
@@ -113,7 +180,7 @@ class ReportView(GenericViewSet):
         report_detail = models.ReportDetail.objects.get(report_id=pk)
         summary = json.loads(report.summary, encoding="utf-8")
         summary['details'] = eval(report_detail.summary_detail)
-        Report2Curl.generate_curl(summary['details'])
+        ConvertRequest.generate_curl(summary['details'], convert_type=('curl',))
         summary["html_report_name"] = report.name
         # return render_to_response('report_template.html', summary)
 

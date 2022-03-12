@@ -164,7 +164,7 @@
                     </template>
                 </el-table-column>
 
-                <el-table-column label="请求方法">
+                <el-table-column label="请求方法" width="100px">
                     <template slot-scope="scope">
             <span
                 :class="scope.row.meta_data.request.method"
@@ -172,15 +172,34 @@
                     </template>
                 </el-table-column>
 
-                <el-table-column label="响应时间 (ms)">
+                <el-table-column label="响应时间 (ms)" width="130px">
                     <template slot-scope="scope">
                         <span>{{ scope.row.meta_data.response.elapsed_ms }}</span>
                     </template>
                 </el-table-column>
 
-                <el-table-column label="测试结果">
+                <el-table-column label="测试结果" width="100px">
                     <template slot-scope="scope">
                         <div :class="scope.row.status">{{ scope.row.status }}</div>
+                    </template>
+                </el-table-column>
+
+                <el-table-column label="Convert" width="200px">
+
+                    <template slot-scope="scope">
+                        <el-popover placement="right-start" width="400" trigger="hover">
+                            <pre class="code-block">{{ scope.row.meta_data.boomer }}</pre>
+                            <el-button slot="reference" round type="text"
+                                       @click="copyDataText(scope.row.meta_data.boomer, 'boomer')">boomer
+                            </el-button>
+                        </el-popover>
+                        <el-popover placement="right-start" width="400" trigger="hover">
+                            <pre class="code-block">{{ scope.row.meta_data.curl }}</pre>
+                            <el-button slot="reference" round type="text"
+                                       @click="copyDataText(scope.row.meta_data.curl, 'curl')">curl
+                            </el-button>
+                        </el-popover>
+
                     </template>
                 </el-table-column>
 
@@ -279,6 +298,21 @@ export default {
                 }
             }
         },
+        copyDataText(text, title) {
+            this.$copyText(text).then(e => {
+                this.$notify.success({
+                    title: 'copy ' + title,
+                    message: text,
+                    duration: 2000
+                });
+            }, function (e) {
+                this.$notify.error({
+                    title: '复制' + title + '失败',
+                    message: e,
+                    duration: 2000
+                });
+            })
+        },
         copyData(title) {
             this.$copyText(this.jsonPathOrValue).then(e => {
                 this.$notify.success({
@@ -344,4 +378,8 @@ export default {
 </script>
 
 <style scoped>
+pre {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
 </style>

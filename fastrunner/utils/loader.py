@@ -20,6 +20,7 @@ import yaml
 from bs4 import BeautifulSoup
 from loguru import logger
 
+from fastrunner.views.report import ConvertRequest
 from httprunner import HttpRunner, parser
 from httprunner.exceptions import FunctionNotFound, VariableNotFound
 from requests.cookies import RequestsCookieJar
@@ -461,6 +462,7 @@ def debug_api(api, project, name=None, config=None, save=True, user=''):
                 json_data = record['meta_data']['response'].pop('json', {})
                 if json_data:
                     record['meta_data']['response']['jsonCopy'] = json_data
+        ConvertRequest.generate_curl(summary['details'], convert_type=('curl', 'boomer'))
         return summary
     except Exception as e:
         logger.error(f"debug_api error: {e}")
