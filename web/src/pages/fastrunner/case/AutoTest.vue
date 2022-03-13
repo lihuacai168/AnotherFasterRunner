@@ -5,17 +5,18 @@
             <div class="nav-api-header">
                 <div style="padding-top: 10px; margin-left: 10px">
                     <el-button
+                        v-if="false"
                         type="primary"
                         size="small"
                         icon="el-icon-circle-plus"
                         @click="dialogVisible = true"
                         :disabled="!addTestActivate"
                     >
-                        新建分组
+                        新建节点
                     </el-button>
 
                     <el-dialog
-                        title="新建分组"
+                        title="新建节点"
                         :visible.sync="dialogVisible"
                         width="30%"
                         align="center"
@@ -32,7 +33,7 @@
                         </el-form>
 
                         <el-radio-group v-model="radio" size="small">
-                            <el-radio-button label="根节点"></el-radio-button>
+                            <el-radio-button label="同级节点"></el-radio-button>
                             <el-radio-button label="子节点"></el-radio-button>
                         </el-radio-group>
 
@@ -43,15 +44,17 @@
                     </el-dialog>
 
                     <el-button
+                        v-if="false"
                         type="danger"
                         size="small"
                         icon="el-icon-delete"
                         @click="deleteNode"
                         :disabled="buttonActivate"
-                    >删除分组
+                    >删除节点
                     </el-button>
 
                     <el-button
+                        v-if="false"
                         :disabled="currentNode === '' "
                         type="info"
                         size="small"
@@ -118,7 +121,7 @@
                         style="margin-left: 20px"
                         type="success"
                         size="mini"
-                        title="移动用例到指定分组"
+                        title="移动用例到指定节点"
                         @click="move = !move"
                     >移动用例
                     </el-button>
@@ -186,8 +189,16 @@
                         >
                             <span class="custom-tree-node"
                                   slot-scope="{ node, data }"
+                                  @mouseenter="mouseenter(node)" @mouseleave="mouseleave"
                             >
-                                <span><i class="iconfont" v-html="expand"></i>&nbsp;&nbsp;{{ node.label }}</span>
+                                <span style="overflow: hidden; text-overflow:ellipsis; width: 125px">
+                                    <i class="iconfont" v-html="expand"></i>&nbsp;&nbsp;{{ node.label }}
+                                </span>
+                                <span class="icon-group" v-show="node.id === mouseNodeId" >
+                                        <i class="el-icon-folder-add" @click="dialogVisible=true"  :disabled="!addTestActivate"></i>
+                                        <i class="el-icon-edit" @click="renameNode(node)"></i>
+                                        <i class="el-icon-delete" @click="deleteNode(node)"></i>
+                                </span>
                             </span>
                         </el-tree>
 
@@ -262,6 +273,7 @@ export default {
     },
     data() {
         return {
+            mouseNodeId: -1,
             testStepResp: [],
             nodeForm: {
                 name: '',
@@ -277,7 +289,7 @@ export default {
             del: false,
             run: false,
             move: false,
-            radio: '根节点',
+            radio: '同级节点',
             addTestActivate: true,
             currentConfig: '请选择',
             currentHost: '请选择',
@@ -359,8 +371,8 @@ export default {
             });
         },
 
-        deleteNode() {
-            this.$confirm('此操作将永久删除该节点下所有用例, 是否继续?', '提示', {
+        deleteNode(node) {
+            this.$confirm(`删除 ${node.label} 节点的所有用例, 是否继续?`, '提示', {
                 confirmButtonText: '确定',
                 cancelButtonText: '取消',
                 type: 'warning'
@@ -409,7 +421,7 @@ export default {
 
         append(data) {
             const newChild = {id: ++this.maxId, label: this.nodeForm.name, children: []};
-            if (data === '' || this.dataTree.length === 0 || this.radio === '根节点') {
+            if (data === '' || this.dataTree.length === 0 || this.radio === '同级节点') {
                 this.dataTree.push(newChild);
                 return
             }
@@ -426,7 +438,12 @@ export default {
                 })
             })
         },
-
+        mouseenter(node) {
+            this.mouseNodeId = node.id;
+        },
+        mouseleave(){
+            this.mouseNodeId = -1;
+        }
     },
     name: "AutoTest",
     mounted() {
@@ -438,6 +455,13 @@ export default {
 </script>
 
 <style scoped>
+.icon-group {
+    margin-right: 6px;
+}
 
+.icon-group i {
+    margin-left: 4px;
+    padding: 2px;
+}
 
 </style>

@@ -5,16 +5,17 @@
             <div class="nav-api-header">
                 <div style="padding-top: 10px; margin-left: 10px">
                     <el-button
+                        v-show="false"
                         type="primary"
                         size="small"
                         icon="el-icon-circle-plus"
                         @click="dialogVisible = true"
                     >
-                        新建分组
+                        新建节点
                     </el-button>
 
                     <el-dialog
-                        title="新建分组"
+                        title="新建节点"
                         :visible.sync="dialogVisible"
                         width="30%"
                         align="center"
@@ -43,17 +44,19 @@
 
 
                     <el-button
+                        v-show="false"
                         :disabled="currentNode === '' || !isSuperuser"
-                        :title="isSuperuser ? '删除所选分组' : '删除分组权限不足' "
+                        :title="isSuperuser ? '删除所选节点' : '删除节点权限不足' "
                         type="danger"
                         size="small"
                         icon="el-icon-delete"
                         @click="deleteNode"
-                    >删除分组
+                    >删除节点
                     </el-button>
 
 
                     <el-button
+                        v-show="false"
                         :disabled="currentNode === '' "
                         type="info"
                         size="small"
@@ -98,7 +101,7 @@
                         <div slot="footer">
                             <el-button @click="importYAPIdialogVisible = false">取消</el-button>
                             <el-button type="primary" @click="handleConfirmYAPI"
-                                       :title="YAPIformData.yapi_openapi_token === YAPIformDataDefaultValue || YAPIformData.yapi_base_url === YAPIformDataDefaultValue ? '配置正确带能导入' : '导入YAPI分组和接口'"
+                                       :title="YAPIformData.yapi_openapi_token === YAPIformDataDefaultValue || YAPIformData.yapi_base_url === YAPIformDataDefaultValue ? '请到项目详情中配置yapi信息' : '导入YAPI节点和接口'"
                                        :disabled="YAPIformData.yapi_openapi_token === YAPIformDataDefaultValue || YAPIformData.yapi_base_url === YAPIformDataDefaultValue">
                                 导入
                             </el-button>
@@ -154,7 +157,7 @@
                         type="success"
                         size="mini"
                         @click="move = !move"
-                        :title="'移动API到指定分组'"
+                        :title="'移动API到指定节点'"
                     >移动API
                     </el-button>
 
@@ -227,8 +230,16 @@
                         >
                             <span class="custom-tree-node"
                                   slot-scope="{ node, data }"
+                                  @mouseenter="mouseenter(node)" @mouseleave="mouseleave"
                             >
-                                <span><i class="iconfont" v-html="expand"></i>&nbsp;&nbsp;{{ node.label }}</span>
+                                <span style="overflow: hidden; text-overflow:ellipsis; width: 125px">
+                                    <i class="iconfont" v-html="expand"></i>&nbsp;&nbsp;{{ node.label }}
+                                </span>
+                                <span class="icon-group" v-show="node.id === mouseNodeId" >
+                                        <i class="el-icon-folder-add" @click="dialogVisible=true"></i>
+                                        <i class="el-icon-edit" @click="renameNode(node)"></i>
+                                        <i class="el-icon-delete" @click="deleteNode(node)"></i>
+                                </span>
                             </span>
                         </el-tree>
                     </div>
@@ -355,6 +366,7 @@ export default {
     data() {
         const YAPIformDataDefaultValue = '请到项目详情编辑'
         return {
+            mouseNodeId: -1,
             isSuperuser: this.$store.state.is_superuser,
             userName: this.$store.state.user,
             projectInfo: {},
@@ -483,8 +495,8 @@ export default {
             })
         },
 
-        deleteNode() {
-            this.$confirm('此操作将永久删除该节点下所有接口, 是否继续?', '提示', {
+        deleteNode(node) {
+            this.$confirm(`删除 ${node.label} 节点下所有接口, 是否继续?`, '提示', {
                 confirmButtonText: '确定',
                 cancelButtonText: '取消',
                 type: 'warning'
@@ -521,6 +533,7 @@ export default {
 
 
         handleConfirm(formName) {
+            console.log(formName);
             this.$refs[formName].validate((valid) => {
                 if (valid) {
                     this.append(this.currentNode);
@@ -532,7 +545,7 @@ export default {
         },
 
         handleNodeClick(node, data) {
-            // 点击分分组之前,先把页码设置为1.2019年7月2日,并且传给子组件.
+            // 点击分节点之前,先把页码设置为1.2019年7月2日,并且传给子组件.
             this.listCurrentPage = 1;
             this.visibleTag = '';
             this.addAPIFlag = false;
@@ -583,8 +596,12 @@ export default {
                 }
             })
         },
-
-
+        mouseenter(node) {
+            this.mouseNodeId = node.id;
+        },
+        mouseleave(){
+            this.mouseNodeId = -1;
+        },
         handleConfirmYAPI() {
             this.$refs['elForm'].validate(valid => {
                 if (!valid) return
@@ -645,6 +662,12 @@ export default {
 </script>
 
 <style scoped>
+.icon-group {
+    margin-right: 6px;
+}
 
-
+.icon-group i {
+    margin-left: 4px;
+    padding: 2px;
+}
 </style>
