@@ -264,7 +264,9 @@ class TreeView(APIView):
                                                                       'project_id': project_id
                                                                   }
                                                                   )
-        body = eval(tree_obj.tree)  # list
+        if created is False:
+            # when created is false, it means tree type is str
+            body = eval(tree_obj.tree)  # list
         tree = {
             "tree": body,
             "id": tree_obj.id,
