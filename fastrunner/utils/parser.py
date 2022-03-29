@@ -924,7 +924,16 @@ class Yapi:
                         for field_name, field_value in req_body_properties.items():
                             if isinstance(field_value, dict) is False:
                                 continue
-                            field_type = field_value['type']
+
+                            any_of = field_value.get('anyOf')
+                            if isinstance(any_of, list):
+                                if len(any_of) > 0:
+                                    field_value: dict = any_of[0]
+
+                            field_type = field_value.get('type', 'unKnow')
+                            if field_type == 'unKnow':
+                                logger.error(f'yapi: {source_api_info["_id"]}, req_body json type is unKnow')
+
                             if not (field_type == 'array' or field_type == 'object'):
                                 self.set_ordinary_variable(api_info_template, field_name, field_type,
                                                            field_value)
