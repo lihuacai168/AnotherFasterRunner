@@ -65,3 +65,4 @@ pydash~=5.0.1
 jsonpath~=0.82
 pydantic==1.9.0
 gunicorn
+sentry-sdk~=1.5.8

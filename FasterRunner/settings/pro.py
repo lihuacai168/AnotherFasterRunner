@@ -23,6 +23,25 @@ if find_dotenv():
     if PLATFORM_NAME:
         IM_REPORT_SETTING.update({'platform_name': PLATFORM_NAME})
 
+    SENTRY_DSN = environ.get('SENTRY_DSN')
+    if SENTRY_DSN:
+        import sentry_sdk
+        from sentry_sdk.integrations.django import DjangoIntegration
+
+        sentry_sdk.init(
+            dsn=SENTRY_DSN,
+            integrations=[DjangoIntegration()],
+
+            # Set traces_sample_rate to 1.0 to capture 100%
+            # of transactions for performance monitoring.
+            # We recommend adjusting this value in production.
+            traces_sample_rate=1.0,
+
+            # If you wish to associate users to errors (assuming you are using
+            # django.contrib.auth) you may enable sending PII data.
+            send_default_pii=True
+        )
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
@@ -43,12 +62,12 @@ BROKER_URL = f'amqp://{MQ_USER}:{MQ_PASSWORD}@{FASTER_HOST}:5672//'
 BASE_REPORT_URL = 'http://192.168.22.19:8000/api/fastrunner/reports'
 
 # 用来直接url访问
-#STATIC_URL = '/static/'
+# STATIC_URL = '/static/'
 
 # 部署的时候执行python manage.py collectstatic，django会把所有App下的static文件都复制到STATIC_ROOT文件夹下
-STATIC_ROOT=os.path.join(BASE_DIR, 'static')
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 # 开发者模式中使用访问静态文
 # STATICFILES_DIRS = (
 #    os.path.join(BASE_DIR, "static"),
-#)
+# )
