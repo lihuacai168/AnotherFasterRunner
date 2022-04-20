@@ -1037,7 +1037,7 @@ CREATE TABLE `fastuser_myuser` (
 -- ----------------------------
 BEGIN;
 INSERT INTO `fastuser_myuser` VALUES (4, 'pbkdf2_sha256$150000$2ZQUTmy2m73w$Dj8Tqyz6g+7Z80aDXPOdrSB98GyCCp/kT4gZspD/YA8=', '2022-02-22 21:28:48.233250', 1, 'admin', '', '', 'lihuacai168@gmail.com', 1, 1, '2020-07-01 17:30:00.000000', '', 0);
-INSERT INTO `fastuser_myuser` VALUES (6, 'pbkdf2_sha256$150000$8fDo70qQ8rKS$FNqsIQDIfVFjVWlxZOYsBb3Gb7NcLX6cZly64r7PWUo=', NULL, 0, 'test', '', '', 'test@baibu.la', 0, 1, '2020-08-16 10:15:54.984186', '18666123456', 0);
+INSERT INTO `fastuser_myuser` VALUES (6, 'pbkdf2_sha256$150000$8fDo70qQ8rKS$FNqsIQDIfVFjVWlxZOYsBb3Gb7NcLX6cZly64r7PWUo=', NULL, 0, 'test', '', '', 'test@email.com', 0, 1, '2020-08-16 10:15:54.984186', '18666123456', 0);
 INSERT INTO `fastuser_myuser` VALUES (7, 'pbkdf2_sha256$150000$LnzEtAW5ysrS$HfU2o2B6QFhzTp7lDO6nxjz6vAlX45WkvtHccy6iTvo=', '2022-01-13 16:25:57.113112', 1, 'root', '', '', '', 1, 1, '2022-01-13 16:11:30.737809', NULL, 0);
 COMMIT;
 
