@@ -230,7 +230,7 @@ def get_jira_core_case_cover_rate(pk) -> dict:
     if project_obj.jira_bearer_token == '' or project_obj.jira_project_key == '':
         logger.info('jira token或者jira project key没配置')
     else:
-        base_url = 'https://jira.szzhijing.com/rest/api/latest/search'
+        base_url = 'https://jira.xxx.com/rest/api/latest/search'
         data = {
             "jql": f"project = {project_obj.jira_project_key} AND issuetype = '测试用例'",
             "maxResults": -1
