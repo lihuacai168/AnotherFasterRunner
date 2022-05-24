@@ -95,6 +95,14 @@ def send_message(summary: dict, webhook: str, **kwargs):
                 "title": title,
                 "text": msg
             }
+        if 'seatalk' in webhook:
+            msg = parse_message(summary=summary, msg_type=None)
+            data = {
+                "tag": "text",
+                "text": {
+                    "content": msg
+                }
+            }
         res = requests.post(url=webhook, data=json.dumps(data).encode("utf-8")).json()
         if res.get('StatusCode') == 0:
             logger.info(f"发送通知成功，请求的webhook是: {webhook}")
