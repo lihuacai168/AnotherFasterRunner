@@ -5,14 +5,17 @@ services:
     privileged: true
     environment:
       # 设置默认数据库和root默认密码,如果宿主机中/var/lib/mysql已经存在,这两个设置都不会生效
-      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
     volumes:
 #      - "/var/lib/mysql:/var/lib/mysql" # 挂载宿主机的mysql数据到docker中
       - ./db/my.cnf:/etc/mysql/mysql.conf.d/mysqld.cnf
       - ./db:/docker-entrypoint-initdb.d/:ro
     # 端口映射,格式 宿主机端口:容器端口
     ports:
-      - "13306:3306"
+      - "${MYSQL_PORT_OUT}:3306"
     restart: always
     command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
 
@@ -23,15 +26,20 @@ services:
       context: .
       dockerfile: Dockerfile
     environment:
+#      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
       - RABBITMQ_DEFAULT_USER=${RABBITMQ_DEFAULT_USER}
       - RABBITMQ_DEFAULT_PASS=${RABBITMQ_DEFAULT_PASS}
+      - MQ_PORT=${MQ_PORT}
       - SENTRY_DSN=${SENTRY_DSN}
     entrypoint: /bin/sh
     command: -c "/app/start.sh app"
     depends_on:
       - db
     ports:
-      - "8000:8000"
+      - "${DJANGO_API_PORT}:8000"
     restart: always
 
   celery-worker:
@@ -39,8 +47,14 @@ services:
       context: .
       dockerfile: Dockerfile
     environment:
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
       - RABBITMQ_DEFAULT_USER=${RABBITMQ_DEFAULT_USER}
       - RABBITMQ_DEFAULT_PASS=${RABBITMQ_DEFAULT_PASS}
+      - MQ_PORT=${MQ_PORT}
+      - SERVER_IP=${SERVER_IP}
+      - DJANGO_API_PORT=${DJANGO_API_PORT}
     entrypoint: /bin/sh
     command: -c "/app/start.sh celery-worker"
     restart: always
@@ -53,8 +67,12 @@ services:
       context: .
       dockerfile: Dockerfile
     environment:
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
       - RABBITMQ_DEFAULT_USER=${RABBITMQ_DEFAULT_USER}
       - RABBITMQ_DEFAULT_PASS=${RABBITMQ_DEFAULT_PASS}
+      - MQ_PORT=${MQ_PORT}
     entrypoint: /bin/sh
     command: -c "/app/start.sh celery-beat"
     restart: always
@@ -62,20 +80,26 @@ services:
       - mq
       - db
 
+# django-admin & app proxy
   nginx:
     build: ./nginx
     ports:
-      - "8080:80"
+      - "${DJANGO_ADMIN_PORT}:80"
     depends_on:
       - app
     restart: always
+    environment:
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+
 
   web:
     build:
       context: ./web
       dockerfile: Dockerfile
     ports:
-      - "80:80"
+      - "${WEB_PORT}:80"
     volumes:
       - ./web/dist:/usr/share/nginx/html
 
@@ -84,9 +108,10 @@ services:
     environment:
       - RABBITMQ_DEFAULT_USER=${RABBITMQ_DEFAULT_USER}
       - RABBITMQ_DEFAULT_PASS=${RABBITMQ_DEFAULT_PASS}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
     restart: always
     ports:
-      - "15672:15672"
-      - "5672:5672"
+      - "${MQ_ADMIN_PORT}:15672"
+      - "${MQ_PORT}:5672"
 
 

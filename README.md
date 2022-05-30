@@ -14,8 +14,17 @@
 # [使用文档](https://www.yuque.com/lihuacai/sggdx7/cn5ncg)
 
 # Quick Start
+
 ```shell
-docker-compose up --build -d
+# 设置环境变量
+cp .env.example $HOME/.env
+
+# 修改.env文件
+```
+
+```shell
+# 指定配置文件启动, .env是绝对路径
+docker-compose --env-file=$HOME/.env up --build -d
 ```
 
 

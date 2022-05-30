@@ -5,7 +5,7 @@
  Source Server Type    : MySQL
  Source Server Version : 80021
  Source Host           : localhost:13306
- Source Schema         : fast_db
+ Source Schema         : in .env
 
  Target Server Type    : MySQL
  Target Server Version : 80021
@@ -14,8 +14,10 @@
  Date: 22/02/2022 21:49:47
 */
 
-create database if not exists fast_db default charset utf8 collate utf8_general_ci;
-use fast_db;
+-- create database if not exists fast_db default charset utf8 collate utf8_general_ci;
+-- use fast_db;
+
+-- set database name in .env
 
 
 SET NAMES utf8mb4;

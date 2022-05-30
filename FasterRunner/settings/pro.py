@@ -59,7 +59,7 @@ DATABASES = {
 
 BROKER_URL = f'amqp://{MQ_USER}:{MQ_PASSWORD}@{FASTER_HOST}:5672//'
 
-BASE_REPORT_URL = 'http://192.168.22.19:8000/api/fastrunner/reports'
+BASE_REPORT_URL = 'http://10.129.144.24:8000/api/fastrunner/reports'
 
 # 用来直接url访问
 # STATIC_URL = '/static/'
