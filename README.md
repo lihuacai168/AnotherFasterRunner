@@ -17,14 +17,14 @@
 
 ```shell
 # 设置环境变量
-cp .env.example ~/.env
+cp .env.example $HOME/.env
 
 # 修改.env文件
 ```
 
 ```shell
 # 指定配置文件启动, .env是绝对路径
-docker-compose --env-file=/Users/xxx/.env up --build -d
+docker-compose --env-file=$HOME/.env up --build -d
 ```
 
 
