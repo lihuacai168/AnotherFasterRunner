@@ -17,7 +17,6 @@ from djcelery.models import PeriodicTask
 from fastrunner.utils.host import parse_host
 
 
-
 def run_all_auto_case(request):
     run_type = request.GET.get('run_type', 'deploy')
     project = request.GET.get('project')
@@ -82,6 +81,7 @@ def get_report_url(request):
         models.Report.objects.filter(project_id=project).last()
     report_url = f'{settings.BASE_REPORT_URL}/{report.id}/'
     return HttpResponse(report_url)
+
 
 # def run_all_auto_case(request):
 #     # 运行方式 auto=定时执行 deploy=Jenkins部署执行
