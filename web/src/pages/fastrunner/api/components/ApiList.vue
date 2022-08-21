@@ -100,6 +100,7 @@
                                 </el-col>
                                 <el-col :span="10">
                                     <el-input
+                                        size="small"
                                         v-show="asyncs"
                                         clearable
                                         placeholder="请输入报告名称"
@@ -141,8 +142,8 @@
 
                     </div>
                     <span slot="footer" class="dialog-footer">
-                    <el-button @click="dialogTreeVisible = false">取 消</el-button>
-                    <el-button type="primary" @click="runTree">确 定</el-button>
+                    <el-button size="small" @click="dialogTreeVisible = false">取 消</el-button>
+                    <el-button size="small" type="primary" @click="runTree">确 定</el-button>
                   </span>
                 </el-dialog>
 
@@ -183,8 +184,8 @@
 
                     </div>
                     <span slot="footer" class="dialog-footer">
-                    <el-button @click="dialogTreeMoveAPIVisible = false">取 消</el-button>
-                    <el-button type="primary" @click="moveAPI">确 定</el-button>
+                    <el-button size="small" @click="dialogTreeMoveAPIVisible = false">取 消</el-button>
+                    <el-button size="small" type="primary" @click="moveAPI">确 定</el-button>
                   </span>
                 </el-dialog>
 
@@ -192,6 +193,7 @@
                 <div style="position: fixed; bottom: 0; right:0; left: 460px; top: 160px">
                     <el-table
                         highlight-current-row
+                        element-loading-text="正在玩命加载"
                         height="calc(100%)"
                         ref="multipleTable"
                         :data="apiData.results"
@@ -205,7 +207,7 @@
                     >
                         <el-table-column
                             type="selection"
-                            width="42"
+                            width="50"
                         >
                         </el-table-column>
                         <el-table-column

@@ -15,7 +15,7 @@ services:
       - ./db:/docker-entrypoint-initdb.d/:ro
     # 端口映射,格式 宿主机端口:容器端口
     ports:
-      - "${MYSQL_PORT_OUT}:3306"
+      - "3306:3306"
     restart: always
     command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
 
@@ -99,7 +99,7 @@ services:
       context: ./web
       dockerfile: Dockerfile
     ports:
-      - "${WEB_PORT}:80"
+      - "${WEB_PORT}:8888"
     volumes:
       - ./web/dist:/usr/share/nginx/html
 

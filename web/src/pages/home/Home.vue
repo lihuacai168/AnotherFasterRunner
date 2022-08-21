@@ -5,7 +5,7 @@
         </el-header>
 
         <el-container>
-            <el-aside style="width: 202px">
+            <el-aside style="width: 160px">
                 <home-side></home-side>
             </el-aside>
 

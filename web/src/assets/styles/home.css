@@ -155,7 +155,7 @@ input, button, select, textarea {
 }
 
 .login {
-    height: 1024px;
+    /* height: 1024px; */
     background-color: #f7f8fa;
     font-family: "PingFang SC", "Helvetica Neue", Helvetica, "Hiragino Sans GB", STHeitiSC-Light, "Microsoft YaHei", "微软雅黑", Arial, sans-serif;
     font-size: 13px;
