@@ -1,23 +1,30 @@
 <template>
-  <div>
-    <div class="nav-header">
+<el-container><el-header style="padding: 0; height: 50px">
+  <div class="nav-header">
+    <img src="\static\FasterRunner\favicon.ico" alt="ico" height="35px" style="padding:0 0 5px 5px;">
       <span
         v-text="platformTitle + this.$store.state.projectName"
-        style="color: white; font-size: 25px; margin-left: 10px"
+        style="color: white; font-size: 20px; margin-left: 10px"
       ></span>
-      <span class="right">
-        <div style="float: right; color: #d9d9d9; margin-right: 100px">
-          <i class="iconfont">&#xe61c;</i>
-
-          <span
-            v-text="this.$store.state.user"
-            style="padding-left: 5px; font-size: large"
-          ></span>
-          <a style="padding-left: 10px" @click="handleLogOut">注 销</a>
-        </div>
-      </span>
+      <el-button
+          type="text"
+          size="big"
+          icon="el-icon-user"
+          style="position: absolute; right: 60px;font-size: 16px; color: white; margin-top: 5px;"
+          @click="addTasks=false"
+      >{{this.$store.state.user}}
+      </el-button>
+      <el-button
+            style="margin-left: 20px; background-color: red; position: absolute; right: 10px; margin-top: 10px;"
+            type="primary"
+            icon="el-icon-close"
+            title="注销"
+            size="small"
+            @click="handleLogOut"
+        >
+        </el-button>
     </div>
-  </div>
+</el-header></el-container> 
 </template>
 
 <script>

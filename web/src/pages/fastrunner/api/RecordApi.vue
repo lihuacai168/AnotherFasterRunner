@@ -5,10 +5,10 @@
             <div class="nav-api-header">
                 <div style="padding-top: 10px; margin-left: 10px">
                     <el-button
-                        v-show="false"
+                        :disabled="addAPIFlag"
                         type="primary"
                         size="small"
-                        icon="el-icon-circle-plus"
+                        icon="el-icon-plus"
                         @click="dialogVisible = true"
                     >
                         新建节点
@@ -37,49 +37,50 @@
                         </el-radio-group>
 
                         <span slot="footer" class="dialog-footer">
-                        <el-button @click="dialogVisible = false">取 消</el-button>
-                        <el-button type="primary" @click="handleConfirm('nodeForm')">确 定</el-button>
+                        <el-button size="small" @click="dialogVisible = false">取 消</el-button>
+                        <el-button size="small" type="primary" @click="handleConfirm('nodeForm')">确 定</el-button>
                       </span>
                     </el-dialog>
 
-
                     <el-button
-                        v-show="false"
+                        v-show="isSuperuser"
                         :disabled="currentNode === '' || !isSuperuser"
                         :title="isSuperuser ? '删除所选节点' : '删除节点权限不足' "
                         type="danger"
                         size="small"
                         icon="el-icon-delete"
+                        style="margin-left: 0px"
                         @click="deleteNode"
                     >删除节点
                     </el-button>
 
-
                     <el-button
-                        v-show="false"
-                        :disabled="currentNode === '' "
+                        v-show="true"
+                        :disabled="currentNode === '' || addAPIFlag "
                         type="info"
                         size="small"
+                        style="margin-left: 0px"
                         icon="el-icon-edit-outline"
                         @click="renameNode(currentNode)"
                     >重命名
                     </el-button>
 
-
                     <el-button
-                        :disabled="currentNode === '' "
+                        :disabled="currentNode === '' || addAPIFlag"
                         type="primary"
                         size="small"
-                        icon="el-icon-circle-plus-outline"
+                        icon="el-icon-circle-plus"
                         @click="initResponse = true"
+                        style="margin-left: 0px"
                     >添加接口
                     </el-button>
 
                     <el-button
-                        v-show="userName === projectInfo.responsible || isSuperuser"
+                        v-show="userName === projectInfo.responsible || !isSuperuser"
                         type="primary"
                         size="small"
                         icon="el-icon-circle-plus-outline"
+                        style="margin-left: 0px"
                         @click="importYAPIdialogVisible = true"
                     >导入接口
                     </el-button>
@@ -112,8 +113,7 @@
                     <el-select
                         placeholder="请选择"
                         size="small"
-                        style=“width:100%”
-                        tyle="margin-left: -6px"
+                        style="width:100%; margin-left: -6px"
                         v-model="currentHost"
                     >
                         <el-option
@@ -124,11 +124,46 @@
                         </el-option>
                     </el-select>
                     </span>
+
+                    <el-button
+                        v-if="!addAPIFlag"
+                        :disabled="!(!addAPIFlag && onlyMe && isSelectAPI)"
+                        style="margin-left: 0px"
+                        type="success"
+                        size="small"
+                        icon="el-icon-s-promotion"
+                        @click="move = !move"
+                        :title="'移动API到指定节点'"
+                    >移动API
+                    </el-button>
+
+                    <el-button
+                        v-if="!addAPIFlag"
+                        style="margin-left: 20px"
+                        type="primary"
+                        icon="el-icon-caret-right"
+                        circle
+                        title="批量运行"
+                        size="mini"
+                        @click="run = !run"
+                    >
+                    </el-button>
+
+                    <el-button
+                        v-if="!isSuperuser"
+                        type="danger"
+                        icon="el-icon-delete"
+                        circle
+                        size="mini"
+                        :title="isSuperuser === true ? '批量删除所选API' : '管理员才能批量删除API'"
+                        :disabled="!isSuperuser"
+                        @click="del = !del"
+                    ></el-button>
                     &nbsp配置:
                     <el-select
                         placeholder="请选择"
                         size="small"
-                        tyle="margin-left: -6px"
+                        style="width: 120px;"
                         v-model="currentConfig"
                         value-key="id"
                     >
@@ -139,40 +174,6 @@
                             :value="item">
                         </el-option>
                     </el-select>
-
-
-                    <el-button
-                        v-if="!addAPIFlag"
-                        style="margin-left: 20px"
-                        type="primary"
-                        size="mini"
-                        @click="run = !run"
-                    >批量运行
-                    </el-button>
-
-                    <el-button
-                        v-if="!addAPIFlag"
-                        :disabled="!(!addAPIFlag && onlyMe && isSelectAPI)"
-                        style="margin-left: 20px"
-                        type="success"
-                        size="mini"
-                        @click="move = !move"
-                        :title="'移动API到指定节点'"
-                    >移动API
-                    </el-button>
-
-
-                    <el-button
-                        v-if="isSuperuser"
-                        type="danger"
-                        icon="el-icon-delete"
-                        circle
-                        size="mini"
-                        :title="isSuperuser === true ? '批量删除所选API' : '批量删除API权限不足'"
-                        :disabled="!isSuperuser"
-                        @click="del = !del"
-                    ></el-button>
-
 
                     <el-switch
                         style="margin-left: 10px"
@@ -194,8 +195,10 @@
 
                     <el-button
                         :disabled="!addAPIFlag"
-                        type="text"
-                        style="position: absolute; right: 30px;"
+                        type="primary"
+                        size="small"
+                        icon="el-icon-back"
+                        style="position: absolute; right: 10px;"
                         @click="handleBackList"
                     >返回列表
                     </el-button>
@@ -211,7 +214,7 @@
                         <el-input
                             placeholder="输入关键字进行过滤"
                             v-model="filterText"
-                            size="medium"
+                            size="small"
                             clearable
                             prefix-icon="el-icon-search"
                         >
@@ -221,7 +224,7 @@
                             :data="dataTree"
                             node-key="id"
                             :default-expand-all="false"
-                            :expand-on-click-node="false"
+                            :expand-on-click-node="true"
                             draggable
                             highlight-current
                             :filter-node-method="filterNode"

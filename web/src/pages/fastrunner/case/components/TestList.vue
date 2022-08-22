@@ -65,6 +65,7 @@
                 <div style="position: fixed; bottom: 0; right:0; left: 500px; top: 160px">
                     <el-dialog
                         v-if="dialogTableVisible"
+                        title="Test Result"
                         :visible.sync="dialogTableVisible"
                         width="70%"
                         :modal-append-to-body="false"
@@ -82,12 +83,13 @@
                     >
                         <div>
                             <div>
-                                <el-row :gutter="3">
+                                <el-row :gutter="20">
                                     <el-col :span="8">
-                                        <span>&nbsp配置: </span>
+                                        <span>配置: </span></el-col>
+                                    <el-col :span="10">
                                         <el-select
                                             placeholder="请选择"
-                                            size="medium"
+                                            size="small"
                                             v-model="currentConfigId"
                                             style="width: 200px;"
                                         >
@@ -101,10 +103,10 @@
                                         </el-select>
                                     </el-col>
                                 </el-row>
-                                <el-row :gutter="2">
+                                <el-row :gutter="20" style="margin-top: 10px">
                                     <el-col :span="8">
                                         <el-switch
-                                            style="margin-top: 10px"
+                                            
                                             v-model="asyncs"
                                             active-color="#13ce66"
                                             inactive-color="#ff4949"
@@ -115,6 +117,7 @@
                                     <el-col :span="10">
                                         <el-input
                                             v-show="asyncs"
+                                            size="small"
                                             clearable
                                             placeholder="请输入报告名称"
                                             v-model="reportName"
@@ -124,11 +127,11 @@
                                     </el-col>
                                 </el-row>
                             </div>
-                            <div style="margin-top: 20px">
+                            <div style="margin-top: 20px; width: 260px;">
                                 <el-input
                                     placeholder="输入关键字进行过滤"
                                     v-model="filterText"
-                                    size="medium"
+                                    size="small"
                                     clearable
                                     prefix-icon="el-icon-search"
                                 >
@@ -170,7 +173,7 @@
                                 <el-input
                                     placeholder="输入关键字进行过滤"
                                     v-model="filterText"
-                                    size="medium"
+                                    size="small"
                                     clearable
                                     prefix-icon="el-icon-search"
                                 >

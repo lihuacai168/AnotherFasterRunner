@@ -87,7 +87,7 @@
                         </el-option>
                     </el-select>
                     </span>
-                    &nbsp配置:
+                    <span style="margin-left: 10px">配置:</span>
                     <el-select
                         placeholder="请选择"
                         size="small"
@@ -109,7 +109,7 @@
                         v-if="addTestActivate"
                         style="margin-left: 20px"
                         type="primary"
-                        size="mini"
+                        size="small"
                         title="批量运行用例"
                         @click="run = !run"
                     >运行用例
@@ -118,9 +118,9 @@
                     <el-button
                         v-if="addTestActivate"
                         :disabled="!isSelectCase"
-                        style="margin-left: 20px"
+                        style="margin-left: 0px"
                         type="success"
-                        size="mini"
+                        size="small"
                         title="移动用例到指定节点"
                         @click="move = !move"
                     >移动用例
@@ -129,11 +129,11 @@
                     <el-button
                         v-if="addTestActivate"
                         :disabled="!(onlyMe && isSelectCase)"
-                        style="margin-left: 20px"
+                        style="margin-left: 0px"
                         type="danger"
                         icon="el-icon-delete"
-                        size="mini"
-                        title="批量删除用例"
+                        size="small"
+                        title="批量删除当前用户的用例"
                         @click="del = !del"
                     >删除用例
                     </el-button>
@@ -149,8 +149,10 @@
 
                     <el-button
                         :disabled="addTestActivate"
-                        type="text"
-                        style="position: absolute; right: 30px;"
+                        type="primary"
+                        size="small"
+                        icon="el-icon-back"
+                        style="position: absolute; right: 10px;"
                         @click="handleBackList"
                     >返回列表
                     </el-button>
@@ -169,7 +171,7 @@
                         <el-input
                             placeholder="输入关键字进行过滤"
                             v-model="filterText"
-                            size="medium"
+                            size="small"
                             clearable
                             prefix-icon="el-icon-search"
                         >
