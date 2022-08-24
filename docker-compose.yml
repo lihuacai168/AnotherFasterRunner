@@ -43,6 +43,7 @@ services:
     restart: always
 
   celery-worker:
+    image: fasterrunner_app:latest
     build:
       context: .
       dockerfile: Dockerfile
@@ -63,6 +64,7 @@ services:
       - mq
 
   celery-beat:
+    image: fasterrunner_app:latest
     build:
       context: .
       dockerfile: Dockerfile
