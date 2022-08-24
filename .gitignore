@@ -6,7 +6,7 @@ celerybeat.pid
 start.sh.bak
 tempWorkDir
 mysql
-.env
+# .env
 /venv/
 /static/
 
