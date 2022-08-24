@@ -1,4 +1,4 @@
-version: '3.8'
+version: '3'
 services:
   db:
     image: registry.cn-qingdao.aliyuncs.com/metersphere/mysql:8.0.28
@@ -97,6 +97,7 @@ services:
 
 
   web:
+    image: anotherfasterrunner-web:latest
     build:
       context: ./web
       dockerfile: Dockerfile
