@@ -97,7 +97,7 @@ services:
 
 
   web:
-    image: anotherfasterrunner-web:latest
+    image: fasterrunner-web:latest
     build:
       context: ./web
       dockerfile: Dockerfile
