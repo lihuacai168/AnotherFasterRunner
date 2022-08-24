@@ -3,7 +3,7 @@
         <el-header style="padding-top: 10px; height: 50px;">
             <div>
                 <el-row :gutter="50">
-                    <el-col :span="6" v-if="configData.count > 11">
+                    <el-col :span="6" v-if="configData.count > 8">
                         <el-input placeholder="请输入配置名称" clearable v-model="search">
                             <el-button slot="append" icon="el-icon-search" @click="getConfigList"></el-button>
                         </el-input>

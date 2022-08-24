@@ -6,17 +6,17 @@
           <el-checkbox
             v-if="apiData.count > 0"
             v-model="checked"
-            style="padding-top: 14px; padding-left: 2px"
           >
           </el-checkbox>
         </div>
         <div class="recordapi__header--item">
           <el-input
             placeholder="请输入接口名称"
+            size="small"
             clearable
             v-model="search"
             @keyup.enter.native="getAPIList"
-            style="width: 400px"
+            style="width: 260px"
           >
             <el-button
               slot="append"
@@ -26,11 +26,11 @@
           </el-input>
         </div>
         <div class="recordapi__header--item">
-          <el-button type="primary" @click="resetSearch">重置 </el-button>
+          <el-button type="primary" size="small" @click="resetSearch">重置 </el-button>
         </div>
         <div class="recordapi__header--item">
           <el-dropdown @command="tagChangeHandle">
-            <el-button type="primary">
+            <el-button type="primary" size="small">
               状态
               <i class="el-icon-arrow-down el-icon--right"></i>
             </el-button>
@@ -893,6 +893,6 @@ export default {
 }
 
 .recordapi__header--item {
-  margin: 0 8px;
+  margin: 0 5px;
 }
 </style>

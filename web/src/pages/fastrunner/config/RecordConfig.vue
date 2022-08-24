@@ -3,7 +3,7 @@
     <el-container>
         <el-header style="background: #fff; padding: 0; height: 50px">
             <div class="nav-api-header">
-                <div style="padding-top: 10px; margin-left: 20px">
+                <div style="padding-top: 10px; margin-left: 10px">
                     <el-button
                         type="primary"
                         size="small"
@@ -39,8 +39,10 @@
 
                     <el-button
                         :disabled="!addConfigActivate"
-                        type="text"
-                        style="position: absolute; right: 30px;"
+                        type="primary"
+                        size="small"
+                        icon="el-icon-back"
+                        style="position: absolute; right: 10px;"
                         @click="addConfigActivate=false"
                     >返回列表
                     </el-button>
