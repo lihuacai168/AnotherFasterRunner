@@ -8,7 +8,7 @@ if (
     window.location.hostname === "127.0.0.1"
 ) {
     var base_Url =
-        window.location.protocol + "//" + "119.91.147.215" + ":" + "8000";
+        window.location.protocol + "//" + "127.0.0.1" + ":" + "8000";
 } else {
     var base_Url = window.location.protocol + "//" + window.location.host;
 }

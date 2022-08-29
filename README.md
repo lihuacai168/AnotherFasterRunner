@@ -1,4 +1,7 @@
 # FasterRunner
+
+## Feature
+
 - [X] 支持同步YAPI（Swagger，Postman），无需手动录入接口
 - [X] 继承 Requests 的全部特性，轻松实现 HTTP(S) 的各种测试需求
 - [X]  借助驱动代码（debugtalk.py），在测试脚本中轻松实现请求参数签名，加密和解密响应等
@@ -11,9 +14,24 @@
 
 [![LICENSE](https://img.shields.io/github/license/HttpRunner/FasterRunner.svg)](https://github.com/HttpRunner/FasterRunner/blob/master/LICENSE) [![travis-ci](https://travis-ci.org/HttpRunner/FasterRunner.svg?branch=master)](https://travis-ci.org/HttpRunner/FasterRunner) ![pyversions](https://img.shields.io/pypi/pyversions/Django.svg)
 
-# [使用文档](https://www.yuque.com/lihuacai/sggdx7/cn5ncg)
+## [使用文档](https://www.yuque.com/lihuacai/sggdx7/cn5ncg)
 
-# Quick Start
+## Quick Start
+
+```shell
+# 编辑Dockerfile，安装必要的依赖及确定WORKDIR
+apk add Nginx
+...
+WORKDIR /opt/workspace/FasterRunner/
+```
+
+```shell
+# 单独构建app及web应用，分别在AnotherFasterRunner及./web目录下
+docker build -t fasterrunner_app:latest .
+cd ./web
+
+docker build -t fasterrunner_web:latest .
+```
 
 ```shell
 # 设置环境变量
@@ -27,9 +45,10 @@ cp .env.example $HOME/.env
 docker-compose --env-file=$HOME/.env up --build -d
 ```
 
+## Dev
 
-# Dev
 - [Django原生部署](https://www.jianshu.com/p/e26ccc21ddf2)
 
-# uWSGI
+## uWSGI
+
 - [uWSGI+Nginx+Supervisor+Python虚拟环境部署](https://www.jianshu.com/p/577a966b0998)

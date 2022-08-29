@@ -13,15 +13,19 @@ RUN apk update &&  \
 
 FROM python:3.6-alpine
 ENV TZ=Asia/Shanghai
+ENV LANG=C.UTF-8
 RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories \
-    && apk --no-cache add tzdata mariadb-connector-c-dev \
+    && apk --no-cache add tzdata mariadb-connector-c-dev nginx\
     && ln -snf /usr/share/zoneinfo/$TZ /etc/localtime \
     && echo $TZ > /etc/timezone && rm -rf /var/cache/apk/*
 
 COPY --from=Base /usr/local/lib/python3.6/site-packages /usr/local/lib/python3.6/site-packages
-WORKDIR /app
-COPY . /app
-RUN chmod +x /app/start.sh
+WORKDIR /opt/workspace/FasterRunner/
+COPY . /opt/workspace/FasterRunner/
+RUN chmod +x /opt/workspace/FasterRunner/start.sh
 
 ONBUILD RUN python manage.py collectstatic --settings=FasterRunner.settings.docker --no-input
 
+EXPOSE 8000
+
+CMD [ "bash ./start.sh" ]
