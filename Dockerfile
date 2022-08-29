@@ -15,7 +15,7 @@ FROM python:3.6-alpine
 ENV TZ=Asia/Shanghai
 ENV LANG=C.UTF-8
 RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories \
-    && apk --no-cache add tzdata mariadb-connector-c-dev nginx\
+    && apk --no-cache add tzdata mariadb-connector-c-dev linux-headers nginx uwsgi\
     && ln -snf /usr/share/zoneinfo/$TZ /etc/localtime \
     && echo $TZ > /etc/timezone && rm -rf /var/cache/apk/*
 
@@ -24,7 +24,7 @@ WORKDIR /opt/workspace/FasterRunner/
 COPY . /opt/workspace/FasterRunner/
 RUN chmod +x /opt/workspace/FasterRunner/start.sh
 
-ONBUILD RUN python manage.py collectstatic --settings=FasterRunner.settings.docker --no-input
+RUN python manage.py collectstatic --settings=FasterRunner.settings.docker --no-input
 
 EXPOSE 8000
 

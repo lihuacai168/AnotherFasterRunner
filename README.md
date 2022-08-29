@@ -52,3 +52,28 @@ docker-compose --env-file=$HOME/.env up --build -d
 ## uWSGI
 
 - [uWSGI+Nginx+Supervisor+Python虚拟环境部署](https://www.jianshu.com/p/577a966b0998)
+
+## Nginx配置
+
+```shell
+#1、验证配置文件
+
+/usr/local/nginx/sbin/nginx -tc /usr/local/nginx/conf/nginx.conf
+
+or
+
+/usr/local/nginx/sbin/nginx -t -c /usr/local/nginx/conf/nginx.conf
+
+#2、指定配置文件启动
+
+/usr/local/nginx/sbin/nginx -c /usr/local/nginx/conf/nginx.conf
+
+#3、指定配置文件重启
+
+/usr/local/nginx/sbin/nginx -s reload -c /usr/local/nginx/conf/nginx.conf
+
+注：/usr/local/nginx/ 目录视自己的安装情况而定。配置文件同样根据自己的命名习惯指定
+————————————————
+版权声明：本文为CSDN博主「gblfy」的原创文章，遵循CC 4.0 BY-SA版权协议，转载请附上原文出处链接及本声明。
+原文链接：https://blog.csdn.net/weixin_40816738/article/details/121512708
+```

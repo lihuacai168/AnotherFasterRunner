@@ -9,7 +9,7 @@ mysql
 # .env
 /venv/
 /static/
-
+nohup.out
 
 # web
 .DS_Store

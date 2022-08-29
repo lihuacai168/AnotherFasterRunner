@@ -6,7 +6,7 @@ DEBUG = True
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'fast_dev',  # 新建数据库
+        'NAME': 'FasterRunner',  # 新建数据库
         # 'NAME': 'fast_mb4',  # 新建数据库名
         'HOST': '127.0.0.1',
         'USER': 'root',  # 数据库登录名
