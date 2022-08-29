@@ -10,7 +10,8 @@ if (
     var base_Url =
         window.location.protocol + "//" + "127.0.0.1" + ":" + "8000";
 } else {
-    var base_Url = window.location.protocol + "//" + window.location.host;
+    // var base_Url = window.location.protocol + "//" + window.location.host;
+    var base_Url = window.location.protocol + "//testapi.caibeike.net/";
 }
 export const baseUrl = base_Url;
 // export let baseUrl = "http://119.91.147.215:8000";
