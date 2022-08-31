@@ -1,7 +1,8 @@
-from datetime import datetime
 import jsonfield
 from django.db import models
-from djcelery.models import PeriodicTask
+from django_celery_beat.models import PeriodicTask
+
+
 # Create your models here.
 from model_utils import Choices
 
@@ -20,11 +21,19 @@ class Project(BaseTable):
     name = models.CharField("项目名称", unique=True, null=False, max_length=100)
     desc = models.CharField("简要介绍", max_length=100, null=False)
     responsible = models.CharField("创建人", max_length=20, null=False)
-    yapi_base_url = models.CharField("yapi的openapi url", max_length=100, null=False, default='', blank=True)
-    yapi_openapi_token = models.CharField("yapi openapi的token", max_length=128, null=False, default='', blank=True)
+    yapi_base_url = models.CharField(
+        "yapi的openapi url", max_length=100, null=False, default="", blank=True
+    )
+    yapi_openapi_token = models.CharField(
+        "yapi openapi的token", max_length=128, null=False, default="", blank=True
+    )
     # jira相关的
-    jira_project_key = models.CharField('jira项目key', null=False, default='', max_length=30, blank=True)
-    jira_bearer_token = models.CharField('jira bearer_token', null=False, default='', max_length=45, blank=True)
+    jira_project_key = models.CharField(
+        "jira项目key", null=False, default="", max_length=30, blank=True
+    )
+    jira_bearer_token = models.CharField(
+        "jira bearer_token", null=False, default="", max_length=45, blank=True
+    )
 
 
 class Debugtalk(BaseTable):
@@ -37,7 +46,9 @@ class Debugtalk(BaseTable):
         db_table = "debugtalk"
 
     code = models.TextField("python代码", default="# write you code", null=False)
-    project = models.OneToOneField(to=Project, on_delete=models.CASCADE, db_constraint=False)
+    project = models.OneToOneField(
+        to=Project, on_delete=models.CASCADE, db_constraint=False
+    )
 
 
 class Config(BaseTable):
@@ -65,11 +76,7 @@ class API(BaseTable):
         verbose_name = "接口信息"
         db_table = "api"
 
-    ENV_TYPE = (
-        (0, "测试环境"),
-        (1, "生产环境"),
-        (2, "预发布 ")
-    )
+    ENV_TYPE = ((0, "测试环境"), (1, "生产环境"), (2, "预发布 "))
     TAG = Choices(
         (0, "未知"),
         (1, "成功"),
@@ -90,12 +97,10 @@ class API(BaseTable):
     # yapi相关的
     yapi_catid = models.IntegerField("yapi的分组id", null=True, default=0)
     yapi_id = models.IntegerField("yapi的id", null=True, default=0)
-    ypai_add_time = models.CharField("yapi创建时间", null=True, default='', max_length=10)
-    ypai_up_time = models.CharField("yapi更新时间", null=True, default='', max_length=10)
-    ypai_username = models.CharField("yapi的原作者", null=True, default='', max_length=30)
+    ypai_add_time = models.CharField("yapi创建时间", null=True, default="", max_length=10)
+    ypai_up_time = models.CharField("yapi更新时间", null=True, default="", max_length=10)
+    ypai_username = models.CharField("yapi的原作者", null=True, default="", max_length=30)
     # resp_sample = models.TextField("接口响应样例", default='{}', null=False)
-
-
 
 
 class Case(BaseTable):
@@ -122,8 +127,10 @@ class Case(BaseTable):
 
     @property
     def tasks(self):
-        task_objs = PeriodicTask.objects.filter(description=self.project.id).values('id', 'name', 'args')
-        return filter(lambda task: self.id in eval(task.pop('args')), task_objs)
+        task_objs = PeriodicTask.objects.filter(description=self.project.id).values(
+            "id", "name", "args"
+        )
+        return filter(lambda task: self.id in eval(task.pop("args")), task_objs)
 
 
 class CaseStep(BaseTable):
@@ -177,6 +184,7 @@ class Report(BaseTable):
     """
     报告存储
     """
+
     report_type = (
         (1, "调试"),
         (2, "异步"),
@@ -198,14 +206,23 @@ class Report(BaseTable):
     summary = models.TextField("报告基础信息", null=False)
     project = models.ForeignKey(Project, on_delete=models.CASCADE, db_constraint=False)
     ci_metadata = jsonfield.JSONField()
-    ci_project_id = models.IntegerField('gitlab的项目id', default=0, null=True, db_index=True)
-    ci_job_id = models.CharField('gitlab的项目id', unique=True, null=True, default=None, db_index=True, max_length=15)
+    ci_project_id = models.IntegerField(
+        "gitlab的项目id", default=0, null=True, db_index=True
+    )
+    ci_job_id = models.CharField(
+        "gitlab的项目id",
+        unique=True,
+        null=True,
+        default=None,
+        db_index=True,
+        max_length=15,
+    )
 
     @property
     def ci_job_url(self):
         if self.ci_metadata:
-            return self.ci_metadata.get('ci_job_url')
-        return ''
+            return self.ci_metadata.get("ci_job_url")
+        return ""
 
 
 class ReportDetail(models.Model):
@@ -213,7 +230,9 @@ class ReportDetail(models.Model):
         verbose_name = "测试报告详情"
         db_table = "report_detail"
 
-    report = models.OneToOneField(Report, on_delete=models.CASCADE, null=True, db_constraint=False)
+    report = models.OneToOneField(
+        Report, on_delete=models.CASCADE, null=True, db_constraint=False
+    )
     summary_detail = models.TextField("报告详细信息")
 
 
@@ -233,24 +252,31 @@ class Relation(models.Model):
 
 class Visit(models.Model):
     METHODS = Choices(
-        ('GET', "GET"),
-        ('POST', "POST"),
-        ('PUT', "PUT"),
-        ('PATCH', "PATCH"),
-        ('DELETE', "DELETE"),
-        ('OPTION', "OPTION"),
+        ("GET", "GET"),
+        ("POST", "POST"),
+        ("PUT", "PUT"),
+        ("PATCH", "PATCH"),
+        ("DELETE", "DELETE"),
+        ("OPTION", "OPTION"),
     )
 
-    user = models.CharField(max_length=100, verbose_name='访问url的用户名', db_index=True)
-    ip = models.CharField(max_length=20, verbose_name='用户的ip', db_index=True)
-    project = models.CharField(max_length=4, verbose_name='项目id', db_index=True, default=0)
-    url = models.CharField(max_length=255, verbose_name='被访问的url', db_index=True)
-    path = models.CharField(max_length=100, verbose_name='被访问的接口路径', default='', db_index=True)
-    request_params = models.CharField(max_length=255, verbose_name='请求参数', default='', db_index=True)
-    request_method = models.CharField(max_length=7, verbose_name='请求方法', choices=METHODS, db_index=True)
-    request_body = models.TextField(verbose_name='请求体')
-    create_time = models.DateTimeField('创建时间', auto_now_add=True, db_index=True)
-
+    user = models.CharField(max_length=100, verbose_name="访问url的用户名", db_index=True)
+    ip = models.CharField(max_length=20, verbose_name="用户的ip", db_index=True)
+    project = models.CharField(
+        max_length=4, verbose_name="项目id", db_index=True, default=0
+    )
+    url = models.CharField(max_length=255, verbose_name="被访问的url", db_index=True)
+    path = models.CharField(
+        max_length=100, verbose_name="被访问的接口路径", default="", db_index=True
+    )
+    request_params = models.CharField(
+        max_length=255, verbose_name="请求参数", default="", db_index=True
+    )
+    request_method = models.CharField(
+        max_length=7, verbose_name="请求方法", choices=METHODS, db_index=True
+    )
+    request_body = models.TextField(verbose_name="请求体")
+    create_time = models.DateTimeField("创建时间", auto_now_add=True, db_index=True)
 
     class Meta:
-        db_table = 'visit'
+        db_table = "visit"
