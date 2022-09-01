@@ -60,8 +60,8 @@ DATABASES = {
 
 # mq_user = environ.get('FASTER_MQ_USER')
 # mq_password = environ.get('FASTER_MQ_PASSWORD')
-# BROKER_URL = f'amqp://{mq_user}:{mq_password}@mq:5672//'
-BROKER_URL = f'amqp://{MQ_USER}:{MQ_PASSWORD}@mq:{MQ_PORT}//'
+# broker_url = f'amqp://{mq_user}:{mq_password}@mq:5672//'
+broker_url = f'amqp://{MQ_USER}:{MQ_PASSWORD}@mq:{MQ_PORT}//'
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 

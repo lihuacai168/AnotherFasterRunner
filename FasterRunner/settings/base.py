@@ -283,3 +283,6 @@ LOGGING = {
         },
     },
 }
+
+# https://github.com/celery/celery/issues/4796
+DJANGO_CELERY_BEAT_TZ_AWARE = False

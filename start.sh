@@ -29,11 +29,11 @@ fi
 
 if [ $1 = "celery-worker" ]; then
     echo "start celery"
-    /usr/local/bin/python manage.py celery -A FasterRunner.mycelery worker -l info --settings=FasterRunner.settings.docker --logfile=./logs/worker.log
+    export DJANGO_SETTINGS_MODULE=FasterRunner.settings.docker; /usr/local/bin/python -m celery -A FasterRunner.mycelery worker -l info
 fi
 
 
 if [ $1 = "celery-beat" ]; then
     echo "start celery beat"
-    python manage.py celery -A FasterRunner.mycelery beat -l info --settings=FasterRunner.settings.docker --logfile=./logs/beat.log
+    export DJANGO_SETTINGS_MODULE=FasterRunner.settings.docker; /usr/local/bin/python -m celery -A FasterRunner.mycelery beat -l info
 fi

@@ -3,7 +3,7 @@ aiocontextvars==0.2.2
 amqp
 anyjson==0.3.3
 beautifulsoup4==4.6.3
-billiard==3.3.0.23
+# billiard==3.3.0.23
 celery~=5.2.7
 certifi==2019.9.11
 chardet==3.0.4
@@ -40,7 +40,7 @@ packaging==20.4
 PyJWT==1.7.1
 pyparsing==2.4.7
 python-dotenv==0.10.3
-pytz==2019.3
+pytz==2022.2.1
 PyYAML~=5.3.1
 requests==2.22.0
 requests-toolbelt==0.9.1
