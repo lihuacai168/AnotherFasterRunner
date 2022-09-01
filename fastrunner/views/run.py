@@ -373,7 +373,15 @@ def run_multi_tests(request):
         summary = loader.TEST_NOT_EXISTS
         summary["msg"] = "用例运行中，请稍后查看报告"
     else:
-        summary, _ = loader.debug_suite(test_sets, project, suite_list, config_list, save=True, user=request.user, report_name=report_name)
+        summary, _ = loader.debug_suite(
+            test_sets,
+            project,
+            suite_list,
+            config_list,
+            save=True,
+            user=request.user,
+            report_name=report_name
+        )
 
     return Response(summary)
 
@@ -401,7 +409,15 @@ def run_test(request):
     if config:
         config = eval(models.Config.objects.get(project=project, name=config["name"]).body)
 
-    summary = loader.debug_api(parse_host(host, loader.load_test(body)), project, name=body.get('name', None),
-                               config=parse_host(host, config), user=request.user)
+    summary = loader.debug_api(
+        parse_host(
+            host,
+            loader.load_test(body)
+        ),
+        project,
+        name=body.get('name', None),
+        config=parse_host(host, config),
+        user=request.user
+    )
 
     return Response(summary)

@@ -2,15 +2,14 @@ import json
 
 import pydash
 import requests
-from django.core.cache import cache
 from django.db.models import Sum, Count, Q
 from django.db.models.functions import Concat
+from django_celery_beat.models import PeriodicTask as celery_models
 from loguru import logger
 
 from fastrunner import models
 from fastrunner.utils.day import get_day, get_week, get_month
 from fastrunner.utils.parser import Format
-from djcelery import models as celery_models
 
 
 def get_counter(model, pk=None):
@@ -43,8 +42,8 @@ def list2dict(arr):
     keys = []
     values = []
     for d in arr:
-        keys.append(str(d.get('create_time')))
-        values.append(d.get('counts'))
+        keys.append(str(d.get("create_time")))
+        values.append(d.get("counts"))
     return dict(zip(keys, values))
 
 
@@ -68,38 +67,46 @@ def get_sql_dateformat(date_type):
 
 def get_project_api_cover(project_id):
     """"""
-    case_steps = models.CaseStep.objects.filter(case__project_id=project_id).filter(
-        ~Q(method='config')).values('url', 'method').annotate(url_method=Concat('url', 'method'))
-    return case_steps.aggregate(Count('url_method', distinct=True))
+    case_steps = (
+        models.CaseStep.objects.filter(case__project_id=project_id)
+        .filter(~Q(method="config"))
+        .values("url", "method")
+        .annotate(url_method=Concat("url", "method"))
+    )
+    return case_steps.aggregate(Count("url_method", distinct=True))
 
 
 def get_project_apis(project_id) -> dict:
-    """统计项目中手动创建和从yapi导入的接口数量
-    """
+    """统计项目中手动创建和从yapi导入的接口数量"""
     query = models.API.objects.filter(delete=0).filter(~Q(tag=4))
     if project_id:
         query = query.filter(project_id=project_id)
 
-    project_api_map: dict = query.aggregate(用户创建=Count('pk', filter=~Q(creator='yapi')),
-                                            yapi导入=Count('pk', filter=Q(creator='yapi')))
+    project_api_map: dict = query.aggregate(
+        用户创建=Count("pk", filter=~Q(creator="yapi")),
+        yapi导入=Count("pk", filter=Q(creator="yapi")),
+    )
     return list(project_api_map.keys()), list(project_api_map.values())
 
 
 def aggregate_apis_bydate(date_type, is_yapi=False) -> dict:
-    """按照日，周，月统计项目中手动创建和从yapi导入的接口数量
-    """
+    """按照日，周，月统计项目中手动创建和从yapi导入的接口数量"""
     create_time = get_sql_dateformat(date_type)
 
     query = models.API.objects.filter(~Q(tag=4))
     if is_yapi:
-        query = query.filter(creator='yapi')
+        query = query.filter(creator="yapi")
     else:
-        query = query.filter(~Q(creator='yapi'))
+        query = query.filter(~Q(creator="yapi"))
 
-    count_data: dict = query.extra(select={"create_time": create_time}) \
-        .values('create_time', ) \
-        .annotate(counts=Count('id')) \
-        .values('create_time', 'counts')
+    count_data: dict = (
+        query.extra(select={"create_time": create_time})
+        .values(
+            "create_time",
+        )
+        .annotate(counts=Count("id"))
+        .values("create_time", "counts")
+    )
 
     # 查询结果是按照时间升序，取最后6条
     # 没有的补0
@@ -113,11 +120,12 @@ def aggregate_case_by_tag(project_id):
     query = models.Case.objects
     if project_id:
         query = query.filter(project_id=project_id)
-    case_count: dict = query.aggregate(冒烟用例=Count('pk', filter=Q(tag=1)),
-                                       集成用例=Count('pk', filter=Q(tag=2)),
-                                       监控脚本=Count('pk', filter=Q(tag=3)),
-                                       核心用例=Count('pk', filter=Q(tag=4)),
-                                       )
+    case_count: dict = query.aggregate(
+        冒烟用例=Count("pk", filter=Q(tag=1)),
+        集成用例=Count("pk", filter=Q(tag=2)),
+        监控脚本=Count("pk", filter=Q(tag=3)),
+        核心用例=Count("pk", filter=Q(tag=4)),
+    )
     return list(case_count.keys()), list(case_count.values())
 
 
@@ -126,11 +134,12 @@ def aggregate_reports_by_type(project_id):
     query = models.Report.objects
     if project_id:
         query = query.filter(project_id=project_id)
-    report_count: dict = query.aggregate(调试=Count('pk', filter=Q(type=1)),
-                                         异步=Count('pk', filter=Q(type=2)),
-                                         定时=Count('pk', filter=Q(type=3)),
-                                         部署=Count('pk', filter=Q(type=4)),
-                                         )
+    report_count: dict = query.aggregate(
+        调试=Count("pk", filter=Q(type=1)),
+        异步=Count("pk", filter=Q(type=2)),
+        定时=Count("pk", filter=Q(type=3)),
+        部署=Count("pk", filter=Q(type=4)),
+    )
     return list(report_count.keys()), list(report_count.values())
 
 
@@ -139,19 +148,24 @@ def aggregate_reports_by_status(project_id):
     query = models.Report.objects
     if project_id:
         query = query.filter(project_id=project_id)
-    report_count: dict = query.aggregate(失败=Count('pk', filter=Q(status=0)),
-                                         成功=Count('pk', filter=Q(status=1)),
-                                         )
+    report_count: dict = query.aggregate(
+        失败=Count("pk", filter=Q(status=0)),
+        成功=Count("pk", filter=Q(status=1)),
+    )
     return list(report_count.keys()), list(report_count.values())
 
 
 def aggregate_reports_or_case_bydate(date_type, model):
     """按月和周统计报告创建数量"""
     create_time = get_sql_dateformat(date_type)
-    qs = model.objects.extra(select={"create_time": create_time}) \
-        .values('create_time', ) \
-        .annotate(counts=Count('id')) \
-        .values('create_time', 'counts')
+    qs = (
+        model.objects.extra(select={"create_time": create_time})
+        .values(
+            "create_time",
+        )
+        .annotate(counts=Count("id"))
+        .values("create_time", "counts")
+    )
 
     qs = list(qs)
     complete_list(qs, date_type)
@@ -166,28 +180,30 @@ def aggregate_reports_or_case_bydate(date_type, model):
 def get_daily_count(project_id, model_name, start, end):
     # 生成日期list, ['08-12', '08-13', ...]
     recent_days = [get_day(n)[5:] for n in range(start, end)]
-    models_mapping = {
-        'api': models.API,
-        'case': models.Case,
-        'report': models.Report
-    }
+    models_mapping = {"api": models.API, "case": models.Case, "report": models.Report}
     model = models_mapping[model_name]
     query = model.objects
-    if model_name == 'api':
+    if model_name == "api":
         query = query.filter(~Q(tag=4))
 
     # 统计给定日期范围内，每天创建的条数
-    count_data: list = query.filter(project_id=project_id, create_time__range=[get_day(start), get_day(end)]) \
-        .extra(select={"create_time": "DATE_FORMAT(create_time,'%%m-%%d')"}) \
-        .values('create_time') \
-        .annotate(counts=Count('id')) \
-        .values('create_time', 'counts')
+    count_data: list = (
+        query.filter(
+            project_id=project_id, create_time__range=[get_day(start), get_day(end)]
+        )
+        .extra(select={"create_time": "DATE_FORMAT(create_time,'%%m-%%d')"})
+        .values("create_time")
+        .annotate(counts=Count("id"))
+        .values("create_time", "counts")
+    )
     # list转dict, key是日期, value是统计数
-    create_time_count_mapping = {data['create_time']: data["counts"] for data in count_data}
+    create_time_count_mapping = {
+        data["create_time"]: data["counts"] for data in count_data
+    }
 
     # 日期为空的key，补0
     count = [create_time_count_mapping.get(d, 0) for d in recent_days]
-    return {'days': recent_days, 'count': count}
+    return {"days": recent_days, "count": count}
 
 
 def get_project_daily_create(project_id):
@@ -195,7 +211,7 @@ def get_project_daily_create(project_id):
     start = -6
     end = 1
     count_mapping = {}
-    for model in ('api', 'case', 'report'):
+    for model in ("api", "case", "report"):
         count_mapping[model] = get_daily_count(project_id, model, start, end)
     return count_mapping
 
@@ -209,17 +225,11 @@ def get_project_detail_v2(pk):
     res = {
         "api_count_by_create_type": {
             "type": api_create_type,
-            "count": api_create_type_count
+            "count": api_create_type_count,
         },
-        "case_count_by_tag": {
-            "tag": case_tag,
-            "count": case_tag_count
-        },
-        "report_count_by_type": {
-            'type': report_type,
-            'count': report_type_count
-        },
-        "daily_create_count": daily_create_count
+        "case_count_by_tag": {"tag": case_tag, "count": case_tag_count},
+        "report_count_by_type": {"type": report_type, "count": report_type_count},
+        "daily_create_count": daily_create_count,
     }
     return res
 
@@ -227,45 +237,49 @@ def get_project_detail_v2(pk):
 def get_jira_core_case_cover_rate(pk) -> dict:
     project_obj = models.Project.objects.get(pk=pk)
     jira_cases = []
-    if project_obj.jira_bearer_token == '' or project_obj.jira_project_key == '':
-        logger.info('jira token或者jira project key没配置')
+    if project_obj.jira_bearer_token == "" or project_obj.jira_project_key == "":
+        logger.info("jira token或者jira project key没配置")
     else:
-        base_url = 'https://jira.xxx.com/rest/api/latest/search'
+        base_url = "https://jira.xxx.com/rest/api/latest/search"
         data = {
             "jql": f"project = {project_obj.jira_project_key} AND issuetype = '测试用例'",
-            "maxResults": -1
+            "maxResults": -1,
         }
         headers = {
-            'Authorization': f'Bearer {project_obj.jira_bearer_token}',
-            'Content-Type': 'application/json',
+            "Authorization": f"Bearer {project_obj.jira_bearer_token}",
+            "Content-Type": "application/json",
         }
         try:
             # TODO 分页查找所有的核心case
-            res = requests.post(url=base_url, headers=headers, data=json.dumps(data)).json()
-            err = res.get('errorMessages')
+            res = requests.post(
+                url=base_url, headers=headers, data=json.dumps(data)
+            ).json()
+            err = res.get("errorMessages")
             if err:
                 logger.error(err)
             else:
-                jira_cases.extend(res['issues'])
+                jira_cases.extend(res["issues"])
         except Exception as e:
             logger.error(str(e))
 
     jira_core_case_count = 0
     for case in jira_cases:
-        if pydash.get(case, 'fields.customfield_11400.value') == '是':
+        if pydash.get(case, "fields.customfield_11400.value") == "是":
             jira_core_case_count += 1
 
     covered_case_count = len(models.Case.objects.filter(project=pk, tag=4))
 
     if jira_core_case_count == 0:
-        core_case_cover_rate = '0.00'
+        core_case_cover_rate = "0.00"
     else:
-        core_case_cover_rate = '%.2f' % ((covered_case_count / jira_core_case_count) * 100)
+        core_case_cover_rate = "%.2f" % (
+            (covered_case_count / jira_core_case_count) * 100
+        )
 
     return {
-        'jira_core_case_count': jira_core_case_count,
-        'core_case_count': covered_case_count,
-        'core_case_cover_rate':  core_case_cover_rate
+        "jira_core_case_count": jira_core_case_count,
+        "core_case_count": covered_case_count,
+        "core_case_cover_rate": core_case_cover_rate,
     }
 
 
@@ -287,8 +301,10 @@ def get_project_detail(pk):
     case_id = []
     task_query_set = task_query_set.filter(enabled=1).values("args")
     for i in task_query_set:
-        case_id += eval(i.get('args'))
-    case_step_count = models.Case.objects.filter(pk__in=case_id).aggregate(Sum("length"))
+        case_id += eval(i.get("args"))
+    case_step_count = models.Case.objects.filter(pk__in=case_id).aggregate(
+        Sum("length")
+    )
 
     return {
         "api_count": api_count,
@@ -305,8 +321,7 @@ def get_project_detail(pk):
 
 
 def project_init(project):
-    """新建项目初始化
-    """
+    """新建项目初始化"""
 
     # 自动生成默认debugtalk.py
     models.Debugtalk.objects.create(project=project)
@@ -317,8 +332,7 @@ def project_init(project):
 
 
 def project_end(project):
-    """删除项目相关表 filter不会报异常 最好不用get
-    """
+    """删除项目相关表 filter不会报异常 最好不用get"""
     models.Debugtalk.objects.filter(project=project).delete()
     models.Config.objects.filter(project=project).delete()
     models.API.objects.filter(project=project).delete()
@@ -327,7 +341,7 @@ def project_end(project):
     models.Variables.objects.filter(project=project).delete()
     celery_models.PeriodicTask.objects.filter(description=project).delete()
 
-    case = models.Case.objects.filter(project=project).values_list('id')
+    case = models.Case.objects.filter(project=project).values_list("id")
 
     for case_id in case:
         models.CaseStep.objects.filter(case__id=case_id).delete()
@@ -341,31 +355,29 @@ def tree_end(params, project):
         type: int
     }
     """
-    type = params['type']
-    node = params['node']
+    type = params["type"]
+    node = params["node"]
 
     if type == 1:
-        models.API.objects. \
-            filter(relation=node, project=project).delete()
+        models.API.objects.filter(relation=node, project=project).delete()
 
     # remove node testcase
     elif type == 2:
-        case = models.Case.objects. \
-            filter(relation=node, project=project).values('id')
+        case = models.Case.objects.filter(relation=node, project=project).values("id")
 
         for case_id in case:
-            models.CaseStep.objects.filter(case__id=case_id['id']).delete()
-            models.Case.objects.filter(id=case_id['id']).delete()
+            models.CaseStep.objects.filter(case__id=case_id["id"]).delete()
+            models.Case.objects.filter(id=case_id["id"]).delete()
 
 
 def update_casestep(body, case, username):
-    step_list = list(models.CaseStep.objects.filter(case=case).values('id'))
+    step_list = list(models.CaseStep.objects.filter(case=case).values("id"))
 
     for index in range(len(body)):
 
         test = body[index]
         try:
-            format_http = Format(test['newBody'])
+            format_http = Format(test["newBody"])
             format_http.parse()
             name = format_http.name
             new_body = format_http.testcase
@@ -373,18 +385,18 @@ def update_casestep(body, case, username):
             method = format_http.method
 
         except KeyError:
-            if 'case' in test.keys():
-                case_step = models.CaseStep.objects.get(id=test['id'])
+            if "case" in test.keys():
+                case_step = models.CaseStep.objects.get(id=test["id"])
             elif test["body"]["method"] == "config":
-                case_step = models.Config.objects.get(name=test['body']['name'])
+                case_step = models.Config.objects.get(name=test["body"]["name"])
             else:
-                case_step = models.API.objects.get(id=test['id'])
+                case_step = models.API.objects.get(id=test["id"])
 
             new_body = eval(case_step.body)
-            name = test['body']['name']
+            name = test["body"]["name"]
 
             if case_step.name != name:
-                new_body['name'] = name
+                new_body["name"] = name
 
             if test["body"]["method"] == "config":
                 url = ""
@@ -392,12 +404,12 @@ def update_casestep(body, case, username):
                 # config没有source_api_id,默认为0
                 source_api_id = 0
             else:
-                url = test['body']['url']
-                method = test['body']['method']
-                source_api_id = test.get('source_api_id', 0)
+                url = test["body"]["url"]
+                method = test["body"]["method"]
+                source_api_id = test.get("source_api_id", 0)
                 # 新增的case_step没有source_api_id字段,需要重新赋值
                 if source_api_id == 0:
-                    source_api_id = test['id']
+                    source_api_id = test["id"]
 
         kwargs = {
             "name": name,
@@ -405,19 +417,21 @@ def update_casestep(body, case, username):
             "url": url,
             "method": method,
             "step": index,
-            "source_api_id": source_api_id
+            "source_api_id": source_api_id,
         }
         # is_copy is True表示用例步骤是复制的
-        if 'case' in test.keys() and test.pop("is_copy", False) is False:
-            models.CaseStep.objects.filter(id=test['id']).update(**kwargs, updater=username)
-            step_list.remove({"id": test['id']})
+        if "case" in test.keys() and test.pop("is_copy", False) is False:
+            models.CaseStep.objects.filter(id=test["id"]).update(
+                **kwargs, updater=username
+            )
+            step_list.remove({"id": test["id"]})
         else:
-            kwargs['case'] = case
+            kwargs["case"] = case
             models.CaseStep.objects.create(**kwargs, creator=username)
 
     #  去掉多余的step
     for content in step_list:
-        models.CaseStep.objects.filter(id=content['id']).delete()
+        models.CaseStep.objects.filter(id=content["id"]).delete()
 
 
 def generate_casestep(body, case, username):
@@ -438,7 +452,7 @@ def generate_casestep(body, case, username):
 
         test = body[index]
         try:
-            format_http = Format(test['newBody'])
+            format_http = Format(test["newBody"])
             format_http.parse()
             name = format_http.name
             new_body = format_http.testcase
@@ -454,16 +468,16 @@ def generate_casestep(body, case, username):
                 new_body = eval(config.body)
                 source_api_id = 0  # config没有api,默认为0
             else:
-                api = models.API.objects.get(id=test['id'])
+                api = models.API.objects.get(id=test["id"])
                 new_body = eval(api.body)
-                name = test['body']['name']
+                name = test["body"]["name"]
 
                 if api.name != name:
-                    new_body['name'] = name
+                    new_body["name"] = name
 
-                url = test['body']['url']
-                method = test['body']['method']
-                source_api_id = test['id']
+                url = test["body"]["url"]
+                method = test["body"]["method"]
+                source_api_id = test["id"]
         kwargs = {
             "name": name,
             "body": new_body,
@@ -472,7 +486,7 @@ def generate_casestep(body, case, username):
             "step": index,
             "case": case,
             "source_api_id": source_api_id,
-            "creator": username
+            "creator": username,
         }
         case_step = models.CaseStep(**kwargs)
         case_steps.append(case_step)

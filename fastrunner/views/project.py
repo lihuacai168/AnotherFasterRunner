@@ -182,7 +182,6 @@ class DashBoardView(GenericViewSet):
             'recent_days': [get_day(n)[5:] for n in range(-5, 1)],
             'recent_months': [get_month_format(n) for n in range(-5, 1)],
             'recent_weeks': [get_week_format(n) for n in range(-5, 1)],
-
         }
         return Response(res)
 
@@ -257,13 +256,14 @@ class TreeView(APIView):
         tree_type = request.query_params['type']
         project_id = kwargs.pop('pk')
         default_tree = [{'id': 1, 'label': 'default node', 'children': []}]
-        tree_obj, created = models.Relation.objects.get_or_create(project__id=project_id,
-                                                                  type=tree_type,
-                                                                  defaults={
-                                                                      'tree': default_tree,
-                                                                      'project_id': project_id
-                                                                  }
-                                                                  )
+        tree_obj, created = models.Relation.objects.get_or_create(
+            project__id=project_id,
+            type=tree_type,
+            defaults={
+                'tree': default_tree,
+                'project_id': project_id
+            }
+        )
         body = eval(tree_obj.tree)  # list
         tree = {
             "tree": body,

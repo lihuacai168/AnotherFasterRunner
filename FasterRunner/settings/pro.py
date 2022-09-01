@@ -12,13 +12,16 @@ DEBUG = False
 if find_dotenv():
     load_dotenv(find_dotenv())
     # RabbitMQ 账号密码
-    MQ_USER = environ.get('FASTER_MQ_USER')
-    MQ_PASSWORD = environ.get('FASTER_MQ_PASSWORD')
+    MQ_USER = environ.get('RABBITMQ_DEFAULT_USER')
+    MQ_PASSWORD = environ.get('RABBITMQ_DEFAULT_PASS')
+    MQ_HOST = environ.get('MQ_HOST')
+
+    SERVER_IP = environ.get('SERVER_IP')
     # 数据库账号密码
-    FASTER_HOST = environ.get('FASTER_HOST')
-    DB_NAME = environ.get('FASTER_DB_NAME')
-    DB_USER = environ.get('FASTER_DB_USERNAME')
-    DB_PASSWORD = environ.get('FASTER_DB_PASSWORD')
+    MYSQL_HOST = environ.get('MYSQL_HOST')
+    DB_NAME = environ.get('MYSQL_DATABASE')
+    DB_USER = environ.get('MYSQL_USER')
+    DB_PASSWORD = environ.get('MYSQL_PASSWORD')
     PLATFORM_NAME = environ.get('PLATFORM_NAME')
     if PLATFORM_NAME:
         IM_REPORT_SETTING.update({'platform_name': PLATFORM_NAME})
@@ -45,7 +48,7 @@ if find_dotenv():
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'HOST': FASTER_HOST,
+        'HOST': MYSQL_HOST,
         'NAME': DB_NAME,  # 新建数据库名
         'USER': DB_USER,  # 数据库登录名
         'PASSWORD': DB_PASSWORD,  # 数据库登录密码
@@ -57,9 +60,9 @@ DATABASES = {
     }
 }
 
-BROKER_URL = f'amqp://{MQ_USER}:{MQ_PASSWORD}@{FASTER_HOST}:5672//'
+broker_url = f'amqp://{MQ_USER}:{MQ_PASSWORD}@{MQ_HOST}:5672//'
 
-BASE_REPORT_URL = 'http://10.129.144.24:8000/api/fastrunner/reports'
+BASE_REPORT_URL = f'http://{SERVER_IP}:8000/api/fastrunner/reports'
 
 # 用来直接url访问
 # STATIC_URL = '/static/'

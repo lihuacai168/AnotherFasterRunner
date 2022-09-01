@@ -207,8 +207,10 @@ class APIRigView(GenericViewSet):
         # api_body['relation'] = relation
         try:
             # 增加api之前先删除已经存在的相同id的除了手动调试成功的api
-            models.API.objects.filter(rig_id=api.rig_id).filter(~Q(tag=1)).update(delete=1,
-                                                                                  update_time=datetime.datetime.now())
+            models.API.objects.filter(rig_id=api.rig_id).filter(~Q(tag=1)).update(
+                delete=1,
+                update_time=datetime.datetime.now()
+            )
             # 创建成功,返回对象,方便获取id
             obj = models.API.objects.create(**api_body)
         except DataError:
