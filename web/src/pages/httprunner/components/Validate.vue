@@ -10,11 +10,9 @@
         @cell-mouse-leave="cellMouseLeave"
     >
         <el-table-column
-            fixed
-            label="实际返回值"
-            width="300">
+            label="实际返回值">
             <template slot-scope="scope">
-                <el-input clearable v-model.trim="scope.row.actual" placeholder="实际返回值"></el-input>
+                <el-input clearable v-model.trim="scope.row.actual" placeholder="实际返回值" size="medium"></el-input>
             </template>
         </el-table-column>
 
@@ -23,31 +21,29 @@
             width="100">
             <template slot-scope="scope">
                 <el-tooltip
-                    style="width: 200px"
+                    style="width: 250px"
                     effect="dark"
                     :content="scope.row.comparator"
                     placement="bottom"
                     :disabled="scope.row.comparator === '' ? 'disabled' : false"
                 >
                     <el-autocomplete
+                        size="medium"
                         clearable
                         v-model="scope.row.comparator"
                         :fetch-suggestions="querySearch"
                     >
                     </el-autocomplete>
                 </el-tooltip>
-
-
             </template>
         </el-table-column>
 
 
         <el-table-column
             label="期望类型"
-            width="110">
+            width="120">
             <template slot-scope="scope">
-
-                <el-select v-model="scope.row.type">
+                <el-select v-model="scope.row.type" size="medium">
                     <el-option
                         v-for="item in dataTypeOptions"
                         :key="item.value"
@@ -55,39 +51,40 @@
                         :value="item.value">
                     </el-option>
                 </el-select>
-
             </template>
         </el-table-column>
 
-
-        <el-table-column
-            label="期望返回值"
-            width="300">
+        <el-table-column label="期望返回值">
             <template slot-scope="scope">
-                <el-input clearable v-model.trim="scope.row.expect === null ? 'None' : scope.row.expect" placeholder="期望返回值"></el-input>
+                <el-input clearable v-model.trim="scope.row.expect === null ? 'None' : scope.row.expect"
+                          placeholder="期望返回值" size="medium">
+                </el-input>
             </template>
         </el-table-column>
 
         <el-table-column
-            label="断言描述"
-            width="300">
+            label="断言描述">
             <template slot-scope="scope">
-                <el-input clearable v-model.trim="scope.row.desc === null ? 'None' : scope.row.desc" placeholder="断言描述"></el-input>
+                <el-input clearable v-model.trim="scope.row.desc === null ? 'None' : scope.row.desc"
+                          placeholder="断言描述" size="medium">
+                </el-input>
             </template>
         </el-table-column>
 
-        <el-table-column>
+        <el-table-column width="160">
             <template slot-scope="scope">
                 <el-row v-show="scope.row === currentRow">
                     <el-button
                         icon="el-icon-circle-plus-outline"
                         size="mini"
+                        style="margin-left: 0"
                         type="info"
                         @click="handleEdit(scope.$index, scope.row)">
                     </el-button>
                     <el-button
                         icon="el-icon-document-copy"
                         size="mini"
+                        style="margin-left: 0"
                         type="info"
                         title="复制断言"
                         @click="handleCopy(scope.$index, scope.row)">
@@ -95,6 +92,7 @@
                     <el-button
                         icon="el-icon-delete"
                         size="mini"
+                        style="margin-left: 0"
                         type="danger"
                         v-show="scope.$index !== 0"
                         @click="handleDelete(scope.$index, scope.row)">
@@ -186,7 +184,7 @@ export default {
                     break;
                 case 2:
                     // 包含$是引用类型,可以任意类型
-                    if (value.indexOf("$") != -1) {
+                    if (value.indexOf("$") !== -1) {
                         tempValue = value
                     } else {
                         tempValue = parseInt(value);
@@ -217,7 +215,7 @@ export default {
                         tempValue = JSON.parse(value);
                     } catch (err) {
                         // 包含$是引用类型,可以任意类型
-                        if (value.indexOf("$") != -1) {
+                        if (value.indexOf("$") !== -1) {
                             tempValue = value
                         } else {
                             tempValue = false
@@ -228,7 +226,7 @@ export default {
                     // None 转 null
                     if (value === 'None') {
                         tempValue = null
-                    } else if (value.indexOf("$") != -1) {
+                    } else if (value.indexOf("$") !== -1) {
                         tempValue = value
                     } else {
                         this.$notify.error({
@@ -274,10 +272,10 @@ export default {
             currentValidate: '',
             currentRow: '',
             tableData: [{
-                expect: '',
-                actual: '',
+                expect: 200,
+                actual: 'status_code',
                 comparator: 'equals',
-                type: 1
+                type: 2
             }],
 
             dataTypeOptions: [{
@@ -305,7 +303,8 @@ export default {
             ],
 
             validateOptions: [{
-                value: 'equals'
+                value: 'equals',
+                label: 'eq'
             }, {
                 value: 'less_than'
             }, {

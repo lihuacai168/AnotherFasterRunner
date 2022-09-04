@@ -18,6 +18,7 @@ import 'styles/reports.css'
 import * as api from './restful/api'
 import store from './store'
 import {datetimeObj2str, timestamp2time} from './util/format.js'
+
 Vue.config.productionTip = false
 Vue.use(ElementUI)
 Vue.prototype.$api = api
@@ -42,7 +43,7 @@ Vue.prototype.getLocalValue = function (name) {
     const value = localStorage.getItem(name);
     if (value) {
         // localStorage只能存字符串，布尔类型需要转换
-        if(value === "false" || value === "true"){
+        if (value === "false" || value === "true") {
             return eval(value)
         }
         return value;
@@ -50,7 +51,12 @@ Vue.prototype.getLocalValue = function (name) {
         return '';
     }
 };
-
+Vue.prototype.getViewportSize = function () {
+    return {
+        width: window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth,
+        height: window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight
+    }
+}
 router.beforeEach((to, from, next) => {
     /* 路由发生变化修改页面title */
     setTimeout((res) => {

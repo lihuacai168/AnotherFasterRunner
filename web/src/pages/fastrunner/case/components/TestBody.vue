@@ -3,7 +3,7 @@
         <div>
             <div>
                 <el-input
-                    style="width: 600px"
+                    style="width: 60%; min-width: 500px"
                     placeholder="请输入接口名称"
                     v-model="name"
                     clearable
@@ -13,6 +13,7 @@
                 <el-button
                     slot="append"
                     type="success"
+                    size="medium"
                     @click="save = !save"
                     :disabled="disabledSave"
                     :title="disabledSave ? '不能修改其他人的用例': '保存用例步骤'"
@@ -20,6 +21,8 @@
                 </el-button>
 
                 <el-button
+                    style="margin-left: 0"
+                    size="medium"
                     slot="append"
                     type="danger"
                     @click="esc = !esc"
@@ -40,7 +43,8 @@
                     class="input-with-select"
                     placeholder="请输入接口请求地址"
                     v-model="url"
-                    clearable=""
+                    clearable
+                    style="width: 60%; min-width: 500px"
                 >
                     <el-select
                         slot="prepend"
@@ -61,6 +65,7 @@
                     effect="dark"
                     content="循环次数"
                     placement="bottom"
+                    style="width: 10%"
                 >
                     <el-input-number
                         v-model="times"

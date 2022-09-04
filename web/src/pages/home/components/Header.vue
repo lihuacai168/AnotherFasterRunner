@@ -15,16 +15,17 @@
       >{{this.$store.state.user}}
       </el-button>
       <el-button
-            style="margin-left: 20px; background-color: red; position: absolute; right: 10px; margin-top: 10px;"
-            type="primary"
+            style="margin-left: 20px; position: absolute; right: 10px; margin-top: 10px;"
+            type="danger"
             icon="el-icon-close"
             title="注销"
             size="small"
+            circle
             @click="handleLogOut"
         >
         </el-button>
     </div>
-</el-header></el-container> 
+</el-header></el-container>
 </template>
 
 <script>

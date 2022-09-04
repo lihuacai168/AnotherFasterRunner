@@ -195,7 +195,7 @@
 
                     <el-button
                         :disabled="!addAPIFlag"
-                        type="primary"
+                        type="info" plain
                         size="small"
                         icon="el-icon-back"
                         style="position: absolute; right: 10px;"

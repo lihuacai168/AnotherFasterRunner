@@ -3,24 +3,26 @@
         <div>
             <div>
                 <el-input
-                    style="width: 600px"
+                    style="width: 60%; min-width: 500px"
                     placeholder="请输入接口名称"
                     v-model="name"
                     clearable
+                    size="medium"
                 >
                     <template slot="prepend">接口信息录入</template>
 
                 </el-input>
                 <el-button
                     slot="append"
-                    type="primary"
+                    type="success" size="medium"
                     :title="userName === creator || isSuperuser || !isSaveAs ? '保存' : '只有API创建者才能更新'"
-                    :disabled="userName != creator && !isSuperuser && isSaveAs"
+                    :disabled="userName !== creator && !isSuperuser && isSaveAs"
                     @click="save = !save"
                 >Save
                 </el-button>
 
                 <el-button
+                    style="margin-left: 0" size="medium"
                     slot="append"
                     type="success"
                     :title="'另存为'"
@@ -29,6 +31,7 @@
                 </el-button>
 
                 <el-button
+                    style="margin-left: 0" size="medium"
                     type="primary"
                     @click="reverseStatus"
                     v-loading="loading"
@@ -39,7 +42,7 @@
 
             <div>
                 <el-input
-                    style="width: 760px; margin-top: 10px"
+                    style="width: 60%; margin-top: 10px;min-width: 500px"
                     placeholder="请输入接口请求地址"
                     v-model="url"
                     clearable

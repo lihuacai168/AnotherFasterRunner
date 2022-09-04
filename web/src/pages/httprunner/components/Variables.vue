@@ -11,10 +11,9 @@
         @cell-mouse-leave="cellMouseLeave"
     >
         <el-table-column
-            label="变量名"
-            width="250">
+            label="变量名">
             <template slot-scope="scope">
-                <el-input clearable v-model="scope.row.key" placeholder="Key"></el-input>
+                <el-input clearable v-model="scope.row.key" placeholder="Key" size="medium"></el-input>
             </template>
         </el-table-column>
 
@@ -22,8 +21,7 @@
             label="类型"
             width="120">
             <template slot-scope="scope">
-
-                <el-select v-model="scope.row.type">
+                <el-select v-model="scope.row.type" size="medium">
                     <el-option
                         v-for="item in dataTypeOptions"
                         :key="item.value"
@@ -31,27 +29,24 @@
                         :value="item.value">
                     </el-option>
                 </el-select>
-
             </template>
         </el-table-column>
 
         <el-table-column
-            label="变量值"
-            width="375">
+            label="变量值">
             <template slot-scope="scope">
-                <el-input clearable v-model="scope.row.value" placeholder="Value"></el-input>
+                <el-input clearable v-model="scope.row.value" placeholder="Value" size="medium"></el-input>
             </template>
         </el-table-column>
 
         <el-table-column
-            label="内容"
-            width="375">
+            label="内容">
             <template slot-scope="scope">
-                <el-input clearable v-model="scope.row.desc" placeholder="变量简要描述"></el-input>
+                <el-input clearable v-model="scope.row.desc" placeholder="变量简要描述" size="medium"></el-input>
             </template>
         </el-table-column>
 
-        <el-table-column>
+        <el-table-column width="180">
             <template slot-scope="scope">
                 <el-row v-show="scope.row === currentRow">
                     <el-button

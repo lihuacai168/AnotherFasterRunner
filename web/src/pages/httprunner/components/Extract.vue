@@ -10,30 +10,27 @@
         :cell-style="{paddingTop: '4px', paddingBottom: '4px'}"
     >
         <el-table-column
-            label="变量名"
-            width="300">
+            label="变量名">
             <template slot-scope="scope">
-                <el-input clearable v-model.trim="scope.row.key" placeholder="接收抽取值后的变量名"></el-input>
+                <el-input clearable v-model.trim="scope.row.key" placeholder="接收抽取值后的变量名" size="medium"></el-input>
             </template>
         </el-table-column>
         <el-table-column
-            label="抽取表达式"
-            width="420">
+            label="抽取表达式">
             <template slot-scope="scope">
-                <el-input clearable v-model.trim="scope.row.value" placeholder="抽取表达式"></el-input>
-
+                <el-input clearable v-model.trim="scope.row.value" placeholder="抽取表达式" size="medium"></el-input>
             </template>
         </el-table-column>
 
         <el-table-column
             label="描述"
-            width="375">
+            width="150">
             <template slot-scope="scope">
-                <el-input clearable v-model="scope.row.desc" placeholder="抽取值简要描述"></el-input>
+                <el-input clearable v-model="scope.row.desc" placeholder="抽取值简要描述" size="medium"></el-input>
             </template>
         </el-table-column>
 
-        <el-table-column>
+        <el-table-column width="180">
             <template slot-scope="scope">
                 <el-row v-show="scope.row === currentRow">
                     <el-button
