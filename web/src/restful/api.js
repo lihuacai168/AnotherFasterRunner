@@ -8,7 +8,7 @@ if (
     window.location.hostname === "127.0.0.1"
 ) {
     var base_Url =
-        window.location.protocol + "//" + "127.0.0.1" + ":" + "8000";
+        window.location.protocol + "//" + "127.0.0.1" + ":" + "8001";
 } else {
     // var base_Url = window.location.protocol + "//" + window.location.host;
     var base_Url = window.location.protocol + "//testapi.caibeike.net";

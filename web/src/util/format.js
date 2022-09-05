@@ -10,14 +10,12 @@ export const datetimeObj2str = function (time, format = 'YY-MM-DD hh:mm:ss') {
         return '0' + index;
     });
 
-    let newTime = format.replace(/YY/g, year)
+    return format.replace(/YY/g, year)
         .replace(/MM/g, preArr[month] || month)
         .replace(/DD/g, preArr[day] || day)
         .replace(/hh/g, preArr[hour] || hour)
         .replace(/mm/g, preArr[min] || min)
         .replace(/ss/g, preArr[sec] || sec);
-
-    return newTime;
 }
 
 export const timestamp2time = function (timestamp) {
