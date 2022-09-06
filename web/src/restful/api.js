@@ -37,6 +37,7 @@ axios.interceptors.request.use(
             let projectId = window.location.pathname.split("/")[3];
             projectId = projectId ? projectId : 0;
             config.headers["Project"] = projectId;
+            config.headers['Content-Type'] = "application/json";
         }
         return config;
     },
@@ -62,7 +63,7 @@ axios.interceptors.response.use(
             ) {
                 Message.error({
                     message: "服务器内部异常, 请检查",
-                    duration: this.$store.state.duration
+                    duration: 2000
                 });
             } else if (error.response.status === 504) {
                 Message.error({
@@ -105,7 +106,7 @@ axios.interceptors.response.use(
         } catch (e) {
             Message.error({
                 message: "服务器连接超时，请重试",
-                duration: this.$store.state.duration
+                duration: 2000
             });
         }
     }

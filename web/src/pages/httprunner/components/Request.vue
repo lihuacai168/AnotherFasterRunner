@@ -6,38 +6,41 @@
                     v-for="item of dataOptions"
                     :label="item.label"
                     :key="item.value"
-                >{{ item.value }}
+                    >{{ item.value }}
                 </el-radio>
             </el-radio-group>
         </div>
         <div style="margin-top: 5px">
             <el-table
                 highlight-current-row
-                :cell-style="{paddingTop: '4px', paddingBottom: '4px'}"
+                :cell-style="{ paddingTop: '4px', paddingBottom: '4px' }"
                 strpe
                 :height="height"
-                :data="dataType === 'data' ? formData: paramsData"
+                :data="dataType === 'data' ? formData : paramsData"
                 style="width: 100%;"
                 @cell-mouse-enter="cellMouseEnter"
                 @cell-mouse-leave="cellMouseLeave"
-                v-show="dataType !== 'json' "
+                v-show="dataType !== 'json'"
             >
                 <!--Request params-->
-                <el-table-column
-                    label="请求Key"
-                    width="250">
-                    <template slot-scope="scope">
-                        <el-input clearable v-model="scope.row.key" placeholder="Key"></el-input>
+                <el-table-column label="请求Key">
+                    <template v-slot="scope">
+                        <el-input
+                            clearable
+                            size="medium"
+                            v-model="scope.row.key"
+                            placeholder="Key"
+                        ></el-input>
                     </template>
                 </el-table-column>
                 <!--Request 表单-->
                 <el-table-column
-                    v-if="dataType === 'data' "
+                    v-if="dataType === 'data'"
                     label="类型"
-                    width="120">
-                    <template slot-scope="scope">
-
-                        <el-select v-model="scope.row.type">
+                    width="120"
+                >
+                    <template v-slot="scope">
+                        <el-select v-model="scope.row.type" size="medium">
                             <el-option
                                 v-for="item in dataTypeOptions"
                                 :key="item.value"
@@ -46,14 +49,11 @@
                             >
                             </el-option>
                         </el-select>
-
                     </template>
                 </el-table-column>
 
-                <el-table-column
-                    label="请求Value"
-                    width="350">
-                    <template slot-scope="scope">
+                <el-table-column label="请求Value">
+                    <template v-slot="scope">
                         <el-input
                             v-show="scope.row.type !== 5"
                             clearable
@@ -75,8 +75,8 @@
                                     <el-button
                                         size="small"
                                         type="primary"
-                                        @click="currentIndex=scope.$index"
-                                    >选择文件
+                                        @click="currentIndex = scope.$index"
+                                        >选择文件
                                     </el-button>
                                 </el-upload>
                             </el-col>
@@ -86,22 +86,25 @@
                                     :value="scope.row.size"
                                     style="margin-top: 8px"
                                 >
-                                    <i class="el-icon-document" v-text="scope.row.value"></i>
+                                    <i
+                                        class="el-icon-document"
+                                        v-text="scope.row.value"
+                                    ></i>
                                 </el-badge>
-
                             </el-col>
                         </el-row>
                     </template>
                 </el-table-column>
 
-                <el-table-column
-                    label="描述"
-                    width="400">
+                <el-table-column label="描述" width="400">
                     <template slot-scope="scope">
-                        <el-input clearable v-model="scope.row.desc" placeholder="参数简要描述"></el-input>
+                        <el-input
+                            clearable
+                            v-model="scope.row.desc"
+                            placeholder="参数简要描述"
+                        ></el-input>
                     </template>
                 </el-table-column>
-
 
                 <el-table-column>
                     <template slot-scope="scope">
@@ -110,44 +113,44 @@
                                 icon="el-icon-circle-plus-outline"
                                 size="mini"
                                 type="info"
-                                @click="handleEdit(scope.$index, scope.row)">
+                                @click="handleEdit(scope.$index, scope.row)"
+                            >
                             </el-button>
                             <el-button
                                 icon="el-icon-document-copy"
                                 size="mini"
                                 type="info"
-                                @click="handleCopy(scope.$index, scope.row)">
+                                @click="handleCopy(scope.$index, scope.row)"
+                            >
                             </el-button>
                             <el-button
                                 icon="el-icon-delete"
                                 size="mini"
                                 type="danger"
                                 v-show="scope.$index !== 0"
-                                @click="handleDelete(scope.$index, scope.row)">
+                                @click="handleDelete(scope.$index, scope.row)"
+                            >
                             </el-button>
                         </el-row>
-
                     </template>
                 </el-table-column>
             </el-table>
 
-            <v-jsoneditor v-model="editorJsonData"
-                          v-show="dataType === 'json'"
-                          :height="height"
-                          :options="options" :plus="true"
-                          ref="requestEditor"
+            <v-jsoneditor
+                v-model="editorJsonData"
+                v-show="dataType === 'json'"
+                :height="height"
+                :options="options"
+                :plus="true"
+                ref="requestEditor"
             >
             </v-jsoneditor>
-
         </div>
-
     </div>
-
-
 </template>
 
 <script>
-import bus from '../../../util/bus.js'
+import bus from "../../../util/bus.js";
 
 export default {
     props: {
@@ -157,109 +160,127 @@ export default {
         }
     },
     data() {
-        let self = this
+        let self = this;
         return {
             options: {
                 onModeChange(newMode, oldMode) {
-                    if (newMode === 'tree') {
-                        self.$refs.requestEditor.editor.expandAll()
+                    if (newMode === "tree") {
+                        self.$refs.requestEditor.editor.expandAll();
                     }
                 },
-                onEvent: function (node, event) {
-                    if (event.type === 'click' && event.altKey) {
+                onEvent: function(node, event) {
+                    if (event.type === "click" && event.altKey) {
                         // 左键点击 + alt 提取请求参数jsonpath插入到extract
-                        let arr = node.path
-                        arr.unshift("request.body")
-                        let jsonPath = arr.join(".")
-                        self.notifyCopyRequest(jsonPath, 'Extract插入')
+                        let arr = node.path;
+                        arr.unshift("request.body");
+                        let jsonPath = arr.join(".");
+                        self.notifyCopyRequest(jsonPath, "Extract插入");
                         const extractOjb = {
-                            "key": arr[arr.length - 1],
-                            "value": jsonPath,
-                            "desc": "",
-                        }
-                        bus.$emit("extractRequest", extractOjb)
+                            key: arr[arr.length - 1],
+                            value: jsonPath,
+                            desc: ""
+                        };
+                        bus.$emit("extractRequest", extractOjb);
                     }
                 },
-                mode: 'code',
-                modes: ['code', 'tree'], // allowed modes
+                mode: "code",
+                modes: ["code", "tree"] // allowed modes
             },
             editorJsonData: {},
             fileList: [],
             currentIndex: 0,
-            currentRow: '',
-            formData: [{
-                key: '',
-                value: '',
-                type: 1,
-                desc: ''
-            }],
-            paramsData: [{
-                key: '',
-                value: '',
-                type: '',
-                desc: ''
-            }],
+            currentRow: "",
+            formData: [
+                {
+                    key: "",
+                    value: "",
+                    type: 1,
+                    desc: ""
+                }
+            ],
+            paramsData: [
+                {
+                    key: "",
+                    value: "",
+                    type: "",
+                    desc: ""
+                }
+            ],
 
-            dataTypeOptions: [{
-                label: 'String',
-                value: 1
-            }, {
-                label: 'Integer',
-                value: 2
-            }, {
-                label: 'Float',
-                value: 3
-            }, {
-                label: 'Boolean',
-                value: 4
-            }, {
-                label: 'File',
-                value: 5
-            }],
+            dataTypeOptions: [
+                {
+                    label: "String",
+                    value: 1
+                },
+                {
+                    label: "Integer",
+                    value: 2
+                },
+                {
+                    label: "Float",
+                    value: 3
+                },
+                {
+                    label: "Boolean",
+                    value: 4
+                },
+                {
+                    label: "File",
+                    value: 5
+                }
+            ],
 
-            dataOptions: [{
-                label: 'data',
-                value: '表单',
-            }, {
-                label: 'json',
-                value: 'json',
-            }, {
-                label: 'params',
-                value: 'params'
-            }],
-            dataType: 'json',
-            timeStamp: "",
-        }
+            dataOptions: [
+                {
+                    label: "data",
+                    value: "表单"
+                },
+                {
+                    label: "json",
+                    value: "json"
+                },
+                {
+                    label: "params",
+                    value: "params"
+                }
+            ],
+            dataType: "json",
+            timeStamp: ""
+        };
     },
 
     computed: {
         height() {
-            return (window.screen.height - 464).toString() + "px"
+            return (window.screen.height - 464).toString() + "px";
         }
     },
 
     mounted() {
-        this.editorJsonData = this.parseJson()
+        this.editorJsonData = this.parseJson();
     },
     name: "Request",
 
     watch: {
-        save: function () {
+        save: function() {
             // Save SaveAs Send都会触发
-            this.$emit('request', {
-                form: this.parseForm(),
-                json: this.editorJsonData,
-                params: this.parseParams(),
-                files: this.parseFile()
-            }, {
-                // 编辑用例步骤用到
-                data: this.formData,
-                params: this.paramsData,
-                json_data: this.editorJsonData
-            });
+            this.$emit(
+                "request",
+                {
+                    form: this.parseForm(),
+                    json: this.editorJsonData,
+                    params: this.parseParams(),
+                    files: this.parseFile()
+                },
+                {
+                    // 编辑用例步骤用到
+                    data: this.formData,
+                    params: this.paramsData,
+                    json_data: this.editorJsonData
+                }
+            );
         },
 
-        request: function () {
+        request: function() {
             if (this.request.length !== 0) {
                 this.formData = this.request.data;
                 this.editorJsonData = this.parseJson();
@@ -268,23 +289,21 @@ export default {
         }
     },
     methods: {
-
         uploadSuccess(response, file, fileList) {
             let size = file.size;
             if (size >= 1048576) {
-                size = (size / 1048576).toFixed(2).toString() + 'MB';
+                size = (size / 1048576).toFixed(2).toString() + "MB";
             } else if (size >= 1024) {
-                size = (size / 1024).toFixed(2).toString() + 'KB';
+                size = (size / 1024).toFixed(2).toString() + "KB";
             } else {
-                size = size.toString() + 'Byte'
+                size = size.toString() + "Byte";
             }
-            this.formData[this.currentIndex]['value'] = file.name;
-            this.formData[this.currentIndex]['size'] = size;
+            this.formData[this.currentIndex]["value"] = file.name;
+            this.formData[this.currentIndex]["size"] = size;
             this.fileList = [];
             if (!response.success) {
                 this.$message.error(file.name + response.msg);
             }
-
         },
 
         uploadFile(row) {
@@ -294,10 +313,10 @@ export default {
         uploadError(error) {
             if (error.status === 401) {
                 this.$router.replace({
-                    name: 'Login'
-                })
+                    name: "Login"
+                });
             } else {
-                this.$message.error('Sorry，文件上传失败啦, 请重试！')
+                this.$message.error("Sorry，文件上传失败啦, 请重试！");
             }
         },
 
@@ -306,20 +325,22 @@ export default {
         },
 
         cellMouseLeave(row) {
-            this.currentRow = '';
+            this.currentRow = "";
         },
 
         handleEdit(index, row) {
-            const data = this.dataType === 'data' ? this.formData : this.paramsData;
+            const data =
+                this.dataType === "data" ? this.formData : this.paramsData;
             data.push({
-                key: '',
-                value: '',
+                key: "",
+                value: "",
                 type: 1,
-                desc: ''
+                desc: ""
             });
         },
         handleCopy(index, row) {
-            const data = this.dataType === 'data' ? this.formData : this.paramsData;
+            const data =
+                this.dataType === "data" ? this.formData : this.paramsData;
             data.splice(index + 1, 0, {
                 key: row.key,
                 value: row.value,
@@ -328,7 +349,8 @@ export default {
             });
         },
         handleDelete(index, row) {
-            const data = this.dataType === 'data' ? this.formData : this.paramsData;
+            const data =
+                this.dataType === "data" ? this.formData : this.paramsData;
             data.splice(index, 1);
         },
 
@@ -341,12 +363,12 @@ export default {
 
             for (let content of this.formData) {
                 // 是文件
-                if (content['key'] !== '' && content['type'] === 5) {
-                    files.files[content['key']] = content['value'];
-                    files.desc[content['key']] = content['desc'];
+                if (content["key"] !== "" && content["type"] === 5) {
+                    files.files[content["key"]] = content["value"];
+                    files.desc[content["key"]] = content["desc"];
                 }
             }
-            return files
+            return files;
         },
 
         // 表单格式化
@@ -357,15 +379,18 @@ export default {
             };
             for (let content of this.formData) {
                 // file 不处理
-                if (content['key'] !== '' && content['type'] !== 5) {
-                    const value = this.parseType(content['type'], content['value']);
+                if (content["key"] !== "" && content["type"] !== 5) {
+                    const value = this.parseType(
+                        content["type"],
+                        content["value"]
+                    );
 
-                    if (value === 'exception') {
+                    if (value === "exception") {
                         continue;
                     }
 
-                    form.data[content['key']] = value;
-                    form.desc[content['key']] = content['desc'];
+                    form.data[content["key"]] = value;
+                    form.desc[content["key"]] = content["desc"];
                 }
             }
             return form;
@@ -377,9 +402,9 @@ export default {
                 desc: {}
             };
             for (let content of this.paramsData) {
-                if (content['key'] !== '') {
-                    params.params[content['key']] = content['value'];
-                    params.desc[content['key']] = content['desc'];
+                if (content["key"] !== "") {
+                    params.params[content["key"]] = content["value"];
+                    params.desc[content["key"]] = content["desc"];
                 }
             }
             return params;
@@ -388,17 +413,17 @@ export default {
         parseJson() {
             // TODO 初始化json太绕了，需要重新整理
             let json = {};
-            let jsonStr = this.request.json_data
-            if (typeof (jsonStr) === "object") {
-                return jsonStr
+            let jsonStr = this.request.json_data;
+            if (typeof jsonStr === "object") {
+                return jsonStr;
             }
-            if (typeof (jsonStr) !== "undefined" && jsonStr !== '') {
+            if (typeof jsonStr !== "undefined" && jsonStr !== "") {
                 try {
                     json = JSON.parse(jsonStr);
                 } catch (err) {
                     this.$notify.error({
-                        title: 'json错误',
-                        message: '不是标准的json数据格式',
+                        title: "json错误",
+                        message: "不是标准的json数据格式",
                         duration: 2000
                     });
                 }
@@ -409,7 +434,11 @@ export default {
         // 类型转换
         parseType(type, value) {
             let tempValue;
-            const msg = value + ' => ' + this.dataTypeOptions[type - 1].label + ' 转换异常, 该数据自动剔除';
+            const msg =
+                value +
+                " => " +
+                this.dataTypeOptions[type - 1].label +
+                " 转换异常, 该数据自动剔除";
             switch (type) {
                 case 1:
                     tempValue = value;
@@ -421,19 +450,19 @@ export default {
                     tempValue = parseFloat(value);
                     break;
                 case 4:
-                    if (value === 'False' || value === 'True') {
+                    if (value === "False" || value === "True") {
                         let bool = {
-                            'True': true,
-                            'False': false
+                            True: true,
+                            False: false
                         };
                         tempValue = bool[value];
                     } else {
                         this.$notify.error({
-                            title: '类型转换错误',
+                            title: "类型转换错误",
                             message: msg,
                             duration: 2000
                         });
-                        return 'exception'
+                        return "exception";
                     }
                     break;
                 case 5:
@@ -442,21 +471,21 @@ export default {
                         tempValue = JSON.parse(value);
                     } catch (err) {
                         // 包含$是引用类型,可以任意类型
-                        if (value.indexOf("$") != -1) {
-                            tempValue = value
+                        if (value.indexOf("$") !== -1) {
+                            tempValue = value;
                         } else {
-                            tempValue = false
+                            tempValue = false;
                         }
                     }
                     break;
             }
             if (tempValue !== 0 && !tempValue && type !== 4 && type !== 1) {
                 this.$notify.error({
-                    title: '类型转换错误',
+                    title: "类型转换错误",
                     message: msg,
                     duration: 2000
                 });
-                return 'exception'
+                return "exception";
             }
             return tempValue;
         },
@@ -468,9 +497,8 @@ export default {
                 duration: 2000
             });
         }
-    },
-
-}
+    }
+};
 </script>
 
 <style scoped>
@@ -482,5 +510,4 @@ export default {
 /*    text-align: left;*/
 /*    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);*/
 /*}*/
-
 </style>

@@ -49,7 +49,7 @@
                         type="danger"
                         size="small"
                         icon="el-icon-delete"
-                        style="margin-left: 0px"
+                        style="margin-left: 0"
                         @click="deleteNode"
                     >删除节点
                     </el-button>
@@ -59,7 +59,7 @@
                         :disabled="currentNode === '' || addAPIFlag "
                         type="info"
                         size="small"
-                        style="margin-left: 0px"
+                        style="margin-left: 0"
                         icon="el-icon-edit-outline"
                         @click="renameNode(currentNode)"
                     >重命名
@@ -80,7 +80,7 @@
                         type="primary"
                         size="small"
                         icon="el-icon-circle-plus-outline"
-                        style="margin-left: 0px"
+                        style="margin-left: 0"
                         @click="importYAPIdialogVisible = true"
                     >导入接口
                     </el-button>
@@ -128,7 +128,7 @@
                     <el-button
                         v-if="!addAPIFlag"
                         :disabled="!(!addAPIFlag && onlyMe && isSelectAPI)"
-                        style="margin-left: 0px"
+                        style="margin-left: 0"
                         type="success"
                         size="small"
                         icon="el-icon-s-promotion"

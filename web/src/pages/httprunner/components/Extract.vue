@@ -11,43 +11,43 @@
     >
         <el-table-column
             label="变量名">
-            <template slot-scope="scope">
+            <template v-slot="scope">
                 <el-input clearable v-model.trim="scope.row.key" placeholder="接收抽取值后的变量名" size="medium"></el-input>
             </template>
         </el-table-column>
         <el-table-column
             label="抽取表达式">
-            <template slot-scope="scope">
+            <template v-slot="scope">
                 <el-input clearable v-model.trim="scope.row.value" placeholder="抽取表达式" size="medium"></el-input>
             </template>
         </el-table-column>
 
         <el-table-column
             label="描述"
-            width="150">
-            <template slot-scope="scope">
+            width="160">
+            <template v-slot="scope">
                 <el-input clearable v-model="scope.row.desc" placeholder="抽取值简要描述" size="medium"></el-input>
             </template>
         </el-table-column>
 
-        <el-table-column width="180">
-            <template slot-scope="scope">
+        <el-table-column width="160">
+            <template v-slot="scope">
                 <el-row v-show="scope.row === currentRow">
                     <el-button
                         icon="el-icon-circle-plus-outline"
-                        size="mini"
+                        size="mini" style="margin-left: 0"
                         type="info"
                         @click="handleEdit(scope.$index, scope.row)">
                     </el-button>
                     <el-button
                         icon="el-icon-document-copy"
-                        size="mini"
+                        size="mini" style="margin-left: 0"
                         type="info"
                         @click="handleCopy(scope.$index, scope.row)">
                     </el-button>
                     <el-button
                         icon="el-icon-delete"
-                        size="mini"
+                        size="mini" style="margin-left: 0"
                         type="danger"
                         v-show="scope.$index !== 0"
                         @click="handleDelete(scope.$index, scope.row)">

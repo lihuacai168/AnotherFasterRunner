@@ -11,7 +11,7 @@
     >
         <el-table-column
             label="实际返回值">
-            <template slot-scope="scope">
+            <template v-slot="scope">
                 <el-input clearable v-model.trim="scope.row.actual" placeholder="实际返回值" size="medium"></el-input>
             </template>
         </el-table-column>
@@ -19,7 +19,7 @@
         <el-table-column
             label="断言类型"
             width="100">
-            <template slot-scope="scope">
+            <template v-slot="scope">
                 <el-tooltip
                     style="width: 250px"
                     effect="dark"
@@ -42,7 +42,7 @@
         <el-table-column
             label="期望类型"
             width="120">
-            <template slot-scope="scope">
+            <template v-slot="scope">
                 <el-select v-model="scope.row.type" size="medium">
                     <el-option
                         v-for="item in dataTypeOptions"
@@ -55,7 +55,7 @@
         </el-table-column>
 
         <el-table-column label="期望返回值">
-            <template slot-scope="scope">
+            <template v-slot="scope">
                 <el-input clearable v-model.trim="scope.row.expect === null ? 'None' : scope.row.expect"
                           placeholder="期望返回值" size="medium">
                 </el-input>
@@ -64,7 +64,7 @@
 
         <el-table-column
             label="断言描述">
-            <template slot-scope="scope">
+            <template v-slot="scope">
                 <el-input clearable v-model.trim="scope.row.desc === null ? 'None' : scope.row.desc"
                           placeholder="断言描述" size="medium">
                 </el-input>
@@ -72,7 +72,7 @@
         </el-table-column>
 
         <el-table-column width="160">
-            <template slot-scope="scope">
+            <template v-slot="scope">
                 <el-row v-show="scope.row === currentRow">
                     <el-button
                         icon="el-icon-circle-plus-outline"

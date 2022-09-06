@@ -10,9 +10,8 @@
         @cell-mouse-leave="cellMouseLeave"
     >
         <el-table-column
-            label="测试之前执行的方法"
-            width="500">
-            <template slot-scope="scope">
+            label="测试之前执行的方法">
+            <template v-slot="scope">
                 <el-input clearable
                           v-model="scope.row.setup"
                           placeholder="${ setup_hooks function($request, *args, **kwargs) }"
@@ -22,20 +21,17 @@
         </el-table-column>
 
         <el-table-column
-            label="测试之后执行的方法"
-            width="500">
-            <template slot-scope="scope">
-                <el-input clearable
-                          v-model="scope.row.teardown"
+            label="测试之后执行的方法">
+            <template v-slot="scope">
+                <el-input clearable v-model="scope.row.teardown"
                           placeholder="${ teardown_hooks function(response, *args, **kwargs) }"
                 >
                 </el-input>
             </template>
         </el-table-column>
 
-
-        <el-table-column>
-            <template slot-scope="scope">
+        <el-table-column width="120">
+            <template v-slot="scope">
                 <el-row v-show="scope.row === currentRow">
                     <el-button
                         icon="el-icon-circle-plus-outline"
@@ -46,7 +42,7 @@
 
                     <el-button
                         icon="el-icon-delete"
-                        size="mini"
+                        size="mini" style="margin-left: 0"
                         type="danger"
                         v-show="scope.$index !== 0"
                         @click="handleDelete(scope.$index, scope.row)">

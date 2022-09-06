@@ -69,8 +69,8 @@
 export default {
   name: "Login",
   mounted() {
-    const myview = this.getViewportSize();
-    this.note.height = String(myview["height"]) + "px";
+    // const myview = this.getViewportSize();
+    // this.note.height = String(myview["height"]) + "px";
   },
   data() {
     return {

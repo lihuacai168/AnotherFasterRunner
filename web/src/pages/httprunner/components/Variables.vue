@@ -1,5 +1,4 @@
 <template>
-
     <el-table
         highlight-current-row
         :cell-style="{paddingTop: '4px', paddingBottom: '4px'}"
@@ -12,7 +11,7 @@
     >
         <el-table-column
             label="变量名">
-            <template slot-scope="scope">
+            <template v-slot="scope">
                 <el-input clearable v-model="scope.row.key" placeholder="Key" size="medium"></el-input>
             </template>
         </el-table-column>
@@ -20,7 +19,7 @@
         <el-table-column
             label="类型"
             width="120">
-            <template slot-scope="scope">
+            <template v-slot="scope">
                 <el-select v-model="scope.row.type" size="medium">
                     <el-option
                         v-for="item in dataTypeOptions"
@@ -34,20 +33,20 @@
 
         <el-table-column
             label="变量值">
-            <template slot-scope="scope">
+            <template v-slot="scope">
                 <el-input clearable v-model="scope.row.value" placeholder="Value" size="medium"></el-input>
             </template>
         </el-table-column>
 
         <el-table-column
             label="内容">
-            <template slot-scope="scope">
+            <template v-slot="scope">
                 <el-input clearable v-model="scope.row.desc" placeholder="变量简要描述" size="medium"></el-input>
             </template>
         </el-table-column>
 
-        <el-table-column width="180">
-            <template slot-scope="scope">
+        <el-table-column width="160">
+            <template v-slot="scope">
                 <el-row v-show="scope.row === currentRow">
                     <el-button
                         icon="el-icon-circle-plus-outline"
@@ -58,14 +57,14 @@
                     </el-button>
                     <el-button
                         icon="el-icon-document-copy"
-                        size="mini"
+                        size="mini" style="margin-left: 0"
                         type="info"
                         title="复制变量"
                         @click="handleCopy(scope.$index, scope.row)">
                     </el-button>
                     <el-button
                         icon="el-icon-delete"
-                        size="mini"
+                        size="mini" style="margin-left: 0"
                         type="danger"
                         title="删除变量"
                         v-show="scope.$index !== 0"

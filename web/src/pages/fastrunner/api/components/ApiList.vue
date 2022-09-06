@@ -12,7 +12,7 @@
         <div class="recordapi__header--item">
           <el-input
             placeholder="请输入接口名称"
-            size="small"
+            size="medium"
             clearable
             v-model="search"
             @keyup.enter.native="getAPIList"
@@ -30,7 +30,7 @@
           <el-dropdown @command="tagChangeHandle">
             <el-button type="primary" size="small">
               状态
-              <i class="el-icon-arrow-down el-icon--right"></i>
+              <i class="el-icon-arrow-down"></i>
             </el-button>
             <el-dropdown-menu slot="dropdown">
               <el-dropdown-item command="1">成功</el-dropdown-item>
@@ -41,7 +41,8 @@
             </el-dropdown-menu>
           </el-dropdown>
             <el-dropdown @command="dropdownMenuChangeHandle">
-                  <span><i class="el-icon-more">选中操作</i></span>
+<!--                  <span><i class="el-icon-more">选中操作</i></span>-->
+                <el-button type="info" size="small">操作<i class="el-icon-more"></i></el-button>
                   <el-dropdown-menu slot="dropdown">
                     <el-dropdown-item disabled style="background-color: #e2e2e2"
                       >选中({{ selectAPI.length }} 条)</el-dropdown-item
@@ -165,11 +166,7 @@
                 ref="tree"
               >
                 <span class="custom-tree-node" slot-scope="{ node, data }">
-                  <span
-                    ><i class="iconfont" v-html="expand"></i>&nbsp;&nbsp;{{
-                      node.label
-                    }}</span
-                  >
+                  <span><i class="iconfont" v-html="expand"></i>&nbsp;&nbsp;{{node.label }}</span>
                 </span>
               </el-tree>
             </div>
@@ -190,7 +187,7 @@
           width="45%"
         >
           <div>
-            <div style="margin-top: 20px">
+            <div>
               <el-input
                 placeholder="输入节点名称进行过滤"
                 v-model="filterText"
@@ -212,28 +209,18 @@
                 ref="tree"
               >
                 <span class="custom-tree-node" slot-scope="{ node, data }">
-                  <span
-                    ><i class="iconfont" v-html="expand"></i>&nbsp;&nbsp;{{
-                      node.label
-                    }}</span
-                  >
+                  <span><i class="iconfont" v-html="expand"></i>&nbsp&nbsp{{node.label }}</span>
                 </span>
               </el-tree>
             </div>
           </div>
           <span slot="footer" class="dialog-footer">
-            <el-button size="small" @click="dialogTreeMoveAPIVisible = false"
-              >取 消</el-button
-            >
-            <el-button size="small" type="primary" @click="moveAPI"
-              >确 定</el-button
-            >
+            <el-button size="small" @click="dialogTreeMoveAPIVisible = false">取 消</el-button>
+            <el-button size="small" type="primary" @click="moveAPI">确 定</el-button>
           </span>
         </el-dialog>
 
-        <div
-          style="position: fixed; bottom: 0; right: 0; left: 460px; top: 160px"
-        >
+        <div style="position: fixed; bottom: 0; right: 0; left: 414px; top: 160px">
           <el-table
             highlight-current-row
             element-loading-text="正在玩命加载"
@@ -251,7 +238,7 @@
             @selection-change="handleSelectionChange"
             v-loading="loading"
           >
-            <el-table-column type="selection" width="50"> </el-table-column>
+            <el-table-column type="selection"></el-table-column>
 <!--            <el-table-column width="25">-->
 <!--              <template slot-scope="scope">-->
 <!--                <el-dropdown @command="dropdownMenuChangeHandle">-->
@@ -285,8 +272,8 @@
 <!--              </template>-->
 <!--            </el-table-column>-->
 
-            <el-table-column min-width="325" align="center">
-              <template slot-scope="scope">
+            <el-table-column min-width="300" align="center">
+              <template v-slot="scope">
                 <div class="block" :class="`block_${scope.row.method.toLowerCase()}`">
                   <span
                     class="block-method block_method_color"
@@ -308,9 +295,10 @@
                   <span class="block-summary-description">{{scope.row.name}}</span>
                   <div>
                     <span
-                      class="el-icon-s-flag"
-                      v-if="scope.row.cases.length > 0"
-                      :title=" 'API已经被用例引用,共计: ' + scope.row.cases.length + '次' "
+                        style="margin-left: 20px"
+                        class="el-icon-s-flag"
+                        v-if="scope.row.cases.length > 0"
+                        :title=" 'API已经被用例引用,共计: ' + scope.row.cases.length + '次' "
                     >
                     </span>
                   </div>
@@ -318,16 +306,9 @@
               </template>
             </el-table-column>
 
-            <el-table-column
-              prop="tag"
-              label="标签"
-              width="90"
-              filter-placement="bottom-end"
-            >
-              <template slot-scope="scope">
-                <el-tag
-                  :type="
-                    scope.row.tag === 0
+            <el-table-column prop="tag" label="标签" width="90" filter-placement="bottom-end">
+              <template v-slot="scope">
+                <el-tag :type="scope.row.tag === 0
                       ? 'info'
                       : scope.row.tag === 2
                       ? 'danger'
@@ -339,14 +320,15 @@
                 </el-tag>
               </template>
             </el-table-column>
-            <el-table-column width="200">
-              <template slot-scope="scope">
+            <el-table-column width="180">
+              <template v-slot="scope">
                 <el-row v-show="currentRow === scope.row">
                   <el-button
                     type="info"
                     icon="el-icon-edit"
                     circle
                     size="mini"
+                    style="margin-left: 0"
                     @click="handleRowClick(scope.row)"
                     title="编辑"
                   ></el-button>
@@ -356,6 +338,7 @@
                     title="运行"
                     circle
                     size="mini"
+                    style="margin-left: 0"
                     @click="handleRunAPI(scope.row.id)"
                   ></el-button>
                   <el-button
@@ -364,6 +347,7 @@
                     title="复制API"
                     circle
                     size="mini"
+                    style="margin-left: 0"
                     @click="handleCopyAPI(scope.row.id, scope.row.name)"
                   >
                   </el-button>
@@ -380,6 +364,7 @@
                         "
                         circle
                         size="mini"
+                        style="margin-left: 0"
                         @click="handleDelApi(scope.row.id)"
                       >
                       </el-button>
@@ -395,6 +380,7 @@
                         "
                         circle
                         size="mini"
+                        style="margin-left: 0"
                         @click="handleSyncCaseStep(scope.row.id)"
                       >
                       </el-button>
