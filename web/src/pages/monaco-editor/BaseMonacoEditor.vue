@@ -8,6 +8,7 @@ import createSqlCompleter from "./util/sql-completion";
 import createJavascriptCompleter from "./util/javascript-completion";
 import createPythonCompleter from "./util/python-completion";
 import registerLanguage from "./util/log-language";
+
 const global = {};
 
 const getHints = (model) => {
@@ -95,8 +96,7 @@ export default {
     getOptions() {
       let props = { value: this.value };
       this.language !== undefined && (props.language = this.language);
-      let options = Object.assign({}, this.defaultOptions, this.options, props);
-      return options;
+        return Object.assign({}, this.defaultOptions, this.options, props);
     },
     onValueChange() {
       this.$emit("input", this.editorInstance.getValue());

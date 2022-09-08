@@ -1,33 +1,40 @@
 <template>
-
     <div>
         <ul class="title-project">
             <li class="title-li" title="Test API Project">
                 <b>{{ projectInfo.name }}</b>
                 <b class="desc-li">{{ projectInfo.desc }}</b>
-
             </li>
         </ul>
 
         <ul class="project_detail" style="display: none">
             <li class="pull-left">
-                <p class="title-p"><i class="iconfont">&#xe74a;</i> &nbsp;{{ projectInfo.api_count }} 个接口</p>
+                <p class="title-p">
+                    <i class="iconfont">&#xe74a;</i> &nbsp;{{projectInfo.api_count}}个接口
+                </p>
                 <p class="desc-p">接口总数</p>
             </li>
             <li class="pull-left">
-                <p class="title-p"><i class="iconfont">&#xe61f;</i> &nbsp;{{ projectInfo.case_step_count }} 个监控接口</p>
+                <p class="title-p">
+                    <i class="iconfont">&#xe61f;</i> &nbsp;{{projectInfo.case_step_count}}个监控接口
+                </p>
                 <p class="desc-p">监控接口个数</p>
             </li>
             <li class="pull-left">
-                <p class="title-p"><i class="iconfont">&#xe61e;</i> &nbsp;{{ projectInfo.task_count }} 项任务</p>
+                <p class="title-p">
+                    <i class="iconfont">&#xe61e;</i> &nbsp;{{projectInfo.task_count }}
+                    项任务
+                </p>
                 <p class="desc-p">定时任务个数</p>
             </li>
 
             <li class="pull-left">
-                <p class="title-p"><i class="iconfont">&#xe6da;</i> &nbsp;{{ projectInfo.case_count }} 个用例</p>
+                <p class="title-p">
+                    <i class="iconfont">&#xe6da;</i> &nbsp;{{projectInfo.case_count }}
+                    个用例
+                </p>
                 <p class="desc-p">用例集总数</p>
             </li>
-
         </ul>
         <ul class="project_detail" style="display: none">
             <!--            <li class="pull-left">-->
@@ -35,20 +42,40 @@
             <!--                <p class="desc-p">环境总数</p>-->
             <!--            </li>            -->
             <li class="pull-left">
-                <p class="title-p"><i class="iconfont">&#xe609;</i> &nbsp;{{ projectInfo.api_cover_rate }}% 接口覆盖率</p>
+                <p class="title-p">
+                    <i class="iconfont">&#xe609;</i> &nbsp;{{
+                    projectInfo.api_cover_rate
+                    }}% 接口覆盖率
+                </p>
                 <p class="desc-p">用例步骤和接口总数的比例</p>
             </li>
             <li class="pull-left">
-                <p class="title-p"><i class="iconfont">&#xe66e;</i> 共 {{ projectInfo.report_count }} 个报告
-                    {{ projectInfo.report_success }} 成功,{{ projectInfo.report_fail }} 失败 </p>
+                <p class="title-p">
+                    <i class="iconfont">&#xe66e;</i> 共
+                    {{ projectInfo.report_count }} 个报告
+                    {{ projectInfo.report_success }} 成功,{{
+                    projectInfo.report_fail
+                    }}
+                    失败
+                </p>
                 <p class="desc-p">测试报告总数</p>
             </li>
             <li class="pull-left">
-                <p class="title-p"><i class="iconfont">&#xee32;</i> &nbsp;{{ projectInfo.config_count }} 套配置</p>
+                <p class="title-p">
+                    <i class="iconfont">&#xee32;</i> &nbsp;{{
+                    projectInfo.config_count
+                    }}
+                    套配置
+                </p>
                 <p class="desc-p">配置总数</p>
             </li>
             <li class="pull-left">
-                <p class="title-p"><i class="iconfont">&#xe692;</i> &nbsp;{{ projectInfo.variables_count }} 对变量</p>
+                <p class="title-p">
+                    <i class="iconfont">&#xe692;</i> &nbsp;{{
+                    projectInfo.variables_count
+                    }}
+                    对变量
+                </p>
                 <p class="desc-p">全局变量对数</p>
             </li>
         </ul>
@@ -95,7 +122,6 @@
                 </div>
                 <ApexCharts :options="reportPieOptions" :series="reportPieSeries"></ApexCharts>
             </el-card>
-
         </div>
 
         <div style="display: flex; justify-content: space-around;  margin-top: 20px;">
@@ -123,43 +149,40 @@
                 </div>
                 <ApexCharts type="area" :options="reportAreaOptions" :series="reportAreaSeries"></ApexCharts>
             </el-card>
-
         </div>
     </div>
 </template>
 
 <script>
-
 export default {
     name: "ProjectDetail",
     data() {
         return {
-
             visitInfo: {},
             projectInfo: {},
             apiPieOptions: {
                 plotOptions: {
                     pie: {
                         donut: {
-                            size: '50%',
+                            size: "50%",
                             labels: {
                                 show: true,
                                 total: {
                                     show: true,
                                     showAlways: true,
-                                    label: 'Total',
+                                    label: "Total"
                                 }
-                            },
+                            }
                         }
                     }
                 },
                 show: true,
                 chart: {
                     id: "apiPie",
-                    type: "donut",
+                    type: "donut"
                 },
                 // 饼图右上角的分类，会被接口返回值的覆盖
-                labels: ['手动创建的API', '从YAPI导入API',]
+                labels: ["手动创建的API", "从YAPI导入API"]
             },
             apiCoverRateSeries: [],
             coreCaseCoverRateSeries: [],
@@ -191,7 +214,7 @@ export default {
                     }
                 },
                 stroke: {
-                    lineCap: "round",
+                    lineCap: "round"
                 },
                 labels: ["接口覆盖率"]
             },
@@ -223,7 +246,7 @@ export default {
                     }
                 },
                 stroke: {
-                    lineCap: "round",
+                    lineCap: "round"
                 },
                 labels: ["核心用例覆盖率"]
             },
@@ -231,55 +254,55 @@ export default {
                 plotOptions: {
                     pie: {
                         donut: {
-                            size: '50%',
+                            size: "50%",
                             labels: {
                                 show: true,
                                 total: {
                                     show: true,
                                     showAlways: true,
-                                    label: 'Total',
+                                    label: "Total"
                                 }
-                            },
+                            }
                         }
                     }
                 },
                 show: true,
                 chart: {
                     id: "casePie",
-                    type: "donut",
+                    type: "donut"
                 },
                 // 饼图右上角的分类，会被接口返回值的覆盖
-                labels: ['冒烟用例', '集成用例', '监控脚本', '核心用例']
+                labels: ["冒烟用例", "集成用例", "监控脚本", "核心用例"]
             },
             reportPieOptions: {
                 plotOptions: {
                     pie: {
                         donut: {
-                            size: '50%',
+                            size: "50%",
                             labels: {
                                 show: true,
                                 total: {
                                     show: true,
                                     showAlways: true,
-                                    label: 'Total',
+                                    label: "Total"
                                 }
-                            },
+                            }
                         }
                     }
                 },
                 show: true,
                 chart: {
-                    type: "donut",
+                    type: "donut"
                 },
                 // 饼图右上角的分类，会被接口返回值的覆盖
-                labels: ['调试', '异步', '定时', '部署',]
+                labels: ["调试", "异步", "定时", "部署"]
             },
             apiPieSeries: [],
             casePieSeries: [],
             reportPieSeries: [],
             visitChartOptions: {
                 chart: {
-                    id: 'vuechart-example',
+                    id: "vuechart-example"
                 },
                 xaxis: {
                     categories: []
@@ -288,7 +311,7 @@ export default {
             apiAreaOptions: {
                 chart: {
                     foreColor: "#aaa",
-                    id: 'apiArea',
+                    id: "apiArea"
                 },
                 xaxis: {
                     categories: []
@@ -296,7 +319,7 @@ export default {
             },
             caseAreaOptions: {
                 chart: {
-                    id: 'caseArea',
+                    id: "caseArea"
                 },
                 xaxis: {
                     categories: []
@@ -304,45 +327,58 @@ export default {
             },
             reportAreaOptions: {
                 chart: {
-                    id: 'reportArea',
+                    id: "reportArea"
                 },
                 xaxis: {
                     categories: []
                 }
             },
-            visitSeries: [{
-                name: '访问量',
-                data: []
-            }],
-            apiAreaSeries: [{
-                name: 'API创建数量',
-                data: []
-            }],
-            caseAreaSeries: [{
-                name: 'Case创建数量',
-                data: []
-            }],
-            reportAreaSeries: [{
-                name: 'Report创建数量',
-                data: []
-            }],
-        }
+            visitSeries: [
+                {
+                    name: "访问量",
+                    data: []
+                }
+            ],
+            apiAreaSeries: [
+                {
+                    name: "API创建数量",
+                    data: []
+                }
+            ],
+            caseAreaSeries: [
+                {
+                    name: "Case创建数量",
+                    data: []
+                }
+            ],
+            reportAreaSeries: [
+                {
+                    name: "Report创建数量",
+                    data: []
+                }
+            ]
+        };
     },
     methods: {
         getVisitData() {
             const project = this.$route.params.id;
-            this.$api.getVisit({
-                params: {
-                    project: project
-                }
-            }).then(res => {
-                this.visitChartOptions = {...this.visitChartOptions, ...{xaxis: {categories: res.recent7days}}}
-            })
+            this.$api
+                .getVisit({
+                    params: {
+                        project: project
+                    }
+                })
+                .then(res => {
+                    this.visitChartOptions = {
+                        ...this.visitChartOptions,
+                        ...{ xaxis: { categories: res.recent7days } }
+                    };
+                });
         },
         success(resp) {
             this.$notify({
                 message: resp["msg"],
-                type: 'success',
+                type: "success",
                 duration: this.$store.state.duration
             });
         },
@@ -354,57 +390,73 @@ export default {
         },
 
         handleArea() {
-            const res = this.projectInfo.daily_create_count
-            const apiDays = res.api.days
-            const caseDays = res.case.days
-            const reportDays = res.report.days
-            const apiCount = res.api.count
-            const caseCount = res.case.count
-            const reportCount = res.report.count
-            this.apiAreaOptions = {...this.apiAreaOptions, ...{xaxis: {categories: apiDays}}}
-            this.caseAreaOptions = {...this.caseAreaOptions, ...{xaxis: {categories: caseDays}}}
-            this.reportAreaOptions = {...this.reportAreaOptions, ...{xaxis: {categories: reportDays}}}
-            this.apiAreaSeries[0].data = apiCount
-            this.caseAreaSeries[0].data = caseCount
-            this.reportAreaSeries[0].data = reportCount
+            const res = this.projectInfo.daily_create_count;
+            const apiDays = res.api.days;
+            const caseDays = res.case.days;
+            const reportDays = res.report.days;
+            const apiCount = res.api.count;
+            const caseCount = res.case.count;
+            const reportCount = res.report.count;
+            this.apiAreaOptions = {
+                ...this.apiAreaOptions,
+                ...{ xaxis: { categories: apiDays } }
+            };
+            this.caseAreaOptions = {
+                ...this.caseAreaOptions,
+                ...{ xaxis: { categories: caseDays } }
+            };
+            this.reportAreaOptions = {
+                ...this.reportAreaOptions,
+                ...{ xaxis: { categories: reportDays } }
+            };
+            this.apiAreaSeries[0].data = apiCount;
+            this.caseAreaSeries[0].data = caseCount;
+            this.reportAreaSeries[0].data = reportCount;
 
-            this.apiCoverRateSeries.push(this.projectInfo.api_cover_rate)
-            this.coreCaseCoverRateSeries.push(this.projectInfo.core_case_cover_rate)
+            this.apiCoverRateSeries.push(this.projectInfo.api_cover_rate);
+            this.coreCaseCoverRateSeries.push(
+                this.projectInfo.core_case_cover_rate
+            );
         },
         handlePie() {
-            const pi = this.projectInfo
-            this.apiPieSeries = pi.api_count_by_create_type.count
-            this.apiPieOptions = {...this.apiPieOptions, ...{labels: pi.api_count_by_create_type.type}}
+            const pi = this.projectInfo;
+            this.apiPieSeries = pi.api_count_by_create_type.count;
+            this.apiPieOptions = {
+                ...this.apiPieOptions,
+                ...{ labels: pi.api_count_by_create_type.type }
+            };
 
-            this.casePieSeries = pi.case_count_by_tag.count
-            this.casePieOptions = {...this.casePieOptions, ...{labels: pi.case_count_by_tag.tag}}
+            this.casePieSeries = pi.case_count_by_tag.count;
+            this.casePieOptions = {
+                ...this.casePieOptions,
+                ...{ labels: pi.case_count_by_tag.tag }
+            };
 
-            this.reportPieSeries = pi.report_count_by_type.count
-            this.reportPieOptions = {...this.reportPieOptions, ...{labels: pi.report_count_by_type.type}}
+            this.reportPieSeries = pi.report_count_by_type.count;
+            this.reportPieOptions = {
+                ...this.reportPieOptions,
+                ...{ labels: pi.report_count_by_type.type }
+            };
         },
         getProjectDetail() {
             const pk = this.$route.params.id;
             this.$api.getProjectDetail(pk).then(res => {
-                this.projectInfo = res
-                this.handleArea()
-                this.handlePie()
-            })
+                this.projectInfo = res;
+                this.handleArea();
+                this.handlePie();
+            });
         }
     },
     mounted() {
-        this.getVisitData()
+        this.getVisitData();
         this.getProjectDetail();
     },
 
-    beforeMount() {
-    }
-
-}
+    beforeMount() { }
+};
 </script>
 
 <style scoped>
-
-
 .desc-p {
     padding-top: 10px;
     font-size: 12px;
@@ -421,7 +473,6 @@ export default {
     text-decoration: none;
     color: #a3a3a3;
     margin-left: 20px;
-
 }
 
 .pull-left {

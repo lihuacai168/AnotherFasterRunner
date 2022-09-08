@@ -106,9 +106,7 @@
                             <el-tag v-if="scope.row.type===4" type="danger">Mongodb</el-tag>
                             <el-tag v-if="scope.row.type===5" type="info">InfluxDB</el-tag>
                             <span
-                                style="margin-left: 10px; font-size: 18px; font-weight: bold">{{
-                                    scope.row.name
-                                }}</span>
+                                style="margin-left: 10px; font-size: 18px; font-weight: bold">{{scope.row.name }}</span>
                         </template>
                     </el-table-column>
 

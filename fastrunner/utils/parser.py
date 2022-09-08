@@ -431,7 +431,13 @@ def format_json(value):
         return value
 
 
-def yapi_properties2json(properties, req_json={}, variables=[], desc={}):
+def yapi_properties2json(properties, req_json=None, variables=None, desc=None):
+    if desc is None:
+        desc = {}
+    if variables is None:
+        variables = []
+    if req_json is None:
+        req_json = {}
     for field_name, field_value in properties.items():
         value_type = field_value['type']
         if not (value_type == 'array' or value_type == 'object'):

@@ -72,8 +72,8 @@ or
 
 /usr/local/nginx/sbin/nginx -s reload -c /usr/local/nginx/conf/nginx.conf
 
-注：/usr/local/nginx/ 目录视自己的安装情况而定。配置文件同样根据自己的命名习惯指定
-————————————————
-版权声明：本文为CSDN博主「gblfy」的原创文章，遵循CC 4.0 BY-SA版权协议，转载请附上原文出处链接及本声明。
-原文链接：https://blog.csdn.net/weixin_40816738/article/details/121512708
+# 注：/usr/local/nginx/ 目录视自己的安装情况而定。配置文件同样根据自己的命名习惯指定
+# ————————————————
+# 版权声明：本文为CSDN博主「gblfy」的原创文章，遵循CC 4.0 BY-SA版权协议，转载请附上原文出处链接及本声明。
+# 原文链接：https://blog.csdn.net/weixin_40816738/article/details/121512708
 ```

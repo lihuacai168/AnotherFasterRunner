@@ -24,9 +24,7 @@
       :key="item.url"
       :disabled="$store.state.routerName === 'ProjectList'"
     >
-      <span class="iconfont" v-html="item.code"></span>&nbsp;&nbsp;{{
-        item.name
-      }}
+      <span class="iconfont" v-html="item.code"></span>&nbsp;&nbsp;{{item.name }}
     </el-menu-item>
     <!-- </el-menu-item-group>
      </el-submenu>-->

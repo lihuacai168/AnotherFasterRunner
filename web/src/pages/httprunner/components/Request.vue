@@ -96,8 +96,8 @@
                     </template>
                 </el-table-column>
 
-                <el-table-column label="描述" width="400">
-                    <template slot-scope="scope">
+                <el-table-column label="描述" width="200">
+                    <template v-slot="scope">
                         <el-input
                             clearable
                             v-model="scope.row.desc"
@@ -107,7 +107,7 @@
                 </el-table-column>
 
                 <el-table-column>
-                    <template slot-scope="scope">
+                    <template v-slot="scope">
                         <el-row v-show="scope.row === currentRow">
                             <el-button
                                 icon="el-icon-circle-plus-outline"

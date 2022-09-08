@@ -3,15 +3,15 @@ import store from "../store/state";
 import router from "../router";
 import { Message, Notification } from "element-ui";
 
+let base_Url;
 if (
     window.location.hostname === "localhost" ||
     window.location.hostname === "127.0.0.1"
 ) {
-    var base_Url =
-        window.location.protocol + "//" + "127.0.0.1" + ":" + "8001";
+    base_Url = window.location.protocol + "//" + "127.0.0.1" + ":" + "8000";
 } else {
     // var base_Url = window.location.protocol + "//" + window.location.host;
-    var base_Url = window.location.protocol + "//testapi.caibeike.net";
+    base_Url = window.location.protocol + "//testapi.caibeike.net";
 }
 export const baseUrl = base_Url;
 // export let baseUrl = "http://119.91.147.215:8000";

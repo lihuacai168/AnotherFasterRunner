@@ -96,8 +96,6 @@ class API(BaseTable):
     # resp_sample = models.TextField("接口响应样例", default='{}', null=False)
 
 
-
-
 class Case(BaseTable):
     """
     用例信息表
@@ -118,6 +116,7 @@ class Case(BaseTable):
     relation = models.IntegerField("节点id", null=False)
     length = models.IntegerField("API个数", null=False)
     tag = models.IntegerField("用例标签", choices=tag, default=2)
+
     # apis = models.ManyToManyField(API, db_table='api_case', related_name='api_case_relate')
 
     @property
@@ -250,7 +249,6 @@ class Visit(models.Model):
     request_method = models.CharField(max_length=7, verbose_name='请求方法', choices=METHODS, db_index=True)
     request_body = models.TextField(verbose_name='请求体')
     create_time = models.DateTimeField('创建时间', auto_now_add=True, db_index=True)
-
 
     class Meta:
         db_table = 'visit'
