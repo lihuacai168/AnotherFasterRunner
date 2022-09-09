@@ -14,6 +14,7 @@ import os
 
 import datetime as datetime
 import djcelery
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 # BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -28,7 +29,6 @@ SECRET_KEY = 'e$od9f28jce8q47u3raik$(e%$@lff6r89ux+=f!e1a$e42+#7'
 # SECURITY WARNING: don't run with debug turned on in production!
 
 DEBUG = False
-
 
 ALLOWED_HOSTS = ['*']
 
@@ -123,12 +123,11 @@ USE_TZ = False
 
 STATIC_URL = '/static/'
 
-
 REST_FRAMEWORK = {
     # 'DEFAULT_AUTHENTICATION_CLASSES': ['FasterRunner.auth.DeleteAuthenticator', 'FasterRunner.auth.Authenticator', ],
     'DEFAULT_AUTHENTICATION_CLASSES': [
-            'FasterRunner.auth.MyJWTAuthentication',
-        ],
+        'FasterRunner.auth.MyJWTAuthentication',
+    ],
     'UNAUTHENTICATED_USER': None,
     'UNAUTHENTICATED_TOKEN': None,
     # json form 渲染
@@ -210,7 +209,7 @@ IM_REPORT_SETTING = {
 djcelery.setup_loader()
 CELERY_ENABLE_UTC = True
 CELERY_TIMEZONE = 'Asia/Shanghai'
-#BROKER_URL = 'amqp://username:password@IP:5672//'
+# BROKER_URL = 'amqp://username:password@IP:5672//'
 
 CELERYBEAT_SCHEDULER = 'djcelery.schedulers.DatabaseScheduler'
 CELERY_RESULT_BACKEND = 'djcelery.backends.database:DatabaseBackend'

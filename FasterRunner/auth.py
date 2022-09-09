@@ -7,12 +7,12 @@ from rest_framework import exceptions
 from rest_framework.authentication import BaseAuthentication
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication, jwt_get_username_from_payload
 from rest_framework_jwt.settings import api_settings
+from FasterRunner.settings.base import INVALID_TIME
+from fastuser import models
 
 jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
 jwt_encode_handler = api_settings.JWT_ENCODE_HANDLER
 jwt_decode_handler = api_settings.JWT_DECODE_HANDLER
-from FasterRunner.settings.base import INVALID_TIME
-from fastuser import models
 
 
 def is_admin(token):
@@ -97,7 +97,7 @@ class MyJWTAuthentication(JSONWebTokenAuthentication):
     def authenticate(self, request):
         """
         Returns a two-tuple of `User` and token if a valid signature has been
-        supplied using JWT-based authentication.  Otherwise returns `None`.
+        supplied using JWT-based authentication.  Otherwise, returns `None`.
         """
         # jwt_value = request.query_params.get("token", None)
         jwt_value = request.META.get('HTTP_AUTHORIZATION', None)

@@ -1,18 +1,16 @@
 <template>
-
     <el-container>
         <el-header style="background: #fff; padding: 0; height: 50px">
             <div class="nav-api-header">
                 <div style="padding-top: 10px; margin-left: 10px">
                     <el-button
-                        v-if="false"
+                        v-if="true"
                         type="primary"
                         size="small"
                         icon="el-icon-circle-plus"
                         @click="dialogVisible = true"
                         :disabled="!addTestActivate"
-                    >
-                        新建节点
+                    >新建节点
                     </el-button>
 
                     <el-dialog
@@ -33,13 +31,13 @@
                         </el-form>
 
                         <el-radio-group v-model="radio" size="small">
-                            <el-radio-button label="同级节点"></el-radio-button>
+                            <el-radio-button label="根节点"></el-radio-button>
                             <el-radio-button label="子节点"></el-radio-button>
                         </el-radio-group>
 
                         <span slot="footer" class="dialog-footer">
-                        <el-button @click="dialogVisible = false">取 消</el-button>
-                        <el-button type="primary" @click="handleConfirm('nodeForm')">确 定</el-button>
+                        <el-button size="small" @click="dialogVisible = false">取 消</el-button>
+                        <el-button size="small" type="primary" @click="handleConfirm('nodeForm')">确 定</el-button>
                       </span>
                     </el-dialog>
 
@@ -64,7 +62,7 @@
                     </el-button>
 
                     <el-button
-                        type="primary"
+                        type="primary" plain
                         size="small"
                         icon="el-icon-circle-plus-outline"
                         @click="buttonActivate=false"
@@ -87,11 +85,11 @@
                         </el-option>
                     </el-select>
                     </span>
-                    <span style="margin-left: 10px">配置:</span>
+<!--                    <span style="margin-left: 10px">配置:</span>-->
                     <el-select
-                        placeholder="请选择"
+                        placeholder="请选择配置"
                         size="small"
-                        tyle="margin-left: -6px"
+                        style="width: 100px"
                         v-model="currentConfig"
                         :disabled="addTestActivate"
                     >
@@ -103,39 +101,41 @@
                         >
                         </el-option>
                     </el-select>
-
-
                     <el-button
                         v-if="addTestActivate"
                         style="margin-left: 20px"
+                        circle
                         type="primary"
                         size="small"
+                        icon="el-icon-caret-right"
                         title="批量运行用例"
                         @click="run = !run"
-                    >运行用例
+                    >
                     </el-button>
 
                     <el-button
                         v-if="addTestActivate"
                         :disabled="!isSelectCase"
-                        style="margin-left: 0px"
+                        style="margin-left: 0"
                         type="success"
                         size="small"
+                        circle
+                        icon="el-icon-s-promotion"
                         title="移动用例到指定节点"
                         @click="move = !move"
-                    >移动用例
+                    >
                     </el-button>
 
                     <el-button
                         v-if="addTestActivate"
                         :disabled="!(onlyMe && isSelectCase)"
-                        style="margin-left: 0px"
+                        style="margin-left: 0" circle
                         type="danger"
                         icon="el-icon-delete"
                         size="small"
                         title="批量删除当前用户的用例"
                         @click="del = !del"
-                    >删除用例
+                    >
                     </el-button>
 
                     <el-switch
@@ -149,7 +149,7 @@
 
                     <el-button
                         :disabled="addTestActivate"
-                        type="primary"
+                        type="info" plain
                         size="small"
                         icon="el-icon-back"
                         style="position: absolute; right: 10px;"
@@ -163,7 +163,7 @@
 
         <el-container>
             <el-aside
-                style="margin-top: 10px;"
+                style="margin-top: 10px;width: 240px"
                 v-show="addTestActivate"
             >
                 <div class="nav-api-side">
@@ -182,7 +182,7 @@
                             :data="dataTree"
                             node-key="id"
                             :default-expand-all="false"
-                            :expand-on-click-node="false"
+                            :expand-on-click-node="true"
                             draggable
                             highlight-current
                             :filter-node-method="filterNode"
@@ -198,17 +198,14 @@
                                     <i class="iconfont" v-html="expand"></i>&nbsp;&nbsp;{{ node.label }}
                                 </span>
                                 <span class="icon-group" v-show="node.id === mouseNodeId" >
-                                        <i class="el-icon-folder-add" @click="dialogVisible=true"  :disabled="!addTestActivate"></i>
+                                        <i class="el-icon-folder-add" @click="dialogVisible=true" disabled="!addTestActivate"></i>
                                         <i class="el-icon-edit" @click="renameNode(node)"></i>
                                         <i class="el-icon-delete" @click="deleteNode(node)"></i>
                                 </span>
                             </span>
                         </el-tree>
-
                     </div>
                 </div>
-
-
             </el-aside>
 
             <el-main style="padding: 0;">

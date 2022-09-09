@@ -209,8 +209,10 @@ class CIView(GenericViewSet):
             ci_job_id = ser.validated_data['ci_job_id']
             summary['name'] = f"{ci_project_namespace}_{ci_project_name}_job{ci_job_id}"
 
-            report_id = save_summary(summary.get('name'), summary, project, type=4, user=ser.validated_data['start_job_user'],
-                         ci_metadata=ser.validated_data)
+            report_id = save_summary(
+                summary.get('name'), summary, project, type_v=4,
+                user=ser.validated_data['start_job_user'], ci_metadata=ser.validated_data
+            )
             junit_results = summary2junit(summary)
             xml_data = xmltodict.unparse(junit_results)
             summary['task_name'] = 'gitlab-ci_' + summary.get('name')

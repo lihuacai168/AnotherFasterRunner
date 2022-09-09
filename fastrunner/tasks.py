@@ -99,7 +99,7 @@ def schedule_debug_suite(*args, **kwargs):
     else:
         report_type = 3
 
-    report_id = save_summary(task_name, summary, project, type=report_type, user=kwargs.get('user', ''))
+    report_id = save_summary(task_name, summary, project, type_v=report_type, user=kwargs.get('user', ''))
 
     strategy = kwargs["strategy"]
     if strategy == '始终发送' or (

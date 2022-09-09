@@ -12,7 +12,7 @@ from concurrent.futures import ThreadPoolExecutor
 
 import sys
 import tempfile
-import types
+# import types
 from threading import Thread
 
 import requests
@@ -24,8 +24,8 @@ from fastrunner.views.report import ConvertRequest
 from httprunner import HttpRunner, parser
 from httprunner.exceptions import FunctionNotFound, VariableNotFound
 from requests.cookies import RequestsCookieJar
-from requests_toolbelt import MultipartEncoder
-
+# from requests_toolbelt import MultipartEncoder
+from httprunner.validator import is_function, is_variable
 from fastrunner import models
 from fastrunner.utils.parser import Format
 from FasterRunner.settings.base import BASE_DIR
@@ -38,30 +38,30 @@ TEST_NOT_EXISTS = {
 }
 
 
-def is_function(tup):
-    """ Takes (name, object) tuple, returns True if it is a function.
-    """
-    name, item = tup
-    return isinstance(item, types.FunctionType)
-
-
-def is_variable(tup):
-    """ Takes (name, object) tuple, returns True if it is a variable.
-    """
-    name, item = tup
-    if callable(item):
-        # function or class
-        return False
-
-    if isinstance(item, types.ModuleType):
-        # imported module
-        return False
-
-    if name.startswith("_"):
-        # private property
-        return False
-
-    return True
+# def is_function(tup):
+#     """ Takes (name, object) tuple, returns True if it is a function.
+#     """
+#     name, item = tup
+#     return isinstance(item, types.FunctionType)
+#
+#
+# def is_variable(tup):
+#     """ Takes (name, object) tuple, returns True if it is a variable.
+#     """
+#     name, item = tup
+#     if callable(item):
+#         # function or class
+#         return False
+#
+#     if isinstance(item, types.ModuleType):
+#         # imported module
+#         return False
+#
+#     if name.startswith("_"):
+#         # private property
+#         return False
+#
+#     return True
 
 
 class FileLoader(object):
@@ -250,16 +250,14 @@ def parse_tests(testcases, debugtalk, name=None, config=None, project=None):
 
 
 def load_debugtalk(project):
-    """import debugtalk.py in sys.path and reload
+    """import debugtalk.py in sys. path and reload
         project: int
     """
     # debugtalk.py
     code = models.Debugtalk.objects.get(project__id=project).code
 
     # file_path = os.path.join(tempfile.mkdtemp(prefix='FasterRunner'), "debugtalk.py")
-    tempfile_path = tempfile.mkdtemp(
-        prefix='FasterRunner', dir=os.path.join(
-            BASE_DIR, 'tempWorkDir'))
+    tempfile_path = tempfile.mkdtemp(prefix='FasterRunner', dir=os.path.join(BASE_DIR, 'tempWorkDir'))
     file_path = os.path.join(tempfile_path, 'debugtalk.py')
     os.chdir(tempfile_path)
     try:
@@ -268,6 +266,7 @@ def load_debugtalk(project):
         return debugtalk, file_path
 
     except Exception as e:
+        print(e)
         os.chdir(BASE_DIR)
         shutil.rmtree(os.path.dirname(file_path))
 
@@ -318,7 +317,8 @@ def debug_suite_parallel(test_sets: list):
     return merge_parallel_result(results, duration)
 
 
-def debug_suite(suite, project, obj, config=None, save=True, user='', report_type=1, report_name="", allow_parallel=False):
+def debug_suite(suite, project, obj, config=None, save=True, user='',
+                report_type=1, report_name="", allow_parallel=False):
     """
             suite : list[list[dict]], 用例列表
             project: int, 项目id
@@ -339,7 +339,8 @@ def debug_suite(suite, project, obj, config=None, save=True, user='', report_typ
     try:
         for index in range(len(suite)):
             # copy.deepcopy 修复引用bug
-            # testcases = copy.deepcopy(parse_tests(suite[index], debugtalk, name=obj[index]['name'], config=config[index]))
+            # testcases = copy.deepcopy(parse_tests(
+            # suite[index], debugtalk, name=obj[index]['name'], config=config[index]))
             testcases = copy.deepcopy(
                 parse_tests(
                     suite[index],
@@ -380,7 +381,8 @@ def debug_suite(suite, project, obj, config=None, save=True, user='', report_typ
         })
         report_id = 0
         if save:
-            report_id = save_summary(report_name or f"批量运行{len(test_sets)}条用例", summary, project, type=report_type, user=user)
+            report_id = save_summary(report_name or f"批量运行{len(test_sets)}条用例",
+                                     summary, project, type_v=report_type, user=user)
         # 复制一份response的json
         for details in summary.get('details', []):
             for record in details.get('records', []):
@@ -436,17 +438,8 @@ def debug_api(api, project, name=None, config=None, save=True, user=''):
     os.chdir(os.path.dirname(debugtalk_path))
     try:
         # testcase_list = [parse_tests(api, load_debugtalk(project), name=name, config=config)]
-        testcase_list = [
-            parse_tests(
-                api,
-                debugtalk_content,
-                name=name,
-                config=config,
-                project=project)]
-
-        kwargs = {
-            "failfast": False
-        }
+        testcase_list = [parse_tests(api, debugtalk_content, name=name, config=config, project=project)]
+        kwargs = {"failfast": False}
 
         runner = HttpRunner(**kwargs)
         runner.run(testcase_list)
@@ -454,7 +447,7 @@ def debug_api(api, project, name=None, config=None, save=True, user=''):
         summary = parse_summary(runner.summary)
 
         if save:
-            save_summary(name, summary, project, type=1, user=user)
+            save_summary(name, summary, project, type_v=1, user=user)
 
         # 复制一份response的json
         for details in summary.get('details', []):
@@ -528,16 +521,13 @@ def parse_summary(summary):
                 if isinstance(value, bytes):
                     record["meta_data"]["request"][key] = value.decode("utf-8")
                 if isinstance(value, RequestsCookieJar):
-                    record["meta_data"]["request"][key] = requests.utils.dict_from_cookiejar(
-                        value)
+                    record["meta_data"]["request"][key] = requests.utils.dict_from_cookiejar(value)
 
             for key, value in record["meta_data"]["response"].items():
                 if isinstance(value, bytes):
-                    record["meta_data"]["response"][key] = value.decode(
-                        "utf-8")
+                    record["meta_data"]["response"][key] = value.decode("utf-8")
                 if isinstance(value, RequestsCookieJar):
-                    record["meta_data"]["response"][key] = requests.utils.dict_from_cookiejar(
-                        value)
+                    record["meta_data"]["response"][key] = requests.utils.dict_from_cookiejar(value)
 
             if "text/html" in record["meta_data"]["response"]["content_type"]:
                 record["meta_data"]["response"]["content"] = BeautifulSoup(
@@ -546,12 +536,14 @@ def parse_summary(summary):
     return summary
 
 
-def save_summary(name, summary, project, type=2, user='', ci_metadata={}):
+def save_summary(name, summary, project, type_v=2, user='', ci_metadata=None):
     """保存报告信息
     """
+    if ci_metadata is None:
+        ci_metadata = {}
     if "status" in summary.keys():
         return
-    if name == "" or name is None:
+    if not name:
         name = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
     # 需要先复制一份,不然会把影响到debug_api返回给前端的报告
@@ -560,7 +552,7 @@ def save_summary(name, summary, project, type=2, user='', ci_metadata={}):
     report = models.Report.objects.create(**{
         "project": models.Project.objects.get(id=project),
         "name": name,
-        "type": type,
+        "type": type_v,
         "status": summary['success'],
         "summary": json.dumps(summary, ensure_ascii=False),
         "creator": user,

@@ -1,6 +1,6 @@
 <template>
   <el-container>
-    <el-header style="padding: 10px 10px; height: 50px">
+    <el-header style="background: #fff;padding: 10px 10px; height: 50px">
       <div class="report__header">
         <div class="report__header--item">
           <el-input
@@ -57,7 +57,7 @@
           v-model="onlyMe"
           active-color="#13ce66"
           inactive-color="#ff4949"
-          active-text="只看自己"
+          active-text="只看我的"
         >
         </el-switch>
 
@@ -115,21 +115,19 @@
           <el-table-column type="selection" width="55"> </el-table-column>
 
           <el-table-column label="报告类型" width="100">
-            <template slot-scope="scope">
-              <el-tag color="#2C3E50" style="color: white">{{
-                scope.row.type
-              }}</el-tag>
+            <template v-slot="scope">
+              <el-tag color="#2C3E50" style="color: white">{{scope.row.type }}</el-tag>
             </template>
           </el-table-column>
 
           <el-table-column label="报告名称">
-            <template slot-scope="scope">
+            <template v-slot="scope">
               <div>{{ scope.row.name }}</div>
             </template>
           </el-table-column>
 
           <el-table-column label="结果" width="60">
-            <template slot-scope="scope">
+            <template v-slot="scope">
               <div
                 :class="{
                   pass: scope.row.success,
@@ -140,13 +138,13 @@
             </template>
           </el-table-column>
           <el-table-column label="创建人" width="80">
-            <template slot-scope="scope">
+            <template v-slot="scope">
               <div>{{ scope.row.creator }}</div>
             </template>
           </el-table-column>
 
           <el-table-column label="测试时间" width="180">
-            <template slot-scope="scope">
+            <template v-slot="scope">
               <div>
                 {{ scope.row.time.start_at | timestampToTime }}
               </div>
@@ -154,31 +152,31 @@
           </el-table-column>
 
           <el-table-column label="耗时" width="100">
-            <template slot-scope="scope">
+            <template v-slot="scope">
               <div v-text="scope.row.time.duration.toFixed(3) + ' 秒'"></div>
             </template>
           </el-table-column>
 
           <el-table-column width="80" label="总计接口">
-            <template slot-scope="scope">
+            <template v-slot="scope">
               <el-tag>{{ scope.row.stat.testsRun }}</el-tag>
             </template>
           </el-table-column>
 
-          <el-table-column width="80" label="通过">
-            <template slot-scope="scope">
+          <el-table-column width="60" label="通过">
+            <template v-slot="scope">
               <el-tag type="success"> {{ scope.row.stat.successes }}</el-tag>
             </template>
           </el-table-column>
 
-          <el-table-column width="80" label="失败">
-            <template slot-scope="scope">
+          <el-table-column width="60" label="失败">
+            <template v-slot="scope">
               <el-tag type="danger">{{ scope.row.stat.failures }}</el-tag>
             </template>
           </el-table-column>
 
-          <el-table-column width="80" label="异常">
-            <template slot-scope="scope">
+          <el-table-column width="60" label="异常">
+            <template v-slot="scope">
               <el-tag type="warning">{{ scope.row.stat.errors }}</el-tag>
             </template>
           </el-table-column>
@@ -206,8 +204,8 @@
           <!--                            </template>-->
           <!--                        </el-table-column>-->
 
-          <el-table-column label="报告操作">
-            <template slot-scope="scope">
+          <el-table-column label="报告操作" width="120">
+            <template v-slot="scope">
               <el-row v-show="currentRow === scope.row">
                 <el-button
                   type="info"
@@ -225,6 +223,7 @@
                   title="查看"
                   circle
                   size="mini"
+                  style="margin-left: 0"
                   @click="handleWatchReports(scope.row.id)"
                 >
                 </el-button>
@@ -234,7 +233,7 @@
                   icon="el-icon-delete"
                   title="删除"
                   circle
-                  size="mini"
+                  size="mini" style="margin-left: 0"
                   @click="handleDelReports(scope.row.id)"
                 >
                 </el-button>

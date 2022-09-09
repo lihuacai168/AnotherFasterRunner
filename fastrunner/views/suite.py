@@ -305,6 +305,7 @@ class TestCaseView(GenericViewSet):
         models.Case.objects.filter(project_id=project_id, pk__in=case_ids).update(tag=tag)
         return Response(response.CASE_UPDATE_SUCCESS)
 
+
 class CaseStepView(APIView):
     """
     测试用例step操作视图

@@ -43,7 +43,7 @@
                     </el-dialog>
 
                     <el-button
-                        v-show="isSuperuser"
+                        v-show="isSuperuser && false"
                         :disabled="currentNode === '' || !isSuperuser"
                         :title="isSuperuser ? '删除所选节点' : '删除节点权限不足' "
                         type="danger"
@@ -55,7 +55,7 @@
                     </el-button>
 
                     <el-button
-                        v-show="true"
+                        v-show="false"
                         :disabled="currentNode === '' || addAPIFlag "
                         type="info"
                         size="small"
@@ -67,11 +67,11 @@
 
                     <el-button
                         :disabled="currentNode === '' || addAPIFlag"
-                        type="primary"
+                        type="primary" plain
                         size="small"
                         icon="el-icon-circle-plus"
                         @click="initResponse = true"
-                        style="margin-left: 0px"
+                        style="margin-left: 0"
                     >添加接口
                     </el-button>
 
@@ -127,34 +127,35 @@
 
                     <el-button
                         v-if="!addAPIFlag"
-                        :disabled="!(!addAPIFlag && onlyMe && isSelectAPI)"
-                        style="margin-left: 0"
-                        type="success"
-                        size="small"
-                        icon="el-icon-s-promotion"
-                        @click="move = !move"
-                        :title="'移动API到指定节点'"
-                    >移动API
-                    </el-button>
-
-                    <el-button
-                        v-if="!addAPIFlag"
                         style="margin-left: 20px"
                         type="primary"
                         icon="el-icon-caret-right"
                         circle
                         title="批量运行"
-                        size="mini"
+                        size="small"
                         @click="run = !run"
                     >
                     </el-button>
+                    <el-button
+                        v-if="!addAPIFlag"
+                        :disabled="!(!addAPIFlag && onlyMe && isSelectAPI)"
+                        style="margin-left: 0"
+                        type="success" circle
+                        size="small"
+                        icon="el-icon-s-promotion"
+                        @click="move = !move"
+                        :title="'移动API到指定节点'"
+                    >
+                    </el-button>
+
 
                     <el-button
-                        v-if="!isSuperuser"
+                        v-if="isSuperuser"
                         type="danger"
                         icon="el-icon-delete"
                         circle
-                        size="mini"
+                        style="margin-left: 0"
+                        size="small"
                         :title="isSuperuser === true ? '批量删除所选API' : '管理员才能批量删除API'"
                         :disabled="!isSuperuser"
                         @click="del = !del"
@@ -163,7 +164,7 @@
                     <el-select
                         placeholder="请选择"
                         size="small"
-                        style="width: 120px;"
+                        style="width: 100px;"
                         v-model="currentConfig"
                         value-key="id"
                     >
@@ -181,7 +182,7 @@
                         v-if="!addAPIFlag"
                         active-color="#13ce66"
                         inactive-color="#ff4949"
-                        active-text="只看自己">
+                        active-text="只看我的">
                     </el-switch>
 
                     <el-switch
