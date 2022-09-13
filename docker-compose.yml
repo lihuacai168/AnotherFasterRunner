@@ -12,8 +12,8 @@ services:
       - MYSQL_DATABASE=${MYSQL_DATABASE}
     volumes:
       - ./mysql:/var/lib/mysql # 挂载宿主机的mysql数据到docker中
-      - ./AnotherFasterRunner/db/my.cnf:/etc/mysql/mysql.conf.d/mysqld.cnf
-      - ./AnotherFasterRunner/db:/docker-entrypoint-initdb.d/:ro
+      - ./db/my.cnf:/etc/mysql/mysql.conf.d/mysqld.cnf
+      - ./db:/docker-entrypoint-initdb.d/:ro
     # 端口映射,格式 宿主机端口:容器端口
     ports:
       - "3306:3306"
@@ -36,8 +36,8 @@ services:
       - MQ_PORT=${MQ_PORT}
       - SENTRY_DSN=${SENTRY_DSN}
     volumes:
-      - ./AnotherFasterRunner:/opt/workspace/FasterRunner
-      - ./AnotherFasterRunner/nginx.conf:/etc/nginx/sites-enabled/nginx.conf
+      - .:/opt/workspace/FasterRunner
+      - ./nginx.conf:/etc/nginx/sites-enabled/nginx.conf
     entrypoint: /bin/sh
     command: -c "/usr/local/bin/python -m gunicorn FasterRunner.wsgi_docker -b 0.0.0.0 -w 4"
     depends_on:
@@ -51,12 +51,12 @@ services:
     image: fasterrunner_web:latest
     container_name: faster-web
     build:
-      context: ./AnotherFasterRunner/web
+      context: ./web
       dockerfile: Dockerfile
     ports:
       - "${WEB_PORT}:8888"
     volumes:
-      - ./AnotherFasterRunner/web/dist:/usr/share/nginx/html
+      - ./web/dist:/usr/share/nginx/html
 
   mq:
     image: rabbitmq:management-alpine

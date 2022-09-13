@@ -144,7 +144,7 @@
                         v-if="addTestActivate"
                         active-color="#13ce66"
                         inactive-color="#ff4949"
-                        active-text="只看自己">
+                        active-text="只看我的">
                     </el-switch>
 
                     <el-button

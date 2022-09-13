@@ -54,7 +54,9 @@
                 <div style="margin: 0 5px;">
                     <el-dropdown @command="dropdownMenuChangeHandle">
 <!--                        <span><i class="el-icon-more"></i></span>-->
-                        <el-button type="info" size="small" icon="el-icon-arrow-down el-icon--right">操作</el-button>
+                        <el-button type="info" size="small">操作
+                            <i class="el-icon-more el-icon--right"></i>
+                        </el-button>
                         <el-dropdown-menu slot="dropdown">
                             <el-dropdown-item disabled style="background-color: #e2e2e2">
                                 {{ selectTest.length }} 条更新为
