@@ -1,74 +1,74 @@
 <template>
     <el-container>
         <div style="display: flex; justify-content: space-around; flex-wrap: wrap">
-        <div class="api-case">
-            <el-card>
-                <div slot="header">
-                    <span>每日指标趋势</span>
-                </div>
-                <ApexCharts
-                    :options="optionsLine"
-                    :series="apiCaseLineSeries"
-                ></ApexCharts>
-            </el-card>
-        </div>
-
-        <div class="api-case">
-            <el-card>
-                <div slot="header">
-                    <span>每周指标</span>
-                </div>
-                <ApexCharts
-                    :options="optionsWeekBar"
-                    :series="weekBarSeries"
-                ></ApexCharts>
-            </el-card>
-        </div>
-        <div class="api-case">
-            <el-card>
-                <div slot="header">
-                    <span>每月指标</span>
-                </div>
-                <ApexCharts
-                    :options="optionsMonthBar"
-                    :series="monthBarSeries"
-                ></ApexCharts>
-            </el-card>
-        </div>
-
-        <div style="width: 50%;" class="report">
-            <el-card>
-                <div slot="header">
-                    <span>报告比例</span>
-                </div>
-                <div style="display: flex; flex-wrap: wrap">
-                    <div style="width: 66%">
-                        <ApexCharts
-                            :options="reportPieOptions"
-                            :series="reportPieSeries"
-                        ></ApexCharts>
+            <div class="api-case">
+                <el-card>
+                    <div slot="header">
+                        <span>每日指标趋势</span>
                     </div>
-                    <div style="width: 30%; align-self: flex-end">
-                        <ApexCharts
-                            :options="reportRadiaOptions"
-                            :series="reportRadiaSeries"
-                        ></ApexCharts>
+                    <ApexCharts
+                        :options="optionsLine"
+                        :series="apiCaseLineSeries"
+                    ></ApexCharts>
+                </el-card>
+            </div>
+
+            <div class="api-case">
+                <el-card>
+                    <div slot="header">
+                        <span>每周指标</span>
                     </div>
-                </div>
-            </el-card>
+                    <ApexCharts
+                        :options="optionsWeekBar"
+                        :series="weekBarSeries"
+                    ></ApexCharts>
+                </el-card>
+            </div>
+            <div class="api-case">
+                <el-card>
+                    <div slot="header">
+                        <span>每月指标</span>
+                    </div>
+                    <ApexCharts
+                        :options="optionsMonthBar"
+                        :series="monthBarSeries"
+                    ></ApexCharts>
+                </el-card>
+            </div>
+
+            <div class="report">
+                <el-card>
+                    <div slot="header">
+                        <span>报告日-周-月趋势</span>
+                    </div>
+                    <ApexCharts
+                        :options="reportOptionsLine"
+                        :series="reportLineSeries"
+                    ></ApexCharts>
+                </el-card>
+            </div>
+            <div class="report">
+                <el-card>
+                    <div slot="header">
+                        <span>报告比例</span>
+                    </div>
+                    <div style="display: flex; flex-wrap: wrap">
+                        <div style="width: 66%">
+                            <ApexCharts
+                                :options="reportPieOptions"
+                                :series="reportPieSeries"
+                            ></ApexCharts>
+                        </div>
+                        <div style="width: 30%; align-self: flex-end">
+                            <ApexCharts
+                                :options="reportRadiaOptions"
+                                :series="reportRadiaSeries"
+                            ></ApexCharts>
+                        </div>
+                    </div>
+                </el-card>
+            </div>
         </div>
-        <div style="width: 40%;" class="report">
-            <el-card>
-                <div slot="header">
-                    <span>报告日-周-月趋势</span>
-                </div>
-                <ApexCharts
-                    :options="reportOptionsLine"
-                    :series="reportLineSeries"
-                ></ApexCharts>
-            </el-card>
-        </div>
-    </div>
     </el-container>
 </template>
 
@@ -350,11 +350,11 @@ export default {
 
 <style scoped>
 .api-case {
-    margin-top: 10px;
-    width: 30%;
+    margin-top: 20px;
+    /*width: 30%;*/
 }
 
 .report {
-    margin-top: 10px;
+    margin-top: 20px;
 }
 </style>

@@ -1,8 +1,9 @@
 import json
+from typing import Any, Union
 
 import pydash
 import requests
-from django.core.cache import cache
+# from django.core.cache import cache
 from django.db.models import Sum, Count, Q
 from django.db.models.functions import Concat
 from loguru import logger
@@ -57,6 +58,7 @@ def complete_list(arr, date_type):
 
 
 def get_sql_dateformat(date_type):
+    create_time = ''
     if date_type == "week":
         create_time = "YEARWEEK(create_time,'%%Y-%%m-%%d')"
     elif date_type == "month":
@@ -73,7 +75,7 @@ def get_project_api_cover(project_id):
     return case_steps.aggregate(Count('url_method', distinct=True))
 
 
-def get_project_apis(project_id) -> dict:
+def get_project_apis(project_id) -> tuple[list[Any], list[Any]]:
     """统计项目中手动创建和从yapi导入的接口数量
     """
     query = models.API.objects.filter(delete=0).filter(~Q(tag=4))
@@ -85,7 +87,7 @@ def get_project_apis(project_id) -> dict:
     return list(project_api_map.keys()), list(project_api_map.values())
 
 
-def aggregate_apis_bydate(date_type, is_yapi=False) -> dict:
+def aggregate_apis_bydate(date_type, is_yapi=False) -> list[Union[int, Any]]:
     """按照日，周，月统计项目中手动创建和从yapi导入的接口数量
     """
     create_time = get_sql_dateformat(date_type)
@@ -265,7 +267,7 @@ def get_jira_core_case_cover_rate(pk) -> dict:
     return {
         'jira_core_case_count': jira_core_case_count,
         'core_case_count': covered_case_count,
-        'core_case_cover_rate':  core_case_cover_rate
+        'core_case_cover_rate': core_case_cover_rate
     }
 
 
@@ -341,15 +343,15 @@ def tree_end(params, project):
         type: int
     }
     """
-    type = params['type']
+    type_value = params['type']
     node = params['node']
 
-    if type == 1:
+    if type_value == 1:
         models.API.objects. \
             filter(relation=node, project=project).delete()
 
     # remove node testcase
-    elif type == 2:
+    elif type_value == 2:
         case = models.Case.objects. \
             filter(relation=node, project=project).values('id')
 

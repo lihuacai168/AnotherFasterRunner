@@ -16,7 +16,7 @@
             clearable
             v-model="search"
             @keyup.enter.native="getAPIList"
-            style="width: 260px"
+            style="min-width: 120px"
           >
             <el-button
               slot="append"
@@ -28,9 +28,7 @@
           <el-button type="primary" size="small" @click="resetSearch">重置 </el-button>
         <div class="recordapi__header--item">
           <el-dropdown @command="tagChangeHandle">
-            <el-button type="primary" size="small">
-              状态
-              <i class="el-icon-arrow-down"></i>
+            <el-button type="primary" size="small">状态<i class="el-icon-arrow-down"></i>
             </el-button>
             <el-dropdown-menu slot="dropdown">
               <el-dropdown-item command="1">成功</el-dropdown-item>
