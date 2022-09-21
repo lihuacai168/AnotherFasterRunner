@@ -6,6 +6,7 @@
 # @Email: lihuacai168@gmail.com
 
 import traceback
+from typing import Union
 
 from loguru import logger
 
@@ -29,8 +30,10 @@ class TreeService:
             defaults={"tree": default_tree, "project_id": query.project_id},
         )
         if created:
+            logger.info(f"tree created {query=}")
             body: list[dict] = tree_obj.tree
         else:
+            logger.info(f"tree exist {query=}")
             body: list[dict] = eval(tree_obj.tree)
         tree = {
             "tree": body,
@@ -40,15 +43,15 @@ class TreeService:
         }
         return StandResponse[TreeOut](**TREE_ADD_SUCCESS, data=TreeOut(**tree))
 
-    def patch(self, pk: int, payload: TreeUpdateIn) -> StandResponse[TreeOut]:
+    def patch(
+        self, pk: int, payload: TreeUpdateIn
+    ) -> StandResponse[Union[TreeOut, None]]:
         try:
             pk: int = self.curd.update_obj_by_pk(pk, None, payload.dict())
         except Exception as e:
             err: str = traceback.format_exc()
             logger.warning(f"update tree {err=}")
-            return StandResponse[TreeOut](
-                code="9999", success=False, msg=err, data=None
-            )
+            return StandResponse[None](code="9999", success=False, msg=err, data=None)
         return StandResponse[TreeOut](
             **TREE_UPDATE_SUCCESS,
             data=TreeOut(tree=payload.tree, id=pk, max=get_tree_max_id(payload.tree)),
