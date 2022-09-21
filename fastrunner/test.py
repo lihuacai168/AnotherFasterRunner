@@ -10,6 +10,7 @@
 from django.test import TestCase
 from fastuser import models
 
+
 class ModelTest(TestCase):
 
     def setUp(self):
