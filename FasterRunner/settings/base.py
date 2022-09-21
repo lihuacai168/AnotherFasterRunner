@@ -10,9 +10,10 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/2.1/ref/settings/
 """
 
+import datetime as datetime
 import os
 
-import datetime as datetime
+from loguru import logger
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 # BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -209,6 +210,18 @@ IM_REPORT_SETTING = {
     "report_title": "自动化测试报告",
 }
 
+for level in ["INFO", "WARNING", "ERROR"]:
+    logger.add(
+        f"logs/{level.lower()}.log",
+        format="{time:YYYY-MM-DD HH:mm:ss.SSS}"
+        " [pid:{process} -> thread:{thread.name}]"
+        " {level}"
+        " [{name}:{function}:{line}]"
+        " {message}",
+        level=level,
+        rotation="00:00",
+        retention="14 days",
+    )
 
 LOGGING = {
     "version": 1,
