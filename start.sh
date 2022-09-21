@@ -27,17 +27,22 @@ uwsgi --ini ./ComposeDeploy/uwsgi_docker.ini --logto ./logs/uwsgi.log
 # /usr/local/bin/python -m gunicorn FasterRunner.wsgi_docker -b 0.0.0.0 -w 4
 
 
-# if [ $1 = "app" ]; then
-#     echo "start app"
-#     /usr/local/bin/python -m gunicorn FasterRunner.wsgi_docker -b 0.0.0.0 -w 4
-# fi
+if [ $1 = "app" ]; then
+    echo "start app"
+    /usr/local/bin/python -m gunicorn FasterRunner.wsgi_docker -b 0.0.0.0 -w 4
+fi
 
-# if [ $1 = "celery-worker" ]; then
-#     echo "start celery"
-#     /usr/local/bin/python manage.py celery -A FasterRunner.mycelery worker -l info --settings=FasterRunner.settings.docker --logfile=./logs/worker.log
-# fi
+if [ $1 = "celery-worker" ]; then
+    echo "start celery"
+    export DJANGO_SETTINGS_MODULE=FasterRunner.settings.docker; /usr/local/bin/python -m celery -A FasterRunner.mycelery worker -l info
+fi
 
 # if [ $1 = "celery-beat" ]; then
 #     echo "start celery beat"
 #     python manage.py celery -A FasterRunner.mycelery beat -l info --settings=FasterRunner.settings.docker --logfile=./logs/beat.log
 # fi
+
+if [ $1 = "celery-beat" ]; then
+    echo "start celery beat"
+    export DJANGO_SETTINGS_MODULE=FasterRunner.settings.docker; /usr/local/bin/python -m celery -A FasterRunner.mycelery beat -l info
+fi

@@ -198,7 +198,11 @@ class VariablesView(GenericViewSet):
         queryset = self.get_queryset().filter(project__id=project).order_by('-update_time')
 
         if search != '':
-            queryset = queryset.filter(Q(key__contains=search) | Q(value__contains=search) | Q(description__contains=search))
+            queryset = queryset.filter(
+                Q(key__contains=search) |
+                Q(value__contains=search) |
+                Q(description__contains=search)
+            )
 
         pagination_queryset = self.paginate_queryset(queryset)
         serializer = self.get_serializer(pagination_queryset, many=True)
@@ -252,7 +256,10 @@ class VariablesView(GenericViewSet):
         except ObjectDoesNotExist:
             return Response(response.VARIABLES_NOT_EXISTS)
 
-        if models.Variables.objects.exclude(id=variable_id).filter(project_id=project_id, key=request.data['key']).first():
+        if models.Variables.objects.exclude(id=variable_id).filter(
+                project_id=project_id,
+                key=request.data['key']
+        ).first():
             return Response(response.VARIABLES_EXISTS)
 
         variables.key = request.data["key"]

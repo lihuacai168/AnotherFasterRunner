@@ -161,8 +161,8 @@ class APITemplateView(GenericViewSet):
         try:
             models.API.objects.filter(
                 project=project,
-                id__in=ids).update(
-                relation=relation)
+                id__in=ids
+            ).update(relation=relation)
         except ObjectDoesNotExist:
             return Response(response.API_NOT_FOUND)
 
@@ -220,9 +220,11 @@ class APITemplateView(GenericViewSet):
         api_ids: list = request.data.get('api_ids', [])
         try:
             if api_ids:
-                models.API.objects.filter(pk__in=api_ids).update(tag=request.data['tag'],
-                                                                  update_time=datetime.datetime.now(),
-                                                                  updater=request.user.username)
+                models.API.objects.filter(pk__in=api_ids).update(
+                    tag=request.data['tag'],
+                    update_time=datetime.datetime.now(),
+                    updater=request.user.username
+                )
         except ObjectDoesNotExist:
             return Response(response.API_NOT_FOUND)
 
@@ -246,11 +248,20 @@ class APITemplateView(GenericViewSet):
         # 限制case_step只在当前项目
         case_steps = models.CaseStep.objects.filter(source_api_id=pk, case_id__in=project_case_ids)
 
-        case_steps.update(**source_api, updater=request.user.username, update_time=datetime.datetime.now())
+        case_steps.update(
+            **source_api,
+            updater=request.user.username,
+            update_time=datetime.datetime.now()
+        )
         case_ids = case_steps.values_list('case', flat=True)
         # 限制case只在当前项目
-        models.Case.objects.filter(pk__in=list(case_ids), project=project).update(update_time=datetime.datetime.now(),
-                                                                                  updater=request.user.username)
+        models.Case.objects.filter(
+            pk__in=list(case_ids),
+            project=project
+        ).update(
+            update_time=datetime.datetime.now(),
+            updater=request.user.username
+        )
         return Response(response.CASE_STEP_SYNC_SUCCESS)
 
     @method_decorator(request_log(level='INFO'))

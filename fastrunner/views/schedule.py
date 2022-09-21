@@ -1,8 +1,8 @@
 import json
 
 from django.utils.decorators import method_decorator
+from django_celery_beat import models
 from rest_framework.viewsets import GenericViewSet
-from djcelery import models
 from rest_framework.response import Response
 from FasterRunner import pagination
 from fastrunner import serializers
@@ -16,11 +16,12 @@ class ScheduleView(GenericViewSet):
     """
     定时任务增删改查
     """
+
     queryset = models.PeriodicTask.objects
     serializer_class = serializers.PeriodicTaskSerializer
     pagination_class = pagination.MyPageNumberPagination
 
-    @method_decorator(request_log(level='DEBUG'))
+    @method_decorator(request_log(level="DEBUG"))
     def list(self, request):
         """
         查询项目信息
@@ -28,7 +29,9 @@ class ScheduleView(GenericViewSet):
         project = request.query_params.get("project")
         task_name = request.query_params.get("task_name")
         creator = request.query_params.get("creator")
-        schedule = self.get_queryset().filter(description=project).order_by('-date_changed')
+        schedule = (
+            self.get_queryset().filter(description=project).order_by("-date_changed")
+        )
         if task_name:
             schedule = schedule.filter(name__contains=task_name)
         if creator:
@@ -37,7 +40,7 @@ class ScheduleView(GenericViewSet):
         serializer = self.get_serializer(page_schedule, many=True)
         return self.get_paginated_response(serializer.data)
 
-    @method_decorator(request_log(level='INFO'))
+    @method_decorator(request_log(level="INFO"))
     def add(self, request):
         """新增定时任务{
             name: str
@@ -60,24 +63,23 @@ class ScheduleView(GenericViewSet):
         else:
             return Response(ser.errors)
 
-    @method_decorator(request_log(level='INFO'))
+    @method_decorator(request_log(level="INFO"))
     def copy(self, request, **kwargs):
-        """复制定时任务
-        """
-        task_obj = self.get_queryset().get(pk=kwargs['pk'])
-        if task_obj.name == request.data['name']:
+        """复制定时任务"""
+        task_obj = self.get_queryset().get(pk=kwargs["pk"])
+        if task_obj.name == request.data["name"]:
             return Response(response.TASK_COPY_FAILURE)
         task_obj.id = None
-        task_obj.name = request.data['name']
+        task_obj.name = request.data["name"]
         task_obj.total_run_count = 0
         kwargs = json.loads(task_obj.kwargs)
-        kwargs['creator'] = request.user.username
-        kwargs['updater'] = ""
+        kwargs["creator"] = request.user.username
+        kwargs["updater"] = ""
         task_obj.kwargs = json.dumps(kwargs, ensure_ascii=False)
         task_obj.save()
         return Response(response.TASK_COPY_SUCCESS)
 
-    @method_decorator(request_log(level='INFO'))
+    @method_decorator(request_log(level="INFO"))
     def update(self, request, **kwargs):
         """更新任务
         :param request:
@@ -87,12 +89,12 @@ class ScheduleView(GenericViewSet):
         ser = serializers.ScheduleDeSerializer(data=request.data)
         if ser.is_valid():
             task = Task(**request.data)
-            resp = task.update_task(kwargs['pk'])
+            resp = task.update_task(kwargs["pk"])
             return Response(resp)
         else:
             return Response(response.TASK_CI_PROJECT_IDS_EXIST)
 
-    @method_decorator(request_log(level='INFO'))
+    @method_decorator(request_log(level="INFO"))
     def patch(self, request, **kwargs):
         """更新任务的状态
         :param request:
@@ -100,29 +102,27 @@ class ScheduleView(GenericViewSet):
         :return:
         """
         # {'pk': 22}
-        task_obj = self.get_queryset().get(pk=kwargs['pk'])
-        task_obj.enabled = request.data['switch']
+        task_obj = self.get_queryset().get(pk=kwargs["pk"])
+        task_obj.enabled = request.data["switch"]
         kwargs = json.loads(task_obj.kwargs)
-        kwargs['updater'] = request.user.username
+        kwargs["updater"] = request.user.username
         task_obj.kwargs = json.dumps(kwargs, ensure_ascii=False)
         task_obj.save()
         return Response(response.TASK_UPDATE_SUCCESS)
 
     def delete(self, request, **kwargs):
-        """删除任务
-        """
+        """删除任务"""
         task = models.PeriodicTask.objects.get(id=kwargs["pk"])
         task.enabled = False
         task.delete()
         return Response(response.TASK_DEL_SUCCESS)
 
-    @method_decorator(request_log(level='INFO'))
+    @method_decorator(request_log(level="INFO"))
     def run(self, request, **kwargs):
         task = models.PeriodicTask.objects.get(id=kwargs["pk"])
-        task_name = 'fastrunner.tasks.schedule_debug_suite'
+        task_name = "fastrunner.tasks.schedule_debug_suite"
         args = eval(task.args)
         kwargs = json.loads(task.kwargs)
-        kwargs['task_id'] = task.id
+        kwargs["task_id"] = task.id
         app.send_task(name=task_name, args=args, kwargs=kwargs)
         return Response(response.TASK_RUN_SUCCESS)
-

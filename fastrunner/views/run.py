@@ -391,8 +391,13 @@ def run_multi_tests(request):
             summary["msg"] = "用例运行中，请稍后查看报告"
         else:
             summary, _ = loader.debug_suite(
-                test_sets, project, suite_list, config_list,
-                save=True, user=request.user, report_name=report_name
+                test_sets,
+                project,
+                suite_list,
+                config_list,
+                save=True,
+                user=request.user,
+                report_name=report_name
             )
     except Exception as e:
         return Response({'traceback': str(e)}, status=400)
@@ -423,8 +428,11 @@ def run_test(request):
         config = eval(models.Config.objects.get(project=project, name=config["name"]).body)
     try:
         summary = loader.debug_api(
-            parse_host(host, loader.load_test(body)), project,
-            name=body.get('name', None), config=parse_host(host, config), user=request.user
+            parse_host(host, loader.load_test(body)),
+            project,
+            name=body.get('name', None),
+            config=parse_host(host, config),
+            user=request.user
         )
     except Exception as e:
         return Response({'traceback': str(e)}, status=400)

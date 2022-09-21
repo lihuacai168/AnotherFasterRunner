@@ -53,19 +53,19 @@ class TestCaseView(GenericViewSet):
             search_type = ser.validated_data.get("searchType")
             case_type = ser.validated_data.get("caseType")
             only_me = ser.validated_data.get("onlyMe")
-    
+
             # update_time 降序排列
             queryset = self.get_queryset().filter(project__id=project).order_by('-create_time')
-    
+
             if only_me is True:
                 queryset = queryset.filter(creator=request.user)
-    
+
             if node != '':
                 queryset = queryset.filter(relation=node)
-    
+
             if case_type != '':
                 queryset = queryset.filter(tag=case_type)
-    
+
             if search != '':
                 # 用例名称搜索
                 if search_type == '1':
@@ -74,10 +74,10 @@ class TestCaseView(GenericViewSet):
                 elif search_type == '2':
                     case_id = self.case_step_search(search)
                     queryset = queryset.filter(pk__in=case_id)
-    
+
             pagination_query = self.paginate_queryset(queryset)
             serializer = self.get_serializer(pagination_query, many=True)
-    
+
             return self.get_paginated_response(serializer.data)
         else:
             return Response(ser.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -175,8 +175,11 @@ class TestCaseView(GenericViewSet):
         prepare.update_casestep(body, case, username=request.user.username)
 
         request.data['tag'] = self.tag_options[request.data['tag']]
-        models.Case.objects.filter(id=pk).update(update_time=datetime.datetime.now(), updater=request.user.username,
-                                                 **request.data)
+        models.Case.objects.filter(id=pk).update(
+            update_time=datetime.datetime.now(),
+            updater=request.user.username,
+            **request.data
+        )
 
         return Response(response.CASE_UPDATE_SUCCESS)
 
@@ -189,8 +192,8 @@ class TestCaseView(GenericViewSet):
         try:
             models.Case.objects.filter(
                 project=project,
-                id__in=ids).update(
-                relation=relation)
+                id__in=ids
+            ).update(relation=relation)
         except ObjectDoesNotExist:
             return Response(response.CASE_NOT_EXISTS)
 
@@ -291,7 +294,11 @@ class TestCaseView(GenericViewSet):
             step: int = item['step']
             source_api = models.API.objects.filter(pk=source_api_id).values("name", "body", "url", "method").first()
             if source_api is not None:
-                models.CaseStep.objects.filter(case_id=pk, source_api_id=source_api_id, step=step).update(**source_api)
+                models.CaseStep.objects.filter(
+                    case_id=pk,
+                    source_api_id=source_api_id,
+                    step=step
+                ).update(**source_api)
         models.Case.objects.filter(pk=pk).update(update_time=datetime.datetime.now())
         return Response(response.CASE_STEP_SYNC_SUCCESS)
 

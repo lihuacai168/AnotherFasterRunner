@@ -1,9 +1,10 @@
+setuptools~=57.5.0
 aiocontextvars==0.2.2
-amqp==1.4.9
+amqp
 anyjson==0.3.3
 beautifulsoup4==4.6.3
-billiard==3.3.0.23
-celery==3.1.26.post2
+# billiard==3.3.0.23
+celery~=5.2.7
 certifi==2019.9.11
 chardet==3.0.4
 colorama==0.4.1
@@ -12,8 +13,8 @@ contextvars==2.4
 coreapi==2.3.3
 coreschema==0.0.4
 DingtalkChatbot==1.3.0
-Django==2.2
-django-celery==3.2.2
+Django==2.2.17
+django-celery-beat
 django-cors-headers==2.4.0
 django-jsonfield==1.4.0
 django-model-utils==4.0.0
@@ -30,7 +31,7 @@ immutables==0.14
 inflection==0.5.0
 itypes==1.1.0
 Jinja2==2.10.3
-kombu==3.0.37
+# kombu
 loguru==0.5.1
 MarkupSafe==1.1.1
 mysqlclient~=2.0.1
@@ -39,7 +40,7 @@ packaging==20.4
 PyJWT==1.7.1
 pyparsing==2.4.7
 python-dotenv==0.10.3
-pytz==2019.3
+pytz==2022.2.1
 PyYAML~=5.3.1
 requests==2.22.0
 requests-toolbelt==0.9.1
@@ -54,7 +55,6 @@ urllib3==1.25.7
 uWSGI==2.0.18
 django_mysql
 json5==0.9.5
-crontab~=0.22.9
 django_bulk_update==2.2.0
 xmltodict~=0.12.0
 django-jsonfield==1.4.0
@@ -66,3 +66,4 @@ jsonpath~=0.82
 pydantic==1.9.0
 gunicorn
 sentry-sdk~=1.5.8
+croniter~=1.3.5 # 计算下一次crontab
