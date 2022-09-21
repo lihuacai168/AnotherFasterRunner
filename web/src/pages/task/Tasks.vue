@@ -25,13 +25,8 @@
         </el-header>
 
         <el-container>
-            <el-header
-                v-if="!addTasks"
-                style="padding: 0; height: 500px; margin-top: 10px;"
-            >
-                <div
-                    style="padding-left: 10px; display: flex"
-                >
+            <el-header v-if="!addTasks" style="padding: 0; height: 500px; margin-top: 10px;">
+                <div style="padding-left: 10px; display: flex">
                     <div>
                         <el-input
                             placeholder="请输入任务名称"
@@ -63,9 +58,7 @@
                                 :disabled="item.disabled"
                             ></el-option>
                         </el-select>
-                        <el-button type="primary" @click="resetSearch" size="small"
-                            >重置
-                        </el-button>
+                        <el-button type="primary" @click="resetSearch" size="small">重置</el-button>
                     </div>
                     <div>
                         <el-pagination
@@ -83,9 +76,7 @@
                 </div>
             </el-header>
             <el-main style="padding: 0; margin-left: 10px; margin-top: 10px;">
-                <div
-                    style="position: fixed; bottom: 0; right:0; left: 230px; top: 160px"
-                >
+                <div style="position: fixed; bottom: 0; right:0; left: 170px; top: 150px">
                     <el-table
                         v-if="!addTasks"
                         :data="tasksData.results"
@@ -93,84 +84,69 @@
                         stripe
                         highlight-current-row
                         height="calc(100%)"
+                        style="width: 100%; overflow: auto"
                         @cell-mouse-enter="cellMouseEnter"
                         @cell-mouse-leave="cellMouseLeave"
                     >
-                        <el-table-column label="任务ID" width="80">
-                            <template slot-scope="scope">
+                        <el-table-column label="任务ID" min-width="50">
+                            <template v-slot="scope">
                                 <div>{{ scope.row.id }}</div>
                             </template>
                         </el-table-column>
 
-                        <el-table-column label="任务名称" width="240">
-                            <template slot-scope="scope">
+                        <el-table-column label="任务名称" min-width="160">
+                            <template v-slot="scope">
                                 <div>{{ scope.row.name }}</div>
                             </template>
                         </el-table-column>
 
-                        <el-table-column width="120" label="时间配置">
-                            <template slot-scope="scope">
+                        <el-table-column width="80" label="时间配置">
+                            <template v-slot="scope">
                                 <div>{{ scope.row.kwargs.crontab }}</div>
                             </template>
                         </el-table-column>
 
-                        <el-table-column width="170" label="下次执行时间">
-                            <template slot-scope="scope">
-                                <div>
-                                    {{
-                                        scope.row.kwargs.next_execute_time
-                                            ? scope.row.kwargs.next_execute_time
-                                            : "" | timestampToTime
-                                    }}
+                        <el-table-column width="150" label="下次执行时间">
+                            <template v-slot="scope">
+                                <div>{{ scope.row.kwargs.next_execute_time ?
+                                    scope.row.kwargs.next_execute_time : "" | timestampToTime }}
                                 </div>
                             </template>
                         </el-table-column>
 
                         <el-table-column width="70" label="CI项目">
-                            <template slot-scope="scope">
-                                <div>
-                                    {{ scope.row.kwargs.ci_project_ids }}
-                                </div>
+                            <template v-slot="scope">
+                                <div>{{ scope.row.kwargs.ci_project_ids }}</div>
                             </template>
                         </el-table-column>
 
                         <el-table-column width="70" label="CI环境">
-                            <template slot-scope="scope">
-                                <div>
-                                    {{
-                                        scope.row.kwargs.ci_env === "请选择"
-                                            ? ""
-                                            : scope.row.kwargs.ci_env
-                                    }}
+                            <template v-slot="scope">
+                                <div>{{ scope.row.kwargs.ci_env === "请选择" ? "" : scope.row.kwargs.ci_env }}
                                 </div>
                             </template>
                         </el-table-column>
 
                         <el-table-column width="180" label="运行配置">
-                            <template slot-scope="scope">
-                                <div>
-                                    {{
-                                        scope.row.kwargs.config === "请选择"
-                                            ? "用例配置"
-                                            : scope.row.kwargs.config
-                                    }}
+                            <template v-slot="scope">
+                                <div>{{scope.row.kwargs.config === "请选择" ? "用例配置" : scope.row.kwargs.config }}
                                 </div>
                             </template>
                         </el-table-column>
 
                         <el-table-column width="100" label="通知策略">
-                            <template slot-scope="scope">
+                            <template v-slot="scope">
                                 <div>{{ scope.row.kwargs.strategy }}</div>
                             </template>
                         </el-table-column>
                         <el-table-column width="70" label="已运行">
-                            <template slot-scope="scope">
+                            <template v-slot="scope">
                                 <div>{{ scope.row.total_run_count }} 次</div>
                             </template>
                         </el-table-column>
 
                         <el-table-column width="80" label="状态">
-                            <template slot-scope="scope">
+                            <template v-slot="scope">
                                 <el-switch
                                     v-model="scope.row.enabled"
                                     active-color="#13ce66"

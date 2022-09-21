@@ -75,7 +75,7 @@ def get_project_api_cover(project_id):
     return case_steps.aggregate(Count('url_method', distinct=True))
 
 
-def get_project_apis(project_id) -> tuple[list[Any], list[Any]]:
+def get_project_apis(project_id) -> dict:
     """统计项目中手动创建和从yapi导入的接口数量
     """
     query = models.API.objects.filter(delete=0).filter(~Q(tag=4))
@@ -87,7 +87,7 @@ def get_project_apis(project_id) -> tuple[list[Any], list[Any]]:
     return list(project_api_map.keys()), list(project_api_map.values())
 
 
-def aggregate_apis_bydate(date_type, is_yapi=False) -> list[Union[int, Any]]:
+def aggregate_apis_bydate(date_type, is_yapi=False) -> dict:
     """按照日，周，月统计项目中手动创建和从yapi导入的接口数量
     """
     create_time = get_sql_dateformat(date_type)

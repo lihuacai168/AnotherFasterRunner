@@ -2,7 +2,7 @@
     <el-container>
         <el-header style="background: #fff; padding: 0; height: 50px">
             <div class="nav-api-header">
-                <div style="padding-top: 10px; margin-left: 20px">
+                <div style="padding-top: 10px; margin-left: 10px">
                     <el-button
                         type="primary"
                         size="small"
@@ -45,7 +45,7 @@
                         <span slot="footer" class="dialog-footer">
               <el-button @click="resetForm('variablesForm', 'dialogVisible')">取 消</el-button>
               <el-button type="primary" @click="handleConfirm('variablesForm')">确 定</el-button>
-            </span>
+                        </span>
                     </el-dialog>
 
                     <el-dialog title="编辑变量" :visible.sync="editdialogVisible" width="30%" align="center">
@@ -70,7 +70,7 @@
                         <span slot="footer" class="dialog-footer">
               <el-button @click="resetForm('editVariablesForm', 'editdialogVisible')">取 消</el-button>
               <el-button type="primary" @click="handleEditConfirm('editVariablesForm')">确 定</el-button>
-            </span>
+                        </span>
                     </el-dialog>
                 </div>
             </div>
@@ -78,20 +78,21 @@
 
         <el-container>
             <el-header style="padding: 0; height: 50px;">
-                <div style="padding-top: 8px; padding-left: 30px; overflow: hidden">
+                <div style="padding-top: 8px; padding-left: 10px; overflow: hidden">
                     <el-row :gutter="50">
-                        <el-col :span="6">
+                        <el-col :span="6" style="padding-right: 0">
                             <el-input
                                 placeholder="请输入变量名称"
                                 v-if="variablesData.count >= 0"
                                 clearable
+                                size="medium"
                                 v-model="search"
                             >
                                 <el-button slot="append" icon="el-icon-search" @click="getVariablesList"></el-button>
                             </el-input>
                         </el-col>
-                        <el-col :span="2">
-                            <el-button type="primary" @click="resetSearch">重置</el-button>
+                        <el-col :span="2" style="padding-left: 5px">
+                            <el-button type="primary" size="medium" @click="resetSearch">重置</el-button>
                         </el-col>
                         <el-col :span="7">
                             <el-pagination
@@ -110,7 +111,7 @@
 
             <el-container>
                 <el-main style="padding: 0; margin-left: 10px; margin-top: 10px;">
-                    <div style="position: fixed; bottom: 0; right:0; left: 220px; top: 150px">
+                    <div style="position: fixed; bottom: 0; right:0; left: 160px; top: 150px">
                         <el-table
                             highlight-current-row
                             :data="variablesData.results"
@@ -124,31 +125,31 @@
                             <el-table-column type="selection" width="55"></el-table-column>
 
                             <el-table-column label="变量名">
-                                <template slot-scope="scope">
+                                <template v-slot="scope">
                                     <div>{{ scope.row.key }}</div>
                                 </template>
                             </el-table-column>
 
                             <el-table-column label="变量值">
-                                <template slot-scope="scope">
+                                <template v-slot="scope">
                                     <div>{{ scope.row.value }}</div>
                                 </template>
                             </el-table-column>
 
                             <el-table-column label="变量描述">
-                                <template slot-scope="scope">
+                                <template v-slot="scope">
                                     <div>{{ scope.row.description }}</div>
                                 </template>
                             </el-table-column>
 
                             <el-table-column label="更新时间">
-                                <template slot-scope="scope">
+                                <template v-slot="scope">
                                     <div>{{ scope.row.update_time|datetimeFormat }}</div>
                                 </template>
                             </el-table-column>
 
-                            <el-table-column>
-                                <template slot-scope="scope">
+                            <el-table-column width="120">
+                                <template v-slot="scope">
                                     <el-row v-show="currentRow === scope.row">
                                         <el-button
                                             type="info"
@@ -165,6 +166,7 @@
                                             title="复制"
                                             circle
                                             size="mini"
+                                            style="margin-left: 0"
                                             @click="handleCopyVariables(scope.row)"
                                         ></el-button>
 
@@ -175,6 +177,7 @@
                                             title="删除"
                                             circle
                                             size="mini"
+                                            style="margin-left: 0"
                                             @click="handleDelVariables(scope.row.id)"
                                         ></el-button>
                                     </el-row>

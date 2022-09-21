@@ -178,7 +178,7 @@ class ReportView(GenericViewSet):
         pk = kwargs["pk"]
         report = models.Report.objects.get(id=pk)
         report_detail = models.ReportDetail.objects.get(report_id=pk)
-        summary = json.loads(report.summary, encoding="utf-8")
+        summary = json.loads(report.summary)
         summary['details'] = eval(report_detail.summary_detail)
         ConvertRequest.generate_curl(summary['details'], convert_type=('curl',))
         summary["html_report_name"] = report.name

@@ -9,14 +9,21 @@
             >
                 <template slot="prepend">配置信息录入</template>
 
-                <el-button
-                    slot="append"
-                    type="success"
-                    plain
-                    @click="save = !save"
-                >Save
-                </el-button>
+<!--                <el-button-->
+<!--                    slot="append"-->
+<!--                    type="success"-->
+<!--                    plain-->
+<!--                    @click="save = !save"-->
+<!--                >Save-->
+<!--                </el-button>-->
             </el-input>
+            <el-button
+                slot="append"
+                type="success"
+                size="medium"
+                @click="save = !save"
+            >Save
+            </el-button>
         </div>
         <div>
             <el-input
@@ -27,10 +34,7 @@
             >
                 <template slot="prepend">配置请求地址</template>
             </el-input>
-        </div>
-        <div>
             <el-switch
-                style="display: block"
                 v-model="is_default"
                 active-color="#13ce66"
                 :disabled="isAddConfig"
@@ -38,6 +42,16 @@
             >
             </el-switch>
         </div>
+<!--        <div>-->
+<!--            <el-switch-->
+<!--                style="display: block"-->
+<!--                v-model="is_default"-->
+<!--                active-color="#13ce66"-->
+<!--                :disabled="isAddConfig"-->
+<!--                active-text="默认配置"-->
+<!--            >-->
+<!--            </el-switch>-->
+<!--        </div>-->
         <div class="request">
             <el-tabs
                 v-model="activeTag"

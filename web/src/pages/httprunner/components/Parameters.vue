@@ -10,12 +10,11 @@
         :cell-style="{paddingTop: '4px', paddingBottom: '4px'}"
     >
         <el-table-column
-            label="数据Key"
-            width="400">
+            label="数据Key">
             <template slot-scope="scope">
                 <el-input
                     type="textarea"
-                    :autosize="{ minRows: 2, maxRows: 8}"
+                    :autosize="{ minRows: 2, maxRows: 10}"
                     clearable
                     v-model="scope.row.key"
                     placeholder="key 、 key-key1"
@@ -24,8 +23,7 @@
         </el-table-column>
 
         <el-table-column
-            label="数据内容"
-            width="700">
+            label="数据内容">
             <template slot-scope="scope">
                 <el-input
                     type="textarea"
@@ -39,13 +37,13 @@
 
         <el-table-column
             label="参数描述"
-            width="400">
+            width="200">
             <template slot-scope="scope">
                 <el-input clearable v-model="scope.row.desc" placeholder="参数简要描述"></el-input>
             </template>
         </el-table-column>
 
-        <el-table-column>
+        <el-table-column width="120">
             <template slot-scope="scope">
                 <el-row v-show="scope.row === currentRow">
                     <el-button
@@ -58,6 +56,7 @@
                     <el-button
                         icon="el-icon-delete"
                         size="mini"
+                        style="margin-left: 0;"
                         type="danger"
                         v-show="scope.$index !== 0"
                         @click="handleDelete(scope.$index, scope.row)">

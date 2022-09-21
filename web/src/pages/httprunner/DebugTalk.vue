@@ -7,9 +7,8 @@
                         <el-button
                             type="primary"
                             size="small"
-                            icon="el-icon-circle-check-outline"
+                            icon="el-icon-circle-check"
                             @click="handleConfirm"
-                            round
                         >
                             点击保存
                         </el-button>
@@ -18,8 +17,8 @@
                             icon="el-icon-caret-right"
                             type="info"
                             size="small"
+                            style="margin-left: 0"
                             @click="handleRunCode"
-                            round
                         >
                             在线运行
                         </el-button>

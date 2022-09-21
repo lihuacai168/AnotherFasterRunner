@@ -2,7 +2,7 @@
     <el-container>
         <el-header style="padding-top: 10px; height: 50px;">
             <div>
-                <el-row :gutter="50">
+                <el-row>
                     <el-col :span="6" v-if="configData.count > 8">
                         <el-input placeholder="请输入配置名称" clearable v-model="search">
                             <el-button slot="append" icon="el-icon-search" @click="getConfigList"></el-button>
@@ -26,7 +26,7 @@
 
         <el-container>
             <el-main style="padding: 0; margin-left: 10px; margin-top: 10px;">
-                <div style="position: fixed; bottom: 0; right:0; left: 220px; top: 150px">
+                <div style="position: fixed; bottom: 0; right:0; left: 165px; top: 150px">
                     <el-table
                         highlight-current-row
                         :data="configData.results"
@@ -37,59 +37,33 @@
                         @cell-mouse-leave="cellMouseLeave"
                         @selection-change="handleSelectionChange"
                     >
-                        <el-table-column
-                            type="selection"
-                            width="55"
-                        >
-                        </el-table-column>
-
-                        <el-table-column
-                            label="配置名称"
-
-                        >
-                            <template slot-scope="scope">
+                        <el-table-column type="selection" width="55"></el-table-column>
+                        <el-table-column label="配置名称">
+                            <template v-slot="scope">
                                 <div>{{ scope.row.name }}</div>
                             </template>
                         </el-table-column>
 
-                        <el-table-column
-
-                            label="基本请求地址"
-                        >
-                            <template slot-scope="scope">
+                        <el-table-column label="基本请求地址">
+                            <template v-slot="scope">
                                 <div v-text="scope.row.base_url === '' ? '无' : scope.row.base_url"></div>
-
                             </template>
                         </el-table-column>
 
-                        <el-table-column
-                            width="90"
-                            label="是否为默认"
-                        >
-                            <template slot-scope="scope">
-                                <el-switch
-                                    disabled
-                                    v-model="scope.row.is_default"
-                                    active-color="#13ce66"
-                                >
-                                </el-switch>
+                        <el-table-column width="90" label="是否为默认">
+                            <template v-slot="scope">
+                                <el-switch disabled v-model="scope.row.is_default" active-color="#13ce66"></el-switch>
                             </template>
                         </el-table-column>
 
-                        <el-table-column
-
-                            label="更新时间"
-                        >
-                            <template slot-scope="scope">
+                        <el-table-column label="更新时间" width="180">
+                            <template v-slot="scope">
                                 <div>{{ scope.row.update_time|datetimeFormat }}</div>
-
                             </template>
                         </el-table-column>
 
-                        <el-table-column
-
-                        >
-                            <template slot-scope="scope">
+                        <el-table-column width="120">
+                            <template v-slot="scope">
                                 <el-row v-show="currentRow === scope.row">
                                     <el-button
                                         type="info"
@@ -103,7 +77,9 @@
                                         type="success"
                                         icon="el-icon-document"
                                         circle size="mini"
+                                        style="margin-left: 0"
                                         @click="handleCopyConfig(scope.row.id, scope.row.name)"
+                                        title="复制"
                                     >
                                     </el-button>
 
@@ -112,6 +88,7 @@
                                         icon="el-icon-delete"
                                         title="删除"
                                         circle size="mini"
+                                        style="margin-left: 0"
                                         @click="handleDelConfig(scope.row.id)"
                                     >
                                     </el-button>

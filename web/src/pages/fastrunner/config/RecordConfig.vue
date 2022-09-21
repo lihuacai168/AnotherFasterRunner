@@ -52,7 +52,7 @@
         </el-header>
 
         <el-container>
-            <el-main style="padding: 0; margin-left: 10px">
+            <el-main style="padding: 0; margin-left: 0">
                 <config-body
                     v-show="addConfigActivate"
                     :project="$route.params.id"
