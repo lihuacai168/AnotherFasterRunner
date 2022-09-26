@@ -11,7 +11,7 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 """
 
 import os
-
+from django.db.models import AutoField
 import datetime as datetime
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -125,7 +125,7 @@ USE_TZ = False
 
 STATIC_URL = "/static/"
 
-
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 REST_FRAMEWORK = {
     # 'DEFAULT_AUTHENTICATION_CLASSES': ['FasterRunner.auth.DeleteAuthenticator', 'FasterRunner.auth.Authenticator', ],
     "DEFAULT_AUTHENTICATION_CLASSES": [
@@ -175,12 +175,12 @@ CORS_ALLOW_CREDENTIALS = True
 CORS_ORIGIN_ALLOW_ALL = True
 CORS_ORIGIN_WHITELIST = (
     # '*',
-    '127.0.0.1:8000',
-    'localhost:8000',
-    '127.0.0.1:8080',
-    'localhost:8080',
-    '127.0.0.1:8888',
-    'localhost:8888',
+    'http://127.0.0.1:8000',
+    'http://localhost:8000',
+    'http://127.0.0.1:8080',
+    'http://localhost:8080',
+    'http://127.0.0.1:8888',
+    'http://localhost:8888',
 )
 
 CORS_ALLOW_METHODS = (

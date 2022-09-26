@@ -364,7 +364,7 @@ def tree_end(params, project):
         type: int
     }
     """
-    type_value = params["type_value"]
+    type_value = params["type"]
     node = params["node"]
 
     if type_value == 1:
