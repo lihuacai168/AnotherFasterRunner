@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 import os
 from django.db.models import AutoField
 import datetime as datetime
+from loguru import logger
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 # BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -31,7 +32,7 @@ SECRET_KEY = "e$od9f28jce8q47u3raik$(e%$@lff6r89ux+=f!e1a$e42+#7"
 
 DEBUG = False
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ["*"]
 
 # Token Settings, 30天过期
 INVALID_TIME = 60 * 60 * 24 * 3650
@@ -216,6 +217,18 @@ IM_REPORT_SETTING = {
     "report_title": "自动化测试报告",
 }
 
+for level in ["INFO", "WARNING", "ERROR"]:
+    logger.add(
+        f"logs/{level.lower()}.log",
+        format="{time:YYYY-MM-DD HH:mm:ss.SSS}"
+        " [pid:{process} -> thread:{thread.name}]"
+        " {level}"
+        " [{name}:{function}:{line}]"
+        " {message}",
+        level=level,
+        rotation="00:00",
+        retention="14 days",
+    )
 
 LOGGING = {
     "version": 1,

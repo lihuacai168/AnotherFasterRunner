@@ -191,7 +191,7 @@ export const runDebugtalk = params => {
 export const getTree = (url, params) => {
     return axios
         .get("/api/fastrunner/tree/" + url + "/", params)
-        .then(res => res.data);
+        .then(res => res.data.data);
 };
 
 export const updateTree = (url, params) => {
@@ -251,7 +251,7 @@ export const getAPISingle = url => {
 };
 
 export const getPaginationBypage = params => {
-    return axios.get("/api/fastrunner/api/", params).then(res => res.data);
+    return axios.get('/api/fastrunner/api/', params).then(res => res.data)
 };
 
 export const addTestCase = params => {

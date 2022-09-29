@@ -493,8 +493,8 @@ export default {
                 type: 1
             }).then(resp => {
                 if (resp['success']) {
-                    this.dataTree = resp['tree'];
-                    this.maxId = resp['max'];
+                    this.dataTree = resp['data']['tree'];
+                    this.maxId = resp['data']['max'];
                 } else {
                     this.$message.error(resp['msg']);
                 }
