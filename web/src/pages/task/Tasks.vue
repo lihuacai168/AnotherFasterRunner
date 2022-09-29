@@ -76,7 +76,7 @@
                 </div>
             </el-header>
             <el-main style="padding: 0; margin-left: 10px; margin-top: 10px;">
-                <div style="position: fixed; bottom: 0; right:0; left: 170px; top: 150px">
+                <div style="position: fixed; bottom: 0; right:0; left: 10px; top: 150px">
                     <el-table
                         v-if="!addTasks"
                         :data="tasksData.results"

@@ -76,7 +76,7 @@
                     </el-button>
 
                     <el-button
-                        v-show="userName === projectInfo.responsible || !isSuperuser"
+                        v-show="userName === projectInfo.responsible || isSuperuser"
                         type="primary"
                         size="small"
                         icon="el-icon-circle-plus-outline"
@@ -420,7 +420,7 @@ export default {
             listCurrentPage: 1,
             visibleTag: '',
             rigEnv: '',
-            onlyMe: true,
+            onlyMe: !this.$store.state.is_superuser,
             showYAPI: true,
             isSelectAPI: false,
             isSaveAs: false,

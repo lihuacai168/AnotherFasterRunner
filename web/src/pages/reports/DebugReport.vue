@@ -10,49 +10,49 @@
             :cell-style="{textAlign:'center'}"
         >
             <el-table-column label="测试时间" width="160">
-                <template slot-scope="scope">
+                <template v-slot="scope">
                     <span>{{ scope.row.time.start_at|timestampToTime }}</span>
                 </template>
             </el-table-column>
 
             <el-table-column label="持续时间" width="100">
-                <template slot-scope="scope">
+                <template v-slot="scope">
                     <span v-text="scope.row.time.duration.toFixed(3)+' 秒'"></span>
                 </template>
             </el-table-column>
 
             <el-table-column label="Total" width="100">
-                <template slot-scope="scope">
+                <template v-slot="scope">
                     <el-tag>{{ scope.row.stat.testsRun }}</el-tag>
                 </template>
             </el-table-column>
 
             <el-table-column label="Success" width="100">
-                <template slot-scope="scope">
+                <template v-slot="scope">
                     <el-tag type="success">{{ scope.row.stat.successes }}</el-tag>
                 </template>
             </el-table-column>
 
             <el-table-column label="Failed" width="100">
-                <template slot-scope="scope">
+                <template v-slot="scope">
                     <el-tag type="danger">{{ scope.row.stat.failures }}</el-tag>
                 </template>
             </el-table-column>
 
             <el-table-column label="Error" width="100">
-                <template slot-scope="scope">
+                <template v-slot="scope">
                     <el-tag type="warning">{{ scope.row.stat.errors }}</el-tag>
                 </template>
             </el-table-column>
 
             <el-table-column label="Skipped" width="100">
-                <template slot-scope="scope">
+                <template v-slot="scope">
                     <el-tag type="info">{{ scope.row.stat.skipped }}</el-tag>
                 </template>
             </el-table-column>
 
             <el-table-column label="Platform">
-                <template slot-scope="scope">
+                <template v-slot="scope">
                     <el-popover trigger="hover" placement="top">
                         <p>HttpRunner: {{ scope.row.platform.httprunner_version }}</p>
                         <p>Python: {{ scope.row.platform.python_version }}</p>
@@ -153,19 +153,19 @@
                 </el-table-column>
 
                 <el-table-column label="名 称">
-                    <template slot-scope="scope">
+                    <template v-slot="scope">
                         <span>{{ scope.row.name }}</span>
                     </template>
                 </el-table-column>
 
                 <el-table-column label="请求地址">
-                    <template slot-scope="scope">
+                    <template v-slot="scope">
                         <span>{{ scope.row.meta_data.request.url }}</span>
                     </template>
                 </el-table-column>
 
                 <el-table-column label="请求方法" width="100px">
-                    <template slot-scope="scope">
+                    <template v-slot="scope">
             <span
                 :class="scope.row.meta_data.request.method"
             >{{ scope.row.meta_data.request.method }}</span>
@@ -173,20 +173,20 @@
                 </el-table-column>
 
                 <el-table-column label="响应时间 (ms)" width="130px">
-                    <template slot-scope="scope">
+                    <template v-slot="scope">
                         <span>{{ scope.row.meta_data.response.elapsed_ms }}</span>
                     </template>
                 </el-table-column>
 
                 <el-table-column label="测试结果" width="100px">
-                    <template slot-scope="scope">
+                    <template v-slot="scope">
                         <div :class="scope.row.status">{{ scope.row.status }}</div>
                     </template>
                 </el-table-column>
 
                 <el-table-column label="Convert" width="200px">
 
-                    <template slot-scope="scope">
+                    <template v-slot="scope">
                         <el-popover placement="right-start" width="400" trigger="hover">
                             <pre class="code-block">{{ scope.row.meta_data.boomer }}</pre>
                             <el-button slot="reference" round type="text"

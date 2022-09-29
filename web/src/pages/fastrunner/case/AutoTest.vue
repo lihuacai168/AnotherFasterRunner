@@ -305,7 +305,7 @@ export default {
             rigEnv: "",
             tag: "",
             search: "",
-            onlyMe: true,
+            onlyMe: !this.$store.state.is_superuser,
             isSelectCase: false,
         }
     },

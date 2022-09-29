@@ -111,7 +111,7 @@
 
             <el-container>
                 <el-main style="padding: 0; margin-left: 10px; margin-top: 10px;">
-                    <div style="position: fixed; bottom: 0; right:0; left: 160px; top: 150px">
+                    <div style="position: fixed; bottom: 0; right:0; left: 0; top: 150px">
                         <el-table
                             highlight-current-row
                             :data="variablesData.results"
@@ -122,7 +122,7 @@
                             @cell-mouse-leave="cellMouseLeave"
                             @selection-change="handleSelectionChange"
                         >
-                            <el-table-column type="selection" width="55"></el-table-column>
+                            <el-table-column type="selection" width="45"></el-table-column>
 
                             <el-table-column label="变量名">
                                 <template v-slot="scope">

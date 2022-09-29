@@ -5,7 +5,7 @@
         </el-header>
 
         <el-container>
-            <el-aside style="width: 160px">
+            <el-aside style="width: 160px" v-show="false">
                 <home-side></home-side>
             </el-aside>
 
@@ -14,13 +14,11 @@
             </el-main>
         </el-container>
     </el-container>
-
-
 </template>
 
 <script>
-import HomeHeader from './components/Header'
-import HomeSide from './components/Side'
+import HomeHeader from "./components/Header";
+import HomeSide from "./components/Side";
 
 export default {
     name: "Home",
@@ -28,13 +26,11 @@ export default {
         HomeHeader,
         HomeSide
     }
-
-}
+};
 </script>
 
 <style scoped>
 .el-main {
     padding: 0px;
 }
-
 </style>

@@ -25,8 +25,8 @@
         </el-header>
 
         <el-container>
-            <el-main style="padding: 0; margin-left: 10px; margin-top: 10px;">
-                <div style="position: fixed; bottom: 0; right:0; left: 165px; top: 150px">
+            <el-main style="padding: 0; margin-left: 0; margin-top: 10px;">
+                <div style="position: fixed; bottom: 0; right:0; left: 10px; top: 160px">
                     <el-table
                         highlight-current-row
                         :data="configData.results"
@@ -37,14 +37,14 @@
                         @cell-mouse-leave="cellMouseLeave"
                         @selection-change="handleSelectionChange"
                     >
-                        <el-table-column type="selection" width="55"></el-table-column>
-                        <el-table-column label="配置名称">
+                        <el-table-column type="selection" width="45"></el-table-column>
+                        <el-table-column label="配置名称" min-width="120">
                             <template v-slot="scope">
                                 <div>{{ scope.row.name }}</div>
                             </template>
                         </el-table-column>
 
-                        <el-table-column label="基本请求地址">
+                        <el-table-column label="基本请求地址" min-width="120">
                             <template v-slot="scope">
                                 <div v-text="scope.row.base_url === '' ? '无' : scope.row.base_url"></div>
                             </template>
@@ -62,7 +62,7 @@
                             </template>
                         </el-table-column>
 
-                        <el-table-column width="120">
+                        <el-table-column width="120" label="操作">
                             <template v-slot="scope">
                                 <el-row v-show="currentRow === scope.row">
                                     <el-button

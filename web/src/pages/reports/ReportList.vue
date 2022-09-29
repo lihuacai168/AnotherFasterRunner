@@ -47,9 +47,7 @@
         </div>
 
         <div class="report__header--item">
-          <el-button type="primary" size="small" @click="resetSearch"
-            >重置
-          </el-button>
+          <el-button type="primary" size="small" @click="resetSearch">重置</el-button>
         </div>
 
         <el-switch
@@ -112,7 +110,7 @@
           @selection-change="handleSelectionChange"
           v-loading="loading"
         >
-          <el-table-column type="selection" width="55"> </el-table-column>
+          <el-table-column type="selection" width="45"> </el-table-column>
 
           <el-table-column label="报告类型" width="100">
             <template v-slot="scope">
@@ -259,7 +257,7 @@ export default {
       selectReports: [],
       currentRow: "",
       currentPage: 1,
-      onlyMe: true,
+      onlyMe: !this.$store.state.is_superuser,
       isSuperuser: this.$store.state.is_superuser,
       // (1, "调试"),
       //     (2, "异步"),

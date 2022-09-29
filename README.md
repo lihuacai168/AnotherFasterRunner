@@ -1,8 +1,9 @@
 # FasterRunner
 
 [![LICENSE](https://img.shields.io/github/license/HttpRunner/FasterRunner.svg)](https://github.com/HttpRunner/FasterRunner/blob/master/LICENSE)
-[![LICENSE](https://img.shields.io/github/license/HttpRunner/FasterRunner.svg)](https://github.com/HttpRunner/FasterRunner/blob/master/LICENSE) [![travis-ci](https://travis-ci.org/HttpRunner/FasterRunner.svg?branch=master)](https://travis-ci.org/HttpRunner/FasterRunner) ![pyversions](https://img.shields.io/pypi/pyversions/Django.svg)
-![screenshoot](https://cdn.jsdelivr.net/gh/lihuacai168/images/img/project_detail.png)
+[![travis-ci](https://travis-ci.org/HttpRunner/FasterRunner.svg?branch=master)](https://travis-ci.org/HttpRunner/FasterRunner)
+![pyversions](https://img.shields.io/pypi/pyversions/Django.svg)
+![screen shoot](https://cdn.jsdelivr.net/gh/lihuacai168/images/img/project_detail.png)
 
 ## Feature
 

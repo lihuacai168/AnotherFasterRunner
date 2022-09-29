@@ -218,7 +218,7 @@
           </span>
         </el-dialog>
 
-        <div style="position: fixed; bottom: 0; right: 0; left: 414px; top: 160px">
+        <div style="position: fixed; bottom: 0; right: 0; left: 255px; top: 160px">
           <el-table
             highlight-current-row
             element-loading-text="正在玩命加载"
