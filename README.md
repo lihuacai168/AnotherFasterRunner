@@ -1,6 +1,8 @@
-[![LICENSE](https://img.shields.io/github/license/HttpRunner/FasterRunner.svg)](https://github.com/HttpRunner/FasterRunner/blob/master/LICENSE)
-
 # FasterRunner
+
+[![LICENSE](https://img.shields.io/github/license/HttpRunner/FasterRunner.svg)](https://github.com/HttpRunner/FasterRunner/blob/master/LICENSE)
+[![LICENSE](https://img.shields.io/github/license/HttpRunner/FasterRunner.svg)](https://github.com/HttpRunner/FasterRunner/blob/master/LICENSE) [![travis-ci](https://travis-ci.org/HttpRunner/FasterRunner.svg?branch=master)](https://travis-ci.org/HttpRunner/FasterRunner) ![pyversions](https://img.shields.io/pypi/pyversions/Django.svg)
+![screenshoot](https://cdn.jsdelivr.net/gh/lihuacai168/images/img/project_detail.png)
 
 ## Feature
 
@@ -14,18 +16,15 @@
 - [X]  测试结果统计报告简洁清晰，附带详尽统计信息和日志记录
 - [X]  测试报告推送飞书，钉钉，企业微信等
 
-[![LICENSE](https://img.shields.io/github/license/HttpRunner/FasterRunner.svg)](https://github.com/HttpRunner/FasterRunner/blob/master/LICENSE) [![travis-ci](https://travis-ci.org/HttpRunner/FasterRunner.svg?branch=master)](https://travis-ci.org/HttpRunner/FasterRunner) ![pyversions](https://img.shields.io/pypi/pyversions/Django.svg)
-![](https://cdn.jsdelivr.net/gh/lihuacai168/images/img/project_detail.png)
-
-
 ## 注意
+
 > 只能使用`python3.9`版本
-> 
+>
 > `V2`版本使用`django-celery-beat`代替`djcelery`, 需要手动执行sql文件夹中的`django_celery_beat_init.sql`
- 
+
 ## [使用文档](https://www.yuque.com/lihuacai/sggdx7/cn5ncg)
 
-- 使用文档 https://www.yuque.com/lihuacai/fasterunner
+- 使用文档 <https://www.yuque.com/lihuacai/fasterunner>
 
 ## Quick Start
 
