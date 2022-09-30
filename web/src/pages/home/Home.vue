@@ -5,9 +5,9 @@
         </el-header>
 
         <el-container>
-            <el-aside style="width: 160px" v-show="false">
-                <home-side></home-side>
-            </el-aside>
+<!--            <el-aside style="width: 160px" v-show="false">-->
+<!--                <home-side></home-side>-->
+<!--            </el-aside>-->
 
             <el-main>
                 <router-view></router-view>

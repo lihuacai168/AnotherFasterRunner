@@ -124,6 +124,11 @@ USE_TZ = False
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
+# Define MEDIA_URL as the base public URL of that directory. Make sure that this directory is writable by the Web
+# server's user account. Define MEDIA_ROOT as the full path to a directory where you'd like Django to store uploaded
+# files. (For performance, these files are not stored in the database.)
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+MEDIA_URL = "/media/"
 STATIC_URL = "/static/"
 
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'

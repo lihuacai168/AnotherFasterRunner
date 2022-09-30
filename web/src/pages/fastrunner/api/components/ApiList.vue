@@ -16,7 +16,7 @@
             clearable
             v-model="search"
             @keyup.enter.native="getAPIList"
-            style="min-width: 120px"
+            style="min-width: 100px"
           >
             <el-button
               slot="append"
