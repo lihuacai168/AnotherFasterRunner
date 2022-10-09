@@ -5,7 +5,7 @@
         <div class="report__header--item">
           <el-input
             placeholder="请输入报告名称"
-            size="small"
+            size="medium"
             clearable
             v-model="search"
             style="width: 260px"
@@ -19,7 +19,7 @@
         </div>
         <div class="report__header--item">
           <el-dropdown @command="reportTypeChangeHandle">
-            <el-button type="primary" size="small">
+            <el-button type="primary" size="medium">
               类型
               <i class="el-icon-arrow-down el-icon--right"></i>
             </el-button>
@@ -34,7 +34,7 @@
         </div>
         <div class="report__header--item">
           <el-dropdown @command="reportStatusChangeHandle">
-            <el-button type="primary" size="small">
+            <el-button type="primary" size="medium">
               结果
               <i class="el-icon-arrow-down el-icon--right"></i>
             </el-button>
@@ -47,7 +47,7 @@
         </div>
 
         <div class="report__header--item">
-          <el-button type="primary" size="small" @click="resetSearch">重置</el-button>
+          <el-button type="primary" size="medium" @click="resetSearch">重置</el-button>
         </div>
 
         <el-switch
@@ -73,18 +73,18 @@
           ></el-button>
         </div>
 
-        <div class="report__header--item">
-          <el-pagination
-            :page-size="11"
-            v-show="reportData.count !== 0"
-            background
-            @current-change="handleCurrentChange"
-            :current-page.sync="currentPage"
-            layout="total, prev, pager, next, jumper"
-            :total="reportData.count"
-          >
-          </el-pagination>
-        </div>
+<!--        <div class="report__header&#45;&#45;item">-->
+<!--          <el-pagination-->
+<!--            :page-size="11"-->
+<!--            v-show="reportData.count !== 0"-->
+<!--            background-->
+<!--            @current-change="handleCurrentChange"-->
+<!--            :current-page.sync="currentPage"-->
+<!--            layout="total, prev, pager, next, jumper"-->
+<!--            :total="reportData.count"-->
+<!--          >-->
+<!--          </el-pagination>-->
+<!--        </div>-->
       </div>
     </el-header>
 
@@ -104,7 +104,7 @@
           :data="reportData.results"
           :show-header="reportData.results.length !== 0"
           stripe
-          max-height="700px"
+          max-height="800px"
           @cell-mouse-enter="cellMouseEnter"
           @cell-mouse-leave="cellMouseLeave"
           @selection-change="handleSelectionChange"
@@ -240,6 +240,20 @@
           </el-table-column>
         </el-table>
       </el-main>
+        <el-footer>
+            <div style="margin: 5px 5px;">
+                <el-pagination
+                    :page-size="11"
+                    v-show="reportData.count !== 0"
+                    background
+                    @current-change="handleCurrentChange"
+                    :current-page.sync="currentPage"
+                    layout="total, prev, pager, next, jumper"
+                    :total="reportData.count"
+                >
+                </el-pagination>
+            </div>
+        </el-footer>
     </el-container>
   </el-container>
 </template>

@@ -31,7 +31,7 @@
 
                     <div style="margin: 0 5px;">
                         <el-dropdown @command="caseTypeChangeHandle">
-                            <el-button size="small" type="primary">类型
+                            <el-button size="medium" type="primary">类型
                                 <i class="el-icon-arrow-down el-icon--right"></i>
                             </el-button>
                             <el-dropdown-menu slot="dropdown">
@@ -46,7 +46,7 @@
                     <div>
                         <el-button
                             type="primary"
-                            size="small"
+                            size="medium"
                             @click="resetSearch"
                             >重置
                         </el-button>
@@ -54,7 +54,7 @@
                 <div style="margin: 0 5px;">
                     <el-dropdown @command="dropdownMenuChangeHandle">
 <!--                        <span><i class="el-icon-more"></i></span>-->
-                        <el-button type="info" size="small">操作
+                        <el-button type="info" size="medium">操作
                             <i class="el-icon-more el-icon--right"></i>
                         </el-button>
                         <el-dropdown-menu slot="dropdown">
@@ -72,24 +72,24 @@
                         </el-dropdown-menu>
                     </el-dropdown>
                 </div>
-                    <div style="margin: 0 5px;">
-                        <el-pagination
-                            @current-change="handleCurrentChange"
-                            :current-page.sync="currentPage"
-                            :page-size="11"
-                            v-show="testData.count !== 0"
-                            background
-                            layout="total, prev, pager, next, jumper"
-                            :total="testData.count"
-                        >
-                        </el-pagination>
-                    </div>
+<!--                    <div style="margin: 0 5px;">-->
+<!--                        <el-pagination-->
+<!--                            @current-change="handleCurrentChange"-->
+<!--                            :current-page.sync="currentPage"-->
+<!--                            :page-size="11"-->
+<!--                            v-show="testData.count !== 0"-->
+<!--                            background-->
+<!--                            layout="total, prev, pager, next, jumper"-->
+<!--                            :total="testData.count"-->
+<!--                        >-->
+<!--                        </el-pagination>-->
+<!--                    </div>-->
             </div>
         </el-header>
 
         <el-container>
             <el-main style="padding: 0; margin-left: 10px; margin-bottom: 10px">
-                <div style="position: fixed; bottom: 0; right:0; left: 255px; top: 160px">
+                <div>
                     <el-dialog
                         v-if="dialogTableVisible"
                         title="Test Result"
@@ -227,18 +227,19 @@
                   </span>
                     </el-dialog>
                     <el-table
+                        style="width: 100%; height: auto;"
                         highlight-current-row
                         v-loading="loading"
                         ref="multipleTable"
                         :data="testData.results"
                         :show-header="testData.count !== 0"
                         stripe
-                        height="calc(100%)"
+                        max-height="900"
                         @cell-mouse-enter="cellMouseEnter"
                         @cell-mouse-leave="cellMouseLeave"
                         @selection-change="handleSelectionChange"
                     >
-                        <el-table-column type="selection" width="45"></el-table-column>
+                        <el-table-column type="selection" width="35"></el-table-column>
 <!--                        <el-table-column width="25">-->
 <!--                            <template v-slot="scope">-->
 <!--                                <el-dropdown-->
@@ -268,7 +269,7 @@
                         <el-table-column label="用例名称" min-width="200">
                             <template v-slot="scope">
                                 <div>{{ scope.row.name }}
-                                    <i class="el-icon-success " style="color: green" v-if="scope.row.tasks.length > 0 "
+                                    <i class="el-icon-success " style="color: green;margin-left: 5px" v-if="scope.row.tasks.length > 0 "
                                        :title="'已加入定时任务: ' + scope.row.tasks.map(task => task.name).join('，')">
                                     </i>
                                 </div>
@@ -392,8 +393,35 @@
                             </template>
                         </el-table-column>
                     </el-table>
+<!--                    <div style="margin: 0 5px;">-->
+<!--                        <el-pagination-->
+<!--                            style="margin-top: 5px"-->
+<!--                            @current-change="handleCurrentChange"-->
+<!--                            :current-page.sync="currentPage"-->
+<!--                            :page-size="11"-->
+<!--                            v-show="testData.count !== 0"-->
+<!--                            background-->
+<!--                            layout="total, prev, pager, next, jumper"-->
+<!--                            :total="testData.count"-->
+<!--                        >-->
+<!--                        </el-pagination>-->
+<!--                    </div>-->
                 </div>
             </el-main>
+            <el-footer>
+                <div style="margin: 5px 5px;">
+                        <el-pagination
+                            @current-change="handleCurrentChange"
+                            :current-page.sync="currentPage"
+                            :page-size="11"
+                            v-show="testData.count !== 0"
+                            background
+                            layout="total, prev, pager, next, jumper"
+                            :total="testData.count"
+                        >
+                        </el-pagination>
+                    </div>
+            </el-footer>
         </el-container>
     </el-container>
 </template>

@@ -25,12 +25,12 @@
         </el-header>
 
         <el-container>
-            <el-header v-if="!addTasks" style="padding: 0; height: 500px; margin-top: 10px;">
-                <div style="padding-left: 10px; display: flex">
+            <el-header v-if="!addTasks" style="padding: 10px 0 0 2px; height: 50px;">
+                <div style="padding-left: 8px; display: flex">
                     <div>
                         <el-input
                             placeholder="请输入任务名称"
-                            size="small"
+                            size="medium"
                             clearable
                             v-model="searchTaskName"
                             @keyup.enter.native="getTaskList"
@@ -45,7 +45,7 @@
                         <span style="margin-left: 10px">创建人: </span>
                         <el-select
                             v-model="selectUser"
-                            size="small"
+                            size="medium"
                             placeholder="请选择创建人"
                             filterable
                             :style="{ width: '120px' }"
@@ -58,39 +58,25 @@
                                 :disabled="item.disabled"
                             ></el-option>
                         </el-select>
-                        <el-button type="primary" @click="resetSearch" size="small">重置</el-button>
-                    </div>
-                    <div>
-                        <el-pagination
-                            style="margin-top: 2px"
-                            :page-size="11"
-                            v-show="tasksData.count !== 0"
-                            background
-                            @current-change="handleCurrentChange"
-                            :current-page.sync="currentPage"
-                            layout="total, prev, pager, next, jumper"
-                            :total="tasksData.count"
-                        >
-                        </el-pagination>
+                        <el-button type="primary" @click="resetSearch" size="medium">重置</el-button>
                     </div>
                 </div>
             </el-header>
             <el-main style="padding: 0; margin-left: 10px; margin-top: 10px;">
-                <div style="position: fixed; bottom: 0; right:0; left: 10px; top: 150px">
+                <div>
                     <el-table
                         v-if="!addTasks"
                         :data="tasksData.results"
                         :show-header="tasksData.results.length !== 0"
                         stripe
                         highlight-current-row
-                        height="calc(100%)"
-                        style="width: 100%; overflow: auto"
+                        style="width: 100%; overflow: auto; height: auto;"
                         @cell-mouse-enter="cellMouseEnter"
                         @cell-mouse-leave="cellMouseLeave"
                     >
-                        <el-table-column label="任务ID" min-width="50">
+                        <el-table-column label="任务ID" min-width="70">
                             <template v-slot="scope">
-                                <div>{{ scope.row.id }}</div>
+                                <div class="block">{{ scope.row.id }}</div>
                             </template>
                         </el-table-column>
 
@@ -108,8 +94,7 @@
 
                         <el-table-column width="150" label="下次执行时间">
                             <template v-slot="scope">
-                                <div>{{ scope.row.kwargs.next_execute_time ?
-                                    scope.row.kwargs.next_execute_time : "" | timestampToTime }}
+                                <div>{{ scope.row.kwargs.next_execute_time ? scope.row.kwargs.next_execute_time : "" | timestampToTime }}
                                 </div>
                             </template>
                         </el-table-column>
@@ -127,14 +112,14 @@
                             </template>
                         </el-table-column>
 
-                        <el-table-column width="180" label="运行配置">
+                        <el-table-column min-width="100" label="运行配置">
                             <template v-slot="scope">
                                 <div>{{scope.row.kwargs.config === "请选择" ? "用例配置" : scope.row.kwargs.config }}
                                 </div>
                             </template>
                         </el-table-column>
 
-                        <el-table-column width="100" label="通知策略">
+                        <el-table-column min-width="100" label="通知策略">
                             <template v-slot="scope">
                                 <div>{{ scope.row.kwargs.strategy }}</div>
                             </template>
@@ -178,19 +163,19 @@
                         <!--                            </template>-->
                         <!--                        </el-table-column>-->
                         <el-table-column width="80" label="更新人">
-                            <template slot-scope="scope">
+                            <template v-slot="scope">
                                 <div>{{ scope.row.kwargs.updater }}</div>
                             </template>
                         </el-table-column>
                         <el-table-column width="80" label="创建人">
-                            <template slot-scope="scope">
+                            <template v-slot="scope">
                                 <div>{{ scope.row.kwargs.creator }}</div>
                             </template>
                         </el-table-column>
 
-                        <el-table-column width="200">
-                            <template slot-scope="scope">
-                                <el-row v-show="currentRow === scope.row">
+                        <el-table-column width="150" label="操作" fixed="right">
+                            <template v-slot="scope">
+                                <el-row v-show="true">
                                     <el-button
                                         type="info"
                                         icon="el-icon-edit"
@@ -210,6 +195,7 @@
                                         title="复制"
                                         circle
                                         size="mini"
+                                        style="margin-left:0;"
                                         @click="
                                             handleCopyTask(
                                                 scope.row.id,
@@ -223,6 +209,7 @@
                                         title="手动触发任务"
                                         circle
                                         size="mini"
+                                        style="margin-left:0;"
                                         @click="runTask(scope.row.id)"
                                     >
                                     </el-button>
@@ -232,6 +219,7 @@
                                         title="删除"
                                         circle
                                         size="mini"
+                                        style="margin-left:0;"
                                         @click="delTasks(scope.row.id)"
                                     >
                                     </el-button>
@@ -239,6 +227,18 @@
                             </template>
                         </el-table-column>
                     </el-table>
+                    <div style="margin: 5px 5px;">
+                        <el-pagination
+                            :page-size="11"
+                            v-show="tasksData.count !== 0"
+                            background
+                            @current-change="handleCurrentChange"
+                            :current-page.sync="currentPage"
+                            layout="total, prev, pager, next, jumper"
+                            :total="tasksData.count"
+                        >
+                        </el-pagination>
+                    </div>
                 </div>
             </el-main>
             <add-tasks

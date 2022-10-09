@@ -94,30 +94,30 @@
                         <el-col :span="2" style="padding-left: 5px">
                             <el-button type="primary" size="medium" @click="resetSearch">重置</el-button>
                         </el-col>
-                        <el-col :span="7">
-                            <el-pagination
-                                :page-size="11"
-                                v-show="variablesData.count !== 0 "
-                                background
-                                @current-change="handleCurrentChange"
-                                :current-page.sync="currentPage"
-                                layout="total, prev, pager, next, jumper"
-                                :total="variablesData.count"
-                            ></el-pagination>
-                        </el-col>
+<!--                        <el-col :span="7">-->
+<!--                            <el-pagination-->
+<!--                                :page-size="11"-->
+<!--                                v-show="variablesData.count !== 0 "-->
+<!--                                background-->
+<!--                                @current-change="handleCurrentChange"-->
+<!--                                :current-page.sync="currentPage"-->
+<!--                                layout="total, prev, pager, next, jumper"-->
+<!--                                :total="variablesData.count"-->
+<!--                            ></el-pagination>-->
+<!--                        </el-col>-->
                     </el-row>
                 </div>
             </el-header>
 
             <el-container>
                 <el-main style="padding: 0; margin-left: 10px; margin-top: 10px;">
-                    <div style="position: fixed; bottom: 0; right:0; left: 0; top: 150px">
+                    <div>
                         <el-table
+                            style="width: 100%; height: auto;"
                             highlight-current-row
                             :data="variablesData.results"
                             :show-header="variablesData.results.length !== 0 "
                             stripe
-                            height="calc(100%)"
                             @cell-mouse-enter="cellMouseEnter"
                             @cell-mouse-leave="cellMouseLeave"
                             @selection-change="handleSelectionChange"
@@ -184,6 +184,17 @@
                                 </template>
                             </el-table-column>
                         </el-table>
+                        <div style="margin: 5px 5px;">
+                            <el-pagination
+                                :page-size="11"
+                                v-show="variablesData.count !== 0 "
+                                background
+                                @current-change="handleCurrentChange"
+                                :current-page.sync="currentPage"
+                                layout="total, prev, pager, next, jumper"
+                                :total="variablesData.count"
+                            ></el-pagination>
+                        </div>
                     </div>
                 </el-main>
             </el-container>

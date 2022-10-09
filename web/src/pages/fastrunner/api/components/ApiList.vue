@@ -25,10 +25,10 @@
             ></el-button>
           </el-input>
         </div>
-          <el-button type="primary" size="small" @click="resetSearch">重置 </el-button>
+          <el-button type="primary" size="medium" @click="resetSearch">重置 </el-button>
         <div class="recordapi__header--item">
           <el-dropdown @command="tagChangeHandle">
-            <el-button type="primary" size="small">状态<i class="el-icon-arrow-down"></i>
+            <el-button type="primary" size="medium">状态<i class="el-icon-arrow-down"></i>
             </el-button>
             <el-dropdown-menu slot="dropdown">
               <el-dropdown-item command="1">成功</el-dropdown-item>
@@ -40,7 +40,7 @@
           </el-dropdown>
             <el-dropdown @command="dropdownMenuChangeHandle">
 <!--                  <span><i class="el-icon-more">选中操作</i></span>-->
-                <el-button type="info" size="small">操作<i class="el-icon-more"></i></el-button>
+                <el-button type="info" size="medium">操作<i class="el-icon-more"></i></el-button>
                   <el-dropdown-menu slot="dropdown">
                     <el-dropdown-item disabled style="background-color: #e2e2e2"
                       >选中({{ selectAPI.length }} 条)</el-dropdown-item
@@ -84,7 +84,7 @@
         <!--                    </el-dropdown>-->
         <!--                </div>-->
 
-        <div class="recordapi__header--item">
+        <!-- <div class="recordapi__header--item">
           <el-pagination
             style="margin-top: 5px"
             :page-size="11"
@@ -96,7 +96,7 @@
             :total="apiData.count"
           >
           </el-pagination>
-        </div>
+        </div> -->
       </div>
     </el-header>
 
@@ -222,7 +222,6 @@
           <el-table
             highlight-current-row
             element-loading-text="正在玩命加载"
-            height="600px"
             ref="multipleTable"
             :data="apiData.results"
             :show-header="false"
@@ -236,7 +235,7 @@
             @selection-change="handleSelectionChange"
             v-loading="loading"
           >
-            <el-table-column type="selection"></el-table-column>
+            <el-table-column type="selection" width="28"></el-table-column>
 <!--            <el-table-column width="25">-->
 <!--              <template slot-scope="scope">-->
 <!--                <el-dropdown @command="dropdownMenuChangeHandle">-->
@@ -270,7 +269,7 @@
 <!--              </template>-->
 <!--            </el-table-column>-->
 
-            <el-table-column min-width="300" align="center">
+            <el-table-column min-width="300" align="center" label="接口信息">
               <template v-slot="scope">
                 <div class="block" :class="`block_${scope.row.method.toLowerCase()}`">
                   <span
@@ -318,7 +317,7 @@
                 </el-tag>
               </template>
             </el-table-column>
-            <el-table-column width="180">
+            <el-table-column width="180" label="操作">
               <template v-slot="scope">
                 <el-row v-show="currentRow === scope.row">
                   <el-button
@@ -429,6 +428,19 @@
               </template>
             </el-table-column>
           </el-table>
+          <div class="recordapi__header--item">
+          <el-pagination
+            style="margin-top: 5px"
+            :page-size="11"
+            v-show="apiData.count !== 0"
+            background
+            @current-change="handleCurrentChange"
+            :current-page.sync="currentPage"
+            layout="total, prev, pager, next, jumper"
+            :total="apiData.count"
+          >
+          </el-pagination>
+        </div>
         </div>
       </el-main>
     </el-container>

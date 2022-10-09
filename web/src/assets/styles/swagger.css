@@ -64,7 +64,7 @@
 .block {
     position: relative;
     border-radius: 4px;
-    height: 43.6px;
+    height: 43px;
     overflow: hidden;
     padding: 5px;
     display: flex;

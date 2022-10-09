@@ -1,46 +1,46 @@
 <template>
     <el-container>
-        <el-header style="padding-top: 10px; height: 50px;">
+        <el-header style="padding-top: 10px; height: 50px;" v-if="configData.count > 8">
             <div>
                 <el-row>
-                    <el-col :span="6" v-if="configData.count > 8">
+                    <el-col :span="6">
                         <el-input placeholder="请输入配置名称" clearable v-model="search">
                             <el-button slot="append" icon="el-icon-search" @click="getConfigList"></el-button>
                         </el-input>
                     </el-col>
-                    <el-col :span="7">
-                        <el-pagination
-                            :page-size="11"
-                            v-show="configData.count !== 0 "
-                            background
-                            @current-change="handleCurrentChange"
-                            :current-page.sync="currentPage"
-                            layout="total, prev, pager, next, jumper"
-                            :total="configData.count"
-                        >
-                        </el-pagination>
-                    </el-col>
+<!--                    <el-col :span="7">-->
+<!--                        <el-pagination-->
+<!--                            :page-size="11"-->
+<!--                            v-show="configData.count !== 0 "-->
+<!--                            background-->
+<!--                            @current-change="handleCurrentChange"-->
+<!--                            :current-page.sync="currentPage"-->
+<!--                            layout="total, prev, pager, next, jumper"-->
+<!--                            :total="configData.count"-->
+<!--                        >-->
+<!--                        </el-pagination>-->
+<!--                    </el-col>-->
                 </el-row>
             </div>
         </el-header>
 
         <el-container>
             <el-main style="padding: 0; margin-left: 0; margin-top: 10px;">
-                <div style="position: fixed; bottom: 0; right:0; left: 10px; top: 160px">
+                <div>
                     <el-table
+                        style="width: 100%; height: auto;"
                         highlight-current-row
                         :data="configData.results"
                         :show-header="configData.results.length !== 0 "
                         stripe
-                        height="calc(100%)"
                         @cell-mouse-enter="cellMouseEnter"
                         @cell-mouse-leave="cellMouseLeave"
                         @selection-change="handleSelectionChange"
                     >
-                        <el-table-column type="selection" width="45"></el-table-column>
+                        <el-table-column type="selection" width="35"></el-table-column>
                         <el-table-column label="配置名称" min-width="120">
                             <template v-slot="scope">
-                                <div>{{ scope.row.name }}</div>
+                                <div style="height: 20px">{{ scope.row.name }}</div>
                             </template>
                         </el-table-column>
 
@@ -98,6 +98,18 @@
                         </el-table-column>
 
                     </el-table>
+                    <div style="margin: 5px 5px;">
+                        <el-pagination
+                            :page-size="11"
+                            v-show="configData.count !== 0 "
+                            background
+                            @current-change="handleCurrentChange"
+                            :current-page.sync="currentPage"
+                            layout="total, prev, pager, next, jumper"
+                            :total="configData.count"
+                        >
+                        </el-pagination>
+                    </div>
                 </div>
             </el-main>
         </el-container>
