@@ -1,5 +1,6 @@
 .git
 **/*.log
+**/*.sock
 **/*-log-*
 **/*.tar.gz
 Dockerfile
