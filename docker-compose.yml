@@ -36,7 +36,7 @@ services:
       - MQ_PORT=${MQ_PORT}
       - SENTRY_DSN=${SENTRY_DSN}
     volumes:
-      - .:/opt/workspace/FasterRunner
+      - ./mysql:/opt/workspace/FasterRunner/mysql
       - ./nginx.conf:/etc/nginx/sites-enabled/nginx.conf
     entrypoint: /bin/sh
     command: -c "/usr/local/bin/python -m gunicorn FasterRunner.wsgi_docker -b 0.0.0.0 -w 4"

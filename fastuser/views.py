@@ -5,8 +5,6 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from drf_yasg.utils import swagger_auto_schema
 
-
-
 from fastuser.common import response
 from fastuser import models
 from fastuser import serializers
@@ -14,7 +12,6 @@ from fastuser import serializers
 from fastuser.common.token import generate_token
 from django.core.exceptions import ObjectDoesNotExist
 from django.conf import settings
-
 
 # 获取用户模型
 User = get_user_model()

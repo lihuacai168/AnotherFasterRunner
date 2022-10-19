@@ -55,7 +55,12 @@ INSTALLED_APPS = [
     "django_celery_beat",
     "rest_framework_swagger",
     "drf_yasg",
+    "captcha", "tyadmin_api_cli", "tyadmin_api"
 ]
+
+TY_ADMIN_CONFIG = {
+    'GEN_APPS': ['fastuser', 'fastrunner']
+}
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
