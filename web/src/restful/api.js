@@ -53,7 +53,7 @@ axios.interceptors.response.use(
     function(error) {
         try {
             if (error.response.status === 401) {
-                Message.error({ message: "请先登录" });
+                Notification.warning({ message: "请先登录" });
                 router.replace({
                     name: "Login"
                 });
@@ -61,20 +61,20 @@ axios.interceptors.response.use(
                 error.response.status === 500 ||
                 error.response.status === 404
             ) {
-                Message.error({
+                Notification.error({
                     message: "服务器内部异常, 请检查",
                     duration: 2000
                 });
             } else if (error.response.status === 504) {
-                Message.error({
+                Notification.error({
                     message: "请求超时,请联系系统管理员"
                 });
             } else if (error.response.status === 405) {
-                Message.error({
+                Notification.error({
                     message: "Not Allowed"
                 });
             } else if (error.response.status === 403) {
-                Message.error({
+                Notification.error({
                     message: error.response.data.msg,
                     duration: this.$store.state.duration
                 });
@@ -104,7 +104,7 @@ axios.interceptors.response.use(
             }
             return Promise.reject(error.response.data);
         } catch (e) {
-            Message.error({
+            Notification.error({
                 message: "服务器连接超时，请重试",
                 duration: 2000
             });

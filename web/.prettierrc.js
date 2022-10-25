@@ -1,8 +1,8 @@
 module.exports = {
   printWidth: 120, // 单行字符数, 默认80
-  tabWidth: 2, // 缩进字节数, 默认2
+  tabWidth: 4, // 缩进字节数, 默认2
   semi: false, // 句尾使用分号, 默认true
-  singleQuote: true, // 使用单引号代替双引号, 默认false
+  singleQuote: false, // 使用单引号代替双引号, 默认false
   trailingComma: 'none', // 多行时尽可能打印尾随逗号, 默认'none', 可选: ['none', 'es5', 'all']
   endOfLine: 'auto' // 结束行形式, 默认'auto', 结尾是 \n \r \n\r auto
 

@@ -104,7 +104,7 @@ class LoginView(MtyCustomExecView):
             # except CaptchaStore.DoesNotExist:
             #     raise ValidationError({"pic_captcha": ["验证码不正确"]})
             user = authenticate(request, username=request.data["userName"], password=request.data["password"])
-            print(user.username)
+            
             log_save(user=user.username, request=self.request, flag="登录",
                      message=f'{user.username}登录成功',
                      log_type="login")

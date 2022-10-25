@@ -141,6 +141,11 @@ REST_FRAMEWORK = {
     # 'DEFAULT_AUTHENTICATION_CLASSES': ['FasterRunner.auth.DeleteAuthenticator', 'FasterRunner.auth.Authenticator', ],
     "DEFAULT_AUTHENTICATION_CLASSES": [
         "FasterRunner.auth.MyJWTAuthentication",
+        # 'FasterRunner.auth.DeleteAuthenticator',
+        # 'FasterRunner.auth.Authenticator',
+        "rest_framework_jwt.authentication.JSONWebTokenAuthentication",
+        "rest_framework.authentication.SessionAuthentication",
+        "rest_framework.authentication.BasicAuthentication",
     ],
     "UNAUTHENTICATED_USER": None,
     "UNAUTHENTICATED_TOKEN": None,

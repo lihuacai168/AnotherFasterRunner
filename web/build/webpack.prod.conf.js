@@ -13,6 +13,8 @@ const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
 const VueLoaderPlugin = require('vue-loader/lib/plugin')
 const env = require('../config/prod.env')
 // const ZipPlugin = require('zip-webpack-plugin');
+const SpeedMeasurePlugin = require('speed-measure-webpack-plugin')
+const smp = new SpeedMeasurePlugin();
 
 const webpackConfig = merge(baseWebpackConfig, {
     module: {
@@ -30,14 +32,60 @@ const webpackConfig = merge(baseWebpackConfig, {
     },
     optimization: {
         splitChunks: {
+            chunks: "all",
             cacheGroups: {
+                libs: {
+                    name: "chunk-libs",
+                    test: /[\\/]node_modules[\\/]/,
+                    priority: 10,
+                    chunks: "initial",
+                    enforce: true,
+                    reuseExistingChunk: true
+                },
+                elementUI: {
+                    name: "chunk-elementUI", // split elementUI into a single package
+                    priority: 20, // the weight needs to be larger than libs and app or it will be packaged into libs or app
+                    test: /[\\/]element-ui[\\/]/,
+                    enforce: true,
+                    reuseExistingChunk: true
+                },
+                "monaco-editor": {
+                    name: "chunk-monaco-editor",
+                    priority: 30,
+                    test: /[\\/]monaco-editor[\\/]/,
+                    enforce: true,
+                    reuseExistingChunk: true
+                },
+                echarts: {
+                    name: "chunk-echarts",
+                    test: /[\\/]echarts[\\/]/,
+                    priority: 5,
+                    enforce: true,
+                    reuseExistingChunk: true
+                },
+                "v-jsoneditor": {
+                    name: "chunk-v-jsoneditor",
+                    priority: 5,
+                    test: /[\\/]v-jsoneditor[\\/]/,
+                    enforce: true,
+                    reuseExistingChunk: true
+                },
+                styles: {
+                    name: "styles", // split styles
+                    test: /.(le|sa|sc|c)ss$/,
+                    priority: 5,
+                    reuseExistingChunk: true
+                },
                 commons: {
-                    name: "commons",
+                    name: "chunk-commons",
+                    priority: 5,
+                    reuseExistingChunk: true, // 是否可以重用使用该chunks
                     chunks: "initial",
                     minChunks: 2
                 }
             }
-        }
+        },
+        minimizer: [new UglifyJsPlugin()]
     },
     mode: 'production',
     plugins: [
@@ -165,4 +213,4 @@ if (config.build.bundleAnalyzerReport) {
     webpackConfig.plugins.push(new BundleAnalyzerPlugin())
 }
 
-module.exports = webpackConfig
+module.exports = smp.wrap(webpackConfig)
