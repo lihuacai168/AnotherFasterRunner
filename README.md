@@ -39,6 +39,8 @@ WORKDIR /opt/workspace/FasterRunner/
 ```shell
 # 单独构建app及web应用，分别在AnotherFasterRunner及./web目录下
 docker build -t fasterrunner_app:latest .
+cd ./ComposeDeploy
+docker build -t fasterrunner_base:latest .
 cd ./web
 npm run build
 docker build -t fasterrunner_web:latest .

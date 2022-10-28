@@ -16,6 +16,7 @@ celerybeat.pid
 start.sh.bak
 tempWorkDir?
 mysql?
+mysql
 
 # .env
 venv/
@@ -23,6 +24,8 @@ nohup.out
 
 # web
 .DS_Store
+web
+tyadmin
 web/node_modules/
 */node_modules*
 */*/.umi*
