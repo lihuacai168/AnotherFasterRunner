@@ -28,6 +28,7 @@ class IndexPageView(View):
         # render三变量: request 模板名称 一个字典写明传给前端的值
         return render(request, "FasterWeb/index.html")
 
+
 class ProjectView(GenericViewSet):
     """
     项目增删改查
@@ -314,7 +315,6 @@ class VisitView(GenericViewSet):
         report_count = [create_time_report_map.get(d, 0) for d in recent7days]
 
         return Response({"recent7days": recent7days, "report_count": report_count})
-
 
 #
 

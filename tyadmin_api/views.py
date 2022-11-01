@@ -8,7 +8,8 @@ from tyadmin_api_cli.contants import SYS_LABELS
 from tyadmin_api.custom import XadminViewSet, custom_exception_handler
 from tyadmin_api.filters import TyAdminSysLogFilter, TyAdminEmailVerifyRecordFilter
 from tyadmin_api.models import TyAdminSysLog, TyAdminEmailVerifyRecord
-from tyadmin_api.serializers import TyAdminSysLogSerializer, TyAdminEmailVerifyRecordSerializer, SysUserChangePasswordSerializer
+from tyadmin_api.serializers import TyAdminSysLogSerializer, TyAdminEmailVerifyRecordSerializer, \
+    SysUserChangePasswordSerializer
 
 
 class TyAdminSysLogViewSet(XadminViewSet):
@@ -104,7 +105,7 @@ class LoginView(MtyCustomExecView):
             except CaptchaStore.DoesNotExist:
                 raise ValidationError({"pic_captcha": ["验证码不正确"]})
             user = authenticate(request, username=request.data["userName"], password=request.data["password"])
-            
+
             log_save(user=user.username, request=self.request, flag="登录",
                      message=f'{user.username}登录成功',
                      log_type="login")
@@ -149,8 +150,9 @@ class CurrentUserView(MtyCustomExecView):
     def get(self, request, *args, **kwargs):
         if request.user:
             try:
-                return JsonResponse({"id": request.user.id, "name": request.user.get_username(), "email": request.user.email,
-                                     "avatar": "https://gw.alipayobjects.com/zos/antfincdn/XAosXuNZyF/BiazfanxmamNRoxxVxka.png"})
+                return JsonResponse(
+                    {"id": request.user.id, "name": request.user.get_username(), "email": request.user.email,
+                     "avatar": "https://gw.alipayobjects.com/zos/antfincdn/XAosXuNZyF/BiazfanxmamNRoxxVxka.png"})
             except AttributeError:
                 return JsonResponse({
                     "errors": "暂未登录"
@@ -177,7 +179,8 @@ class UploadView(MtyCustomExecView):
     def post(self, request, *args, **kwargs):
         rich_ser = RichUploadSerializer(data=request.data)
         rich_ser.is_valid(raise_exception=True)
-        rich_ser.validated_data["ty_admin_prefix"] = request._request.scheme + "://" + self.request.META['HTTP_HOST'] + settings.MEDIA_URL
+        rich_ser.validated_data["ty_admin_prefix"] = request._request.scheme + "://" + self.request.META[
+            'HTTP_HOST'] + settings.MEDIA_URL
         res = rich_ser.create(validated_data=rich_ser.validated_data)
         return Response(res)
 
@@ -225,7 +228,8 @@ class UserListChangePasswordView(MtyCustomExecView):
             password = make_password(change_re_password)
             cur_user.password = password
             cur_user.save()
-            log_save(user=request.user.get_username(), request=self.request, flag="修改", message=f'用户: {cur_user.get_username()}密码被修改', log_type="user")
+            log_save(user=request.user.get_username(), request=self.request, flag="修改",
+                     message=f'用户: {cur_user.get_username()}密码被修改', log_type="user")
         except SysUser.DoesNotExist:
             raise ValidationError({"username": ["用户名不存在"]})
         ret_info = {

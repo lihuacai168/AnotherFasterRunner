@@ -48,16 +48,16 @@ services:
       - "${DJANGO_API_PORT}:8000"
     restart: always
 
-  web:
-    image: fasterrunner_web:latest
-    container_name: faster-web
-    build:
-      context: ./web
-      dockerfile: Dockerfile
-    ports:
-      - "${WEB_PORT}:8888"
-    volumes:
-      - ./web/dist:/usr/share/nginx/html
+  # web:
+  #   image: fasterrunner_web:latest
+  #   container_name: faster-web
+  #   build:
+  #     context: ./web
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - "${WEB_PORT}:8888"
+  #   volumes:
+  #     - ./web/dist:/usr/share/nginx/html
 
   mq:
     image: rabbitmq:management-alpine
