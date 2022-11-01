@@ -97,12 +97,12 @@ class LoginView(MtyCustomExecView):
     def post(self, request, *args, **kwargs):
         if request.data["type"] == "account":
             pic_captcha = request.data["pic_captcha"]
-            # key = request.data["key"]
-            # try:
-            #     captcha = CaptchaStore.objects.get(challenge=pic_captcha.upper(), hashkey=key)
-            #     captcha.delete()
-            # except CaptchaStore.DoesNotExist:
-            #     raise ValidationError({"pic_captcha": ["验证码不正确"]})
+            key = request.data["key"]
+            try:
+                captcha = CaptchaStore.objects.get(challenge=pic_captcha.upper(), hashkey=key)
+                captcha.delete()
+            except CaptchaStore.DoesNotExist:
+                raise ValidationError({"pic_captcha": ["验证码不正确"]})
             user = authenticate(request, username=request.data["userName"], password=request.data["password"])
             
             log_save(user=user.username, request=self.request, flag="登录",

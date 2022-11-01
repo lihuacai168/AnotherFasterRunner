@@ -66,9 +66,22 @@ const errorHandler = error => {
  * 配置request请求时的默认参数
  */
 
+const getLocalValue = function (name) {
+const value = localStorage.getItem(name);
+if (value) {
+    // localStorage只能存字符串，布尔类型需要转换
+    if (value === "false" || value === "true") {
+        return eval(value)
+    }
+    return value;
+} else {
+    return '';
+}}
+
 const request = extend({
   errorHandler,
   // 默认错误处理
   credentials: 'include', // 默认请求是否带上cookie
+  headers: {'Authorization': getLocalValue('token')}
 });
 export default request;

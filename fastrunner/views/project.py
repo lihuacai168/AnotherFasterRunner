@@ -1,6 +1,8 @@
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Count
 from django.utils.decorators import method_decorator
+from django.shortcuts import render
+from django.views import View
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -18,6 +20,13 @@ from fastrunner.utils.response import StandResponse
 from fastrunner.utils.runner import DebugCode
 from fastrunner.utils.tree import get_tree_max_id
 
+
+class IndexPageView(View):
+    # 直接调用get方法免去判断
+    def get(self, request):
+        # render就是渲染html返回用户
+        # render三变量: request 模板名称 一个字典写明传给前端的值
+        return render(request, "FasterWeb/index.html")
 
 class ProjectView(GenericViewSet):
     """

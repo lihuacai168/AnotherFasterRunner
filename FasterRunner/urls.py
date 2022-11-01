@@ -17,7 +17,7 @@ from django.contrib import admin
 from django.conf.urls import url
 from django.urls import path, include, re_path
 from django.views.static import serve
-from fastrunner.views import run_all_auto_case
+from fastrunner.views import run_all_auto_case, project
 from FasterRunner.settings.docker import STATIC_ROOT, MEDIA_ROOT
 from rest_framework import permissions
 from drf_yasg.views import get_schema_view
@@ -41,6 +41,7 @@ schema_view = get_schema_view(
 urlpatterns = [
     path(r"login", obtain_jwt_token),
     path('admin/', admin.site.urls),
+    re_path('^fastrunner/.*', project.IndexPageView.as_view()),
     re_path('^xadmin/.*', AdminIndexView.as_view()),
     path('api/xadmin/v1/', include('tyadmin_api.urls')),
     url(r'^static/(?P<path>.*)$', serve, {"document_root": STATIC_ROOT}),
