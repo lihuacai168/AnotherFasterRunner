@@ -20,6 +20,10 @@ class VisitTimesMiddleware(MiddlewareMixin):
         else:
             body = str(body, encoding='utf-8')
 
+        url: str = request.path
+        # 去除测试报告页字体相关的访问
+        if '/fonts/roboto/' in url or response.headers['Content-Type'] != 'application/json':
+            return response
         if request.user is None:
             # 报告页面不需要登录，获取不到用户名
             user = 'AnonymousUser'
@@ -29,11 +33,6 @@ class VisitTimesMiddleware(MiddlewareMixin):
         ip = request.META.get('HTTP_X_FORWARDED_FOR', request.META.get('REMOTE_ADDR'))
         # 前端请求头没传project，就默认为0
         project = request.META.get('HTTP_PROJECT', 0)
-
-        url: str = request.path
-        # 去除测试报告页字体相关的访问
-        if '/fonts/roboto/' in url:
-            return response
 
         if request.GET != {}:
             query_params = '?'
