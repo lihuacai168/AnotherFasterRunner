@@ -52,8 +52,8 @@
             </li>
         </ul>
 
-        <div style="display: flex; justify-content: space-around; margin-top: 10px">
-            <el-card style="width: 33%">
+        <div style="display: flex; margin: 10px;">
+            <el-card style="width: 500px; height: 400px; margin-right: 5px;">
                 <div slot="header">
                     <span>API</span>
                     <i class="iconfont">&#xe74a;</i>
@@ -76,7 +76,7 @@
                 </el-row>
             </el-card>
 
-            <el-card style="width: 33%">
+            <el-card style="width: 500px; height: 400px;">
                 <div slot="header">
                     <span>Case</span>
                     <i class="iconfont">&#xe6da;</i>
@@ -99,19 +99,9 @@
                     </el-col>
                 </el-row>
             </el-card>
-            <el-card style="width: 33%">
-                <div slot="header">
-                    <span>Report</span>
-                    <i class="iconfont">&#xe66e;</i>
-                </div>
-                <ApexCharts
-                    :options="reportPieOptions"
-                    :series="reportPieSeries"
-                ></ApexCharts>
-            </el-card>
         </div>
 
-        <div style="display: flex; justify-content: space-around;  margin-top: 10px;" v-show="false">
+        <div style="display: flex; justify-content: space-around;  margin-top: 10px;" v-if="false">
             <el-card style="width: 33%;">
                 <div slot="header">
                     <span>API每日创建</span>
@@ -149,8 +139,18 @@
                 ></ApexCharts>
             </el-card>
         </div>
-        <div style="display: flex; justify-content: space-around; margin-top: 10px;">
-            <el-card style="width: 50%">
+        <div style="display: flex; margin: 10px;">
+            <el-card style="width: 500px; height: 430px; margin-right: 5px;">
+                <div slot="header">
+                    <span>Report</span>
+                    <i class="iconfont">&#xe66e;</i>
+                </div>
+                <ApexCharts
+                    :options="reportPieOptions"
+                    :series="reportPieSeries"
+                ></ApexCharts>
+            </el-card>
+            <el-card style="width: 500px; height: 430px;">
                 <div slot="header"><span>每日数据</span></div>
                 <ApexCharts
                     type="area"

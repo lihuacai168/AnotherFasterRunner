@@ -109,7 +109,7 @@ class ReportView(GenericViewSet):
 
     queryset = models.Report.objects
     serializer_class = serializers.ReportSerializer
-    pagination_class = pagination.MyCursorPagination
+    pagination_class = pagination.MyPageNumberPagination
 
     def get_authenticators(self):
         # 查看报告详情不需要鉴权
