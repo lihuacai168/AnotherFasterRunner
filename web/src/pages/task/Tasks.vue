@@ -173,7 +173,7 @@
                             </template>
                         </el-table-column>
 
-                        <el-table-column width="150" label="操作" fixed="right">
+                        <el-table-column width="150" label="操作">
                             <template v-slot="scope">
                                 <el-row v-show="true">
                                     <el-button

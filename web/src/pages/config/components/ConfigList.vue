@@ -27,44 +27,25 @@
                         @cell-mouse-leave="cellMouseLeave"
                         @selection-change="handleSelectionChange"
                     >
-                        <el-table-column
-                            type="selection"
-                            width="55">
+                        <el-table-column type="selection" width="55"></el-table-column>
+                        <el-table-column label="配置名称" width="350">
+                            <template v-slot="scope"><div>{{ scope.row.name }}</div></template>
                         </el-table-column>
 
-                        <el-table-column
-                            label="配置名称"
-                            width="350"
-                        >
-                            <template slot-scope="scope">
-                                <div>{{ scope.row.name }}</div>
-                            </template>
-                        </el-table-column>
-
-                        <el-table-column
-                            width="300"
-                            label="配置请求地址"
-                        >
-                            <template slot-scope="scope">
+                        <el-table-column width="300" label="配置请求地址">
+                            <template v-slot="scope">
                                 <div v-text="scope.row.base_url === '' ? '无' : scope.row.base_url"></div>
-
                             </template>
                         </el-table-column>
 
-                        <el-table-column
-                            width="300"
-                            label="更新时间"
-                        >
-                            <template slot-scope="scope">
+                        <el-table-column width="300" label="更新时间">
+                            <template v-slot="scope">
                                 <div>{{ scope.row.update_time|datetimeFormat }}</div>
-
                             </template>
                         </el-table-column>
 
-                        <el-table-column
-                            width="300"
-                        >
-                            <template slot-scope="scope">
+                        <el-table-column width="300">
+                            <template v-slot="scope">
                                 <el-row v-show="currentRow === scope.row">
                                     <el-button
                                         type="info"

@@ -1,24 +1,38 @@
 import Vue from "vue";
 import Router from "vue-router";
-import Home from "@/pages/home/Home";
-import Register from "@/pages/auth/Register";
-import Login from "@/pages/auth/Login";
-import ProjectList from "@/pages/project/ProjectList";
-import ProjectDetail from "@/pages/project/ProjectDetail";
-import DebugTalk from "@/pages/httprunner/DebugTalk";
-import RecordApi from "@/pages/fastrunner/api/RecordApi";
-import AutoTest from "@/pages/fastrunner/case/AutoTest";
-import GlobalEnv from "@/pages/variables/GlobalEnv";
-import ReportList from "@/pages/reports/ReportList";
-import RecordConfig from "@/pages/fastrunner/config/RecordConfig";
-import Tasks from "@/pages/task/Tasks";
-import HostAddress from "@/pages/variables/HostAddress";
+const Home = () => import("@/pages/home/Home");
+const Register = () => import("@/pages/auth/Register");
+const Login = () => import("@/pages/auth/Login");
+const ProjectList = () => import("@/pages/project/ProjectList");
+const ProjectDetail = () => import("@/pages/project/ProjectDetail");
+const DebugTalk = () => import("@/pages/httprunner/DebugTalk");
+const RecordApi = () => import("@/pages/fastrunner/api/RecordApi");
+const AutoTest = () => import("@/pages/fastrunner/case/AutoTest");
+const GlobalEnv = () => import("@/pages/variables/GlobalEnv");
+const ReportList = () => import("@/pages/reports/ReportList");
+const RecordConfig = () => import("@/pages/fastrunner/config/RecordConfig");
+const Tasks = () => import("@/pages/task/Tasks");
+const HostAddress = () => import("@/pages/variables/HostAddress");
+const ExecPublic = () => import("../pages/components/ExecPublic.vue")
 
 Vue.use(Router);
+
+const originalPush = Router.prototype.push
+Router.prototype.push = function push(location){
+    return originalPush.call(this, location).catch(err => err)
+}
 
 export default new Router({
     mode: "history",
     routes: [
+        {
+            path: "/fastrunner/execpub",
+            name: "ExecPublic",
+            component: ExecPublic,
+            meta: {
+                title: "表格封装测试",
+            },
+        },
         {
             path: "/fastrunner/register",
             name: "Register",
