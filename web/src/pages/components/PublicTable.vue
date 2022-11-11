@@ -1,4 +1,4 @@
-<!-- 
+<!--
 @author Zou Tiancong
 @version 创建时间：2021年4月8日 下午4:53:36
 @return
@@ -18,10 +18,10 @@
 			<el-table-column v-for="(column,columIndex) in columObj.columnData" :key="columIndex" :prop="column.prop"
 				:label="column.label" :min-width="column.width" :fixed="column.fixed" :align="column.align || 'center'"
 				:sortable="column.sortable" :index="columIndex" show-overflow-tooltip>
-				<template slot-scope="{row,$index}">
-					
+				<template v-slot="{row,$index}">
+
 					<!-- 默认展示 -->
-					<span v-if="column.text && column.editRow != $index">{{row[column.prop]}}</span>
+					<span v-if="column.text && column.editRow !== $index">{{row[column.prop]}}</span>
 					<!-- 状态对象展示 -->
 					<span v-if="column.status && row[column.prop]">{{row[column.prop].msg}}</span>
 					<!-- 自定义内容 -->
@@ -33,15 +33,15 @@
 						<img v-if="column.image" :src="viewUrl + row[column.prop]" />
 						<el-image slot="reference" v-if="column.image" :src="viewUrl + row[column.prop]"/>
 					</el-popover>
- 
+
 					<!-- 图片数组 -->
 					<el-popover v-if="column.imageArr" trigger="hover" placement="top" popper-class="popper">
 						<img v-if="row[column.prop].length>0" :src="row[column.prop][0]" />
 						<el-image slot="reference" v-if="row[column.prop].length >0" :src="row[column.prop][0]" :preview-src-list="row[column.prop]"/>
 					</el-popover>
- 
+
 					<!-- 可编辑input，仅在text默认展示类型才可编辑-->
-					<el-input v-focus v-if="column.editRow == $index" v-model="row[column.prop]" @blur="editInputBlur(row,$index,column.prop,columIndex)"/>
+					<el-input v-focus v-if="column.editRow === $index" v-model="row[column.prop]" @blur="editInputBlur(row,$index,column.prop,columIndex)"/>
 					<!-- 操作按钮 -->
 					<span v-if="column.isOperation" v-for="(operations, index) in column.operation" :key="index">
 						<el-button v-if="operations.isShow(row,$index)" :icon="operations.icon" :type="operations.type"
@@ -62,7 +62,7 @@
 		</div>
 	</div>
 </template>
- 
+
 <script>
 	export default {
 		name: "PublicTable",
@@ -133,24 +133,24 @@
 	.el-button {
 		margin: 0 6px;
 	}
- 
+
 	::v-deep .el-input__inner {
 		border: none;
 	}
- 
+
 	::v-deep .el-image__inner {
 		height: 50px;
 	}
- 
+
 	// switch左边文字颜色
 	::v-deep .el-switch__label--left {
 		color: #606266;
 	}
- 
+
 	img {
 		height: 400px;
 	}
- 
+
 	.page_div {
 		padding: 15px 0;
 	}

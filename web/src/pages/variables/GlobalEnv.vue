@@ -79,7 +79,7 @@
         <el-container>
             <el-header style="padding: 0; height: 50px;">
                 <div style="padding-top: 8px; padding-left: 10px; overflow: hidden">
-                    <el-row :gutter="50">
+                    <el-row :gutter="40">
                         <el-col :span="6" style="padding-right: 0">
                             <el-input
                                 placeholder="请输入变量名称"

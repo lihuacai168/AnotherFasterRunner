@@ -29,3 +29,4 @@ pnpm-lock.yaml
 *.ntvs*
 *.njsproj
 *.sln
+templates/FasterWeb/index.html

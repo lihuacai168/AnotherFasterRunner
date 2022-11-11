@@ -1,52 +1,70 @@
 <template>
     <el-container>
-        <el-header style="padding-top: 8px;padding-left: 10px;height: 50px">
-            <el-row :gutter="30"><el-col :span="6">
-            <el-input placeholder="请输入配置名称" clearable v-model="search" size="medium">
-                <el-button slot="append" icon="el-icon-search" @click="getConfigList"></el-button>
-            </el-input>
-            </el-col></el-row>
+        <el-header style="padding: 0; height: 50px;">
+            <div style="padding-top: 8px; padding-left: 10px;">
+                <el-pagination
+                    :page-size="11"
+                    v-show="configData.count !== 0 "
+                    background
+                    @current-change="handleCurrentChange"
+                    :current-page.sync="currentPage"
+                    layout="total, prev, pager, next, jumper"
+                    :total="configData.count"
+                >
+                </el-pagination>
+            </div>
         </el-header>
 
-        <el-main style="padding: 0; margin-left: 10px;">
-                <div>
+        <el-container>
+            <el-main style="padding: 0; margin-left: 10px; margin-top: 10px;">
+                <div style="position: fixed; bottom: 0; right:0; left: 220px; top: 150px">
                     <el-table
-                        style="width: 100%; height: auto;"
-                        highlight-current-row
                         :data="configData.results"
                         :show-header="configData.results.length !== 0 "
                         stripe
+                        height="calc(100%)"
                         @cell-mouse-enter="cellMouseEnter"
                         @cell-mouse-leave="cellMouseLeave"
                         @selection-change="handleSelectionChange"
                     >
-                        <el-table-column type="selection" width="35"></el-table-column>
-                        <el-table-column label="配置名称" min-width="120">
-                            <template v-slot="scope">
-                                <div style="height: 20px">{{ scope.row.name }}</div>
+                        <el-table-column
+                            type="selection"
+                            width="55">
+                        </el-table-column>
+
+                        <el-table-column
+                            label="配置名称"
+                            width="350"
+                        >
+                            <template slot-scope="scope">
+                                <div>{{ scope.row.name }}</div>
                             </template>
                         </el-table-column>
 
-                        <el-table-column label="基本请求地址" min-width="120">
-                            <template v-slot="scope">
+                        <el-table-column
+                            width="300"
+                            label="配置请求地址"
+                        >
+                            <template slot-scope="scope">
                                 <div v-text="scope.row.base_url === '' ? '无' : scope.row.base_url"></div>
+
                             </template>
                         </el-table-column>
 
-                        <el-table-column width="90" label="是否为默认">
-                            <template v-slot="scope">
-                                <el-switch disabled v-model="scope.row.is_default" active-color="#13ce66"></el-switch>
-                            </template>
-                        </el-table-column>
-
-                        <el-table-column label="更新时间" width="180">
-                            <template v-slot="scope">
+                        <el-table-column
+                            width="300"
+                            label="更新时间"
+                        >
+                            <template slot-scope="scope">
                                 <div>{{ scope.row.update_time|datetimeFormat }}</div>
+
                             </template>
                         </el-table-column>
 
-                        <el-table-column width="120" label="操作">
-                            <template v-slot="scope">
+                        <el-table-column
+                            width="300"
+                        >
+                            <template slot-scope="scope">
                                 <el-row v-show="currentRow === scope.row">
                                     <el-button
                                         type="info"
@@ -60,18 +78,14 @@
                                         type="success"
                                         icon="el-icon-document"
                                         circle size="mini"
-                                        style="margin-left: 0"
-                                        @click="handleCopyConfig(scope.row.id, scope.row.name)"
-                                        title="复制"
+                                        @click="handleCopyConfig(scope.row.id)"
                                     >
                                     </el-button>
 
                                     <el-button
                                         type="danger"
                                         icon="el-icon-delete"
-                                        title="删除"
                                         circle size="mini"
-                                        style="margin-left: 0"
                                         @click="handleDelConfig(scope.row.id)"
                                     >
                                     </el-button>
@@ -81,26 +95,17 @@
                         </el-table-column>
 
                     </el-table>
-                    <div style="margin: 5px 5px;">
-                        <el-pagination
-                            :page-size="11"
-                            v-show="configData.count !== 0 "
-                            background
-                            @current-change="handleCurrentChange"
-                            :current-page.sync="currentPage"
-                            layout="total, prev, pager, next, jumper"
-                            :total="configData.count"
-                        >
-                        </el-pagination>
-                    </div>
                 </div>
             </el-main>
+        </el-container>
     </el-container>
 </template>
 
 <script>
+import PublicTable from "../../components/PublicTable.vue"
 export default {
-    name: "ConfigList",
+    name: "ConfigListExec",
+    components: {PublicTable},
     props: {
         back: Boolean,
         project: {
@@ -110,7 +115,6 @@ export default {
     },
     data() {
         return {
-            search: '',
             selectConfig: [],
             currentRow: '',
             currentPage: 1,
@@ -121,7 +125,9 @@ export default {
         }
     },
     watch: {
-        back() {this.getConfigList();},
+        back() {
+            this.getConfigList();
+        },
 
         del() {
             if (this.selectConfig.length !== 0) {
@@ -131,25 +137,23 @@ export default {
                     type: 'warning',
                 }).then(() => {
                     this.$api.delAllConfig({data: this.selectConfig}).then(resp => {
-                        if (resp.success) {
-                            this.getConfigList();
-                        } else {
-                            this.$message.error(resp.msg);
-                        }
+                        this.getConfigList();
                     })
                 })
             } else {
                 this.$notify.warning({
                     title: '提示',
                     message: '请至少勾选一个配置',
-                    duration: this.$store.state.duration
+                    duration: 1000
                 })
             }
         }
     },
 
     methods: {
-        handleSelectionChange(val) {this.selectConfig = val;},
+        handleSelectionChange(val) {
+            this.selectConfig = val;
+        },
 
         handleCurrentChange(val) {
             this.$api.getConfigPaginationBypage({
@@ -158,7 +162,9 @@ export default {
                     project: this.project,
                     search: this.search
                 }
-            }).then(resp => {this.configData = resp;})
+            }).then(resp => {
+                this.configData = resp;
+            })
         },
 
         //删除api
@@ -178,14 +184,15 @@ export default {
             })
         },
 
-        handleEditConfig(row) {this.$emit('respConfig', row);},
+        handleEditConfig(row) {
+            this.$emit('respConfig', row);
+        },
 
-        handleCopyConfig(id, name) {
+        handleCopyConfig(id) {
             this.$prompt('请输入配置名称', '提示', {
                 confirmButtonText: '确定',
                 inputPattern: /^[\s\S]*.*[^\s][\s\S]*$/,
-                inputErrorMessage: '配置名称不能为空',
-                inputValue: name
+                inputErrorMessage: '配置名称不能为空'
             }).then(({value}) => {
                 this.$api.copyConfig(id, {
                     'name': value
@@ -199,14 +206,18 @@ export default {
             })
         },
 
-        cellMouseEnter(row) {this.currentRow = row;},
+        cellMouseEnter(row) {
+            this.currentRow = row;
+        },
 
-        cellMouseLeave(row) {this.currentRow = '';},
+        cellMouseLeave(row) {
+            this.currentRow = '';
+        },
 
         getConfigList() {
-            this.$api.configList({
-                params: {project: this.project, search: this.search}
-            }).then(resp => {this.configData = resp;})
+            this.$api.configList({params: {project: this.project}}).then(resp => {
+                this.configData = resp;
+            })
         },
     },
     mounted() {

@@ -1,6 +1,6 @@
 <template>
-    <el-container><el-header style="padding: 0; height: 50px">
-        <div class="nav-header">
+    <el-container><el-header style="padding: 0;">
+        <div>
             <el-menu
                 :default-active="$store.state.routerName"
                 mode="horizontal"
@@ -123,10 +123,8 @@ export default {
 }
 .el-menu-item {
     padding: 0 8px;
-    line-height: 52px;
-}
-.el-menu--horizontal>.el-menu-item {
     height: 52px;
+    line-height: 52px;
 }
 .nav-header {
     background: #01101a;
