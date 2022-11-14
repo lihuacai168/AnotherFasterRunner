@@ -159,7 +159,7 @@
 
                     <el-table-column label="操作" align="center" width="230">
                         <template v-slot="scope">
-                            <el-button size="small" type="success" @click="handleCellClick(scope.row)">详情</el-button>
+                            <el-button size="small" type="success" @click="handleCellClick(scope.row)">选择</el-button>
                             <el-button
                                 size="small"
                                 type="primary"
