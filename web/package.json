@@ -13,7 +13,7 @@
     "@babel/runtime": "^7.20.1",
     "ajv": "^6.12.6",
     "apexcharts": "^3.27.3",
-    "axios": "^0.18.0",
+    "axios": "^1.1.3",
     "babel-preset-es2015": "^6.24.1",
     "babel-runtime": "^6.26.0",
     "echarts": "^4.9.0",
