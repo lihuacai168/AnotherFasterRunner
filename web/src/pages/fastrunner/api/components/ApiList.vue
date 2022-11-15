@@ -3,11 +3,7 @@
     <el-header style="padding: 0; height: 50px">
       <div class="recordapi__header">
         <div class="recordapi__header--item" :style="{ paddingLeft: '2px' }">
-          <el-checkbox
-            v-if="apiData.count > 0"
-            v-model="checked"
-          >
-          </el-checkbox>
+          <el-checkbox v-if="apiData.count > 0" v-model="checked"> </el-checkbox>
         </div>
         <div class="recordapi__header--item">
           <el-input
@@ -18,55 +14,34 @@
             @keyup.enter.native="getAPIList"
             style="min-width: 100px"
           >
-            <el-button
-              slot="append"
-              icon="el-icon-search"
-              @click="getAPIList"
-            ></el-button>
+            <el-button slot="append" icon="el-icon-search" @click="getAPIList"></el-button>
           </el-input>
         </div>
-          <el-button type="primary" size="medium" @click="resetSearch">重置 </el-button>
+        <el-button type="primary" size="medium" @click="resetSearch">重置 </el-button>
         <div class="recordapi__header--item">
           <el-dropdown @command="tagChangeHandle">
-            <el-button type="primary" size="medium">状态<i class="el-icon-arrow-down"></i>
-            </el-button>
+            <el-button type="primary" size="medium">状态<i class="el-icon-arrow-down"></i> </el-button>
             <el-dropdown-menu slot="dropdown">
               <el-dropdown-item command="1">成功</el-dropdown-item>
               <el-dropdown-item command="0">未知</el-dropdown-item>
               <el-dropdown-item command="2">失败</el-dropdown-item>
-<!--              <el-dropdown-item command="3">自动成功</el-dropdown-item>-->
+              <!--              <el-dropdown-item command="3">自动成功</el-dropdown-item>-->
               <el-dropdown-item command="">所有</el-dropdown-item>
             </el-dropdown-menu>
           </el-dropdown>
-            <el-dropdown @command="dropdownMenuChangeHandle">
-<!--                  <span><i class="el-icon-more">选中操作</i></span>-->
-                <el-button type="info" size="medium">操作<i class="el-icon-more"></i></el-button>
-                  <el-dropdown-menu slot="dropdown">
-                    <el-dropdown-item disabled style="background-color: #e2e2e2"
-                      >选中({{ selectAPI.length }} 条)</el-dropdown-item
-                    >
-                    <el-dropdown-item
-                      :disabled="selectAPI.length === 0"
-                      command="success"
-                      >更新为成功
-                    </el-dropdown-item>
-                    <el-dropdown-item
-                      :disabled="selectAPI.length === 0"
-                      command="fail"
-                      >更新为失败
-                    </el-dropdown-item>
-                    <el-dropdown-item
-                      :disabled="selectAPI.length === 0"
-                      command="deprecated"
-                      >更新为废弃
-                    </el-dropdown-item>
-                    <el-dropdown-item
-                      :disabled="selectAPI.length === 0"
-                      command="move"
-                      >移动API
-                    </el-dropdown-item>
-                  </el-dropdown-menu>
-                </el-dropdown>
+          <el-dropdown @command="dropdownMenuChangeHandle">
+            <!--                  <span><i class="el-icon-more">选中操作</i></span>-->
+            <el-button type="info" size="medium">操作<i class="el-icon-more"></i></el-button>
+            <el-dropdown-menu slot="dropdown">
+              <el-dropdown-item disabled style="background-color: #e2e2e2"
+                >选中({{ selectAPI.length }} 条)</el-dropdown-item
+              >
+              <el-dropdown-item :disabled="selectAPI.length === 0" command="success">更新为成功 </el-dropdown-item>
+              <el-dropdown-item :disabled="selectAPI.length === 0" command="fail">更新为失败 </el-dropdown-item>
+              <el-dropdown-item :disabled="selectAPI.length === 0" command="deprecated">更新为废弃 </el-dropdown-item>
+              <el-dropdown-item :disabled="selectAPI.length === 0" command="move">移动API </el-dropdown-item>
+            </el-dropdown-menu>
+          </el-dropdown>
         </div>
         <!--                            api环境字段暂时不使用-->
 
@@ -102,19 +77,11 @@
 
     <el-container>
       <el-main style="padding: 0; margin-left: 10px">
-        <el-dialog
-          v-if="dialogTableVisible"
-          :visible.sync="dialogTableVisible"
-          width="70%"
-        >
+        <el-dialog v-if="dialogTableVisible" :visible.sync="dialogTableVisible" width="70%">
           <report :summary="summary"></report>
         </el-dialog>
 
-        <el-dialog
-          title="Run API"
-          :visible.sync="dialogTreeVisible"
-          width="40%"
-        >
+        <el-dialog title="Run API" :visible.sync="dialogTreeVisible" width="40%">
           <div>
             <div>
               <el-row :gutter="2">
@@ -164,26 +131,18 @@
                 ref="tree"
               >
                 <span class="custom-tree-node" slot-scope="{ node, data }">
-                  <span><i class="iconfont" v-html="expand"></i>&nbsp;&nbsp;{{node.label }}</span>
+                  <span><i class="iconfont" v-html="expand"></i>&nbsp;&nbsp;{{ node.label }}</span>
                 </span>
               </el-tree>
             </div>
           </div>
           <span slot="footer" class="dialog-footer">
-            <el-button size="small" @click="dialogTreeVisible = false"
-              >取 消</el-button
-            >
-            <el-button size="small" type="primary" @click="runTree"
-              >确 定</el-button
-            >
+            <el-button size="small" @click="dialogTreeVisible = false">取 消</el-button>
+            <el-button size="small" type="primary" @click="runTree">确 定</el-button>
           </span>
         </el-dialog>
 
-        <el-dialog
-          title="Move API"
-          :visible.sync="dialogTreeMoveAPIVisible"
-          width="45%"
-        >
+        <el-dialog title="Move API" :visible.sync="dialogTreeMoveAPIVisible" width="45%">
           <div>
             <div>
               <el-input
@@ -207,7 +166,7 @@
                 ref="tree"
               >
                 <span class="custom-tree-node" slot-scope="{ node, data }">
-                  <span><i class="iconfont" v-html="expand"></i>&nbsp&nbsp{{node.label }}</span>
+                  <span><i class="iconfont" v-html="expand"></i>&nbsp&nbsp{{ node.label }}</span>
                 </span>
               </el-tree>
             </div>
@@ -227,7 +186,7 @@
             :show-header="false"
             :cell-style="{
               paddingTop: '4px',
-              paddingBottom: '4px',
+              paddingBottom: '4px'
             }"
             @cell-mouse-enter="cellMouseEnter"
             @cell-mouse-leave="cellMouseLeave"
@@ -236,38 +195,38 @@
             v-loading="loading"
           >
             <el-table-column type="selection" width="28"></el-table-column>
-<!--            <el-table-column width="25">-->
-<!--              <template slot-scope="scope">-->
-<!--                <el-dropdown @command="dropdownMenuChangeHandle">-->
-<!--                  <span><i class="el-icon-more"></i></span>-->
-<!--                  <el-dropdown-menu slot="dropdown">-->
-<!--                    <el-dropdown-item disabled style="background-color: #e2e2e2"-->
-<!--                      >选中({{ selectAPI.length }} 条)</el-dropdown-item-->
-<!--                    >-->
-<!--                    <el-dropdown-item-->
-<!--                      :disabled="selectAPI.length === 0"-->
-<!--                      command="success"-->
-<!--                      >更新为成功-->
-<!--                    </el-dropdown-item>-->
-<!--                    <el-dropdown-item-->
-<!--                      :disabled="selectAPI.length === 0"-->
-<!--                      command="fail"-->
-<!--                      >更新为失败-->
-<!--                    </el-dropdown-item>-->
-<!--                    <el-dropdown-item-->
-<!--                      :disabled="selectAPI.length === 0"-->
-<!--                      command="deprecated"-->
-<!--                      >更新为废弃-->
-<!--                    </el-dropdown-item>-->
-<!--                    <el-dropdown-item-->
-<!--                      :disabled="selectAPI.length === 0"-->
-<!--                      command="move"-->
-<!--                      >移动API-->
-<!--                    </el-dropdown-item>-->
-<!--                  </el-dropdown-menu>-->
-<!--                </el-dropdown>-->
-<!--              </template>-->
-<!--            </el-table-column>-->
+            <!--            <el-table-column width="25">-->
+            <!--              <template slot-scope="scope">-->
+            <!--                <el-dropdown @command="dropdownMenuChangeHandle">-->
+            <!--                  <span><i class="el-icon-more"></i></span>-->
+            <!--                  <el-dropdown-menu slot="dropdown">-->
+            <!--                    <el-dropdown-item disabled style="background-color: #e2e2e2"-->
+            <!--                      >选中({{ selectAPI.length }} 条)</el-dropdown-item-->
+            <!--                    >-->
+            <!--                    <el-dropdown-item-->
+            <!--                      :disabled="selectAPI.length === 0"-->
+            <!--                      command="success"-->
+            <!--                      >更新为成功-->
+            <!--                    </el-dropdown-item>-->
+            <!--                    <el-dropdown-item-->
+            <!--                      :disabled="selectAPI.length === 0"-->
+            <!--                      command="fail"-->
+            <!--                      >更新为失败-->
+            <!--                    </el-dropdown-item>-->
+            <!--                    <el-dropdown-item-->
+            <!--                      :disabled="selectAPI.length === 0"-->
+            <!--                      command="deprecated"-->
+            <!--                      >更新为废弃-->
+            <!--                    </el-dropdown-item>-->
+            <!--                    <el-dropdown-item-->
+            <!--                      :disabled="selectAPI.length === 0"-->
+            <!--                      command="move"-->
+            <!--                      >移动API-->
+            <!--                    </el-dropdown-item>-->
+            <!--                  </el-dropdown-menu>-->
+            <!--                </el-dropdown>-->
+            <!--              </template>-->
+            <!--            </el-table-column>-->
 
             <el-table-column min-width="300" align="center" label="接口信息">
               <template v-slot="scope">
@@ -288,14 +247,14 @@
                       YAPI
                     </span>
                   </div>
-                  <span class="block-method block_url">{{scope.row.url}}</span>
-                  <span class="block-summary-description">{{scope.row.name}}</span>
+                  <span class="block-method block_url">{{ scope.row.url }}</span>
+                  <span class="block-summary-description">{{ scope.row.name }}</span>
                   <div>
                     <span
-                        style="margin-left: 20px"
-                        class="el-icon-s-flag"
-                        v-if="scope.row.cases.length > 0"
-                        :title=" 'API已经被用例引用,共计: ' + scope.row.cases.length + '次' "
+                      style="margin-left: 20px"
+                      class="el-icon-s-flag"
+                      v-if="scope.row.cases.length > 0"
+                      :title="'API已经被用例引用,共计: ' + scope.row.cases.length + '次'"
                     >
                     </span>
                   </div>
@@ -305,12 +264,8 @@
 
             <el-table-column prop="tag" label="标签" width="90" filter-placement="bottom-end">
               <template v-slot="scope">
-                <el-tag :type="scope.row.tag === 0
-                      ? 'info'
-                      : scope.row.tag === 2
-                      ? 'danger'
-                      : 'success'
-                  "
+                <el-tag
+                  :type="scope.row.tag === 0 ? 'info' : scope.row.tag === 2 ? 'danger' : 'success'"
                   effect="light"
                 >
                   {{ scope.row.tag_name }}
@@ -329,7 +284,7 @@
                     @click="handleRowClick(scope.row)"
                     title="编辑"
                   ></el-button>
-                    <el-button
+                  <el-button
                     type="primary"
                     icon="el-icon-caret-right"
                     title="运行"
@@ -348,99 +303,89 @@
                     @click="handleCopyAPI(scope.row.id, scope.row.name)"
                   >
                   </el-button>
-                    <el-button
-                        type="danger"
-                        icon="el-icon-delete"
-                        :title="
-                          userName === scope.row.creator || isSuperuser
-                            ? '删除'
-                            : '只有API创建者才能删除'
-                        "
-                        :disabled="
-                          userName !== scope.row.creator && !isSuperuser
-                        "
-                        circle
-                        size="mini"
-                        style="margin-left: 0"
-                        @click="handleDelApi(scope.row.id)"
-                      >
-                      </el-button>
-                      <el-button
-                        v-show="(userName === scope.row.creator || isSuperuser) && scope.row.cases.length > 0"
-                        :disabled="userName !== scope.row.creator && !isSuperuser"
-                        type="warning"
-                        icon="el-icon-refresh"
-                        :title="
-                          userName === scope.row.creator || isSuperuser
-                            ? '同步用例步骤'
-                            : '同步用例权限不足'
-                        "
-                        circle
-                        size="mini"
-                        style="margin-left: 0"
-                        @click="handleSyncCaseStep(scope.row.id)"
-                      >
-                      </el-button>
-<!--                  <el-popover style="margin-left: 10px" trigger="hover">-->
-<!--                    <div style="text-align: center">-->
-<!--                      <el-button-->
-<!--                        type="danger"-->
-<!--                        icon="el-icon-delete"-->
-<!--                        :title="-->
-<!--                          userName === scope.row.creator || isSuperuser-->
-<!--                            ? '删除'-->
-<!--                            : '只有API创建者才能删除'-->
-<!--                        "-->
-<!--                        :disabled="-->
-<!--                          userName !== scope.row.creator && !isSuperuser-->
-<!--                        "-->
-<!--                        circle-->
-<!--                        size="mini"-->
-<!--                        @click="handleDelApi(scope.row.id)"-->
-<!--                      >-->
-<!--                      </el-button>-->
-<!--                      <el-button-->
-<!--                        v-show="(userName === scope.row.creator || isSuperuser) && scope.row.cases.length > 0"-->
-<!--                        :disabled="userName !== scope.row.creator && !isSuperuser"-->
-<!--                        type="warning"-->
-<!--                        icon="el-icon-refresh"-->
-<!--                        :title="-->
-<!--                          userName === scope.row.creator || isSuperuser-->
-<!--                            ? '同步用例步骤'-->
-<!--                            : '同步用例权限不足'-->
-<!--                        "-->
-<!--                        circle-->
-<!--                        size="mini"-->
-<!--                        @click="handleSyncCaseStep(scope.row.id)"-->
-<!--                      >-->
-<!--                      </el-button>-->
-<!--                    </div>-->
-<!--                    <el-button-->
-<!--                      icon="el-icon-more"-->
-<!--                      title="更多"-->
-<!--                      circle-->
-<!--                      size="mini"-->
-<!--                      slot="reference"-->
-<!--                    >-->
-<!--                    </el-button>-->
-<!--                  </el-popover>-->
+                  <el-button
+                    type="danger"
+                    icon="el-icon-delete"
+                    :title="userName === scope.row.creator || isSuperuser ? '删除' : '只有API创建者才能删除'"
+                    :disabled="userName !== scope.row.creator && !isSuperuser"
+                    circle
+                    size="mini"
+                    style="margin-left: 0"
+                    @click="handleDelApi(scope.row.id)"
+                  >
+                  </el-button>
+                  <el-button
+                    v-show="(userName === scope.row.creator || isSuperuser) && scope.row.cases.length > 0"
+                    :disabled="userName !== scope.row.creator && !isSuperuser"
+                    type="warning"
+                    icon="el-icon-refresh"
+                    :title="userName === scope.row.creator || isSuperuser ? '同步用例步骤' : '同步用例权限不足'"
+                    circle
+                    size="mini"
+                    style="margin-left: 0"
+                    @click="handleSyncCaseStep(scope.row.id)"
+                  >
+                  </el-button>
+                  <!--                  <el-popover style="margin-left: 10px" trigger="hover">-->
+                  <!--                    <div style="text-align: center">-->
+                  <!--                      <el-button-->
+                  <!--                        type="danger"-->
+                  <!--                        icon="el-icon-delete"-->
+                  <!--                        :title="-->
+                  <!--                          userName === scope.row.creator || isSuperuser-->
+                  <!--                            ? '删除'-->
+                  <!--                            : '只有API创建者才能删除'-->
+                  <!--                        "-->
+                  <!--                        :disabled="-->
+                  <!--                          userName !== scope.row.creator && !isSuperuser-->
+                  <!--                        "-->
+                  <!--                        circle-->
+                  <!--                        size="mini"-->
+                  <!--                        @click="handleDelApi(scope.row.id)"-->
+                  <!--                      >-->
+                  <!--                      </el-button>-->
+                  <!--                      <el-button-->
+                  <!--                        v-show="(userName === scope.row.creator || isSuperuser) && scope.row.cases.length > 0"-->
+                  <!--                        :disabled="userName !== scope.row.creator && !isSuperuser"-->
+                  <!--                        type="warning"-->
+                  <!--                        icon="el-icon-refresh"-->
+                  <!--                        :title="-->
+                  <!--                          userName === scope.row.creator || isSuperuser-->
+                  <!--                            ? '同步用例步骤'-->
+                  <!--                            : '同步用例权限不足'-->
+                  <!--                        "-->
+                  <!--                        circle-->
+                  <!--                        size="mini"-->
+                  <!--                        @click="handleSyncCaseStep(scope.row.id)"-->
+                  <!--                      >-->
+                  <!--                      </el-button>-->
+                  <!--                    </div>-->
+                  <!--                    <el-button-->
+                  <!--                      icon="el-icon-more"-->
+                  <!--                      title="更多"-->
+                  <!--                      circle-->
+                  <!--                      size="mini"-->
+                  <!--                      slot="reference"-->
+                  <!--                    >-->
+                  <!--                    </el-button>-->
+                  <!--                  </el-popover>-->
                 </el-row>
               </template>
             </el-table-column>
           </el-table>
           <div class="recordapi__header--item">
-          <el-pagination
-            style="margin-top: 5px"
-            :page-size="11"
-            v-show="apiData.count !== 0"
-            background
-            @current-change="handleCurrentChange"
-            :current-page.sync="currentPage"
-            layout="total, prev, pager, next, jumper"
-            :total="apiData.count"
-          >
-          </el-pagination>
-        </div>
+            <el-pagination
+              style="margin-top: 5px"
+              :page-size="11"
+              v-show="apiData.count !== 0"
+              background
+              @current-change="handleCurrentChange"
+              :current-page.sync="currentPage"
+              layout="total, prev, pager, next, jumper"
+              :total="apiData.count"
+            >
+            </el-pagination>
+          </div>
         </div>
       </el-main>
     </el-container>
@@ -452,24 +397,24 @@ import Report from "../../../reports/DebugReport";
 
 export default {
   components: {
-    Report,
+    Report
   },
   name: "ApiList",
   props: {
     host: {
-      require: true,
+      require: true
     },
     config: {
-      require: true,
+      require: true
     },
     run: Boolean,
     move: Boolean,
     back: Boolean,
     pNode: {
-      require: true,
+      require: true
     },
     project: {
-      require: true,
+      require: true
     },
     del: Boolean,
     listCurrentPage: Number,
@@ -477,7 +422,7 @@ export default {
     rigEnv: [Number, String],
     onlyMe: Boolean,
     showYAPI: Boolean,
-    isSelectAPI: Boolean,
+    isSelectAPI: Boolean
   },
   data() {
     return {
@@ -501,8 +446,8 @@ export default {
       node: "",
       apiData: {
         count: 0,
-        results: [],
-      },
+        results: []
+      }
       // tag: this.visibleTag,
       // rigEnv: this.rigEnv,
     };
@@ -545,7 +490,7 @@ export default {
         this.$confirm("此操作将永久删除API，是否继续?", "提示", {
           confirmButtonText: "确定",
           cancelButtonText: "取消",
-          type: "warning",
+          type: "warning"
         })
           .then(() => {
             this.$api.delAllAPI({ data: this.selectAPI }).then((resp) => {
@@ -557,7 +502,7 @@ export default {
         this.$notify.warning({
           title: "提示",
           message: "请至少选择一个接口",
-          duration: this.$store.state.duration,
+          duration: this.$store.state.duration
         });
       }
     },
@@ -576,7 +521,7 @@ export default {
     },
     search() {
       this.getAPIList();
-    },
+    }
   },
 
   methods: {
@@ -610,7 +555,7 @@ export default {
         this.$api
           .tagAPI({
             tag: tag,
-            api_ids: api_ids,
+            api_ids: api_ids
           })
           .then((resp) => {
             this.selectAPI = [];
@@ -649,11 +594,11 @@ export default {
         confirmButtonText: "确定",
         inputPattern: /^[\s\S]*.*[^\s][\s\S]*$/,
         inputErrorMessage: "接口名称不能为空",
-        inputValue: name,
+        inputValue: name
       }).then(({ value }) => {
         this.$api
           .copyAPI(id, {
-            name: value,
+            name: value
           })
           .then((resp) => {
             if (resp.success) {
@@ -676,7 +621,7 @@ export default {
         this.$notify.error({
           title: "提示",
           message: "请至少选择一个节点",
-          duration: 1500,
+          duration: 1500
         });
       } else {
         this.$api
@@ -686,13 +631,13 @@ export default {
             relation: relation,
             async: this.asyncs,
             name: this.reportName,
-            config: this.config,
+            config: this.config
           })
           .then((resp) => {
             if (resp.hasOwnProperty("status")) {
               this.$message.info({
                 message: resp.msg,
-                duration: 1500,
+                duration: 1500
               });
             } else {
               this.summary = resp;
@@ -709,20 +654,20 @@ export default {
         this.$notify.error({
           title: "提示",
           message: "请至少选择一个节点",
-          duration: 1500,
+          duration: 1500
         });
       } else if (length !== 1) {
         this.$notify.error({
           title: "提示",
           message: "API只能移动到一个节点, 现在选了" + length + "个节点",
-          duration: 1500,
+          duration: 1500
         });
       } else {
         this.$api
           .moveAPI({
             project: this.project,
             relation: relation[0],
-            api: this.selectAPI,
+            api: this.selectAPI
           })
           .then((resp) => {
             this.selectAPI = [];
@@ -730,31 +675,29 @@ export default {
             if (resp.success) {
               this.$message.success({
                 message: "移动API成功",
-                duration: 1500,
+                duration: 1500
               });
               this.dialogTreeMoveAPIVisible = false;
               this.resetSearch();
             } else {
               this.$message.error({
                 message: resp.msg,
-                duration: 1500,
+                duration: 1500
               });
             }
           });
       }
     },
     getTree(showType) {
-      this.$api
-        .getTree(this.$route.params.id, { params: { type: 1 } })
-        .then((resp) => {
-          this.dataTree = resp.tree;
-          // run是批量运行api弹窗，其他是批量更新api relation弹窗
-          if (showType === "run") {
-            this.dialogTreeVisible = true;
-          } else {
-            this.dialogTreeMoveAPIVisible = this;
-          }
-        });
+      this.$api.getTree(this.$route.params.id, { params: { type: 1 } }).then((resp) => {
+        this.dataTree = resp.tree;
+        // run是批量运行api弹窗，其他是批量更新api relation弹窗
+        if (showType === "run") {
+          this.dialogTreeVisible = true;
+        } else {
+          this.dialogTreeMoveAPIVisible = this;
+        }
+      });
     },
 
     handleSelectionChange(val) {
@@ -788,8 +731,8 @@ export default {
               tag: this.visibleTag,
               rigEnv: this.rigEnv,
               onlyMe: this.onlyMe,
-              showYAPI: this.showYAPI,
-            },
+              showYAPI: this.showYAPI
+            }
           })
           .then((res) => {
             this.apiData = res;
@@ -808,8 +751,8 @@ export default {
             tag: this.visibleTag,
             rigEnv: this.rigEnv,
             onlyMe: this.onlyMe,
-            showYAPI: this.showYAPI,
-          },
+            showYAPI: this.showYAPI
+          }
         })
         .then((res) => {
           this.apiData = res;
@@ -822,7 +765,7 @@ export default {
       this.$confirm("此操作将永久删除该API，是否继续???", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
-        type: "warning",
+        type: "warning"
       }).then(() => {
         this.$api.delAPI(index).then((resp) => {
           if (resp.success) {
@@ -837,7 +780,7 @@ export default {
       if (tag === "success" || tag === "bug") {
         this.$api
           .tagAPI(index, {
-            tag: tag === "success" ? 1 : 2,
+            tag: tag === "success" ? 1 : 2
           })
           .then((resp) => {
             if (resp.success) {
@@ -853,7 +796,7 @@ export default {
       this.$confirm("是否确定把当前api同步到用例步骤", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
-        type: "warning",
+        type: "warning"
       })
         .then(() => {
           this.$api.syncCaseStep(id).then((resp) => {
@@ -862,7 +805,7 @@ export default {
               this.$notify.success({
                 title: "提示",
                 message: "用例步骤同步成功",
-                duration: 1500,
+                duration: 1500
               });
             } else {
               this.$message.error(resp.msg);
@@ -888,8 +831,8 @@ export default {
         .runAPIByPk(id, {
           params: {
             host: this.host,
-            config: this.config,
-          },
+            config: this.config
+          }
         })
         .then((resp) => {
           this.summary = resp;
@@ -907,11 +850,11 @@ export default {
 
     cellMouseLeave(row) {
       this.currentRow = "";
-    },
+    }
   },
   mounted() {
     this.getAPIList();
-  },
+  }
 };
 </script>
 

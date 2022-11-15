@@ -1,263 +1,224 @@
 <template>
-    <div style="margin-left: 10px">
-        <div style="margin-top: 10px">
-            <el-input
-                style="width: 600px"
-                placeholder="请输入配置名称"
-                v-model="name"
-                clearable
-            >
-                <template slot="prepend">配置信息录入</template>
+  <div style="margin-left: 10px">
+    <div style="margin-top: 10px">
+      <el-input style="width: 600px" placeholder="请输入配置名称" v-model="name" clearable>
+        <template slot="prepend">配置信息录入</template>
 
-<!--                <el-button-->
-<!--                    slot="append"-->
-<!--                    type="success"-->
-<!--                    plain-->
-<!--                    @click="save = !save"-->
-<!--                >Save-->
-<!--                </el-button>-->
-            </el-input>
-            <el-button
-                slot="append"
-                type="success"
-                size="medium"
-                @click="save = !save"
-            >Save
-            </el-button>
-        </div>
-        <div>
-            <el-input
-                class="input-with-select"
-                placeholder="请输入 base_url 地址"
-                v-model="baseUrl"
-                clearable
-            >
-                <template slot="prepend">配置请求地址</template>
-            </el-input>
-            <el-switch
-                v-model="is_default"
-                active-color="#13ce66"
-                :disabled="isAddConfig"
-                active-text="默认配置"
-            >
-            </el-switch>
-        </div>
-<!--        <div>-->
-<!--            <el-switch-->
-<!--                style="display: block"-->
-<!--                v-model="is_default"-->
-<!--                active-color="#13ce66"-->
-<!--                :disabled="isAddConfig"-->
-<!--                active-text="默认配置"-->
-<!--            >-->
-<!--            </el-switch>-->
-<!--        </div>-->
-        <div class="request">
-            <el-tabs
-                v-model="activeTag"
-                style="margin-left: 20px"
-            >
-                <el-tab-pane label="Header" name="first">
-                    <headers
-                        :save="save"
-                        v-on:header="handleHeader"
-                        :header="response ? response.body.header: [] ">
-                    </headers>
-                </el-tab-pane>
-
-
-                <el-tab-pane label="Variables" name="third">
-                    <variables
-                        :save="save"
-                        v-on:variables="handleVariables"
-                        :variables="response ? response.body.variables : []"
-                    >
-
-                    </variables>
-                </el-tab-pane>
-
-                <el-tab-pane label="Hooks" name="fourth">
-                    <hooks
-                        :save="save"
-                        v-on:hooks="handleHooks"
-                        :hooks="response ? response.body.hooks: []"
-                    >
-                    </hooks>
-                </el-tab-pane>
-
-                <el-tab-pane label="Parameters" name="five">
-                    <parameters
-                        :save="save"
-                        v-on:parameters="handleParameters"
-                        :parameters="response ? response.body.parameters: []"
-                    >
-                    </parameters>
-                </el-tab-pane>
-
-            </el-tabs>
-        </div>
+        <!--                <el-button-->
+        <!--                    slot="append"-->
+        <!--                    type="success"-->
+        <!--                    plain-->
+        <!--                    @click="save = !save"-->
+        <!--                >Save-->
+        <!--                </el-button>-->
+      </el-input>
+      <el-button slot="append" type="success" size="medium" @click="save = !save">Save </el-button>
     </div>
+    <div>
+      <el-input class="input-with-select" placeholder="请输入 base_url 地址" v-model="baseUrl" clearable>
+        <template slot="prepend">配置请求地址</template>
+      </el-input>
+      <el-switch v-model="is_default" active-color="#13ce66" :disabled="isAddConfig" active-text="默认配置">
+      </el-switch>
+    </div>
+    <!--        <div>-->
+    <!--            <el-switch-->
+    <!--                style="display: block"-->
+    <!--                v-model="is_default"-->
+    <!--                active-color="#13ce66"-->
+    <!--                :disabled="isAddConfig"-->
+    <!--                active-text="默认配置"-->
+    <!--            >-->
+    <!--            </el-switch>-->
+    <!--        </div>-->
+    <div class="request">
+      <el-tabs v-model="activeTag" style="margin-left: 20px">
+        <el-tab-pane label="Header" name="first">
+          <headers :save="save" v-on:header="handleHeader" :header="response ? response.body.header : []"> </headers>
+        </el-tab-pane>
 
+        <el-tab-pane label="Variables" name="third">
+          <variables :save="save" v-on:variables="handleVariables" :variables="response ? response.body.variables : []">
+          </variables>
+        </el-tab-pane>
+
+        <el-tab-pane label="Hooks" name="fourth">
+          <hooks :save="save" v-on:hooks="handleHooks" :hooks="response ? response.body.hooks : []"> </hooks>
+        </el-tab-pane>
+
+        <el-tab-pane label="Parameters" name="five">
+          <parameters
+            :save="save"
+            v-on:parameters="handleParameters"
+            :parameters="response ? response.body.parameters : []"
+          >
+          </parameters>
+        </el-tab-pane>
+      </el-tabs>
+    </div>
+  </div>
 </template>
 
 <script>
-import Headers from '../../../httprunner/components/Headers'
-import Variables from '../../../httprunner/components/Variables'
-import Hooks from '../../../httprunner/components/Hooks'
-import Parameters from '../../../httprunner/components/Parameters'
+import Headers from "../../../httprunner/components/Headers.vue";
+import Variables from "../../../httprunner/components/Variables.vue";
+import Hooks from "../../../httprunner/components/Hooks.vue";
+import Parameters from "../../../httprunner/components/Parameters.vue";
 
 export default {
-    components: {
-        Headers,
-        Variables,
-        Hooks,
-        Parameters
+  components: {
+    Headers,
+    Variables,
+    Hooks,
+    Parameters
+  },
+
+  props: {
+    project: {
+      require: false
+    },
+    response: {
+      require: false
+    },
+    type: {
+      type: String,
+      default: ""
+    }
+  },
+  computed: {
+    isAddConfig() {
+      return this.type === "add";
+    }
+  },
+  watch: {
+    response: {
+      deep: true,
+      handler(val) {
+        this.name = val.body.name;
+        this.baseUrl = val.body.base_url;
+        this.id = val.id;
+        this.is_default = val.is_default;
+      }
+    }
+  },
+  methods: {
+    handleHeader(header) {
+      this.header = header;
     },
 
-    props: {
-        project: {
-            require: false
-        },
-        response: {
-            require: false
-        },
-        type: {
-            type: String,
-            default: ''
-        }
+    handleVariables(variables) {
+      this.variables = variables;
     },
-    computed: {
-        isAddConfig() {
-            return this.type === 'add'
-        }
+    handleHooks(hooks) {
+      this.hooks = hooks;
     },
-    watch: {
-        response: {
-            deep: true,
-            handler(val) {
-                this.name = val.body.name;
-                this.baseUrl = val.body.base_url;
-                this.id = val.id;
-                this.is_default = val.is_default
-            }
-        }
+    handleParameters(parameters) {
+      this.parameters = parameters;
+      if (this.id === "") {
+        this.addConfig();
+      } else {
+        this.updateConfig();
+      }
     },
-    methods: {
-        handleHeader(header) {
-            this.header = header;
-        },
 
-        handleVariables(variables) {
-            this.variables = variables;
-        },
-        handleHooks(hooks) {
-            this.hooks = hooks;
-        },
-        handleParameters(parameters) {
-            this.parameters = parameters;
-            if (this.id === '') {
-                this.addConfig();
+    addConfig() {
+      if (this.validateData()) {
+        debugger;
+        this.$api
+          .addConfig({
+            parameters: this.parameters,
+            header: this.header,
+            request: this.request,
+            variables: this.variables,
+            hooks: this.hooks,
+            base_url: this.baseUrl,
+            name: this.name,
+            project: this.project,
+            is_default: this.is_default
+          })
+          .then((resp) => {
+            if (resp.success) {
+              this.$emit("addSuccess");
             } else {
-                this.updateConfig();
+              this.$message.error({
+                message: resp.msg,
+                duration: this.$store.state.duration
+              });
             }
-        },
-
-        addConfig() {
-            if (this.validateData()) {
-                debugger
-                this.$api.addConfig({
-                    parameters: this.parameters,
-                    header: this.header,
-                    request: this.request,
-                    variables: this.variables,
-                    hooks: this.hooks,
-                    base_url: this.baseUrl,
-                    name: this.name,
-                    project: this.project,
-                    is_default: this.is_default,
-                }).then(resp => {
-                    if (resp.success) {
-                        this.$emit("addSuccess");
-                    } else {
-                        this.$message.error({
-                            message: resp.msg,
-                            duration: this.$store.state.duration
-                        })
-                    }
-                })
-            }
-        },
-
-        updateConfig() {
-            if (this.validateData()) {
-                this.$api.updateConfig(this.id, {
-                    parameters: this.parameters,
-                    header: this.header,
-                    request: this.request,
-                    variables: this.variables,
-                    hooks: this.hooks,
-                    base_url: this.baseUrl,
-                    name: this.name,
-                    is_default: this.is_default
-                }).then(resp => {
-                    if (resp.success) {
-                        this.$emit("addSuccess");
-                    } else {
-                        this.$message.error({
-                            message: resp.msg,
-                            duration: this.$store.state.duration
-                        })
-                    }
-                })
-            }
-        },
-
-        validateData() {
-            if (this.name === '') {
-                this.$notify.error({
-                    title: '参数错误',
-                    message: '配置名称不能为空',
-                    duration: 1500
-                });
-                return false;
-            }
-            return true
-        },
-
+          });
+      }
     },
 
-    data() {
-        return {
-            name: '',
-            baseUrl: '',
-            is_default: false,
-            id: '',
-            header: [],
-            request: [],
-            variables: [],
-            hooks: [],
-            parameters: [],
-            save: false,
-            activeTag: 'third',
-        }
+    updateConfig() {
+      if (this.validateData()) {
+        this.$api
+          .updateConfig(this.id, {
+            parameters: this.parameters,
+            header: this.header,
+            request: this.request,
+            variables: this.variables,
+            hooks: this.hooks,
+            base_url: this.baseUrl,
+            name: this.name,
+            is_default: this.is_default
+          })
+          .then((resp) => {
+            if (resp.success) {
+              this.$emit("addSuccess");
+            } else {
+              this.$message.error({
+                message: resp.msg,
+                duration: this.$store.state.duration
+              });
+            }
+          });
+      }
     },
-    name: "ConfigBody"
-}
+
+    validateData() {
+      if (this.name === "") {
+        this.$notify.error({
+          title: "参数错误",
+          message: "配置名称不能为空",
+          duration: 1500
+        });
+        return false;
+      }
+      return true;
+    }
+  },
+
+  data() {
+    return {
+      name: "",
+      baseUrl: "",
+      is_default: false,
+      id: "",
+      header: [],
+      request: [],
+      variables: [],
+      hooks: [],
+      parameters: [],
+      save: false,
+      activeTag: "third"
+    };
+  },
+  name: "ConfigBody"
+};
 </script>
 
 <style scoped>
 .el-select {
-    width: 130px;
+  width: 130px;
 }
 
 .input-with-select {
-    width: 600px;
-    margin-top: 10px;
+  width: 600px;
+  margin-top: 10px;
 }
 
 .request {
-    margin-top: 15px;
-    border: 1px solid #ddd;
+  margin-top: 15px;
+  border: 1px solid #ddd;
 }
-
 </style>
