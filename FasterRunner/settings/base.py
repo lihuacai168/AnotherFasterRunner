@@ -227,7 +227,7 @@ HOST = "localhost"
 DB_NAME = "faster_db"
 
 IM_REPORT_SETTING = {
-    "base_url": "http://10.129.144.24",
+    "base_url": "https://testapi.caibeike.net",
     "port": 8000,
     "report_title": "自动化测试报告",
 }
