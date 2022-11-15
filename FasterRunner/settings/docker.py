@@ -67,10 +67,5 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 SERVER_IP = environ.get('SERVER_IP', '')
 DJANGO_API_PORT = environ.get('DJANGO_API_PORT', '8000')
-BASE_REPORT_URL = f'http://{SERVER_IP}:{DJANGO_API_PORT}/api/fastrunner/reports'
-
-IM_REPORT_SETTING = {
-    'base_url': 'http://localhost',
-    'port': 8000,
-    'report_title': '自动化测试报告'
-}
+# BASE_REPORT_URL = f'https://{SERVER_IP}:{DJANGO_API_PORT}/api/fastrunner/reports'
+BASE_REPORT_URL = f'https://{SERVER_IP}/api/fastrunner/reports'

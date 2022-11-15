@@ -1,0 +1,255 @@
+<template>
+  <el-container>
+    <el-header style="padding-top: 8px; padding-left: 10px; height: 50px">
+      <el-row :gutter="30"
+        ><el-col :span="6">
+          <el-input
+            placeholder="请输入配置名称"
+            clearable
+            v-model="search"
+            size="medium"
+          >
+            <el-button
+              slot="append"
+              icon="el-icon-search"
+              @click="getConfigList"
+            ></el-button>
+          </el-input> </el-col
+      ></el-row>
+    </el-header>
+
+    <el-main style="padding: 0; margin-left: 10px">
+      <div>
+        <el-table
+          style="width: 100%; height: auto"
+          highlight-current-row
+          :data="configData.results"
+          :show-header="configData.results.length !== 0"
+          stripe
+          @cell-mouse-enter="cellMouseEnter"
+          @cell-mouse-leave="cellMouseLeave"
+          @selection-change="handleSelectionChange"
+        >
+          <el-table-column type="selection" width="35"></el-table-column>
+          <el-table-column label="配置名称" min-width="120">
+            <template v-slot="scope">
+              <div style="height: 20px">{{ scope.row.name }}</div>
+            </template>
+          </el-table-column>
+
+          <el-table-column label="基本请求地址" min-width="120">
+            <template v-slot="scope">
+              <div
+                v-text="scope.row.base_url === '' ? '无' : scope.row.base_url"
+              ></div>
+            </template>
+          </el-table-column>
+
+          <el-table-column width="90" label="是否为默认">
+            <template v-slot="scope">
+              <el-switch
+                disabled
+                v-model="scope.row.is_default"
+                active-color="#13ce66"
+              ></el-switch>
+            </template>
+          </el-table-column>
+
+          <el-table-column label="更新时间" width="180">
+            <template v-slot="scope">
+              <div>{{ scope.row.update_time | datetimeFormat }}</div>
+            </template>
+          </el-table-column>
+
+          <el-table-column width="120" label="操作">
+            <template v-slot="scope">
+              <el-row v-show="currentRow === scope.row">
+                <el-button
+                  type="info"
+                  icon="el-icon-edit"
+                  title="编辑"
+                  circle
+                  size="mini"
+                  @click="handleEditConfig(scope.row)"
+                ></el-button>
+
+                <el-button
+                  type="success"
+                  icon="el-icon-document"
+                  circle
+                  size="mini"
+                  style="margin-left: 5px"
+                  @click="handleCopyConfig(scope.row.id, scope.row.name)"
+                  title="复制"
+                >
+                </el-button>
+
+                <el-button
+                  type="danger"
+                  icon="el-icon-delete"
+                  title="删除"
+                  circle
+                  size="mini"
+                  style="margin-left: 5px"
+                  @click="handleDelConfig(scope.row.id)"
+                >
+                </el-button>
+              </el-row>
+            </template>
+          </el-table-column>
+        </el-table>
+        <div style="margin: 5px 5px">
+          <el-pagination
+            :page-size="11"
+            v-show="configData.count !== 0"
+            background
+            @current-change="handleCurrentChange"
+            :current-page.sync="currentPage"
+            layout="total, prev, pager, next, jumper"
+            :total="configData.count"
+          >
+          </el-pagination>
+        </div>
+      </div>
+    </el-main>
+  </el-container>
+</template>
+
+<script>
+export default {
+  name: "ConfigList",
+  props: {
+    back: Boolean,
+    project: {
+      require: true,
+    },
+    del: Boolean,
+  },
+  data() {
+    return {
+      search: "",
+      selectConfig: [],
+      currentRow: "",
+      currentPage: 1,
+      configData: {
+        count: 0,
+        results: [],
+      },
+    };
+  },
+  watch: {
+    back() {
+      this.getConfigList();
+    },
+
+    del() {
+      if (this.selectConfig.length !== 0) {
+        this.$confirm("此操作将永久删除配置，是否继续?", "提示", {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning",
+        }).then(() => {
+          this.$api.delAllConfig({ data: this.selectConfig }).then((resp) => {
+            if (resp.success) {
+              this.getConfigList();
+            } else {
+              this.$message.error(resp.msg);
+            }
+          });
+        });
+      } else {
+        this.$notify.warning({
+          title: "提示",
+          message: "请至少勾选一个配置",
+          duration: this.$store.state.duration,
+        });
+      }
+    },
+  },
+
+  methods: {
+    handleSelectionChange(val) {
+      this.selectConfig = val;
+    },
+
+    handleCurrentChange(val) {
+      this.$api
+        .getConfigPaginationBypage({
+          params: {
+            page: this.currentPage,
+            project: this.project,
+            search: this.search,
+          },
+        })
+        .then((resp) => {
+          this.configData = resp;
+        });
+    },
+
+    //删除api
+    handleDelConfig(index) {
+      this.$confirm("此操作将永久删除该配置，是否继续?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      }).then(() => {
+        this.$api.deleteConfig(index).then((resp) => {
+          if (resp.success) {
+            this.getConfigList();
+          } else {
+            this.$message.error(resp.msg);
+          }
+        });
+      });
+    },
+
+    handleEditConfig(row) {
+      this.$emit("respConfig", row);
+    },
+
+    handleCopyConfig(id, name) {
+      this.$prompt("请输入配置名称", "提示", {
+        confirmButtonText: "确定",
+        inputPattern: /^[\s\S]*.*[^\s][\s\S]*$/,
+        inputErrorMessage: "配置名称不能为空",
+        inputValue: name,
+      }).then(({ value }) => {
+        this.$api
+          .copyConfig(id, {
+            name: value,
+          })
+          .then((resp) => {
+            if (resp.success) {
+              this.getConfigList();
+            } else {
+              this.$message.error(resp.msg);
+            }
+          });
+      });
+    },
+
+    cellMouseEnter(row) {
+      this.currentRow = row;
+    },
+
+    cellMouseLeave(row) {
+      this.currentRow = "";
+    },
+
+    getConfigList() {
+      this.$api
+        .configList({
+          params: { project: this.project, search: this.search },
+        })
+        .then((resp) => {
+          this.configData = resp;
+        });
+    },
+  },
+  mounted() {
+    this.getConfigList();
+  },
+};
+</script>
+
+<style scoped></style>
