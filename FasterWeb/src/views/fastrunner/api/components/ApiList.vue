@@ -40,7 +40,7 @@
           </el-dropdown>
           <el-dropdown @command="dropdownMenuChangeHandle">
             <!--                  <span><i class="el-icon-more">选中操作</i></span>-->
-            <el-button type="info" size="medium"
+            <el-button type="info" size="medium" style="margin-left: 5px"
               >操作<i class="el-icon-more"></i
             ></el-button>
             <el-dropdown-menu slot="dropdown">

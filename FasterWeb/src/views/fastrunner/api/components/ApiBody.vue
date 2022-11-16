@@ -205,32 +205,14 @@ import Hooks from "../../../httprunner/components/Hooks.vue";
 import Report from "../../../reports/DebugReport.vue";
 
 export default {
-  components: {
-    Headers,
-    Request,
-    Extract,
-    Validate,
-    Variables,
-    Hooks,
-    Report,
-  },
+  components: { Headers, Request, Extract, Validate, Variables, Hooks, Report },
 
   props: {
-    host: {
-      require: false,
-    },
-    nodeId: {
-      require: false,
-    },
-    project: {
-      require: false,
-    },
-    config: {
-      require: false,
-    },
-    response: {
-      require: false,
-    },
+    host: { require: false },
+    nodeId: { require: false },
+    project: { require: false },
+    config: { require: false },
+    response: { require: false },
     isSaveAs: Boolean,
   },
   methods: {
@@ -439,27 +421,13 @@ export default {
       summary: {},
       activeTag: "second",
       httpOptions: [
-        {
-          label: "GET",
-        },
-        {
-          label: "POST",
-        },
-        {
-          label: "PUT",
-        },
-        {
-          label: "DELETE",
-        },
-        {
-          label: "HEAD",
-        },
-        {
-          label: "OPTIONS",
-        },
-        {
-          label: "PATCH",
-        },
+        { label: "GET" },
+        { label: "POST" },
+        { label: "PUT" },
+        { label: "DELETE" },
+        { label: "HEAD" },
+        { label: "OPTIONS" },
+        { label: "PATCH" },
       ],
     };
   },

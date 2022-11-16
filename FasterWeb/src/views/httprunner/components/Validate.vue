@@ -20,10 +20,10 @@
       </template>
     </el-table-column>
 
-    <el-table-column label="断言类型" width="100">
+    <el-table-column label="断言类型" width="250">
       <template v-slot="scope">
         <el-tooltip
-          style="width: 250px"
+          style="width: 240px"
           effect="dark"
           :content="scope.row.comparator"
           placement="bottom"
@@ -308,101 +308,37 @@ export default {
       ],
 
       dataTypeOptions: [
-        {
-          label: "String",
-          value: 1,
-        },
-        {
-          label: "Integer",
-          value: 2,
-        },
-        {
-          label: "Float",
-          value: 3,
-        },
-        {
-          label: "Boolean",
-          value: 4,
-        },
-        {
-          label: "List",
-          value: 5,
-        },
-        {
-          label: "Dict",
-          value: 6,
-        },
-        {
-          label: "None",
-          value: 7,
-        },
+        { label: "String", value: 1 },
+        { label: "Integer", value: 2 },
+        { label: "Float", value: 3 },
+        { label: "Boolean", value: 4 },
+        { label: "List", value: 5 },
+        { label: "Dict", value: 6 },
+        { label: "None", value: 7 },
       ],
 
       validateOptions: [
-        {
-          value: "equals",
-          label: "eq",
-        },
-        {
-          value: "less_than",
-        },
-        {
-          value: "less_than_or_equals",
-        },
-        {
-          value: "greater_than",
-        },
-        {
-          value: "greater_than_or_equals",
-        },
-        {
-          value: "not_equals",
-        },
-        {
-          value: "string_equals",
-        },
-        {
-          value: "length_equals",
-        },
-        {
-          value: "length_greater_than",
-        },
-        {
-          value: "length_greater_than_or_equals",
-        },
-        {
-          value: "length_less_than",
-        },
-        {
-          value: "length_less_than_or_equals",
-        },
-        {
-          value: "contains",
-        },
-        {
-          value: "not_contains",
-        },
-        {
-          value: "contained_by",
-        },
-        {
-          value: "list_any_item_contains",
-        },
-        {
-          value: "list_all_item_contains",
-        },
-        {
-          value: "type_match",
-        },
-        {
-          value: "regex_match",
-        },
-        {
-          value: "startswith",
-        },
-        {
-          value: "endswith",
-        },
+        { value: "equals", label: "eq" },
+        { value: "less_than" },
+        { value: "less_than_or_equals" },
+        { value: "greater_than" },
+        { value: "greater_than_or_equals" },
+        { value: "not_equals" },
+        { value: "string_equals" },
+        { value: "length_equals" },
+        { value: "length_greater_than" },
+        { value: "length_greater_than_or_equals" },
+        { value: "length_less_than" },
+        { value: "length_less_than_or_equals" },
+        { value: "contains" },
+        { value: "not_contains" },
+        { value: "contained_by" },
+        { value: "list_any_item_contains" },
+        { value: "list_all_item_contains" },
+        { value: "type_match" },
+        { value: "regex_match" },
+        { value: "startswith" },
+        { value: "endswith" },
       ],
     };
   },
