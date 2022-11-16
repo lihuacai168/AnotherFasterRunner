@@ -374,61 +374,16 @@ export default {
             times: 1,
             url: "",
             method: "POST",
-            header: [
-              {
-                key: "",
-                value: "",
-                desc: "",
-              },
-            ],
+            header: [{ key: "", value: "", desc: "" }],
             request: {
-              data: [
-                {
-                  key: "",
-                  value: "",
-                  desc: "",
-                  type: 1,
-                },
-              ],
-              params: [
-                {
-                  key: "",
-                  value: "",
-                  desc: "",
-                  type: 1,
-                },
-              ],
+              data: [{ key: "", value: "", desc: "", type: 1 }],
+              params: [{ key: "", value: "", desc: "", type: 1 }],
               json_data: "",
             },
-            validate: [
-              {
-                expect: "",
-                actual: "",
-                comparator: "equals",
-                type: 1,
-              },
-            ],
-            variables: [
-              {
-                key: "",
-                value: "",
-                desc: "",
-                type: 1,
-              },
-            ],
-            extract: [
-              {
-                key: "",
-                value: "",
-                desc: "",
-              },
-            ],
-            hooks: [
-              {
-                setup: "",
-                teardown: "",
-              },
-            ],
+            validate: [{ expect: "", actual: "", comparator: "equals", type: 1 }],
+            variables: [{ key: "", value: "", desc: "", type: 1 }],
+            extract: [{ key: "", value: "", desc: "" }],
+            hooks: [{ setup: "", teardown: "" }],
           },
         };
       },
@@ -455,20 +410,8 @@ export default {
         name: "",
       },
       rules: {
-        yapi_base_url: [
-          {
-            required: true,
-            message: "yapi的openapi url",
-            trigger: "blur",
-          },
-        ],
-        yapi_openapi_token: [
-          {
-            required: true,
-            message: "yapi的openapi token",
-            trigger: "blur",
-          },
-        ],
+        yapi_base_url: [{ required: true, message: "yapi的openapi url", trigger: "blur" }],
+        yapi_openapi_token: [{ required: true, message: "yapi的openapi token", trigger: "blur" }],
         name: [
           { required: true, message: "请输入节点名称", trigger: "blur" },
           { min: 1, max: 50, message: "最多不超过50个字符", trigger: "blur" },
