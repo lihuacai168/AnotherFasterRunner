@@ -126,6 +126,11 @@ USE_L10N = True
 
 USE_TZ = False
 
+CELERY_TIMEZONE = TIME_ZONE
+# https://github.com/celery/celery/issues/4796
+DJANGO_CELERY_BEAT_TZ_AWARE = False
+CELERY_BEAT_SCHEDULER="django_celery_beat.schedulers:DatabaseScheduler"
+
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
@@ -318,6 +323,3 @@ LOGGING = {
         },
     },
 }
-
-# https://github.com/celery/celery/issues/4796
-DJANGO_CELERY_BEAT_TZ_AWARE = False

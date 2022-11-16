@@ -25,6 +25,7 @@ nohup.out
 # web
 .DS_Store
 web
+FasterWeb
 tyadmin
 web/node_modules/
 */node_modules*
