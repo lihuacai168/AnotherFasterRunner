@@ -11,7 +11,6 @@ import random
 import string
 import time
 
-from loguru import logger
 from requests_toolbelt import MultipartEncoder
 
 from httprunner.compat import builtin_str, integer_types

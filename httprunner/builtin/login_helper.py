@@ -5,12 +5,15 @@
 # @File: login_helper.py
 # @Time : 2021/8/9 17:30
 # @Email: lihuacai168@gmail.com
+import logging
 import json
 import pydash
 import requests
-from loguru import logger
+# from loguru import logger
 
 uac_token_url = 'http://192.168.22.19:8002/api/uac/token/'
+
+logger = logging.getLogger(__name__)
 
 
 def _get_token(biz, account, password, env='qa'):

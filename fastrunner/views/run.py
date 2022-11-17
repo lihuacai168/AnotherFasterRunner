@@ -1,5 +1,6 @@
 import json
-from loguru import logger
+# from loguru import logger
+import logging
 import datetime
 
 from django.core.exceptions import ObjectDoesNotExist
@@ -12,6 +13,8 @@ from fastrunner.utils.ding_message import DingMessage
 from fastrunner.utils.host import parse_host
 from fastrunner.utils.parser import Format
 from fastrunner import models
+
+logger = logging.getLogger(__name__)
 
 """运行方式
 """
