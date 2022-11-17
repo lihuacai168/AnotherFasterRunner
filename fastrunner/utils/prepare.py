@@ -328,10 +328,6 @@ def project_init(project):
 
     # 自动生成默认debugtalk.py
     models.Debugtalk.objects.create(project=project)
-    # 自动生成API tree
-    models.Relation.objects.create(project=project)
-    # 自动生成Test Tree
-    models.Relation.objects.create(project=project, type=2)
 
 
 def project_end(project):

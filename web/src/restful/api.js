@@ -124,7 +124,7 @@ export const runDebugtalk = params => {
 };
 
 export const getTree = (url, params) => {
-    return axios.get('/api/fastrunner/tree/' + url + '/', params).then(res => res.data)
+    return axios.get('/api/fastrunner/tree/' + url + '/', params).then(res => res.data.data)
 };
 
 export const updateTree = (url, params) => {

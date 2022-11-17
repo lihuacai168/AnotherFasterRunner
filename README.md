@@ -1,5 +1,4 @@
 [![LICENSE](https://img.shields.io/github/license/HttpRunner/FasterRunner.svg)](https://github.com/HttpRunner/FasterRunner/blob/master/LICENSE)
-
 # FasterRunner
 - [X] 支持同步YAPI（Swagger，Postman），无需手动录入接口
 - [X] 继承 Requests 的全部特性，轻松实现 HTTP(S) 的各种测试需求
@@ -9,7 +8,9 @@
 - [X]  测试用例支持参数化和数据驱动机制
 - [X]  Gitlab-CI, Jenkins 等持续集成工具完美结合
 - [X]  测试结果统计报告简洁清晰，附带详尽统计信息和日志记录
-- [X]  测试报告推送飞书，钉钉，企业微信等
+- [X]  测试报告推送飞书，钉钉，企业微信等  
+
+![](https://cdn.jsdelivr.net/gh/lihuacai168/images/img/project_detail.png)
 
 
 # 注意
@@ -17,7 +18,8 @@
 > 
 > `V2`版本使用`django-celery-beat`代替`djcelery`, 需要手动执行sql文件夹中的`django_celery_beat_init.sql`
  
-# [使用文档](https://www.yuque.com/lihuacai/sggdx7/cn5ncg)
+# 文档
+- 使用文档 https://www.yuque.com/lihuacai/fasterunner
 
 # Quick Start
 
