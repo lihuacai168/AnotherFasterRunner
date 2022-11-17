@@ -1,5 +1,6 @@
 import datetime
 import json
+import logging
 
 import json5
 import time
@@ -13,6 +14,7 @@ from loguru import logger
 from fastrunner import models
 from fastrunner.utils.tree import get_tree_max_id, get_all_ycatid, get_tree_ycatid_mapping
 
+logger = logging.getLogger(__name__)
 
 class FileType(Enum):
     """

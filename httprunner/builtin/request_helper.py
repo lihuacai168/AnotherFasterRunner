@@ -7,9 +7,13 @@
 # @Email: lihuacai168@gmail.com
 
 import json
+import logging
 
 import pydash
-from loguru import logger
+
+# from loguru import logger
+
+logger = logging.getLogger(__name__)
 
 
 def _load_json(in_data):
@@ -27,11 +31,11 @@ def set_json(request_obj, in_data={}, include="", json_path="."):
     修改请求体的json, 包含模式
     """
     in_data = _load_json(in_data)
-    request_data = pydash.get(request_obj['json'], json_path)
+    request_data = pydash.get(request_obj["json"], json_path)
     include_keys = include.split("-")
     for k in include_keys:
         v = pydash.get(in_data, k)
-        path = k.split('.')[-1]
+        path = k.split(".")[-1]
         pydash.set_(request_data, path, v)
 
 
@@ -40,7 +44,7 @@ def set_json_e(request_obj, in_data={}, exclude="", in_path="."):
     修改请求体的json， 排除模式
     """
     in_data = _load_json(in_data)
-    request_data = pydash.get(request_obj['json'], in_path)
+    request_data = pydash.get(request_obj["json"], in_path)
     exclude_keys = exclude.split("-")
     if isinstance(in_data, dict):
         for k, v in in_data.items():

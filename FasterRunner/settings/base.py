@@ -58,6 +58,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'log_request_id.middleware.RequestIDMiddleware',
     "django.middleware.security.SecurityMiddleware",
     "django.middleware.gzip.GZipMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -215,12 +216,31 @@ LOGGING = {
     "disable_existing_loggers": True,
     "formatters": {
         "standard": {
-            "format": "%(asctime)s [%(levelname)s] - %(message)s",
+            'format': '%(levelname)-2s [%(asctime)s] [%(request_id)s] %(name)s: %(message)s',
             "datefmt": "%Y-%m-%d %H:%M:%S",
+        },
+        'color': {
+            '()': 'colorlog.ColoredFormatter',
+            'format': '%(green)s%(asctime)s [%(request_id)s] %(name)s %(log_color)s%(levelname)s [pid:%(process)d] '
+                      '[%(filename)s->%(funcName)s:%(lineno)s] %(cyan)s%(message)s',
+            'log_colors': {
+                'DEBUG': 'black',
+                'INFO': 'white',
+                'WARNING': 'yellow',
+                'ERROR': 'red',
+                'CRITICAL': 'bold_red',
+            },
         }
         # 日志格式
     },
-    "filters": {},
+    "filters": {
+        'request_id': {
+            '()': 'log_request_id.filters.RequestIDFilter'
+        },
+        'require_debug_true': {
+            '()': 'django.utils.log.RequireDebugTrue',  # 过滤器，只有当setting的DEBUG = True时生效
+        },
+    },
     "handlers": {
         "mail_admins": {
             "level": "ERROR",
@@ -231,34 +251,21 @@ LOGGING = {
             "level": "DEBUG",
             "class": "logging.handlers.RotatingFileHandler",
             # 'filename': os.path.join(BASE_DIR, 'logs/../../logs/debug.log'),
-            "filename": os.path.join(BASE_DIR, "logs/debug.log"),
+            "filename": os.path.join(BASE_DIR, "logs/info.log"),
             "maxBytes": 1024 * 1024 * 50,
             "backupCount": 5,
-            "formatter": "standard",
+            "formatter": "color",
+            'filters': ['request_id'],
+
         },
         "console": {
             "level": "DEBUG",
             "class": "logging.StreamHandler",
-            "formatter": "standard",
+            "formatter": "color",
+            'filters': ['request_id'],
+
         },
-        "request_handler": {
-            "level": "INFO",
-            "class": "logging.handlers.RotatingFileHandler",
-            # 'filename': os.path.join(BASE_DIR, 'logs/../../logs/run.log'),
-            "filename": os.path.join(BASE_DIR, "logs/run.log"),
-            "maxBytes": 1024 * 1024 * 50,
-            "backupCount": 5,
-            "formatter": "standard",
-        },
-        "scprits_handler": {
-            "level": "INFO",
-            "class": "logging.handlers.RotatingFileHandler",
-            # 'filename': os.path.join(BASE_DIR, 'logs/../../logs/run.log'),
-            "filename": os.path.join(BASE_DIR, "logs/run.log"),
-            "maxBytes": 1024 * 1024 * 100,
-            "backupCount": 5,
-            "formatter": "standard",
-        },
+
     },
     "loggers": {
         "django": {
@@ -266,23 +273,22 @@ LOGGING = {
             "level": "INFO",
             "propagate": True,
         },
-        "FasterRunner.app": {
+        "fastrunner": {
             "handlers": ["default", "console"],
             "level": "INFO",
             "propagate": True,
         },
-        "django.request": {
-            "handlers": ["request_handler"],
-            "level": "INFO",
-            "propagate": True,
-        },
-        "FasterRunner": {
-            "handlers": ["scprits_handler", "console"],
+        "httprunner": {
+            "handlers": ["default", "console"],
             "level": "INFO",
             "propagate": True,
         },
     },
 }
+LOG_REQUEST_ID_HEADER = "HTTP_X_REQUEST_ID"
+GENERATE_REQUEST_ID_IF_NOT_IN_HEADER = True
+REQUEST_ID_RESPONSE_HEADER = "RESPONSE_HEADER_NAME"
+
 
 # https://github.com/celery/celery/issues/4796
 DJANGO_CELERY_BEAT_TZ_AWARE = False

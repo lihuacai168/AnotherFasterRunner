@@ -7,9 +7,12 @@ import json
 import os.path
 import string
 from datetime import datetime
+import logging
 
-from httprunner import exceptions, logger
+from httprunner import exceptions
 from httprunner.compat import OrderedDict, basestring, is_py2
+
+logger = logging.getLogger(__name__)
 
 
 def remove_prefix(text, prefix):
@@ -25,7 +28,7 @@ def set_os_environ(variables_mapping):
     """
     for variable in variables_mapping:
         os.environ[variable] = variables_mapping[variable]
-        logger.log_debug("Loaded variable: {}".format(variable))
+        logger.debug("Loaded variable: {}".format(variable))
 
 
 def query_json(json_content, query, delimiter='.'):
@@ -57,7 +60,7 @@ def query_json(json_content, query, delimiter='.'):
             elif isinstance(json_content, dict):
                 json_content = json_content[key]
             else:
-                logger.log_error(
+                logger.error(
                     "invalid type value: {}({})".format(json_content, type(json_content)))
                 raise_flag = True
     except (KeyError, ValueError, IndexError):
@@ -66,7 +69,7 @@ def query_json(json_content, query, delimiter='.'):
     if raise_flag:
         err_msg = u"Failed to extract! => {}\n".format(query)
         err_msg += response_body
-        logger.log_error(err_msg)
+        logger.error(err_msg)
         raise exceptions.ExtractFailure(err_msg)
 
     return json_content
@@ -391,18 +394,18 @@ def print_io(in_out):
     content += prepare_content("Out", _out)
     content += "-" * 56 + "\n"
 
-    logger.log_debug(content)
+    logger.debug(content)
 
 
 def create_scaffold(project_name):
     """ create scaffold with specified project name.
     """
     if os.path.isdir(project_name):
-        logger.log_warning(u"Folder {} exists, please specify a new folder name.".format(project_name))
+        logger.warning(u"Folder {} exists, please specify a new folder name.".format(project_name))
         return
 
-    logger.color_print("Start to create new project: {}".format(project_name), "GREEN")
-    logger.color_print("CWD: {}\n".format(os.getcwd()), "BLUE")
+    logger.info("Start to create new project: {}".format(project_name), "GREEN")
+    logger.info("CWD: {}\n".format(os.getcwd()), "BLUE")
 
     def create_path(path, ptype):
         if ptype == "folder":
@@ -411,7 +414,7 @@ def create_scaffold(project_name):
             open(path, 'w').close()
 
         msg = "created {}: {}".format(ptype, path)
-        logger.color_print(msg, "BLUE")
+        logger.info(msg, "BLUE")
 
     path_list = [
         (project_name, "folder"),
@@ -464,10 +467,10 @@ def validate_json_file(file_list):
     """
     for json_file in set(file_list):
         if not json_file.endswith(".json"):
-            logger.log_warning("Only JSON file format can be validated, skip: {}".format(json_file))
+            logger.warning("Only JSON file format can be validated, skip: {}".format(json_file))
             continue
 
-        logger.color_print("Start to validate JSON file: {}".format(json_file), "GREEN")
+        logger.info("Start to validate JSON file: {}".format(json_file), "GREEN")
 
         with io.open(json_file) as stream:
             try:
@@ -483,10 +486,10 @@ def prettify_json_file(file_list):
     """
     for json_file in set(file_list):
         if not json_file.endswith(".json"):
-            logger.log_warning("Only JSON file format can be prettified, skip: {}".format(json_file))
+            logger.warning("Only JSON file format can be prettified, skip: {}".format(json_file))
             continue
 
-        logger.color_print("Start to prettify JSON file: {}".format(json_file), "GREEN")
+        logger.info("Start to prettify JSON file: {}".format(json_file), "GREEN")
 
         dir_path = os.path.dirname(json_file)
         file_name, file_suffix = os.path.splitext(os.path.basename(json_file))

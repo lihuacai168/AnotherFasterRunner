@@ -2,16 +2,18 @@
 
 import argparse
 import multiprocessing
-import os
+import logging
 import sys
 import unittest
 
-from httprunner import logger
+# from httprunner import logger
 from httprunner.__about__ import __description__, __version__
 from httprunner.api import HttpRunner
 from httprunner.compat import is_py2
 from httprunner.utils import (create_scaffold, get_python2_retire_msg,
                               prettify_json_file, validate_json_file)
+
+logger = logging.getLogger(__name__)
 
 
 def main_hrun():
@@ -56,13 +58,14 @@ def main_hrun():
         help="Prettify JSON testcase format.")
 
     args = parser.parse_args()
-    logger.setup_logger(args.log_level, args.log_file)
+    # logger.setup_logger(args.log_level, args.log_file)
 
     if is_py2:
-        logger.log_warning(get_python2_retire_msg())
+        logger.warning(get_python2_retire_msg())
 
     if args.version:
-        logger.color_print("{}".format(__version__), "GREEN")
+        logger.info("{}".format(__version__), "GREEN")
+
         exit(0)
 
     if args.validate:
@@ -86,7 +89,7 @@ def main_hrun():
             dot_env_path=args.dot_env_path
         )
     except Exception:
-        logger.log_error("!!!!!!!!!! exception stage: {} !!!!!!!!!!".format(runner.exception_stage))
+        logger.error("!!!!!!!!!! exception stage: {} !!!!!!!!!!".format(runner.exception_stage))
         raise
 
     if not args.no_html_report:
@@ -131,7 +134,7 @@ def main_locust():
         # default
         loglevel = "INFO"
 
-    logger.setup_logger(loglevel)
+    # logger.setup_logger(loglevel)
 
     # get testcase file path
     try:
@@ -154,7 +157,7 @@ def main_locust():
         """ locusts -f locustfile.py --processes 4
         """
         if "--no-web" in sys.argv:
-            logger.log_error("conflict parameter args: --processes & --no-web. \nexit.")
+            logger.error("conflict parameter args: --processes & --no-web. \nexit.")
             sys.exit(1)
 
         processes_index = sys.argv.index('--processes')
@@ -166,7 +169,7 @@ def main_locust():
                 locusts -f locustfile.py --processes
             """
             processes_count = multiprocessing.cpu_count()
-            logger.log_warning("processes count not specified, use {} by default.".format(processes_count))
+            logger.warning("processes count not specified, use {} by default.".format(processes_count))
         else:
             try:
                 """ locusts -f locustfile.py --processes 4 """
@@ -175,7 +178,7 @@ def main_locust():
             except ValueError:
                 """ locusts -f locustfile.py --processes -P 8888 """
                 processes_count = multiprocessing.cpu_count()
-                logger.log_warning("processes count not specified, use {} by default.".format(processes_count))
+                logger.warning("processes count not specified, use {} by default.".format(processes_count))
 
         sys.argv.pop(processes_index)
         locusts.run_locusts_with_processes(sys.argv, processes_count)

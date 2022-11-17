@@ -1,15 +1,18 @@
 import json
+import logging
 
 import pydash
 import requests
 from django.db.models import Sum, Count, Q
 from django.db.models.functions import Concat
 from django_celery_beat.models import PeriodicTask as celery_models
-from loguru import logger
+# from loguru import logger
 
 from fastrunner import models
 from fastrunner.utils.day import get_day, get_week, get_month
 from fastrunner.utils.parser import Format
+
+logger = logging.getLogger(__name__)
 
 
 def get_counter(model, pk=None):
