@@ -1,10 +1,8 @@
 name: Deploy Web
 
-on:
-  push:
-    branches:
-      - 'master'
-      - 'web/**'
+on:  
+  release:
+    types: [released]
     paths:
       - '**.vue'
       - '**.js'
