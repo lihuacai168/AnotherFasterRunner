@@ -1,3 +1,6 @@
+{% load static %}
+
+{% load compress %}
 <!DOCTYPE html>
 <html>
 
@@ -8474,8 +8477,9 @@
 
 </script>
 
-<script src='http://extentreports.com/resx/dist/js/extent.js' type='text/javascript'></script>
-
+{% compress js %}
+<script src="{% static 'extent.js' %}" type='text/javascript'></script>
+{% endcompress js %}
 
 <script type='text/javascript'>
     $(window).off("keydown");

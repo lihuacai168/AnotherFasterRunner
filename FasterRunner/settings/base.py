@@ -56,12 +56,15 @@ INSTALLED_APPS = [
     "django_celery_beat",
     "rest_framework_swagger",
     "drf_yasg",
+    "compressor",
 ]
 
 MIDDLEWARE = [
-    'log_request_id.middleware.RequestIDMiddleware',
-    "django.middleware.security.SecurityMiddleware",
     "django.middleware.gzip.GZipMiddleware",
+    "htmlmin.middleware.HtmlMinifyMiddleware",
+    "htmlmin.middleware.MarkRequestMiddleware",
+    "log_request_id.middleware.RequestIDMiddleware",
+    "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -70,6 +73,32 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "fastrunner.utils.middleware.VisitTimesMiddleware",
 ]
+# Static files (CSS, JavaScript, Images)
+# https://docs.djangoproject.com/en/2.1/howto/static-files/
+STATIC_URL = "/static/"
+
+STATICFILES_FINDERS = (
+    "django.contrib.staticfiles.finders.FileSystemFinder",
+    "django.contrib.staticfiles.finders.AppDirectoriesFinder",
+    # Add this
+    "compressor.finders.CompressorFinder",
+)
+STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
+COMPRESS_ROOT = os.path.join(BASE_DIR, "static")
+STATIC_ROOT = os.path.join(BASE_DIR, "static_root")
+COMPRESS_ENABLED = True
+COMPRESS_CSS_HASHING_METHOD = "content"
+COMPRESS_FILTERS = {
+    "css": [
+        "compressor.filters.css_default.CssAbsoluteFilter",
+        "compressor.filters.cssmin.rCSSMinFilter",
+    ],
+    "js": [
+        "compressor.filters.jsmin.JSMinFilter",
+    ],
+}
+HTML_MINIFY = True
+KEEP_COMMENTS_ON_MINIFYING = True
 
 ROOT_URLCONF = "FasterRunner.urls"
 
@@ -122,11 +151,6 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = False
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/2.1/howto/static-files/
-
-STATIC_URL = "/static/"
 
 
 REST_FRAMEWORK = {
@@ -229,29 +253,27 @@ LOGGING = {
     "disable_existing_loggers": True,
     "formatters": {
         "standard": {
-            'format': '%(levelname)-2s [%(asctime)s] [%(request_id)s] %(name)s: %(message)s',
+            "format": "%(levelname)-2s [%(asctime)s] [%(request_id)s] %(name)s: %(message)s",
             "datefmt": "%Y-%m-%d %H:%M:%S",
         },
-        'color': {
-            '()': 'colorlog.ColoredFormatter',
-            'format': '%(green)s%(asctime)s [%(request_id)s] %(name)s %(log_color)s%(levelname)s [pid:%(process)d] '
-                      '[%(filename)s->%(funcName)s:%(lineno)s] %(cyan)s%(message)s',
-            'log_colors': {
-                'DEBUG': 'black',
-                'INFO': 'white',
-                'WARNING': 'yellow',
-                'ERROR': 'red',
-                'CRITICAL': 'bold_red',
+        "color": {
+            "()": "colorlog.ColoredFormatter",
+            "format": "%(green)s%(asctime)s [%(request_id)s] %(name)s %(log_color)s%(levelname)s [pid:%(process)d] "
+            "[%(filename)s->%(funcName)s:%(lineno)s] %(cyan)s%(message)s",
+            "log_colors": {
+                "DEBUG": "black",
+                "INFO": "white",
+                "WARNING": "yellow",
+                "ERROR": "red",
+                "CRITICAL": "bold_red",
             },
         }
         # 日志格式
     },
     "filters": {
-        'request_id': {
-            '()': 'log_request_id.filters.RequestIDFilter'
-        },
-        'require_debug_true': {
-            '()': 'django.utils.log.RequireDebugTrue',  # 过滤器，只有当setting的DEBUG = True时生效
+        "request_id": {"()": "log_request_id.filters.RequestIDFilter"},
+        "require_debug_true": {
+            "()": "django.utils.log.RequireDebugTrue",  # 过滤器，只有当setting的DEBUG = True时生效
         },
     },
     "handlers": {
@@ -268,17 +290,14 @@ LOGGING = {
             "maxBytes": 1024 * 1024 * 50,
             "backupCount": 5,
             "formatter": "color",
-            'filters': ['request_id'],
-
+            "filters": ["request_id"],
         },
         "console": {
             "level": "DEBUG",
             "class": "logging.StreamHandler",
             "formatter": "color",
-            'filters': ['request_id'],
-
+            "filters": ["request_id"],
         },
-
     },
     "loggers": {
         "django": {

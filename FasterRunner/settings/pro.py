@@ -68,7 +68,7 @@ BASE_REPORT_URL = f'http://{SERVER_IP}:8000/api/fastrunner/reports'
 # STATIC_URL = '/static/'
 
 # 部署的时候执行python manage.py collectstatic，django会把所有App下的static文件都复制到STATIC_ROOT文件夹下
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+# STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 # 开发者模式中使用访问静态文
 # STATICFILES_DIRS = (
