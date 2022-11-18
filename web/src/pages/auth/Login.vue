@@ -49,7 +49,7 @@
                                     </div>
                                 </div>
                                 <div class="form-foot">
-                                    <span>注册功能已经关闭，创建用户请联系管理员</span>
+                                    <span>注册功能已经关闭了，创建用户请联系管理员</span>
                                 </div>
 
                             </div>
