@@ -38,8 +38,6 @@ services:
     command: -c "/app/start.sh app"
     depends_on:
       - db
-    ports:
-      - "${DJANGO_API_PORT}:8000"
     restart: always
 
   celery-worker:
@@ -84,7 +82,7 @@ services:
   nginx:
     build: ./nginx
     ports:
-      - "${DJANGO_ADMIN_PORT}:80"
+      - "${DJANGO_ADMIN_PORT}:8000"
     depends_on:
       - app
     restart: always

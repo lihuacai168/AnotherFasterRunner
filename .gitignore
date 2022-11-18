@@ -8,7 +8,7 @@ tempWorkDir
 mysql
 .env
 /venv/
-/static/
+/CACHE/
 
 
 # web
