@@ -40,12 +40,12 @@ schema_view = get_schema_view(
 
 urlpatterns = [
     path(r"login", obtain_jwt_token),
-    path('admin/', admin.site.urls),
-    re_path('^fastrunner/.*', project.IndexPageView.as_view()),
-    re_path('^xadmin/.*', AdminIndexView.as_view()),
+    path('api/admin/', admin.site.urls),
+    # re_path('^fastrunner/.*', project.IndexPageView.as_view()),
+    # re_path('^xadmin/.*', AdminIndexView.as_view()),
     path('api/xadmin/v1/', include('tyadmin_api.urls')),
-    url(r'^static/(?P<path>.*)$', serve, {"document_root": STATIC_ROOT}),
-    url(r'^docs/', schema_view, name="docs"),
+    # url(r'^static/(?P<path>.*)$', serve, {"document_root": STATIC_ROOT}),
+    url(r'^api/docs/', schema_view, name="docs"),
     url(r'^accounts/', include('rest_framework.urls',)),
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework_api_auth')),
     path('api/user/', include('fastuser.urls')),
@@ -54,11 +54,11 @@ urlpatterns = [
     # 执行定时任务
     # TODO 需要增加触发检验，暂时关闭触发入口
     # re_path(r'^run_all_auto_case/$', run_all_auto_case.run_all_auto_case, name='run_all_auto_case'),
-    re_path(r'^get_report_url/$', run_all_auto_case.get_report_url, name='get_report_url'),
+    re_path(r'^api/get_report_url/$', run_all_auto_case.get_report_url, name='get_report_url'),
 
     # swagger
-    url(r'^swagger(?P<format>\.json|\.yaml)$', schema_view.without_ui(cache_timeout=0), name='schema-json'),
-    url(r'^swagger/$', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
-    url(r'^redoc/$', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
+    url(r'^api/swagger(?P<format>\.json|\.yaml)$', schema_view.without_ui(cache_timeout=0), name='schema-json'),
+    url(r'^api/swagger/$', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
+    url(r'^api/redoc/$', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
 
 ]
