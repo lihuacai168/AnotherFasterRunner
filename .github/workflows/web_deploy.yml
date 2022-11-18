@@ -8,18 +8,19 @@ on:
     paths:
       - '**.vue'
       - '**.js'
+  workflow_dispatch:
 
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
-
+    defaults:
+      run:
+        working-directory: ./web
     steps:
     - uses: actions/checkout@v1
     - name: Install Node.js
       uses: actions/setup-node@v1
-      working-directory: ./web
       with:
         node-version: '16'
     - name: Install npm dependencies
