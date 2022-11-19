@@ -68,6 +68,3 @@ gunicorn
 sentry-sdk~=1.5.8
 croniter~=1.3.5 # 计算下一次crontab
 django-log-request-id~=2.0.0
-
-django-htmlmin==0.11.0
-django-compressor==2.3 # 压缩静态文件
