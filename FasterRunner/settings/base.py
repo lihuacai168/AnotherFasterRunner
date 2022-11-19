@@ -56,13 +56,10 @@ INSTALLED_APPS = [
     "django_celery_beat",
     "rest_framework_swagger",
     "drf_yasg",
-    "compressor",
 ]
 
 MIDDLEWARE = [
     "django.middleware.gzip.GZipMiddleware",
-    "htmlmin.middleware.HtmlMinifyMiddleware",
-    "htmlmin.middleware.MarkRequestMiddleware",
     "log_request_id.middleware.RequestIDMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -77,28 +74,7 @@ MIDDLEWARE = [
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 STATIC_URL = "/static/"
 
-STATICFILES_FINDERS = (
-    "django.contrib.staticfiles.finders.FileSystemFinder",
-    "django.contrib.staticfiles.finders.AppDirectoriesFinder",
-    # Add this
-    "compressor.finders.CompressorFinder",
-)
-STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
-COMPRESS_ROOT = os.path.join(BASE_DIR, "static")
 STATIC_ROOT = os.path.join(BASE_DIR, "static_root")
-COMPRESS_ENABLED = True
-COMPRESS_CSS_HASHING_METHOD = "content"
-COMPRESS_FILTERS = {
-    "css": [
-        "compressor.filters.css_default.CssAbsoluteFilter",
-        "compressor.filters.cssmin.rCSSMinFilter",
-    ],
-    "js": [
-        "compressor.filters.jsmin.JSMinFilter",
-    ],
-}
-HTML_MINIFY = True
-KEEP_COMMENTS_ON_MINIFYING = True
 
 ROOT_URLCONF = "FasterRunner.urls"
 
