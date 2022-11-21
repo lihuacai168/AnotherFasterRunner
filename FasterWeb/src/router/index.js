@@ -72,8 +72,7 @@ const router = new VueRouter({
     },
     {
       path: "/",
-      name: "Index",
-      component: Home,
+      redirect: "/fastrunner/project_list",
       meta: {
         title: "首页",
         requireAuth: true,
@@ -83,6 +82,7 @@ const router = new VueRouter({
       path: "/fastrunner",
       name: "Index",
       component: Home,
+      redirect: "/fastrunner/project_list",
       meta: {
         title: "首页",
         requireAuth: true,

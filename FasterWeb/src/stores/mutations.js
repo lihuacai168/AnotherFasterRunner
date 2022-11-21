@@ -15,7 +15,9 @@ export default {
     }
     state.projectName = value;
   },
-
+  setProjectId(state, value) {
+    state.projectId = value;
+  },
   setIsSuperuser(state, value) {
     state.is_superuser = value;
   },
