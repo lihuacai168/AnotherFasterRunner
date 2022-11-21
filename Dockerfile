@@ -22,10 +22,15 @@ RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
 
 # COPY --from=Base /usr/local/lib/python3.9/site-packages /usr/local/lib/python3.9/site-packages
 WORKDIR /opt/workspace/FasterRunner/
+COPY nginx.conf /etc/nginx/http.d/default.conf
 COPY . /opt/workspace/FasterRunner/
 RUN chmod +x /opt/workspace/FasterRunner/start.sh &&  \
-    python manage.py collectstatic --settings=FasterRunner.settings.docker --no-input
+    python manage.py collectstatic --settings=FasterRunner.settings.docker --no-input &&  \
+    addgroup -g 1000 TestGroup && adduser testuser -D -G TestGroup -u 1000 &&  \
+    chmod o+w /opt/workspace/FasterRunner/logs/*
 
+ENV PYTHONUNBUFFERED=1
+ENV DJANGO_SETTINGS_MODULE=FasterRunner.settings.docker
 EXPOSE 8000
 
 CMD [ "bash ./start.sh" ]

@@ -28,7 +28,8 @@ axios.interceptors.request.use(
       config.headers.Authorization = store.token;
 
       // 取url地址的第四位作为projectId，如果不存在，默认设置为0
-      let projectId = window.location.pathname.split("/")[3];
+      // let projectId = window.location.pathname.split("/")[3];
+      let projectId = store.projectId;
       projectId = projectId ? projectId : 0;
       config.headers["Project"] = projectId;
       config.headers["Content-Type"] = "application/json";
@@ -102,12 +103,14 @@ axios.interceptors.response.use(
 );
 
 // user api
-export const register = (params) => {
-  return axios.post("/api/user/register/", params).then((res) => res.data);
+export const register = async (params) => {
+  const res = await axios.post("/api/user/register/", params);
+  return res.data;
 };
 
-export const login = (params) => {
-  return axios.post("/api/user/login/", params).then((res) => res.data);
+export const login = async (params) => {
+  const res = await axios.post("/api/user/login/", params);
+  return res.data;
 };
 
 export const getUserList = () => {
@@ -115,12 +118,14 @@ export const getUserList = () => {
 };
 
 // fastrunner api
-export const addProject = (params) => {
-  return axios.post("/api/fastrunner/project/", params).then((res) => res.data);
+export const addProject = async (params) => {
+  const res = await axios.post("/api/fastrunner/project/", params);
+  return res.data;
 };
 
-export const deleteProject = (config) => {
-  return axios.delete("/api/fastrunner/project/", config).then((res) => res.data);
+export const deleteProject = async (config) => {
+  const res = await axios.delete("/api/fastrunner/project/", config);
+  return res.data;
 };
 
 export const getProjectList = (params) => {
@@ -147,64 +152,75 @@ export const getPagination = (url) => {
   return axios.get(url).then((res) => res.data);
 };
 
-export const updateProject = (params) => {
-  return axios.patch("/api/fastrunner/project/", params).then((res) => res.data);
+export const updateProject = async (params) => {
+  const res = await axios.patch("/api/fastrunner/project/", params);
+  return res.data;
 };
 
 export const getDebugtalk = (url) => {
   return axios.get("/api/fastrunner/debugtalk/" + url + "/").then((res) => res.data);
 };
 
-export const updateDebugtalk = (params) => {
-  return axios.patch("/api/fastrunner/debugtalk/", params).then((res) => res.data);
+export const updateDebugtalk = async (params) => {
+  const res = await axios.patch("/api/fastrunner/debugtalk/", params);
+  return res.data;
 };
 
-export const runDebugtalk = (params) => {
-  return axios.post("/api/fastrunner/debugtalk/", params).then((res) => res.data);
+export const runDebugtalk = async (params) => {
+  const res = await axios.post("/api/fastrunner/debugtalk/", params);
+  return res.data;
 };
 
 export const getTree = (url, params) => {
   return axios.get("/api/fastrunner/tree/" + url + "/", params).then((res) => res.data.data);
 };
 
-export const updateTree = (url, params) => {
-  return axios.patch("/api/fastrunner/tree/" + url + "/", params).then((res) => res.data);
+export const updateTree = async (url, params) => {
+  const res = await axios.patch("/api/fastrunner/tree/" + url + "/", params);
+  return res.data;
 };
 
 export const uploadFile = (url) => {
   return baseUrl + "/api/fastrunner/file/?token=" + store.token;
 };
 
-export const addAPI = (params) => {
-  return axios.post("/api/fastrunner/api/", params).then((res) => res.data);
+export const addAPI = async (params) => {
+  const res = await axios.post("/api/fastrunner/api/", params);
+  return res.data;
 };
 
-export const updateAPI = (url, params) => {
-  return axios.patch("/api/fastrunner/api/" + url + "/", params).then((res) => res.data);
+export const updateAPI = async (url, params) => {
+  const res = await axios.patch("/api/fastrunner/api/" + url + "/", params);
+  return res.data;
 };
 
-export const addYAPI = (project_id) => {
-  return axios.post("/api/fastrunner/yapi/" + project_id + "/").then((res) => res.data);
+export const addYAPI = async (project_id) => {
+  const res = await axios.post("/api/fastrunner/yapi/" + project_id + "/");
+  return res.data;
 };
 
 export const apiList = (params) => {
   return axios.get("/api/fastrunner/api/", params).then((res) => res.data);
 };
 
-export const delAPI = (url) => {
-  return axios.delete("/api/fastrunner/api/" + url + "/").then((res) => res.data);
+export const delAPI = async (url) => {
+  const res = await axios.delete("/api/fastrunner/api/" + url + "/");
+  return res.data;
 };
 
-export const tagAPI = (params) => {
-  return axios.patch("/api/fastrunner/api/tag/", params).then((res) => res.data);
+export const tagAPI = async (params) => {
+  const res = await axios.patch("/api/fastrunner/api/tag/", params);
+  return res.data;
 };
 
-export const syncCaseStep = (url, params) => {
-  return axios.patch("/api/fastrunner/api/sync/" + url + "/").then((res) => res.data);
+export const syncCaseStep = async (url, params) => {
+  const res = await axios.patch("/api/fastrunner/api/sync/" + url + "/");
+  return res.data;
 };
 
-export const delAllAPI = (params) => {
-  return axios.delete("/api/fastrunner/api/", params).then((res) => res.data);
+export const delAllAPI = async (params) => {
+  const res = await axios.delete("/api/fastrunner/api/", params);
+  return res.data;
 };
 
 export const getAPISingle = (url) => {
@@ -215,31 +231,37 @@ export const getPaginationBypage = (params) => {
   return axios.get("/api/fastrunner/api/", params).then((res) => res.data);
 };
 
-export const addTestCase = (params) => {
-  return axios.post("/api/fastrunner/test/", params).then((res) => res.data);
+export const addTestCase = async (params) => {
+  const res = await axios.post("/api/fastrunner/test/", params);
+  return res.data;
 };
 
-export const updateTestCase = (url, params) => {
-  return axios.patch("/api/fastrunner/test/" + url + "/", params).then((res) => res.data);
+export const updateTestCase = async (url, params) => {
+  const res = await axios.patch("/api/fastrunner/test/" + url + "/", params);
+  return res.data;
 };
 
 export const testList = (params) => {
   return axios.get("/api/fastrunner/test/", params).then((res) => res.data);
 };
 
-export const deleteTest = (url) => {
-  return axios.delete("/api/fastrunner/test/" + url + "/").then((res) => res.data);
+export const deleteTest = async (url) => {
+  const res = await axios.delete("/api/fastrunner/test/" + url + "/");
+  return res.data;
 };
 
-export const syncTest = (url) => {
-  return axios.put("/api/fastrunner/test/" + url + "/").then((res) => res.data);
+export const syncTest = async (url) => {
+  const res = await axios.put("/api/fastrunner/test/" + url + "/");
+  return res.data;
 };
-export const delAllTest = (params) => {
-  return axios.delete("/api/fastrunner/test/", params).then((res) => res.data);
+export const delAllTest = async (params) => {
+  const res = await axios.delete("/api/fastrunner/test/", params);
+  return res.data;
 };
 
-export const coptTest = (url, params) => {
-  return axios.post("/api/fastrunner/test/" + url + "/", params).then((res) => res.data);
+export const coptTest = async (url, params) => {
+  const res = await axios.post("/api/fastrunner/test/" + url + "/", params);
+  return res.data;
 };
 
 export const editTest = (url) => {
@@ -250,31 +272,37 @@ export const getTestPaginationBypage = (params) => {
   return axios.get("/api/fastrunner/test/", params).then((res) => res.data);
 };
 
-export const addConfig = (params) => {
-  return axios.post("/api/fastrunner/config/", params).then((res) => res.data);
+export const addConfig = async (params) => {
+  const res = await axios.post("/api/fastrunner/config/", params);
+  return res.data;
 };
 
-export const updateConfig = (url, params) => {
-  return axios.patch("/api/fastrunner/config/" + url + "/", params).then((res) => res.data);
+export const updateConfig = async (url, params) => {
+  const res = await axios.patch("/api/fastrunner/config/" + url + "/", params);
+  return res.data;
 };
 
 export const configList = (params) => {
   return axios.get("/api/fastrunner/config/", params).then((res) => res.data);
 };
 
-export const copyConfig = (url, params) => {
-  return axios.post("/api/fastrunner/config/" + url + "/", params).then((res) => res.data);
+export const copyConfig = async (url, params) => {
+  const res = await axios.post("/api/fastrunner/config/" + url + "/", params);
+  return res.data;
 };
 
-export const copyAPI = (url, params) => {
-  return axios.post("/api/fastrunner/api/" + url + "/", params).then((res) => res.data);
+export const copyAPI = async (url, params) => {
+  const res = await axios.post("/api/fastrunner/api/" + url + "/", params);
+  return res.data;
 };
 
-export const deleteConfig = (url) => {
-  return axios.delete("/api/fastrunner/config/" + url + "/").then((res) => res.data);
+export const deleteConfig = async (url) => {
+  const res = await axios.delete("/api/fastrunner/config/" + url + "/");
+  return res.data;
 };
-export const delAllConfig = (params) => {
-  return axios.delete("/api/fastrunner/config/", params).then((res) => res.data);
+export const delAllConfig = async (params) => {
+  const res = await axios.delete("/api/fastrunner/config/", params);
+  return res.data;
 };
 
 export const getConfigPaginationBypage = (params) => {
@@ -285,52 +313,62 @@ export const getAllConfig = (url) => {
   return axios.get("/api/fastrunner/config/" + url + "/").then((res) => res.data);
 };
 
-export const runSingleAPI = (params) => {
-  return axios.post("/api/fastrunner/run_api/", params).then((res) => res.data);
+export const runSingleAPI = async (params) => {
+  const res = await axios.post("/api/fastrunner/run_api/", params);
+  return res.data;
 };
 
 export const runAPIByPk = (url, params) => {
   return axios.get("/api/fastrunner/run_api_pk/" + url + "/", params).then((res) => res.data);
 };
 
-export const runAPITree = (params) => {
-  return axios.post("/api/fastrunner/run_api_tree/", params).then((res) => res.data);
+export const runAPITree = async (params) => {
+  const res = await axios.post("/api/fastrunner/run_api_tree/", params);
+  return res.data;
 };
 
-export const moveAPI = (params) => {
-  return axios.patch("/api/fastrunner/api/move_api/", params).then((res) => res.data);
+export const moveAPI = async (params) => {
+  const res = await axios.patch("/api/fastrunner/api/move_api/", params);
+  return res.data;
 };
 
-export const moveCase = (params) => {
-  return axios.patch("/api/fastrunner/test/move_case/", params).then((res) => res.data);
+export const moveCase = async (params) => {
+  const res = await axios.patch("/api/fastrunner/test/move_case/", params);
+  return res.data;
 };
 
-export const tagCase = (params) => {
-  return axios.patch("/api/fastrunner/test/tag/", params).then((res) => res.data);
+export const tagCase = async (params) => {
+  const res = await axios.patch("/api/fastrunner/test/tag/", params);
+  return res.data;
 };
 
-export const runSingleTestSuite = (params) => {
-  return axios.post("/api/fastrunner/run_testsuite/", params).then((res) => res.data);
+export const runSingleTestSuite = async (params) => {
+  const res = await axios.post("/api/fastrunner/run_testsuite/", params);
+  return res.data;
 };
 
-export const runSingleTest = (params) => {
-  return axios.post("/api/fastrunner/run_test/", params).then((res) => res.data);
+export const runSingleTest = async (params) => {
+  const res = await axios.post("/api/fastrunner/run_test/", params);
+  return res.data;
 };
 
-export const runMultiTest = (params) => {
-  return axios.post("/api/fastrunner/run_multi_tests/", params).then((res) => res.data);
+export const runMultiTest = async (params) => {
+  const res = await axios.post("/api/fastrunner/run_multi_tests/", params);
+  return res.data;
 };
 
 export const runTestByPk = (url, params) => {
   return axios.get("/api/fastrunner/run_testsuite_pk/" + url + "/", params).then((res) => res.data);
 };
 
-export const runSuiteTree = (params) => {
-  return axios.post("/api/fastrunner/run_suite_tree/", params).then((res) => res.data);
+export const runSuiteTree = async (params) => {
+  const res = await axios.post("/api/fastrunner/run_suite_tree/", params);
+  return res.data;
 };
 
-export const addVariables = (params) => {
-  return axios.post("/api/fastrunner/variables/", params).then((res) => res.data);
+export const addVariables = async (params) => {
+  const res = await axios.post("/api/fastrunner/variables/", params);
+  return res.data;
 };
 
 export const variablesList = (params) => {
@@ -341,57 +379,66 @@ export const getVariablesPaginationBypage = (params) => {
   return axios.get("/api/fastrunner/variables/", params).then((res) => res.data);
 };
 
-export const updateVariables = (url, params) => {
-  return axios.patch("/api/fastrunner/variables/" + url + "/", params).then((res) => res.data);
+export const updateVariables = async (url, params) => {
+  const res = await axios.patch("/api/fastrunner/variables/" + url + "/", params);
+  return res.data;
 };
 
-export const updateTask = (url, params, data) => {
-  return axios({
+export const updateTask = async (url, params, data) => {
+  const res = await axios({
     url: "/api/fastrunner/schedule/" + url + "/",
     method: "PUT",
     params: params,
     data: data
-  }).then((res) => res.data);
+  });
+  return res.data;
 };
 
-export const patchTask = (url, params) => {
-  return axios.patch("/api/fastrunner/schedule/" + url + "/", params).then((res) => res.data);
+export const patchTask = async (url, params) => {
+  const res = await axios.patch("/api/fastrunner/schedule/" + url + "/", params);
+  return res.data;
 };
 
-export const deleteVariables = (url) => {
-  return axios.delete("/api/fastrunner/variables/" + url + "/").then((res) => res.data);
+export const deleteVariables = async (url) => {
+  const res = await axios.delete("/api/fastrunner/variables/" + url + "/");
+  return res.data;
 };
 
-export const delAllVariabels = (params) => {
-  return axios.delete("/api/fastrunner/variables/", params).then((res) => res.data);
+export const delAllVariabels = async (params) => {
+  const res = await axios.delete("/api/fastrunner/variables/", params);
+  return res.data;
 };
 
 export const reportList = (params) => {
   return axios.get("/api/fastrunner/reports/", params).then((res) => res.data);
 };
 
-export const deleteReports = (url) => {
-  return axios.delete("/api/fastrunner/reports/" + url + "/").then((res) => res.data);
+export const deleteReports = async (url) => {
+  const res = await axios.delete("/api/fastrunner/reports/" + url + "/");
+  return res.data;
 };
 
 export const getReportsPaginationBypage = (params) => {
   return axios.get("/api/fastrunner/reports/", params).then((res) => res.data);
 };
 
-export const delAllReports = (params) => {
-  return axios.delete("/api/fastrunner/reports/", params).then((res) => res.data);
+export const delAllReports = async (params) => {
+  const res = await axios.delete("/api/fastrunner/reports/", params);
+  return res.data;
 };
 
 export const watchSingleReports = (url) => {
   return axios.get("/api/fastrunner/reports/" + url + "/").then((res) => res.data);
 };
 
-export const addTask = (params) => {
-  return axios.post("/api/fastrunner/schedule/", params).then((res) => res.data);
+export const addTask = async (params) => {
+  const res = await axios.post("/api/fastrunner/schedule/", params);
+  return res.data;
 };
 
-export const copyTask = (task_id, params) => {
-  return axios.post("/api/fastrunner/schedule/" + task_id + "/", params).then((res) => res.data);
+export const copyTask = async (task_id, params) => {
+  const res = await axios.post("/api/fastrunner/schedule/" + task_id + "/", params);
+  return res.data;
 };
 export const taskList = (params) => {
   return axios.get("/api/fastrunner/schedule/", params).then((res) => res.data);
@@ -399,28 +446,32 @@ export const taskList = (params) => {
 export const getTaskPaginationBypage = (params) => {
   return axios.get("/api/fastrunner/schedule/", params).then((res) => res.data);
 };
-export const deleteTasks = (url) => {
-  return axios.delete("/api/fastrunner/schedule/" + url + "/").then((res) => res.data);
+export const deleteTasks = async (url) => {
+  const res = await axios.delete("/api/fastrunner/schedule/" + url + "/");
+  return res.data;
 };
 
 export const runTask = (url) => {
   return axios.get("/api/fastrunner/schedule/" + url + "/").then((res) => res.data);
 };
 
-export const addHostIP = (params) => {
-  return axios.post("/api/fastrunner/host_ip/", params).then((res) => res.data);
+export const addHostIP = async (params) => {
+  const res = await axios.post("/api/fastrunner/host_ip/", params);
+  return res.data;
 };
 
 export const hostList = (params) => {
   return axios.get("/api/fastrunner/host_ip/", params).then((res) => res.data);
 };
 
-export const updateHost = (url, params) => {
-  return axios.patch("/api/fastrunner/host_ip/" + url + "/", params).then((res) => res.data);
+export const updateHost = async (url, params) => {
+  const res = await axios.patch("/api/fastrunner/host_ip/" + url + "/", params);
+  return res.data;
 };
 
-export const deleteHost = (url) => {
-  return axios.delete("/api/fastrunner/host_ip/" + url + "/").then((res) => res.data);
+export const deleteHost = async (url) => {
+  const res = await axios.delete("/api/fastrunner/host_ip/" + url + "/");
+  return res.data;
 };
 
 export const getHostPaginationBypage = (params) => {

@@ -39,7 +39,7 @@ Vue.prototype.setLocalValue = function (name, value) {
     alert("This browser does NOT support localStorage");
   }
 };
-Vue.prototype.getLocalValue = function (name) {
+Vue.prototype.getLocalValue = function (name, defaultValue = "") {
   const value = localStorage.getItem(name);
   if (value) {
     // localStorage只能存字符串，布尔类型需要转换
@@ -48,7 +48,7 @@ Vue.prototype.getLocalValue = function (name) {
     }
     return value;
   } else {
-    return "";
+    return defaultValue;
   }
 };
 Vue.prototype.getViewportSize = function () {
@@ -60,22 +60,23 @@ Vue.prototype.getViewportSize = function () {
 router.beforeEach((to, from, next) => {
   /* 路由发生变化修改页面title */
   setTimeout((res) => {
-    if (to.meta.title) {
-      document.title = to.meta.title;
-    }
+    // if (to.meta.title) {
+    //   document.title = to.meta.title;
+    // }
 
     if (to.meta.requireAuth) {
       if (store.state.token !== "") {
         next();
       } else {
-        next({
-          name: "Login"
-        });
+        next({ name: "Login" });
       }
     } else {
       next();
     }
   });
+});
+router.afterEach((to, from) => {
+  document.title = to.meta.title || "FasterRunner";
 });
 
 /* eslint-disable no-new */

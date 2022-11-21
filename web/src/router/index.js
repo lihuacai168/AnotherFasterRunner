@@ -1,18 +1,18 @@
 import Vue from "vue";
 import Router from "vue-router";
-const Home = () => import("@/pages/home/Home");
-const Register = () => import("@/pages/auth/Register");
-const Login = () => import("@/pages/auth/Login");
-const ProjectList = () => import("@/pages/project/ProjectList");
+const Home = () => import("../pages/home/Home.vue");
+const Register = () => import("../pages/auth/Register.vue");
+const Login = () => import("../pages/auth/Login.vue");
+const ProjectList = () => import("../pages/project/ProjectList.vue");
 const ProjectDetail = () => import("../pages/project/ProjectDetail.vue");
-const DebugTalk = () => import("@/pages/httprunner/DebugTalk");
-const RecordApi = () => import("@/pages/fastrunner/api/RecordApi");
-const AutoTest = () => import("@/pages/fastrunner/case/AutoTest");
-const GlobalEnv = () => import("@/pages/variables/GlobalEnv");
-const ReportList = () => import("@/pages/reports/ReportList");
-const RecordConfig = () => import("@/pages/fastrunner/config/RecordConfig");
-const Tasks = () => import("@/pages/task/Tasks");
-const HostAddress = () => import("@/pages/variables/HostAddress");
+const DebugTalk = () => import("../pages/httprunner/DebugTalk.vue");
+const RecordApi = () => import("../pages/fastrunner/api/RecordApi.vue");
+const AutoTest = () => import("../pages/fastrunner/case/AutoTest.vue");
+const GlobalEnv = () => import("../pages/variables/GlobalEnv.vue");
+const ReportList = () => import("../pages/reports/ReportList.vue");
+const RecordConfig = () => import("../pages/fastrunner/config/RecordConfig.vue");
+const Tasks = () => import("../pages/task/Tasks.vue");
+const HostAddress = () => import("../pages/variables/HostAddress.vue");
 const ExecPublic = () => import("../pages/components/ExecPublic.vue");
 
 Vue.use(Router);
@@ -51,8 +51,7 @@ export default new Router({
     },
     {
       path: "/",
-      name: "Index",
-      component: Home,
+      redirect: "/fastrunner/project_list",
       meta: {
         title: "首页",
         requireAuth: true
@@ -62,6 +61,7 @@ export default new Router({
       path: "/fastrunner",
       name: "Index",
       component: Home,
+      redirect: "/fastrunner/project_list",
       meta: {
         title: "首页",
         requireAuth: true

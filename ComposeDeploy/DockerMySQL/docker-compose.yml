@@ -1,0 +1,54 @@
+version: '3'
+services:
+  db-master:
+    image: docker.io/mysql:5.7
+    container_name: db-master
+    privileged: true
+    environment:
+      # 设置默认数据库和root默认密码,如果宿主机中/var/lib/mysql已经存在,这两个设置都不会生效
+      - MYSQL_ROOT_PASSWORD=Xsp20504544
+      - MYSQL_USER=shisi
+      - MYSQL_PASSWORD=Xsp20504544
+      - MYSQL_DATABASE=db
+    volumes:
+      - ./master/mysql:/var/lib/mysql # 挂载宿主机的mysql数据到docker中
+      - ./master/my.cnf:/etc/mysql/mysql.conf.d/my.cnf
+      # - ./db:/docker-entrypoint-initdb.d/:ro
+    # 端口映射,格式 宿主机端口:容器端口
+    ports:
+      - "3307:3306"
+    restart: always
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --socket=/var/lib/mysql/mysql.sock
+
+  db-slave:
+    image: docker.io/mysql:5.7
+    container_name: db-slave
+    privileged: true
+    environment:
+      # 设置默认数据库和root默认密码,如果宿主机中/var/lib/mysql已经存在,这两个设置都不会生效
+      - MYSQL_ROOT_PASSWORD=Xsp20504544
+      - MYSQL_USER=shisi
+      - MYSQL_PASSWORD=Xsp20504544
+      - MYSQL_DATABASE=db
+    volumes:
+      - ./slave/mysql:/var/lib/mysql # 挂载宿主机的mysql数据到docker中
+      - ./slave/my.cnf:/etc/mysql/mysql.conf.d/my.cnf
+      # - ./db:/docker-entrypoint-initdb.d/:ro
+    # 端口映射,格式 宿主机端口:容器端口
+    ports:
+      - "3308:3306"
+    restart: always
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --socket=/var/lib/mysql/mysql.sock
+
+  redis:
+    image: docker.io/redis:7-alpine
+    container_name: conan-redis
+    privileged: true
+    volumes:
+      - ./Redis/redis.conf:/etc/redis/redis.conf  # 挂载redis.conf文件
+      - ./Redis/data:/data
+      - ./Redis/redis-sysctl.conf:/etc/sysctl.d/redis-sysctl.conf
+    ports:
+      - "6379:6379" # docker与宿主机的端口映射
+    restart: always
+    command: redis-server /etc/redis/redis.conf
