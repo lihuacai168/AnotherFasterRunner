@@ -34,8 +34,8 @@ services:
       - RABBITMQ_DEFAULT_PASS=${RABBITMQ_DEFAULT_PASS}
       - MQ_PORT=${MQ_PORT}
       - SENTRY_DSN=${SENTRY_DSN}
-    entrypoint: /bin/sh
-    command: -c "/app/start.sh app"
+    entrypoint: /app/start.sh
+    command: "app"
     depends_on:
       - db
     restart: always
@@ -53,8 +53,8 @@ services:
       - MQ_PORT=${MQ_PORT}
       - SERVER_IP=${SERVER_IP}
       - DJANGO_API_PORT=${DJANGO_API_PORT}
-    entrypoint: /bin/sh
-    command: -c "/app/start.sh celery-worker"
+    entrypoint: /app/start.sh
+    command: "celery-worker"
     restart: always
     depends_on:
       - db
@@ -71,8 +71,8 @@ services:
       - RABBITMQ_DEFAULT_USER=${RABBITMQ_DEFAULT_USER}
       - RABBITMQ_DEFAULT_PASS=${RABBITMQ_DEFAULT_PASS}
       - MQ_PORT=${MQ_PORT}
-    entrypoint: /bin/sh
-    command: -c "/app/start.sh celery-beat"
+    entrypoint: /app/start.sh
+    command: "celery-beat"
     restart: always
     depends_on:
       - mq
