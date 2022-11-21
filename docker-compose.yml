@@ -41,7 +41,6 @@ services:
     entrypoint: /bin/sh
     command: -c "/opt/workspace/FasterRunner/start.sh"
     # command: -c "/usr/local/bin/python -m gunicorn FasterRunner.wsgi_docker -b 0.0.0.0 -w 4"
-#    command: -c "/usr/local/bin/python manage.py runserver 0.0.0.0:8000 --settings=FasterRunner.settings.docker"
     depends_on:
       - db
       - mq
