@@ -1,20 +1,10 @@
 <template>
   <el-container>
-    <el-header style="background: #fff;padding: 10px 10px; height: 50px">
+    <el-header style="background: #fff; padding: 10px 10px; height: 50px">
       <div class="report__header">
         <div class="report__header--item">
-          <el-input
-            placeholder="请输入报告名称"
-            size="medium"
-            clearable
-            v-model="search"
-            style="width: 260px"
-          >
-            <el-button
-              slot="append"
-              icon="el-icon-search"
-              @click="getReportList"
-            ></el-button>
+          <el-input placeholder="请输入报告名称" size="medium" clearable v-model="search" style="width: 260px">
+            <el-button slot="append" icon="el-icon-search" @click="getReportList"></el-button>
           </el-input>
         </div>
         <div class="report__header--item">
@@ -73,33 +63,29 @@
           ></el-button>
         </div>
 
-<!--        <div class="report__header&#45;&#45;item">-->
-<!--          <el-pagination-->
-<!--            :page-size="11"-->
-<!--            v-show="reportData.count !== 0"-->
-<!--            background-->
-<!--            @current-change="handleCurrentChange"-->
-<!--            :current-page.sync="currentPage"-->
-<!--            layout="total, prev, pager, next, jumper"-->
-<!--            :total="reportData.count"-->
-<!--          >-->
-<!--          </el-pagination>-->
-<!--        </div>-->
+        <!--        <div class="report__header&#45;&#45;item">-->
+        <!--          <el-pagination-->
+        <!--            :page-size="11"-->
+        <!--            v-show="reportData.count !== 0"-->
+        <!--            background-->
+        <!--            @current-change="handleCurrentChange"-->
+        <!--            :current-page.sync="currentPage"-->
+        <!--            layout="total, prev, pager, next, jumper"-->
+        <!--            :total="reportData.count"-->
+        <!--          >-->
+        <!--          </el-pagination>-->
+        <!--        </div>-->
       </div>
     </el-header>
 
     <el-container>
       <el-main style="padding: 0; margin-left: 10px">
-        <el-dialog
-          v-if="dialogTableVisible"
-          :visible.sync="dialogTableVisible"
-          width="70%"
-        >
+        <el-dialog v-if="dialogTableVisible" :visible.sync="dialogTableVisible" width="70%">
           <report :summary="summary"></report>
         </el-dialog>
 
         <el-table
-          style="width: 100%; height: auto;"
+          style="width: 100%; height: auto"
           highlight-current-row
           :data="reportData.results"
           :show-header="reportData.results.length !== 0"
@@ -114,7 +100,7 @@
 
           <el-table-column label="报告类型" width="100">
             <template v-slot="scope">
-              <el-tag color="#2C3E50" style="color: white">{{scope.row.type }}</el-tag>
+              <el-tag color="#2C3E50" style="color: white">{{ scope.row.type }}</el-tag>
             </template>
           </el-table-column>
 
@@ -129,7 +115,7 @@
               <div
                 :class="{
                   pass: scope.row.success,
-                  fail: !scope.row.success,
+                  fail: !scope.row.success
                 }"
                 v-text="scope.row.success === true ? '通过' : '失败'"
               ></div>
@@ -231,7 +217,8 @@
                   icon="el-icon-delete"
                   title="删除"
                   circle
-                  size="mini" style="margin-left: 0"
+                  size="mini"
+                  style="margin-left: 0"
                   @click="handleDelReports(scope.row.id)"
                 >
                 </el-button>
@@ -240,20 +227,20 @@
           </el-table-column>
         </el-table>
       </el-main>
-        <el-footer>
-            <div style="margin: 5px 5px;">
-                <el-pagination
-                    :page-size="11"
-                    v-show="reportData.count !== 0"
-                    background
-                    @current-change="handleCurrentChange"
-                    :current-page.sync="currentPage"
-                    layout="total, prev, pager, next, jumper"
-                    :total="reportData.count"
-                >
-                </el-pagination>
-            </div>
-        </el-footer>
+      <el-footer>
+        <div style="margin: 5px 5px">
+          <el-pagination
+            :page-size="11"
+            v-show="reportData.count !== 0"
+            background
+            @current-change="handleCurrentChange"
+            :current-page.sync="currentPage"
+            layout="total, prev, pager, next, jumper"
+            :total="reportData.count"
+          >
+          </el-pagination>
+        </div>
+      </el-footer>
     </el-container>
   </el-container>
 </template>
@@ -263,7 +250,7 @@ import Report from "./DebugReport";
 
 export default {
   components: {
-    Report,
+    Report
   },
   data() {
     return {
@@ -282,11 +269,11 @@ export default {
       reportStatus: "",
       reportData: {
         count: 0,
-        results: [],
+        results: []
       },
       dialogTableVisible: false,
       summary: {},
-      loading: false,
+      loading: false
     };
   },
 
@@ -297,7 +284,7 @@ export default {
 
     onlyMe() {
       this.getReportList();
-    },
+    }
   },
 
   methods: {
@@ -343,8 +330,8 @@ export default {
             reportType: this.reportType,
             reportStatus: this.reportStatus,
             page: this.currentPage,
-            onlyMe: this.onlyMe,
-          },
+            onlyMe: this.onlyMe
+          }
         })
         .then((resp) => {
           this.reportData = resp;
@@ -356,7 +343,7 @@ export default {
         .runMultiTest({
           name: row.name,
           project: this.$route.params.id,
-          case_config_mapping_list: row.stat.failure_case_config_mapping_list,
+          case_config_mapping_list: row.stat.failure_case_config_mapping_list
         })
         .then((resp) => {
           this.getReportList();
@@ -373,7 +360,7 @@ export default {
       this.$confirm("此操作将永久删除该测试报告，是否继续?", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
-        type: "warning",
+        type: "warning"
       }).then(() => {
         this.$api.deleteReports(index).then((resp) => {
           if (resp.success) {
@@ -390,7 +377,7 @@ export default {
         this.$confirm("此操作将永久删除勾选的测试报告，是否继续?", "提示", {
           confirmButtonText: "确定",
           cancelButtonText: "取消",
-          type: "warning",
+          type: "warning"
         }).then(() => {
           this.$api.delAllReports({ data: this.selectReports }).then((resp) => {
             this.getReportList();
@@ -400,7 +387,7 @@ export default {
         this.$notify.warning({
           title: "提示",
           message: "请至少勾选一个测试报告",
-          duration: this.$store.state.duration,
+          duration: this.$store.state.duration
         });
       }
     },
@@ -413,8 +400,8 @@ export default {
             reportType: this.reportType,
             reportStatus: this.reportStatus,
             page: this.currentPage,
-            onlyMe: this.onlyMe,
-          },
+            onlyMe: this.onlyMe
+          }
         })
         .then((resp) => {
           this.reportData = resp;
@@ -422,20 +409,18 @@ export default {
     },
     handleShowRerun(row) {
       try {
-        if (
-          row.stat.failure_case_config_mapping_list[0].config_name !== undefined
-        ) {
+        if (row.stat.failure_case_config_mapping_list[0].config_name !== undefined) {
           return true;
         }
       } catch (e) {
         return false;
       }
-    },
+    }
   },
   name: "ReportList",
   mounted() {
     this.getReportList();
-  },
+  }
 };
 </script>
 

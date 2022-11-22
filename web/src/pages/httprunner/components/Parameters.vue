@@ -10,7 +10,7 @@
     :cell-style="{ paddingTop: '4px', paddingBottom: '4px' }"
   >
     <el-table-column label="数据Key">
-      <template slot-scope="scope">
+      <template v-slot="scope">
         <el-input
           type="textarea"
           :autosize="{ minRows: 2, maxRows: 10 }"
@@ -22,7 +22,7 @@
     </el-table-column>
 
     <el-table-column label="数据内容">
-      <template slot-scope="scope">
+      <template v-slot="scope">
         <el-input
           type="textarea"
           :autosize="{ minRows: 2, maxRows: 8 }"
@@ -34,13 +34,13 @@
     </el-table-column>
 
     <el-table-column label="参数描述" width="200">
-      <template slot-scope="scope">
+      <template v-slot="scope">
         <el-input clearable v-model="scope.row.desc" placeholder="参数简要描述"></el-input>
       </template>
     </el-table-column>
 
     <el-table-column width="120">
-      <template slot-scope="scope">
+      <template v-slot="scope">
         <el-row v-show="scope.row === currentRow">
           <el-button
             icon="el-icon-circle-plus-outline"
@@ -109,11 +109,7 @@ export default {
     },
 
     handleEdit(index, row) {
-      this.tableData.push({
-        key: "",
-        value: "",
-        desc: ""
-      });
+      this.tableData.push({ key: "", value: "", desc: "" });
     },
 
     handleDelete(index, row) {

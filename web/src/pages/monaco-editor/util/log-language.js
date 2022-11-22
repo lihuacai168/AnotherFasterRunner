@@ -9,23 +9,18 @@ function registerLanguage(monaco) {
         [/\sERROR\s.*/, "log-error"],
         [/\sWARN\s.*/, "log-warn"],
         [/\sINFO\s.*/, "log-info"],
-        [
-          /^([0-9]{4}||[0-9]{2})-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}(.[0-9]{3})?/,
-          "log-date",
-        ],
-        [
-          /^[0-9]{2}\/[0-9]{2}\/[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}(.[0-9]{3})?/,
-          "log-date",
-        ],
+        [/^([0-9]{4}||[0-9]{2})-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}(.[0-9]{3})?/, "log-date"],
+        [/^[0-9]{2}\/[0-9]{2}\/[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}(.[0-9]{3})?/, "log-date"],
         [/(^\*\*Waiting queue:.*)/, "log-info"],
-        [/(^\*\*result tips:.*)/, "log-info"],
-      ],
-    },
+        [/(^\*\*result tips:.*)/, "log-info"]
+      ]
+    }
   });
   monaco.editor.defineTheme("log", {
     base: "vs",
     inherit: true,
-    rules: [{
+    rules: [
+      {
         token: "log-info",
         foreground: "4b71ca"
       },
@@ -45,14 +40,13 @@ function registerLanguage(monaco) {
       {
         token: "log-normal",
         foreground: "808080"
-      },
+      }
     ],
     colors: {
       "editor.lineHighlightBackground": "#ffffff",
-      "editorGutter.background": "#f7f7f7",
-    },
+      "editorGutter.background": "#f7f7f7"
+    }
   });
-
 }
 
 export default registerLanguage;
