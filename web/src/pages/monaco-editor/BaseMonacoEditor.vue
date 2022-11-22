@@ -15,18 +15,9 @@ const getHints = (model) => {
   let id = model.id.substring(6);
   return (global[id] && global[id].hints) || [];
 };
-monaco.languages.registerCompletionItemProvider(
-  "sql",
-  createSqlCompleter(getHints)
-);
-monaco.languages.registerCompletionItemProvider(
-  "javascript",
-  createJavascriptCompleter(getHints)
-);
-monaco.languages.registerCompletionItemProvider(
-  "python",
-  createPythonCompleter(getHints)
-);
+monaco.languages.registerCompletionItemProvider("sql", createSqlCompleter(getHints));
+monaco.languages.registerCompletionItemProvider("javascript", createJavascriptCompleter(getHints));
+monaco.languages.registerCompletionItemProvider("python", createPythonCompleter(getHints));
 registerLanguage(monaco);
 /**
  * monaco options
@@ -38,21 +29,16 @@ export default {
       type: Object,
       default() {
         return {};
-      },
+      }
     },
-    value: {
-      type: String,
-      required: true,
-    },
-    language: {
-      type: String,
-    },
+    value: { type: String, required: true },
+    language: { type: String },
     hints: {
       type: Array,
       default() {
         return [];
-      },
-    },
+      }
+    }
   },
   name: "BaseMonacoEditor",
   data() {
@@ -60,8 +46,8 @@ export default {
       editorInstance: null,
       defaultOptions: {
         theme: "vs",
-        fontSize: 14,
-      },
+        fontSize: 14
+      }
     };
   },
   watch: {
@@ -69,7 +55,7 @@ export default {
       if (this.value !== this.editorInstance.getValue()) {
         this.editorInstance.setValue(this.value);
       }
-    },
+    }
   },
   mounted() {
     this.initEditor();
@@ -96,7 +82,7 @@ export default {
     getOptions() {
       let props = { value: this.value };
       this.language !== undefined && (props.language = this.language);
-        return Object.assign({}, this.defaultOptions, this.options, props);
+      return Object.assign({}, this.defaultOptions, this.options, props);
     },
     onValueChange() {
       this.$emit("input", this.editorInstance.getValue());
@@ -106,27 +92,21 @@ export default {
       this.MonacoEnvironment = {
         getWorkerUrl: function () {
           return "./editor.worker.bundle.js";
-        },
+        }
       };
 
-      this.editorInstance = monaco.editor.create(
-        this.$refs.editor,
-        this.getOptions()
-      );
+      this.editorInstance = monaco.editor.create(this.$refs.editor, this.getOptions());
       this.editorInstance.onContextMenu((e) => {
         this.$emit("contextmenu", e);
       });
       this.editorInstance.onDidChangeModelContent(() => {
         this.onValueChange();
       });
-      this.editorInstance.addCommand(
-        monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_S,
-        () => {
-          this.$emit("save", this.editorInstance.getValue());
-        }
-      );
-    },
-  },
+      this.editorInstance.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_S, () => {
+        this.$emit("save", this.editorInstance.getValue());
+      });
+    }
+  }
 };
 </script>
 

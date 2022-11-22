@@ -138,32 +138,13 @@ import Hooks from "../../../httprunner/components/Hooks";
 import Report from "../../../reports/DebugReport";
 
 export default {
-  components: {
-    Headers,
-    Request,
-    Extract,
-    Validate,
-    Variables,
-    Hooks,
-    Report
-  },
-
+  components: { Headers, Request, Extract, Validate, Variables, Hooks, Report },
   props: {
-    host: {
-      require: false
-    },
-    nodeId: {
-      require: false
-    },
-    project: {
-      require: false
-    },
-    config: {
-      require: false
-    },
-    response: {
-      require: false
-    },
+    host: { require: false },
+    nodeId: { require: false },
+    project: { require: false },
+    config: { require: false },
+    response: { require: false },
     isSaveAs: Boolean
   },
   methods: {

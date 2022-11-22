@@ -37,7 +37,7 @@
 
     <el-table-column width="120">
       <template v-slot="scope">
-        <el-row v-show="scope.row === currentRow">fffffffffffffffffffffffffffffffffffffffffffffffffff
+        <el-row v-show="scope.row === currentRow">
           <el-button
             icon="el-icon-circle-plus-outline"
             size="mini"
@@ -136,99 +136,37 @@ export default {
   data() {
     return {
       headerOptions: [
-        {
-          value: "Accept"
-        },
-        {
-          value: "Accept-Charset"
-        },
-        {
-          value: "Accept-Language"
-        },
-        {
-          value: "Accept-Datetime"
-        },
-        {
-          value: "Authorization"
-        },
-        {
-          value: "Cache-Control"
-        },
-        {
-          value: "Connection"
-        },
-        {
-          value: "Cookie"
-        },
-        {
-          value: "Content-Length"
-        },
-        {
-          value: "Content-MD5"
-        },
-        {
-          value: "Content-Type"
-        },
-        {
-          value: "Expect"
-        },
-        {
-          value: "Date"
-        },
-        {
-          value: "From"
-        },
-        {
-          value: "Host"
-        },
-        {
-          value: "If-Match"
-        },
-        {
-          value: "If-Modified-Since"
-        },
-        {
-          value: "If-None-Match"
-        },
-        {
-          value: "If-Range"
-        },
-        {
-          value: "If-Unmodified-Since"
-        },
-        {
-          value: "Max-Forwards"
-        },
-        {
-          value: "Origin"
-        },
-        {
-          value: "Pragma"
-        },
-        {
-          value: "Proxy-Authorization"
-        },
-        {
-          value: "Range"
-        },
-        {
-          value: "Referer"
-        },
-        {
-          value: "TE"
-        },
-        {
-          value: "User-Agent"
-        },
-        {
-          value: "Upgrade"
-        },
-        {
-          value: "Via"
-        },
-        {
-          value: "Warning"
-        }
+        { value: "Accept" },
+        { value: "Accept-Charset" },
+        { value: "Accept-Language" },
+        { value: "Accept-Datetime" },
+        { value: "Authorization" },
+        { value: "Cache-Control" },
+        { value: "Connection" },
+        { value: "Cookie" },
+        { value: "Content-Length" },
+        { value: "Content-MD5" },
+        { value: "Content-Type" },
+        { value: "Expect" },
+        { value: "Date" },
+        { value: "From" },
+        { value: "Host" },
+        { value: "If-Match" },
+        { value: "If-Modified-Since" },
+        { value: "If-None-Match" },
+        { value: "If-Range" },
+        { value: "If-Unmodified-Since" },
+        { value: "Max-Forwards" },
+        { value: "Origin" },
+        { value: "Pragma" },
+        { value: "Proxy-Authorization" },
+        { value: "Range" },
+        { value: "Referer" },
+        { value: "TE" },
+        { value: "User-Agent" },
+        { value: "Upgrade" },
+        { value: "Via" },
+        { value: "Warning" }
       ],
 
       currentRow: "",
