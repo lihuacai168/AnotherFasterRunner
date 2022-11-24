@@ -6,13 +6,14 @@
           <el-col :span="12">
             <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px">
               <el-form-item label="任务名称" prop="name">
-                <el-input v-model="ruleForm.name" placeholder="请输入任务名称" clearable=""></el-input>
+                <el-input v-model="ruleForm.name" size="medium" placeholder="请输入任务名称" clearable=""></el-input>
               </el-form-item>
 
               <el-form-item label="时间配置" prop="crontab">
                 <el-input
                   clearable
                   v-model="ruleForm.crontab"
+                  size="medium"
                   placeholder="请输入cortab表达式，例如 2 12 * * *"
                 ></el-input>
               </el-form-item>
@@ -20,7 +21,7 @@
               <el-form-item label="运行配置" prop="config">
                 <el-select
                   placeholder="请选择"
-                  size="small"
+                  size="medium"
                   tyle="margin-left: -6px"
                   v-model="ruleForm.config"
                   value-key="id"
@@ -39,7 +40,7 @@
               <el-form-item label="CI环境" prop="ci_env">
                 <el-select
                   placeholder="请选择"
-                  size="small"
+                  size="medium"
                   tyle="margin-left: -6px"
                   v-model="ruleForm.ci_env"
                   value-key="id"
@@ -55,6 +56,7 @@
               <el-form-item label="Gitlab项目id" prop="ci_project_ids">
                 <el-input
                   clearable
+                  size="medium"
                   v-model="ruleForm.ci_project_ids"
                   placeholder="请输入Gitlab项目id,多个用逗号分隔，例如: 1,2"
                 ></el-input>
@@ -116,7 +118,7 @@
     </template>
 
     <template v-if="next">
-      <el-aside style="margin-top: 10px">
+      <el-aside style="margin-top: 10px; width: 240px">
         <div class="nav-api-side">
           <div class="api-tree">
             <el-input
@@ -147,7 +149,7 @@
       </el-aside>
       <el-main style="padding-top: 0px">
         <div>
-          <el-row :gutter="20">
+          <el-row :gutter="10">
             <el-col :span="12">
               <el-pagination
                 :page-size="11"
@@ -162,14 +164,14 @@
               </el-pagination>
             </el-col>
             <el-col :span="12">
-              <el-button type="primary" v-if="testData.length > 0" @click="saveTask">保存</el-button>
-              <el-button v-if="testData.length > 0" @click="next = false">上一步</el-button>
+              <el-button type="success" v-if="testData.length > 0" @click="saveTask" size="medium">保存</el-button>
+              <el-button v-if="testData.length > 0" @click="next = false" size="medium">上一步</el-button>
             </el-col>
           </el-row>
         </div>
 
         <div>
-          <el-row :gutter="20">
+          <el-row :gutter="10">
             <el-col :span="12">
               <div
                 v-for="(item, index) in suiteData.results"
@@ -202,7 +204,7 @@
                     v-model="testData"
                     @end="dragEnd"
                     @start="length = testData.length"
-                    :options="{ animation: 200 }"
+                    v-bind="{ animation: 200 }"
                   >
                     <div
                       v-for="(test, index) in testData"

@@ -256,7 +256,7 @@
     </el-header>
 
     <el-container>
-      <el-aside style="width: 260px; margin-top: 10px">
+      <el-aside style="width: 240px; margin-top: 10px">
         <div class="nav-api-side">
           <div class="api-tree">
             <el-input

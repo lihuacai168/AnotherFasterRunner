@@ -32,83 +32,96 @@
 
     <el-main>
       <div v-show="!editTestStepActivate" class="recordapi__header">
-        <div class="recordapi__header" :style="{ flex: 1 }">
-          <div class="recordapi__header--item">
-            <el-input
-              placeholder="请输入接口名称"
-              style="min-width: 150px; text-align: center"
-              size="medium"
-              clearable
-              @input="inputVal"
-              :value="search"
-              @keyup.enter.native="getAPIList"
-            >
-            </el-input>
-          </div>
-          <div class="recordapi__header--item">
-            <el-button type="primary" size="medium" @click="resetSearch">重置</el-button>
-          </div>
+        <el-row :gutter="5">
+          <el-col :span="12">
+            <div class="recordapi__header" :style="{ flex: 1 }">
+              <div class="recordapi__header--item">
+                <el-input
+                  placeholder="请输入接口名称"
+                  style="min-width: 100px; text-align: center"
+                  size="medium"
+                  clearable
+                  @input="inputVal"
+                  :value="search"
+                  @keyup.enter.native="getAPIList"
+                >
+                </el-input>
+              </div>
+              <div class="recordapi__header--item">
+                <el-button type="primary" size="medium" @click="resetSearch">重置</el-button>
+              </div>
 
-          <div class="recordapi__header--item">
-            <el-dropdown @command="tagChangeHandle">
-              <el-button type="primary" size="medium"
-                >状态
-                <i class="el-icon-arrow-down el-icon--right"></i>
+              <div class="recordapi__header--item">
+                <el-dropdown @command="tagChangeHandle">
+                  <el-button type="primary" size="medium"
+                    >状态
+                    <i class="el-icon-arrow-down el-icon--right"></i>
+                  </el-button>
+                  <el-dropdown-menu slot="dropdown">
+                    <el-dropdown-item command="1">成功</el-dropdown-item>
+                    <el-dropdown-item command="0">未知</el-dropdown-item>
+                    <el-dropdown-item command="2">失败</el-dropdown-item>
+                    <el-dropdown-item command="">所有</el-dropdown-item>
+                  </el-dropdown-menu>
+                </el-dropdown>
+              </div>
+              <div class="recordapi__header--item">
+                <el-select
+                  v-model="selectUser"
+                  placeholder="创建人"
+                  filterable
+                  size="medium"
+                  :style="{ width: '100px' }"
+                >
+                  <el-option
+                    v-for="(item, index) in users"
+                    :key="index"
+                    :label="item.label"
+                    :value="item.value"
+                    :disabled="item.disabled"
+                  ></el-option>
+                </el-select>
+              </div></div
+          ></el-col>
+          <el-col :span="12">
+            <div class="recordapi__header" :style="{ flex: 1 }">
+              <div class="recordapi__header--item">
+                <el-input
+                  style="min-width: 150px; text-align: center"
+                  size="medium"
+                  placeholder="请输入测试用例名称"
+                  v-model="testName"
+                  clearable
+                  v-if="testData.length > 0"
+                >
+                  <el-select v-model="testTag" slot="prepend" placeholder="请选择" style="width: 105px">
+                    <el-option v-for="value in tagOptions" :key="value" :label="value" :value="value"></el-option>
+                  </el-select>
+                </el-input>
+              </div>
+
+              <el-button
+                slot="append"
+                type="success"
+                size="medium"
+                @click="handleClickSave"
+                :title="disabledSave ? '不能修改其他人的用例' : '保存用例'"
+                :disabled="disabledSave"
+                >Save
               </el-button>
-              <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item command="1">成功</el-dropdown-item>
-                <el-dropdown-item command="0">未知</el-dropdown-item>
-                <el-dropdown-item command="2">失败</el-dropdown-item>
-                <el-dropdown-item command="">所有</el-dropdown-item>
-              </el-dropdown-menu>
-            </el-dropdown>
-          </div>
-          <div class="recordapi__header--item">
-            <el-select v-model="selectUser" placeholder="创建人" filterable size="medium" :style="{ width: '100px' }">
-              <el-option
-                v-for="(item, index) in users"
-                :key="index"
-                :label="item.label"
-                :value="item.value"
-                :disabled="item.disabled"
-              ></el-option>
-            </el-select>
-          </div>
-        </div>
-        <div class="recordapi__header" :style="{ flex: 1 }">
-          <div class="recordapi__header--item">
-            <el-input
-              style="min-width: 150px; text-align: center"
-              size="medium"
-              placeholder="请输入测试用例名称"
-              v-model="testName"
-              clearable
-              v-if="testData.length > 0"
-            >
-              <el-select v-model="testTag" slot="prepend" placeholder="请选择" style="width: 105px">
-                <el-option v-for="value in tagOptions" :key="value" :label="value" :value="value"></el-option>
-              </el-select>
-            </el-input>
-          </div>
 
-          <el-button
-            slot="append"
-            type="success"
-            size="medium"
-            @click="handleClickSave"
-            :title="disabledSave ? '不能修改其他人的用例' : '保存用例'"
-            :disabled="disabledSave"
-            >Save
-          </el-button>
-
-          <div class="recordapi__header--item">
-            <el-button type="primary" size="medium" v-loading="suite_loading" @click="handleClickRun">Send </el-button>
-          </div>
-        </div>
+              <div class="recordapi__header--item">
+                <el-button type="primary" size="medium" v-loading="suite_loading" @click="handleClickRun"
+                  >Send
+                </el-button>
+              </div>
+            </div></el-col
+          ></el-row
+        >
       </div>
 
-      <div v-show="!editTestStepActivate" style="margin-top: 10px">
-        <el-row :gutter="20">
+      <div v-show="!editTestStepActivate">
+        <el-row :gutter="5">
           <el-col :span="12">
             <div
               v-for="(item, index) in apiData.results"
@@ -176,7 +189,7 @@
                   v-model="testData"
                   @end="dragEnd"
                   @start="length = testData.length"
-                  :options="{ animation: 200 }"
+                  v-bind="{ animation: 200 }"
                 >
                   <div
                     v-for="(test, index) in testData"
@@ -284,8 +297,8 @@
 
 <script>
 import draggable from "vuedraggable";
-import HttpRunner from "./TestBody";
-import Report from "../../../reports/DebugReport";
+import HttpRunner from "./TestBody.vue";
+import Report from "../../../reports/DebugReport.vue";
 
 export default {
   components: {
