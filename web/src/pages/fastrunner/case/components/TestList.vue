@@ -406,7 +406,7 @@
 </template>
 
 <script>
-import Report from "../../../reports/DebugReport";
+import Report from "../../../reports/DebugReport.vue";
 
 export default {
   name: "TestList",

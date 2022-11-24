@@ -37,7 +37,7 @@ const webpackConfig = merge(baseWebpackConfig, {
         libs: {
           name: "chunk-libs",
           test: /[\\/]node_modules[\\/]/,
-          priority: 10,
+          priority: 5,
           chunks: "initial",
           enforce: true,
           reuseExistingChunk: true
@@ -63,9 +63,16 @@ const webpackConfig = merge(baseWebpackConfig, {
           enforce: true,
           reuseExistingChunk: true
         },
+        "vue-apexcharts": {
+          name: "chunk-vue-apexcharts",
+          test: /[\\/]vue-apexcharts[\\/]/,
+          priority: 20,
+          enforce: true,
+          reuseExistingChunk: true
+        },
         "v-jsoneditor": {
           name: "chunk-v-jsoneditor",
-          priority: 5,
+          priority: 20,
           test: /[\\/]v-jsoneditor[\\/]/,
           enforce: true,
           reuseExistingChunk: true

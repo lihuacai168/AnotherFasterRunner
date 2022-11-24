@@ -206,6 +206,7 @@
           <div style="margin: 5px 5px">
             <el-pagination
               :page-size="11"
+              v-if="!addTasks"
               v-show="tasksData.count !== 0"
               background
               @current-change="handleCurrentChange"
@@ -232,7 +233,7 @@
 </template>
 
 <script>
-import AddTasks from "./AddTasks";
+import AddTasks from "./AddTasks.vue";
 
 export default {
   components: {
