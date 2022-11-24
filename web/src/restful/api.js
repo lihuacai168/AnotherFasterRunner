@@ -4,8 +4,12 @@ import router from "../router";
 import { Message, Notification } from "element-ui";
 
 let base_Url;
-if (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1") {
-  base_Url = window.location.protocol + "//" + "127.0.0.1" + ":" + "8000";
+if (
+  window.location.hostname === "localhost" ||
+  window.location.hostname === "127.0.0.1" ||
+  !window.location.hostname.includes("caibeike.net")
+) {
+  base_Url = window.location.protocol + "//" + window.location.hostname + ":" + "8000";
 } else {
   // var base_Url = window.location.protocol + "//" + window.location.host;
   base_Url = window.location.protocol + "//testapi.caibeike.net";

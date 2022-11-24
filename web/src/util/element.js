@@ -42,7 +42,9 @@ import {
   Radio,
   Upload,
   Loading,
-  Notification
+  Notification,
+  MessageBox,
+  Message
 } from "element-ui";
 
 const coms = [
@@ -95,6 +97,9 @@ export default {
   install(Vue, options) {
     Vue.use(Loading.directive, Notification);
     Vue.prototype.$notify = Notification;
+    Vue.prototype.$prompt = MessageBox.prompt;
+    Vue.prototype.$confirm = MessageBox.confirm;
+    Vue.prototype.$message = Message;
     coms.map((c) => {
       Vue.component(c.name, c);
     });
