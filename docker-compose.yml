@@ -49,7 +49,7 @@ services:
     restart: always
 
   web:
-    image: fasterrunner_web:latest
+    image: registry-vpc.cn-hangzhou.aliyuncs.com/cbk/fasterrunner_web:latest
     container_name: faster-web
     build:
       context: ./FasterWeb
