@@ -1,6 +1,6 @@
 <template>
-  <el-container>
-    <el-header style="padding: 0; height: 50px">
+  <div>
+    <el-header style="padding: 0; height: 40px">
       <div class="recordapi__header">
         <div class="recordapi__header--item" :style="{ paddingLeft: '2px' }">
           <el-checkbox v-if="apiData.count > 0" v-model="checked"> </el-checkbox>
@@ -381,7 +381,7 @@
         </el-pagination>
       </div>
     </el-main>
-  </el-container>
+  </div>
 </template>
 
 <script>

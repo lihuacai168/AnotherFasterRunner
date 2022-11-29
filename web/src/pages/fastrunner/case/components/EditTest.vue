@@ -31,7 +31,7 @@
     </el-aside>
 
     <el-main>
-      <el-row :gutter="5">
+      <el-row :gutter="5" v-if="!editTestStepActivate">
         <el-col :span="12">
           <div class="recordapi__header">
             <el-input

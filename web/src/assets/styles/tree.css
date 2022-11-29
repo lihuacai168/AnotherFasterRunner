@@ -19,7 +19,12 @@ ul li {
     height: 48px;
     border-bottom: 1px solid #ddd;
     background-color: #F7F7F7;
-
+    background: #fff;
+    padding: 0;
+    position: fixed;
+    top: 36;
+    width: 100%;
+    z-index: 10;
 }
 
 .nav-api-side {
@@ -29,7 +34,7 @@ ul li {
     margin-left: 10px;
     border-radius: 4px;
     position: fixed;
-    top: 110px;
+    top: 90px;
     bottom: 0;
 
 }

@@ -7,9 +7,7 @@
     active-text-color="#1dbe89"
     @select="select"
   >
-    <el-menu-item index="ProjectList">
-      <i class="iconfont">&#xe631;</i>&nbsp;&nbsp;首 页
-    </el-menu-item>
+    <el-menu-item index="ProjectList"> <i class="iconfont">&#xe631;</i>&nbsp;&nbsp;首 页 </el-menu-item>
 
     <!-- <el-submenu index="ApiTest">
              <template slot="title">
@@ -24,7 +22,7 @@
       :key="item.url"
       :disabled="$store.state.routerName === 'ProjectList'"
     >
-      <span class="iconfont" v-html="item.code"></span>&nbsp;&nbsp;{{item.name }}
+      <span class="iconfont" v-html="item.code"></span>&nbsp;&nbsp;{{ item.name }}
     </el-menu-item>
     <!-- </el-menu-item-group>
      </el-submenu>-->
@@ -47,8 +45,8 @@ export default {
         { name: "全局变量", url: "GlobalEnv", code: "&#xe692;" },
         { name: "驱动代码", url: "DebugTalk", code: "&#xe7ca;" },
         { name: "定时任务", url: "Task", code: "&#xe61e;" },
-        { name: "历史报告", url: "Reports", code: "&#xe66e;" },
-      ],
+        { name: "历史报告", url: "Reports", code: "&#xe66e;" }
+      ]
     };
   },
   methods: {
@@ -61,17 +59,17 @@ export default {
         projectName = this.$store.state.projectName;
       }
       this.$store.commit("setProjectName", projectName);
-    },
+    }
   },
   mounted() {
     if (this.$store.state.show_hosts) {
       this.side_menu.splice(5, 0, {
         name: "Hosts管理",
         url: "HostIP",
-        code: "&#xe609;",
+        code: "&#xe609;"
       });
     }
-  },
+  }
 };
 </script>
 
@@ -86,6 +84,6 @@ export default {
   display: inline-block;
 }
 .submenu-side-bar {
-    min-width: 100px;
+  min-width: 100px;
 }
 </style>
