@@ -44,7 +44,8 @@ import {
   Loading,
   Notification,
   MessageBox,
-  Message
+  Message,
+  Divider
 } from "element-ui";
 
 const coms = [
@@ -89,7 +90,8 @@ const coms = [
   Drawer,
   Footer,
   Radio,
-  Upload
+  Upload,
+  Divider
   // Loading
 ];
 

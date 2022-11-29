@@ -1,64 +1,49 @@
 <template>
-  <el-container>
-    <el-header style="background-color: #f7f7f7; padding: 0; height: 50px">
-      <div style="padding-top: 10px; margin-left: 10px">
-        <el-row>
-          <el-col :span="15">
-            <el-button type="primary" size="small" icon="el-icon-circle-check" @click="handleConfirm">
-              点击保存
-            </el-button>
-            <el-button
-              icon="el-icon-caret-right"
-              type="info"
-              size="small"
-              style="margin-left: 0"
-              @click="handleRunCode"
-            >
-              在线运行
-            </el-button>
-          </el-col>
-        </el-row>
-      </div>
-    </el-header>
+  <div>
+    <div style="height: 50px; padding: 5px">
+      <el-button type="primary" size="small" icon="el-icon-circle-check" @click="handleConfirm"> 点击保存 </el-button>
+      <el-button icon="el-icon-caret-right" type="info" size="small" style="margin-left: 0" @click="handleRunCode">
+        在线运行
+      </el-button>
+      <el-button type="text" @click="table = true">嵌套表格的演示Drawer</el-button>
+      <el-drawer title="示例表格代码!" :visible.sync="table" direction="rtl" size="50%">
+        <el-table :data="gridData">
+          <el-table-column property="date" label="日期" width="150"></el-table-column>
+          <el-table-column property="name" label="姓名" width="200"></el-table-column>
+          <el-table-column property="address" label="地址"></el-table-column>
+        </el-table>
+      </el-drawer>
+    </div>
+    <div>
+      <MonacoEditor
+        ref="editor"
+        :height="codeHeight"
+        language="python"
+        :code="code.code"
+        :options="options"
+        @mounted="onMounted"
+        @codeChange="onCodeChange"
+        :key="timeStamp"
+      >
+      </MonacoEditor>
 
-    <el-container>
-      <el-main style="padding: 0; margin-left: 10px">
-        <el-row>
-          <el-col :span="24">
-            <MonacoEditor
-              ref="editor"
-              :height="codeHeight"
-              language="python"
-              :code="code.code"
-              :options="options"
-              @mounted="onMounted"
-              @codeChange="onCodeChange"
-              :key="timeStamp"
-            >
-            </MonacoEditor>
-          </el-col>
-
-          <el-col :span="14">
-            <el-drawer
-              style="margin-top: 100px"
-              :height="codeHeight"
-              :destroy-on-close="true"
-              :with-header="false"
-              :modal="false"
-              :visible.sync="isShowDebug"
-            >
-              <RunCodeResult :msg="resp.msg"></RunCodeResult>
-            </el-drawer>
-          </el-col>
-        </el-row>
-      </el-main>
-    </el-container>
-  </el-container>
+      <el-drawer
+        style="margin-top: 86px"
+        :height="codeHeight"
+        :destroy-on-close="true"
+        :with-header="false"
+        :modal="false"
+        :visible.sync="isShowDebug"
+      >
+        <RunCodeResult :msg="resp.msg"></RunCodeResult>
+      </el-drawer>
+    </div>
+  </div>
 </template>
 
 <script>
 import MonacoEditor from "vue-monaco-editor";
-import RunCodeResult from "./components/RunCodeResult";
+import RunCodeResult from "./components/RunCodeResult.vue";
 import BaseMonacoEditor from "../monaco-editor/BaseMonacoEditor";
 
 export default {
@@ -73,7 +58,30 @@ export default {
       isShowDebug: false,
       options: { selectOnLineNumbers: false },
       code: { code: "", id: "" },
-      resp: { msg: "" }
+      resp: { msg: "" },
+      table: false,
+      gridData: [
+        {
+          date: "2016-05-02",
+          name: "王小虎",
+          address: "上海市普陀区金沙江路 1518 弄"
+        },
+        {
+          date: "2016-05-04",
+          name: "王小虎",
+          address: "上海市普陀区金沙江路 1518 弄"
+        },
+        {
+          date: "2016-05-01",
+          name: "王小虎",
+          address: "上海市普陀区金沙江路 1518 弄"
+        },
+        {
+          date: "2016-05-03",
+          name: "王小虎",
+          address: "上海市普陀区金沙江路 1518 弄"
+        }
+      ]
     };
   },
   name: "DebugTalk",
@@ -114,7 +122,7 @@ export default {
 
   computed: {
     codeHeight() {
-      return window.screen.height - 248;
+      return window.screen.height - 111;
     }
   },
 

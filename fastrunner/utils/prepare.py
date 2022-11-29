@@ -6,7 +6,7 @@ import requests
 # from django.core.cache import cache
 from django.db.models import Sum, Count, Q
 from django.db.models.functions import Concat
-from django_celery_beat.models import PeriodicTask as celery_models
+import django_celery_beat.models as celery_models
 from loguru import logger
 
 from fastrunner import models

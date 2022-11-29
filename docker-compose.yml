@@ -1,7 +1,7 @@
 version: '3'
 services:
   db:
-    image: docker.io/mysql:5.7
+    image: registry-vpc.cn-hangzhou.aliyuncs.com/cbk/mysql:5.7
     container_name: faster-mysql
     privileged: true
     environment:
@@ -21,7 +21,7 @@ services:
     command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --socket=/var/lib/mysql/mysql.sock
 
   app:
-    image: fasterrunner_app:latest
+    image: registry-vpc.cn-hangzhou.aliyuncs.com/cbk/fasterrunner_app:latest
     container_name: faster-app
     build:
       context: .

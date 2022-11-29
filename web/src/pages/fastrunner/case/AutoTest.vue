@@ -1,5 +1,5 @@
 <template>
-  <el-container>
+  <div>
     <el-header style="background: #fff; padding: 0; height: 50px">
       <div class="nav-api-header">
         <div style="padding-top: 10px; margin-left: 10px">
@@ -61,7 +61,7 @@
             >添加用例
           </el-button>
           <span v-show="this.$store.state.show_hosts">
-            &nbspHosts:
+            Hosts:
             <el-select placeholder="请选择" size="small" tyle="margin-left: -6px" v-model="currentHost">
               <el-option v-for="item in hostOptions" :key="item.id" :label="item.name" :value="item.name"> </el-option>
             </el-select>
@@ -130,7 +130,7 @@
             plain
             size="small"
             icon="el-icon-back"
-            style="position: absolute; right: 10px"
+            style="position: absolute; right: 20px"
             @click="handleBackList"
             >返回列表
           </el-button>
@@ -217,7 +217,7 @@
         </edit-test>
       </el-main>
     </el-container>
-  </el-container>
+  </div>
 </template>
 
 <script>

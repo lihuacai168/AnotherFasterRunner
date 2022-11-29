@@ -1,5 +1,5 @@
 <template>
-  <el-container>
+  <div>
     <el-header style="padding-top: 8px; padding-left: 10px; height: 50px">
       <el-row :gutter="30"
         ><el-col :span="6">
@@ -97,7 +97,7 @@
         </div>
       </div>
     </el-main>
-  </el-container>
+  </div>
 </template>
 
 <script>

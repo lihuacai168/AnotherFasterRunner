@@ -1,4 +1,4 @@
-FROM nginx:stable-alpine
+FROM registry-vpc.cn-hangzhou.aliyuncs.com/cbk-fe/nginx:alpine
 
 RUN rm /etc/nginx/conf.d/default.conf
 

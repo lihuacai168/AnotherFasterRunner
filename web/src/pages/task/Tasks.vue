@@ -1,5 +1,5 @@
 <template>
-  <el-container>
+  <div>
     <el-header style="background: #fff; padding: 0; height: 50px">
       <div class="nav-api-header">
         <div style="padding-top: 10px; margin-left: 10px">
@@ -12,7 +12,7 @@
             type="primary"
             size="small"
             icon="el-icon-back"
-            style="position: absolute; right: 10px"
+            style="position: absolute; right: 20px"
             @click="addTasks = false"
             >返回列表
           </el-button>
@@ -20,216 +20,212 @@
       </div>
     </el-header>
 
-    <el-container>
-      <el-header v-if="!addTasks" style="padding: 10px 0 0 2px; height: 50px">
-        <div style="padding-left: 8px; display: flex">
-          <div>
-            <el-input
-              placeholder="请输入任务名称"
-              size="medium"
-              clearable
-              v-model="searchTaskName"
-              @keyup.enter.native="getTaskList"
-              style="width: 260px"
-            >
-              <el-button slot="append" icon="el-icon-search" @click="getTaskList"></el-button>
-            </el-input>
-            <span style="margin-left: 10px">创建人: </span>
-            <el-select
-              v-model="selectUser"
-              size="medium"
-              placeholder="请选择创建人"
-              filterable
-              :style="{ width: '120px' }"
-            >
-              <el-option
-                v-for="(item, index) in users"
-                :key="index"
-                :label="item.label"
-                :value="item.value"
-                :disabled="item.disabled"
-              ></el-option>
-            </el-select>
-            <el-button type="primary" @click="resetSearch" size="medium">重置</el-button>
-          </div>
-        </div>
-      </el-header>
-      <el-main style="padding: 0; margin-left: 10px; margin-top: 10px">
+    <el-header v-if="!addTasks" style="padding: 10px 0 0 2px; height: 50px">
+      <div style="padding-left: 8px; display: flex">
         <div>
-          <el-table
-            v-if="!addTasks"
-            :data="tasksData.results"
-            :show-header="tasksData.results.length !== 0"
-            stripe
-            highlight-current-row
-            style="width: 100%; overflow: auto; height: auto"
-            @cell-mouse-enter="cellMouseEnter"
-            @cell-mouse-leave="cellMouseLeave"
+          <el-input
+            placeholder="请输入任务名称"
+            size="medium"
+            clearable
+            v-model="searchTaskName"
+            @keyup.enter.native="getTaskList"
+            style="width: 260px"
           >
-            <el-table-column label="任务ID" min-width="70">
-              <template v-slot="scope">
-                <div class="block">{{ scope.row.id }}</div>
-              </template>
-            </el-table-column>
-
-            <el-table-column label="任务名称" min-width="160">
-              <template v-slot="scope">
-                <div>{{ scope.row.name }}</div>
-              </template>
-            </el-table-column>
-
-            <el-table-column width="80" label="时间配置">
-              <template v-slot="scope">
-                <div>{{ scope.row.kwargs.crontab }}</div>
-              </template>
-            </el-table-column>
-
-            <el-table-column width="150" label="下次执行时间">
-              <template v-slot="scope">
-                <div>
-                  {{ scope.row.kwargs.next_execute_time ? scope.row.kwargs.next_execute_time : "" | timestampToTime }}
-                </div>
-              </template>
-            </el-table-column>
-
-            <el-table-column width="70" label="CI项目">
-              <template v-slot="scope">
-                <div>{{ scope.row.kwargs.ci_project_ids }}</div>
-              </template>
-            </el-table-column>
-
-            <el-table-column width="70" label="CI环境">
-              <template v-slot="scope">
-                <div>{{ scope.row.kwargs.ci_env === "请选择" ? "" : scope.row.kwargs.ci_env }}</div>
-              </template>
-            </el-table-column>
-
-            <el-table-column min-width="100" label="运行配置">
-              <template v-slot="scope">
-                <div>{{ scope.row.kwargs.config === "请选择" ? "用例配置" : scope.row.kwargs.config }}</div>
-              </template>
-            </el-table-column>
-
-            <el-table-column min-width="100" label="通知策略">
-              <template v-slot="scope">
-                <div>{{ scope.row.kwargs.strategy }}</div>
-              </template>
-            </el-table-column>
-            <el-table-column width="70" label="已运行">
-              <template v-slot="scope">
-                <div>{{ scope.row.total_run_count }} 次</div>
-              </template>
-            </el-table-column>
-
-            <el-table-column width="80" label="状态">
-              <template v-slot="scope">
-                <el-switch
-                  v-model="scope.row.enabled"
-                  active-color="#13ce66"
-                  @change="handleSwitchChange(scope.row.id, scope.row.enabled)"
-                  inactive-color="#ff4949"
-                >
-                </el-switch>
-              </template>
-            </el-table-column>
-            <!--                        <el-table-column-->
-            <!--                            width="320"-->
-            <!--                            label="接收人"-->
-            <!--                        >-->
-            <!--                            <template slot-scope="scope">-->
-            <!--                                <div>{{ scope.row.kwargs.receiver }}</div>-->
-            <!--                            </template>-->
-            <!--                        </el-table-column>-->
-            <!--                        <el-table-column-->
-            <!--                            width="320"-->
-            <!--                            label="抄送人"-->
-            <!--                        >-->
-            <!--                            <template slot-scope="scope">-->
-            <!--                                <div>{{ scope.row.kwargs.mail_cc }}</div>-->
-            <!--                            </template>-->
-            <!--                        </el-table-column>-->
-            <el-table-column width="80" label="更新人">
-              <template v-slot="scope">
-                <div>{{ scope.row.kwargs.updater }}</div>
-              </template>
-            </el-table-column>
-            <el-table-column width="80" label="创建人">
-              <template v-slot="scope">
-                <div>{{ scope.row.kwargs.creator }}</div>
-              </template>
-            </el-table-column>
-
-            <el-table-column width="150" label="操作">
-              <template v-slot="scope">
-                <el-row v-show="true">
-                  <el-button
-                    type="info"
-                    icon="el-icon-edit"
-                    title="编辑"
-                    circle
-                    size="mini"
-                    @click="handleEditSchedule(scope.row.id, scope.row)"
-                  ></el-button>
-                  <el-button
-                    type="success"
-                    icon="el-icon-document-copy"
-                    title="复制"
-                    circle
-                    size="mini"
-                    style="margin-left: 0"
-                    @click="handleCopyTask(scope.row.id, scope.row.name)"
-                  ></el-button>
-                  <el-button
-                    type="primary"
-                    icon="el-icon-caret-right"
-                    title="手动触发任务"
-                    circle
-                    size="mini"
-                    style="margin-left: 0"
-                    @click="runTask(scope.row.id)"
-                  >
-                  </el-button>
-                  <el-button
-                    type="danger"
-                    icon="el-icon-delete"
-                    title="删除"
-                    circle
-                    size="mini"
-                    style="margin-left: 0"
-                    @click="delTasks(scope.row.id)"
-                  >
-                  </el-button>
-                </el-row>
-              </template>
-            </el-table-column>
-          </el-table>
-          <div style="margin: 5px 5px">
-            <el-pagination
-              :page-size="11"
-              v-if="!addTasks"
-              v-show="tasksData.count !== 0"
-              background
-              @current-change="handleCurrentChange"
-              :current-page.sync="currentPage"
-              layout="total, prev, pager, next, jumper"
-              :total="tasksData.count"
-            >
-            </el-pagination>
-          </div>
+            <el-button slot="append" icon="el-icon-search" @click="getTaskList"></el-button>
+          </el-input>
+          <span style="margin-left: 10px">创建人: </span>
+          <el-select
+            v-model="selectUser"
+            size="medium"
+            placeholder="请选择创建人"
+            filterable
+            :style="{ width: '120px' }"
+          >
+            <el-option
+              v-for="(item, index) in users"
+              :key="index"
+              :label="item.label"
+              :value="item.value"
+              :disabled="item.disabled"
+            ></el-option>
+          </el-select>
+          <el-button type="primary" @click="resetSearch" size="medium">重置</el-button>
         </div>
-      </el-main>
-      <add-tasks
-        v-if="addTasks"
-        v-on:changeStatus="changeStatus"
-        :ruleForm="ruleForm"
-        :configOptions="configOptions"
-        :CIEnvOptions="CIEnvOptions"
-        :args="args"
-        :scheduleId="scheduleId"
+      </div>
+    </el-header>
+    <el-main style="padding: 0; margin-left: 0">
+      <el-table
+        v-if="!addTasks"
+        :data="tasksData.results"
+        :show-header="tasksData.results.length !== 0"
+        stripe
+        highlight-current-row
+        style="width: 100%; overflow: auto; height: auto"
+        @cell-mouse-enter="cellMouseEnter"
+        @cell-mouse-leave="cellMouseLeave"
       >
-      </add-tasks>
-    </el-container>
-  </el-container>
+        <el-table-column label="任务ID" min-width="70">
+          <template v-slot="scope">
+            <div class="block">{{ scope.row.id }}</div>
+          </template>
+        </el-table-column>
+
+        <el-table-column label="任务名称" min-width="160">
+          <template v-slot="scope">
+            <div>{{ scope.row.name }}</div>
+          </template>
+        </el-table-column>
+
+        <el-table-column width="80" label="时间配置">
+          <template v-slot="scope">
+            <div>{{ scope.row.kwargs.crontab }}</div>
+          </template>
+        </el-table-column>
+
+        <el-table-column width="150" label="下次执行时间">
+          <template v-slot="scope">
+            <div>
+              {{ scope.row.kwargs.next_execute_time ? scope.row.kwargs.next_execute_time : "" | timestampToTime }}
+            </div>
+          </template>
+        </el-table-column>
+
+        <el-table-column width="70" label="CI项目">
+          <template v-slot="scope">
+            <div>{{ scope.row.kwargs.ci_project_ids }}</div>
+          </template>
+        </el-table-column>
+
+        <el-table-column width="70" label="CI环境">
+          <template v-slot="scope">
+            <div>{{ scope.row.kwargs.ci_env === "请选择" ? "" : scope.row.kwargs.ci_env }}</div>
+          </template>
+        </el-table-column>
+
+        <el-table-column min-width="100" label="运行配置">
+          <template v-slot="scope">
+            <div>{{ scope.row.kwargs.config === "请选择" ? "用例配置" : scope.row.kwargs.config }}</div>
+          </template>
+        </el-table-column>
+
+        <el-table-column min-width="100" label="通知策略">
+          <template v-slot="scope">
+            <div>{{ scope.row.kwargs.strategy }}</div>
+          </template>
+        </el-table-column>
+        <el-table-column width="70" label="已运行">
+          <template v-slot="scope">
+            <div>{{ scope.row.total_run_count }} 次</div>
+          </template>
+        </el-table-column>
+
+        <el-table-column width="80" label="状态">
+          <template v-slot="scope">
+            <el-switch
+              v-model="scope.row.enabled"
+              active-color="#13ce66"
+              @change="handleSwitchChange(scope.row.id, scope.row.enabled)"
+              inactive-color="#ff4949"
+            >
+            </el-switch>
+          </template>
+        </el-table-column>
+        <!--                        <el-table-column-->
+        <!--                            width="320"-->
+        <!--                            label="接收人"-->
+        <!--                        >-->
+        <!--                            <template slot-scope="scope">-->
+        <!--                                <div>{{ scope.row.kwargs.receiver }}</div>-->
+        <!--                            </template>-->
+        <!--                        </el-table-column>-->
+        <!--                        <el-table-column-->
+        <!--                            width="320"-->
+        <!--                            label="抄送人"-->
+        <!--                        >-->
+        <!--                            <template slot-scope="scope">-->
+        <!--                                <div>{{ scope.row.kwargs.mail_cc }}</div>-->
+        <!--                            </template>-->
+        <!--                        </el-table-column>-->
+        <el-table-column width="80" label="更新人">
+          <template v-slot="scope">
+            <div>{{ scope.row.kwargs.updater }}</div>
+          </template>
+        </el-table-column>
+        <el-table-column width="80" label="创建人">
+          <template v-slot="scope">
+            <div>{{ scope.row.kwargs.creator }}</div>
+          </template>
+        </el-table-column>
+
+        <el-table-column width="150" label="操作">
+          <template v-slot="scope">
+            <el-row v-show="true">
+              <el-button
+                type="info"
+                icon="el-icon-edit"
+                title="编辑"
+                circle
+                size="mini"
+                @click="handleEditSchedule(scope.row.id, scope.row)"
+              ></el-button>
+              <el-button
+                type="success"
+                icon="el-icon-document-copy"
+                title="复制"
+                circle
+                size="mini"
+                style="margin-left: 0"
+                @click="handleCopyTask(scope.row.id, scope.row.name)"
+              ></el-button>
+              <el-button
+                type="primary"
+                icon="el-icon-caret-right"
+                title="手动触发任务"
+                circle
+                size="mini"
+                style="margin-left: 0"
+                @click="runTask(scope.row.id)"
+              >
+              </el-button>
+              <el-button
+                type="danger"
+                icon="el-icon-delete"
+                title="删除"
+                circle
+                size="mini"
+                style="margin-left: 0"
+                @click="delTasks(scope.row.id)"
+              >
+              </el-button>
+            </el-row>
+          </template>
+        </el-table-column>
+      </el-table>
+      <div style="margin: 5px 5px">
+        <el-pagination
+          :page-size="11"
+          v-if="!addTasks"
+          v-show="tasksData.count !== 0"
+          background
+          @current-change="handleCurrentChange"
+          :current-page.sync="currentPage"
+          layout="total, prev, pager, next, jumper"
+          :total="tasksData.count"
+        >
+        </el-pagination>
+      </div>
+    </el-main>
+    <add-tasks
+      v-if="addTasks"
+      v-on:changeStatus="changeStatus"
+      :ruleForm="ruleForm"
+      :configOptions="configOptions"
+      :CIEnvOptions="CIEnvOptions"
+      :args="args"
+      :scheduleId="scheduleId"
+    >
+    </add-tasks>
+  </div>
 </template>
 
 <script>
