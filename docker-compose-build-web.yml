@@ -96,13 +96,13 @@ services:
   web:
     build:
       context: ./web
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile-build
+      args:
+        - API_URL=http://${SERVER_IP}:${DJANGO_ADMIN_PORT}
     ports:
       - "${WEB_PORT}:80"
-    volumes:
-      - ./web/dist:/usr/share/nginx/html
-    environment:
-      - FasterRunner=${MYSQL_USER}
+    depends_on:
+      - app
 
   mq:
     image: rabbitmq:management-alpine
