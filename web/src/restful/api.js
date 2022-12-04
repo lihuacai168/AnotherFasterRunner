@@ -10,6 +10,10 @@ export let baseUrl = "http://localhost:8000";
 if (process.env.NODE_ENV === "production") {
     baseUrl = "http://119.91.147.215:8000";
 }
+if (process.env.NODE_ENV === "production" && process.env.API_URL){
+    // build的时候可以传递API_URL环境变量
+    baseUrl = process.env.API_URL;
+}
 
 axios.defaults.withCredentials = true;
 axios.defaults.baseURL = baseUrl;
