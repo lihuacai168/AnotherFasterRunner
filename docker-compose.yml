@@ -1,7 +1,8 @@
 version: '3.8'
 services:
   db:
-    image: mysql:8.0.21
+    #image: mysql:8.0.21
+    image: mariadb:10.6.1
     # privileged: true
     environment:
       # 设置默认数据库和root默认密码,如果宿主机中/var/lib/mysql已经存在,这两个设置都不会生效
@@ -100,6 +101,8 @@ services:
       - "${WEB_PORT}:80"
     volumes:
       - ./web/dist:/usr/share/nginx/html
+    environment:
+      - FasterRunner=${MYSQL_USER}
 
   mq:
     image: rabbitmq:management-alpine
