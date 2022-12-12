@@ -35,7 +35,7 @@ class Task(object):
             "is_parallel": kwargs.get("is_parallel", False),
             "config": kwargs.get("config", "请选择"),
         }
-        self.__crontab_time = None
+        self.__crontab_time = dict()
 
     def format_crontab(self):
         """

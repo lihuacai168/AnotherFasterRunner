@@ -119,14 +119,16 @@ AUTH_PASSWORD_VALIDATORS = [
 LANGUAGE_CODE = "zh-Hans"
 
 TIME_ZONE = "Asia/Shanghai"
-
+timezone = "Asia/Shanghai"
 USE_I18N = True
 
 USE_L10N = True
 
 USE_TZ = False
 
-CELERY_TIMEZONE = TIME_ZONE
+# The 'CELERY_TIMEZONE' setting is deprecated and scheduled for removal in version 6.0.0.
+#  Use the timezone instead
+# CELERY_TIMEZONE = TIME_ZONE 
 # https://github.com/celery/celery/issues/4796
 DJANGO_CELERY_BEAT_TZ_AWARE = False
 CELERY_BEAT_SCHEDULER="django_celery_beat.schedulers:DatabaseScheduler"
