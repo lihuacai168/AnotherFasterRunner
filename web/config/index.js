@@ -11,15 +11,12 @@ module.exports = {
         assetsSubDirectory: 'static',
         assetsPublicPath: '/',
         proxyTable: {
-           /* '/httprunner': {
-                target: 'http://localhost:8000',//设置你调用的接口域名和端口号 别忘了加http
-                changeOrigin: true,
-                pathRewrite: {
-                    '^/httprunner': ''
-                }
-            }*/
+            '/api': {
+                target: 'http://localhost:8000', // 这是本地用node写的一个服务，用webpack-dev-server起的服务默认端口是8080
+                // pathRewrite: {"": ""}, // 后台在转接的时候url中是没有 /api 的
+                changeOrigin: true, // 加了这个属性，那后端收到的请求头中的host是目标地址 target
+            }
         },
-
         // Various Dev Server settings
         host: '0.0.0.0', // can be overwritten by process.variables.HOST
         port: 8080, // can be overwritten by process.variables.PORT, if port is in use, a free one will be determined

@@ -323,8 +323,11 @@ export default {
         },
 
         handleWatchReports(index) {
-            window.open(this.$api.baseUrl + "/api/fastrunner/reports/" + index + "/")
-
+            //window.open(this.$api.baseUrl + "/api/fastrunner/reports/" + index + "/")
+            const host = window.location.host
+            const protocol = window.location.protocol
+            const url = protocol + '//' + host + '/api/fastrunner/reports/' + index + '/'
+            window.open(url)
         },
 
 
