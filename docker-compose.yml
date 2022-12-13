@@ -103,6 +103,8 @@ services:
       - ./web/dist:/usr/share/nginx/html
     environment:
       - FasterRunner=${MYSQL_USER}
+    depends_on:
+      - app
 
   mq:
     image: rabbitmq:management-alpine

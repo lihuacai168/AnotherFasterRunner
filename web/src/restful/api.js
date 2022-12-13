@@ -3,20 +3,24 @@ import store from '../store/state'
 import router from '../router'
 import {Message} from 'element-ui';
 
+// 通过proxy的方式解决跨域
+// build时，通过nginx转发，不需要指定后端地址
 
-export let baseUrl = "http://localhost:8000";
-// export let baseUrl = "http://192.168.22.19:8000";
 
-if (process.env.NODE_ENV === "production") {
-    baseUrl = "http://119.91.147.215:8000";
-}
-if (process.env.NODE_ENV === "production" && process.env.API_URL){
-    // build的时候可以传递API_URL环境变量
-    baseUrl = process.env.API_URL;
-}
+
+// export let baseUrl = "http://localhost:8000";
+// // export let baseUrl = "http://192.168.22.19:8000";
+//
+// if (process.env.NODE_ENV === "production") {
+//     baseUrl = "http://192.168.199.250:8000";
+// }
+// if (process.env.NODE_ENV === "production" && process.env.API_URL){
+//     // build的时候可以传递API_URL环境变量
+//     baseUrl = process.env.API_URL;
+// }
 
 axios.defaults.withCredentials = true;
-axios.defaults.baseURL = baseUrl;
+// axios.defaults.baseURL = baseUrl;
 
 axios.interceptors.request.use(function (config) {
     if (!config.url.startsWith("/api/user/") || config.url === "/api/user/list/") {
