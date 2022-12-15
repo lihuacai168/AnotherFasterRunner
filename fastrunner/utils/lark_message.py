@@ -105,13 +105,23 @@ def send_message(summary: dict, webhook: str, **kwargs):
                 }
             }
         if 'weixin' in webhook:
-            msg = parse_message(summary=summary, msg_type='')
-            data = {
+            """
+            {
                 "msgtype": "text",
                 "text": {
                     "content": msg,
                     "mentioned_list":["shisi"],
                     "mentioned_mobile_list":["17621034206","@all"]
+                }
+            }
+            """
+            msg = parse_message(summary=summary, msg_type='')
+            data = {
+                "msgtype": "text",
+                "text": {
+                    "content": msg,
+                    "mentioned_list": ["shisi"],
+                    "mentioned_mobile_list": ["17621034206", ]
                 }
             }
         res = requests.post(url=webhook, data=json.dumps(data).encode("utf-8")).json()

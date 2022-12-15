@@ -1,66 +1,53 @@
 <template>
-  <el-container
-    ><el-header style="padding: 0">
-      <div>
-        <el-menu
-          :default-active="$store.state.routerName"
-          mode="horizontal"
-          background-color="#01101a"
-          text-color="#BFCBD9"
-          active-text-color="#1dbe89"
-          @select="select"
+  <el-header style="padding: 0">
+    <el-menu
+      :default-active="$store.state.routerName"
+      mode="horizontal"
+      @select="select"
+    >
+      <el-menu-item>
+        <img src="../../../../static/favicon.ico" alt="ico" height="35px" />
+        <span
+          v-text="platformTitle + this.$store.state.projectName"
+          style="font-size: 16px; margin-left: 10px"
         >
-          <el-menu-item>
-            <img src="../../../../static/favicon.ico" alt="ico" height="35px" />
-            <span
-              v-text="platformTitle + this.$store.state.projectName"
-              style="color: white; font-size: 16px; margin-left: 10px"
-            ></span>
-          </el-menu-item>
-          <el-menu-item index="ProjectList" class="menu-items">
-            <i class="iconfont">&#xe631;</i>&nbsp;首 页
-          </el-menu-item>
-          <el-menu-item
-            v-for="item of side_menu"
-            :index="item.url"
-            :key="item.url"
-            :disabled="$store.state.routerName === 'ProjectList'"
-            ><span class="iconfont" v-html="item.code"></span>&nbsp;{{
-              item.name
-            }}
-          </el-menu-item>
-          <el-button
-            type="text"
-            size="big"
-            icon="el-icon-user"
-            style="
-              position: absolute;
-              right: 60px;
-              font-size: 16px;
-              color: white;
-              margin-top: 5px;
-            "
-            @click="addTasks = false"
-            >{{ this.$store.state.user }}
-          </el-button>
-          <el-button
-            style="
-              margin-left: 20px;
-              position: absolute;
-              right: 10px;
-              margin-top: 10px;
-            "
-            type="danger"
-            icon="el-icon-close"
-            title="注销"
-            size="small"
-            circle
-            @click="handleLogOut"
-          >
-          </el-button>
-        </el-menu>
-      </div> </el-header
-  ></el-container>
+        </span>
+      </el-menu-item>
+      <el-menu-item index="ProjectList" class="menu-items">
+        <i class="iconfont">&#xe631;</i>&nbsp;首 页
+      </el-menu-item>
+      <el-menu-item
+        v-for="item of side_menu"
+        :index="item.url"
+        :key="item.url"
+        :disabled="$store.state.routerName === 'ProjectList'"
+        ><span class="iconfont" v-html="item.code"></span>&nbsp;{{ item.name }}
+      </el-menu-item>
+      <el-button
+        type="text"
+        size="big"
+        icon="el-icon-user"
+        style="position: absolute; right: 60px; font-size: 16px"
+        @click="addTasks = false"
+        >{{ this.$store.state.user }}
+      </el-button>
+      <el-button
+        style="
+          margin-left: 20px;
+          position: absolute;
+          right: 10px;
+          margin-top: 4px;
+        "
+        type="danger"
+        icon="el-icon-close"
+        title="注销"
+        size="mini"
+        circle
+        @click="handleLogOut"
+      >
+      </el-button>
+    </el-menu>
+  </el-header>
 </template>
 
 <script>
@@ -140,8 +127,8 @@ export default {
 }
 .el-menu-item {
   padding: 0 8px;
-  height: 52px;
-  line-height: 52px;
+  height: 36px;
+  line-height: 36px;
 }
 .nav-header {
   background: #01101a;
