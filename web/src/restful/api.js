@@ -140,7 +140,7 @@ export const updateTree = (url, params) => {
 };
 
 export const uploadFile = url => {
-    return baseUrl + '/api/fastrunner/file/?token=' + store.token
+    return '/api/fastrunner/file/?token=' + store.token
 };
 
 export const addAPI = params => {
