@@ -29,7 +29,7 @@ fi
 
 if [ $1 = "celery-worker" ]; then
     echo "start celery"
-    export DJANGO_SETTINGS_MODULE=FasterRunner.settings.docker; /usr/local/bin/python -m celery -A FasterRunner.mycelery worker -l info
+    export DJANGO_SETTINGS_MODULE=FasterRunner.settings.docker; /usr/local/bin/python -m celery -A FasterRunner.mycelery worker -l info --concurrency=4
 fi
 
 
