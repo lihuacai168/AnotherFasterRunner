@@ -29,7 +29,10 @@ cp .env.example $HOME/.env
 ```
 
 ```shell
-# 指定配置文件启动, .env是绝对路径
+# 使用makefile命令快速启动
+make up
+
+# 或者使用docker-compose原始的命令, 指定配置文件启动, .env是绝对路径
 docker-compose --env-file=$HOME/.env up --build -d
 ```
 
