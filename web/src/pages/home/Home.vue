@@ -22,7 +22,7 @@
         font: 0.5em sans-serif;
       "
     >
-      Copyright © 2022 - 2022 . CBK QA . All Rights Reserved
+      Copyright © 2022 - 2023 . CBK QA . All Rights Reserved
     </el-footer>
   </el-container>
 </template>

@@ -12,7 +12,7 @@
 #COPY requirements.txt .
 #RUN pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
 
-FROM registry-vpc.cn-hangzhou.aliyuncs.com/cbk/fasterrunner_base:latest
+FROM registry-vpc.cn-hangzhou.aliyuncs.com/cbk/fasterrunner:base-latest
 ENV TZ=Asia/Shanghai
 ENV LANG=C.UTF-8
 RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories \

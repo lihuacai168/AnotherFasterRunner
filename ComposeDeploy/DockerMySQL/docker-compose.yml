@@ -1,7 +1,7 @@
 version: '3'
 services:
   db-master:
-    image: docker.io/mysql:5.7
+    image: registry-vpc.cn-hangzhou.aliyuncs.com/cbk/mysql:5.7
     container_name: db-master
     privileged: true
     environment:
@@ -21,7 +21,7 @@ services:
     command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --socket=/var/lib/mysql/mysql.sock
 
   db-slave:
-    image: docker.io/mysql:5.7
+    image: registry-vpc.cn-hangzhou.aliyuncs.com/cbk/mysql:5.7
     container_name: db-slave
     privileged: true
     environment:
@@ -48,6 +48,7 @@ services:
       - ./Redis/redis.conf:/etc/redis/redis.conf  # 挂载redis.conf文件
       - ./Redis/data:/data
       - ./Redis/redis-sysctl.conf:/etc/sysctl.d/redis-sysctl.conf
+      - ./Redis/redis-sysctl.conf:/etc/sysctl.conf
     ports:
       - "6379:6379" # docker与宿主机的端口映射
     restart: always

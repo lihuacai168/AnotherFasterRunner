@@ -21,7 +21,7 @@ services:
     command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --socket=/var/lib/mysql/mysql.sock
 
   app:
-    image: registry-vpc.cn-hangzhou.aliyuncs.com/cbk/fasterrunner_app:latest
+    image: registry-vpc.cn-hangzhou.aliyuncs.com/cbk/fasterrunner:app-latest
     container_name: faster-app
     build:
       context: .
@@ -35,6 +35,7 @@ services:
       - RABBITMQ_DEFAULT_PASS=${RABBITMQ_DEFAULT_PASS}
       - MQ_PORT=${MQ_PORT}
       - SENTRY_DSN=${SENTRY_DSN}
+      - DJANGO_SETTINGS_MODULE=FasterRunner.settings.docker
     volumes:
       - ./mysql:/opt/workspace/FasterRunner/mysql
       - ./nginx.conf:/etc/nginx/sites-enabled/nginx.conf
@@ -49,7 +50,7 @@ services:
     restart: always
 
   web:
-    image: registry-vpc.cn-hangzhou.aliyuncs.com/cbk/fasterrunner_web:latest
+    image: registry-vpc.cn-hangzhou.aliyuncs.com/cbk/fasterrunner:web-latest
     container_name: faster-web
     build:
       context: ./FasterWeb

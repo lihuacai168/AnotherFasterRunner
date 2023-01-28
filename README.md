@@ -29,6 +29,16 @@
 
 ## Quick Start
 
+- 开发环境准备：mysql
+- 启动mysql后执行初始化脚本：db目录中两个脚本
+
+```shell
+docker pull mysql:5.7
+docker run --name mysql -v ./mysql:/var/lib/mysql -p 3306:3306 -e MYSQL_ROOT_PASSWORD=123456 -d mysql:latest
+```
+
+## 正式部署
+
 ```shell
 # 编辑Dockerfile，安装必要的依赖及确定WORKDIR
 apk add Nginx
@@ -37,14 +47,17 @@ WORKDIR /opt/workspace/FasterRunner/
 ```
 
 ```shell
-# 单独构建app及web应用，分别在AnotherFasterRunner及./web目录下
+# 单独构建app及web应用，分别在AnotherFasterRunner及./FasterWeb目录下
 cd ./ComposeDeploy
-docker build -t registry-vpc.cn-hangzhou.aliyuncs.com/cbk/fasterrunner_base:latest .
+docker build -t registry-vpc.cn-hangzhou.aliyuncs.com/cbk/fasterrunner:base-latest .
 cd ..
-docker build -t registry-vpc.cn-hangzhou.aliyuncs.com/cbk/fasterrunner_app:latest .
+docker build -t registry-vpc.cn-hangzhou.aliyuncs.com/cbk/fasterrunner:app-latest .
 cd ./web
-npm run build
-docker build -t registry-vpc.cn-hangzhou.aliyuncs.com/cbk/fasterrunner_web:latest .
+npm config set registry https://registry.npmmirror.com
+npm install -g pnpm
+pnpm install
+pnpm build
+docker build -t registry-vpc.cn-hangzhou.aliyuncs.com/cbk/fasterrunner:web-latest .
 ```
 
 ```shell

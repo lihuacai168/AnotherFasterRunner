@@ -6,6 +6,7 @@ celerybeat.pid
 start.sh.bak
 tempWorkDir
 mysql
+
 # .env
 /venv/
 /static/
@@ -31,3 +32,4 @@ pnpm-lock.yaml
 *.sln
 templates/FasterWeb/index.html
 templates/TyAdmin/index.html
+ComposeDeploy/DockerMySQL/Redis/data/

@@ -52,7 +52,7 @@ class Test(TestCase):
     def test_get_tree_relation_name_default(self):
         assert get_tree_relation_name(self.tree, 1) == '默认分组'
 
-    def test_get_tree_relation_name_default(self):
+    def test_get_tree_relation_name_index(self):
         assert get_tree_relation_name(self.tree, 11) == '首页'
 
 

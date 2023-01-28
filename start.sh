@@ -3,7 +3,7 @@ echo "--------------start nginx--------------"
 nginx
 
 echo "--------------start app--------------"
-uwsgi --ini ./ComposeDeploy/uwsgi_docker.ini
+uwsgi --ini ./FasterRunner/uwsgi_docker.ini
 # uwsgi --ini ./ComposeDeploy/uwsgi_docker.ini --logto ./logs/uwsgi.log
 # /usr/local/bin/python manage.py runserver 0.0.0.0:8000 --settings=FasterRunner.settings.docker
 

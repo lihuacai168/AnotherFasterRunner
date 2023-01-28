@@ -17,6 +17,7 @@ start.sh.bak
 tempWorkDir?
 mysql?
 mysql
+ComposeDeploy
 
 # .env
 venv/
