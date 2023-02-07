@@ -1,5 +1,5 @@
 module.exports = {
-  printWidth: 80, // 单行字符数, 默认80
+  printWidth: 120, // 单行字符数, 默认80
   tabWidth: 2, // 缩进字节数, 默认2
   semi: true, // 句尾使用分号, 默认true
   singleQuote: false, // 使用单引号代替双引号, 默认false

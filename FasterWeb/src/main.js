@@ -1,6 +1,6 @@
 import Vue from "vue";
 import { createPinia, PiniaVuePlugin } from "pinia";
-import ElementUI from "element-ui";
+import ElementUI from "./util/element";
 import VJsoneditor from "v-jsoneditor";
 import VueClipboard from "vue-clipboard2";
 import echarts from "echarts";

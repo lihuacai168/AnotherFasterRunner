@@ -125,7 +125,7 @@ def send_message(summary: dict, webhook: str, **kwargs):
                 }
             }
         res = requests.post(url=webhook, data=json.dumps(data).encode("utf-8")).json()
-        if res.get('StatusCode') == 0:
+        if res.get('StatusCode') == 0 or res.get('errcode') == 0:
             logger.info(f"发送通知成功，请求的webhook是: {webhook}")
         else:
             logger.error(f"发送通知失败，请求的webhook是: {webhook}， 响应是：{res}")
