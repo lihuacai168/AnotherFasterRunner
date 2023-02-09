@@ -1,5 +1,5 @@
 <template>
-  <el-container>
+  <div>
     <el-aside style="width: 240px; margin-top: 10px">
       <div class="nav-api-side">
         <div class="api-tree">
@@ -30,23 +30,23 @@
       </div>
     </el-aside>
 
-    <el-main>
+    <el-main style="margin-left: 235px; padding-top: 0">
       <el-row :gutter="5" v-if="!editTestStepActivate">
         <el-col :span="12">
           <div class="recordapi__header">
             <el-input
               placeholder="请输入接口名称"
               min-width="100"
-              size="medium"
+              size="small"
               clearable
               @input="inputVal"
               :value="search"
               @keyup.enter.native="getAPIList"
             >
             </el-input>
-            <el-button type="primary" size="medium" style="margin-left: 5px" @click="resetSearch">重置</el-button>
+            <el-button type="primary" size="small" style="margin-left: 5px" @click="resetSearch">重置</el-button>
             <el-dropdown @command="tagChangeHandle" style="margin-left: 5px">
-              <el-button type="primary" size="medium"
+              <el-button type="primary" size="small"
                 >状态
                 <i class="el-icon-arrow-down el-icon--right"></i>
               </el-button>
@@ -57,7 +57,7 @@
                 <el-dropdown-item command="">所有</el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
-            <el-select v-model="selectUser" placeholder="创建人" filterable size="medium" style="margin-left: 5px">
+            <el-select v-model="selectUser" placeholder="创建人" filterable size="small" style="margin-left: 5px">
               <el-option
                 v-for="(item, index) in users"
                 :key="index"
@@ -72,7 +72,7 @@
           <div class="recordapi__header" :style="{ flex: 1 }">
             <el-input
               style="min-width: 150px; text-align: center"
-              size="medium"
+              size="small"
               placeholder="请输入测试用例名称"
               v-model="testName"
               clearable
@@ -84,14 +84,14 @@
             <el-button
               slot="append"
               type="success"
-              size="medium"
+              size="small"
               style="margin-left: 5px"
               @click="handleClickSave"
               :title="disabledSave ? '不能修改其他人的用例' : '保存用例'"
               :disabled="disabledSave && testData.length > 0"
-              >Save
+              >保 存
             </el-button>
-            <el-button type="primary" size="medium" v-loading="suite_loading" @click="handleClickRun">Send</el-button>
+            <el-button type="primary" size="small" v-loading="suite_loading" @click="handleClickRun">发 送</el-button>
           </div>
         </el-col>
       </el-row>
@@ -163,75 +163,71 @@
                 @start="length = testData.length"
                 v-bind="{ animation: 200 }"
               >
-                <div
-                  v-for="(test, index) in testData"
-                  :key="index"
-                  class="block block_test"
-                  @mousemove="currentTest = index"
-                  v-if="test.body.method !== 'config'"
-                >
-                  <span class="block-method block_method_test block_method_color">Step_{{ index }}</span>
-                  <input class="block-test-name" v-model="test.body.name" />
+                <div v-for="(test, index) in testData" :key="index" @mousemove="currentTest = index">
+                  <div class="block block_test" v-if="test.body.method !== 'config'">
+                    <span class="block-method block_method_test block_method_color">Step_{{ index }}</span>
+                    <input class="block-test-name" v-model="test.body.name" />
 
-                  <el-button
-                    style="position: absolute; right: 156px; top: 8px"
-                    v-show="currentTest === index"
-                    type="info"
-                    icon="el-icon-edit"
-                    title="编辑"
-                    circle
-                    size="mini"
-                    @click="editTestStepActivate = true"
-                  >
-                  </el-button>
+                    <el-button
+                      style="position: absolute; right: 156px; top: 8px"
+                      v-show="currentTest === index"
+                      type="info"
+                      icon="el-icon-edit"
+                      title="编辑"
+                      circle
+                      size="mini"
+                      @click="editTestStepActivate = true"
+                    >
+                    </el-button>
 
-                  <el-button
-                    style="position: absolute; right: 84px; top: 8px"
-                    v-show="currentTest === index"
-                    type="success"
-                    icon="el-icon-caret-right"
-                    circle
-                    size="mini"
-                    title="单个运行"
-                    @click="handleSingleRun()"
-                  >
-                  </el-button>
+                    <el-button
+                      style="position: absolute; right: 84px; top: 8px"
+                      v-show="currentTest === index"
+                      type="success"
+                      icon="el-icon-caret-right"
+                      circle
+                      size="mini"
+                      title="单个运行"
+                      @click="handleSingleRun()"
+                    >
+                    </el-button>
 
-                  <el-button
-                    style="position: absolute; right: 48px; top: 8px"
-                    v-show="currentTest === index"
-                    type="primary"
-                    icon="el-icon-caret-right"
-                    circle
-                    size="mini"
-                    title="运行开始到当前位置的所有api"
-                    @click="handlePartialRun(index)"
-                  >
-                  </el-button>
+                    <el-button
+                      style="position: absolute; right: 48px; top: 8px"
+                      v-show="currentTest === index"
+                      type="primary"
+                      icon="el-icon-caret-right"
+                      circle
+                      size="mini"
+                      title="运行开始到当前位置的所有api"
+                      @click="handlePartialRun(index)"
+                    >
+                    </el-button>
 
-                  <el-button
-                    style="position: absolute; right: 120px; top: 8px"
-                    v-show="currentTest === index"
-                    type="danger"
-                    icon="el-icon-document-copy"
-                    title="复制当前步骤"
-                    circle
-                    size="mini"
-                    @click="handleCopyStep(index)"
-                  >
-                  </el-button>
+                    <el-button
+                      style="position: absolute; right: 120px; top: 8px"
+                      v-show="currentTest === index"
+                      type="danger"
+                      icon="el-icon-document-copy"
+                      title="复制当前步骤"
+                      circle
+                      size="mini"
+                      @click="handleCopyStep(index)"
+                    >
+                    </el-button>
 
-                  <el-button
-                    style="position: absolute; right: 12px; top: 8px"
-                    v-show="currentTest === index"
-                    type="danger"
-                    icon="el-icon-delete"
-                    title="删除"
-                    circle
-                    size="mini"
-                    @click="testData.splice(index, 1)"
-                  >
-                  </el-button>
+                    <el-button
+                      style="position: absolute; right: 12px; top: 8px"
+                      v-show="currentTest === index"
+                      type="danger"
+                      icon="el-icon-delete"
+                      title="删除"
+                      circle
+                      size="mini"
+                      @click="testData.splice(index, 1)"
+                    >
+                    </el-button>
+                  </div>
                 </div>
               </draggable>
             </div>
@@ -262,7 +258,7 @@
       >
       </http-runner>
     </el-main>
-  </el-container>
+  </div>
 </template>
 
 <script>

@@ -11,41 +11,33 @@
       <el-row>
         <el-col :span="7">
           <div class="bottom-left">
-            <img src="~@/assets/images/bottom-left.png" />
+            <img src="../../assets/images/bottom-left.png" />
           </div>
         </el-col>
         <el-col :span="24">
           <div>
-            <div id="form-title">
-              {{ this.$store.state.FasterRunner }}自动化测试平台
-            </div>
+            <div id="form-title">{{ this.$store.state.FasterRunner }}自动化测试平台</div>
             <form id="submit-form">
               <div id="form-content">
                 <div id="form-msg">登录账号</div>
                 <div id="form-inputs">
                   <div class="form-input-div">
-                    <i class="iconfont" style="
-                        position: absolute;
-                        bottom: 250px;
-                        padding-left: 10px;
-                      ">&#xe61c;</i>
+                    <i class="iconfont" style="position: absolute; bottom: 250px; padding-left: 10px">&#xe61c;</i>
                     <input placeholder="用户名" type="text" id="email" v-model="loginForm.username" />
-                    <div class="err_msg" id="email_err" v-html="usernameInvalid" @mouseover="usernameInvalid = ''">
-                    </div>
+                    <div
+                      class="err_msg"
+                      id="email_err"
+                      v-html="usernameInvalid"
+                      @mouseover="usernameInvalid = ''"
+                    ></div>
                   </div>
                   <div class="form-input-div">
-                    <i class="iconfont" style="
-                        position: absolute;
-                        bottom: 190px;
-                        padding-left: 10px;
-                      ">&#xe652;</i>
+                    <i class="iconfont" style="position: absolute; bottom: 190px; padding-left: 10px">&#xe652;</i>
                     <input placeholder="密码" type="password" id="pwd" v-model="loginForm.password" />
                     <div class="err_msg" id="pwd_err" v-html="passwordInvalid" @mouseover="passwordInvalid = ''"></div>
                   </div>
                   <div class="form-submit">
-                    <button type="button" class="btn btn-primary" id="submitBtn" @click="submitForm">
-                      立即登录
-                    </button>
+                    <button type="button" class="btn btn-primary" id="submitBtn" @click="submitForm">立即登录</button>
                   </div>
                 </div>
                 <div class="form-foot">
@@ -121,7 +113,7 @@ export default {
     },
     submitForm() {
       if (this.validateUserName() && this.validatePassword()) {
-        this.$api.login(this.loginForm).then(resp => {
+        this.$api.login(this.loginForm).then((resp) => {
           this.handleLoginSuccess(resp);
         });
       }
@@ -130,5 +122,4 @@ export default {
 };
 </script>
 
-<style scoped>
-</style>
+<style scoped></style>

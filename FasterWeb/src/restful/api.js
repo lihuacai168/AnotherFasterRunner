@@ -35,7 +35,7 @@ axios.interceptors.request.use(
 
       // 取url地址的第四位作为projectId，如果不存在，默认设置为0
       let projectId = window.location.pathname.split("/")[3];
-      projectId = projectId ? projectId : 0;
+      projectId = projectId ? projectId : 8;
       config.headers["Project"] = projectId;
       config.headers["Content-Type"] = "application/json";
     }

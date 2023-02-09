@@ -7,27 +7,28 @@
 # @Email: lihuacai168@gmail.com
 # @Software: PyCharm
 # api模块和数据库api表relation对应关系
-API_RELATION = {"default": 66,
-                "energy.ball": 67,
-                "manage": 68,
-                "app_manage": 68,
-                "artisan": 69,
-                "goods": 70,
-                "member": 71,
-                "order": 72,
-                "seller": 73,
-                "payment": 74,
-                "martketing": 75,
-                "promotion": 76,
-                "purchase": 77,
-                "security": 78,
-                "logistics": 79,
-                "recycle": 80,
-                "image-search": 81,
-                "content": 82,
-                "bmpm": 83,
-                "bi": 84
-                }
+API_RELATION = {
+    "default": 66,
+    "energy.ball": 67,
+    "manage": 68,
+    "app_manage": 68,
+    "artisan": 69,
+    "goods": 70,
+    "member": 71,
+    "order": 72,
+    "seller": 73,
+    "payment": 74,
+    "martketing": 75,
+    "promotion": 76,
+    "purchase": 77,
+    "security": 78,
+    "logistics": 79,
+    "recycle": 80,
+    "image-search": 81,
+    "content": 82,
+    "bmpm": 83,
+    "bi": 84
+}
 
 # Java同学项目分组
 API_AUTHOR = {

@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div style="margin-left: 10px">
     <div>
       <div>
         <el-input
@@ -7,44 +7,45 @@
           placeholder="请输入接口名称"
           v-model="name"
           clearable
-          size="medium"
+          size="small"
         >
           <template slot="prepend">接口信息录入</template>
         </el-input>
         <el-button
           slot="append"
           type="success"
-          size="medium"
+          size="small"
           :title="userName === creator || isSuperuser || !isSaveAs ? '保存' : '只有API创建者才能更新'"
           :disabled="userName !== creator && !isSuperuser && isSaveAs"
           @click="save = !save"
-          >Save
+          >保 存
         </el-button>
 
         <el-button
           style="margin-left: 0"
-          size="medium"
+          size="small"
           slot="append"
           type="success"
           :title="'另存为'"
           @click="handleSaveAs"
-          >Save As
+          >另存为
         </el-button>
 
         <el-button
           style="margin-left: 0"
-          size="medium"
+          size="small"
           type="primary"
           @click="reverseStatus"
           v-loading="loading"
           :disabled="loading"
-          >Send
+          >请 求
         </el-button>
       </div>
 
       <div>
         <el-input
           style="width: 60%; margin-top: 10px; min-width: 500px"
+          size="small"
           placeholder="请输入接口请求地址"
           v-model="url"
           clearable
@@ -61,7 +62,14 @@
         </el-input>
 
         <el-tooltip effect="dark" content="循环次数" placement="bottom">
-          <el-input-number v-model="times" controls-position="right" :min="1" :max="100" style="width: 120px">
+          <el-input-number
+            size="small"
+            v-model="times"
+            controls-position="right"
+            :min="1"
+            :max="100"
+            style="width: 120px"
+          >
           </el-input-number>
         </el-tooltip>
       </div>
@@ -129,13 +137,13 @@
 </template>
 
 <script>
-import Headers from "../../../httprunner/components/Headers";
-import Request from "../../../httprunner/components/Request";
-import Extract from "../../../httprunner/components/Extract";
-import Validate from "../../../httprunner/components/Validate";
-import Variables from "../../../httprunner/components/Variables";
-import Hooks from "../../../httprunner/components/Hooks";
-import Report from "../../../reports/DebugReport";
+import Headers from "../../../httprunner/components/Headers.vue";
+import Request from "../../../httprunner/components/Request.vue";
+import Extract from "../../../httprunner/components/Extract.vue";
+import Validate from "../../../httprunner/components/Validate.vue";
+import Variables from "../../../httprunner/components/Variables.vue";
+import Hooks from "../../../httprunner/components/Hooks.vue";
+import Report from "../../../reports/DebugReport.vue";
 
 export default {
   components: { Headers, Request, Extract, Validate, Variables, Hooks, Report },

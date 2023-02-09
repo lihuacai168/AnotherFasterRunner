@@ -15,7 +15,7 @@
           clearable
           v-model="scope.row.key"
           :fetch-suggestions="querySearch"
-          size="medium"
+          size="small"
           placeholder="头部标签"
           style="margin-left: 0"
         >
@@ -23,24 +23,25 @@
       </template>
     </el-table-column>
 
-    <el-table-column label="内容" min-width="280" style="margin-left: 0">
+    <el-table-column label="内容" min-width="280">
       <template v-slot="scope">
-        <el-input clearable v-model="scope.row.value" placeholder="头部内容" size="medium"></el-input>
+        <el-input clearable v-model="scope.row.value" placeholder="头部内容" size="small"></el-input>
       </template>
     </el-table-column>
 
     <el-table-column label="描述" width="180">
       <template v-slot="scope">
-        <el-input clearable v-model="scope.row.desc" placeholder="头部信息简要描述" size="medium"></el-input>
+        <el-input clearable v-model="scope.row.desc" placeholder="头部信息简要描述" size="small"></el-input>
       </template>
     </el-table-column>
 
     <el-table-column width="120">
       <template v-slot="scope">
-        <el-row v-show="scope.row === currentRow">
+        <el-row v-show="true">
           <el-button
             icon="el-icon-circle-plus-outline"
             size="mini"
+            circle
             type="info"
             style="margin-left: 0"
             @click="handleEdit(scope.$index, scope.row)"
@@ -49,6 +50,7 @@
           <el-button
             icon="el-icon-delete"
             size="mini"
+            circle
             type="danger"
             v-show="scope.$index !== 0"
             style="margin-left: 0"

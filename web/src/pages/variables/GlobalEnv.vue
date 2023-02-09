@@ -73,14 +73,14 @@
             placeholder="请输入变量名称"
             v-if="variablesData.count >= 0"
             clearable
-            size="medium"
+            size="small"
             v-model="search"
           >
             <el-button slot="append" icon="el-icon-search" @click="getVariablesList"></el-button>
           </el-input>
         </el-col>
         <el-col :span="2">
-          <el-button type="primary" size="medium" @click="resetSearch">重置</el-button>
+          <el-button type="primary" size="small" @click="resetSearch">重置</el-button>
         </el-col>
         <!--                        <el-col :span="7">-->
         <!--                            <el-pagination-->

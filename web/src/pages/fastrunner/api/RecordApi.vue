@@ -69,11 +69,11 @@
         </el-button>
 
         <el-dialog width="30%" title="导入YAPI接口" align="center" :visible.sync="importYAPIdialogVisible">
-          <el-form ref="elForm" :model="YAPIformData" :rules="rules" size="medium" label-width="100px">
+          <el-form ref="elForm" :model="YAPIformData" :rules="rules" size="small" label-width="100px">
             <el-form-item label="YAPI的地址" prop="yapi_base_url">
               <el-input
                 v-model="YAPIformData.yapi_base_url"
-                readonly
+                disabled
                 placeholder="http://yapi.xxx.com"
                 clearable
                 :style="{ width: '100%' }"
@@ -82,7 +82,7 @@
             <el-form-item label="token" prop="yapi_openapi_token">
               <el-input
                 v-model="YAPIformData.yapi_openapi_token"
-                readonly
+                disabled
                 placeholder="yapi项目的openapi token"
                 clearable
                 :style="{ width: '100%' }"
@@ -189,8 +189,8 @@
       </div></el-header
     >
 
-    <el-container>
-      <el-aside style="width: 250px">
+    <div>
+      <el-aside style="width: 250px" v-show="!addAPIFlag">
         <div class="nav-api-side">
           <div class="api-tree">
             <el-input
@@ -247,6 +247,7 @@
         >
         </api-body>
         <api-list
+          style="margin-left: 255px"
           v-show="!addAPIFlag"
           v-on:api="handleAPI"
           :pNode="currentNode !== '' ? currentNode.id : ''"
@@ -267,7 +268,7 @@
         >
         </api-list>
       </el-main>
-    </el-container>
+    </div>
   </div>
 </template>
 

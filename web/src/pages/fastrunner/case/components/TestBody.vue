@@ -8,15 +8,15 @@
         <el-button
           slot="append"
           type="success"
-          size="medium"
+          size="small"
           @click="save = !save"
           :disabled="disabledSave"
           :title="disabledSave ? '不能修改其他人的用例' : '保存用例步骤'"
-          >Save
+          >保 存
         </el-button>
 
-        <el-button style="margin-left: 0" size="medium" slot="append" type="danger" @click="esc = !esc"
-          >Back
+        <el-button style="margin-left: 0" size="small" slot="append" type="danger" @click="esc = !esc"
+          >返 回
         </el-button>
 
         <!-- <el-button

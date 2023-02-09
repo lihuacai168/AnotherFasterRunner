@@ -29,13 +29,13 @@
 
 <script>
 import HomeHeader from "./components/Header.vue";
-import HomeSide from "./components/Side.vue";
+// import HomeSide from "./components/Side.vue";
 
 export default {
   name: "Home",
   components: {
     HomeHeader,
-    HomeSide
+    // HomeSide
   },
   data() {
     return { defaultHeight: { height: "" } };

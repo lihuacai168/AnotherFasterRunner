@@ -114,7 +114,7 @@
 
           <el-table-column label="操作" align="center">
             <template v-slot="scope">
-              <el-button size="medium" @click="handleEdit(scope.$index, scope.row)">编辑 </el-button>
+              <el-button size="small" @click="handleEdit(scope.$index, scope.row)">编辑 </el-button>
 
               <el-dialog title="编辑数据库" :visible.sync="editVisible" width="40%" align="center">
                 <el-form :model="dataBaseForm" :rules="rules" ref="dataBaseForm" label-width="100px">
@@ -144,7 +144,7 @@
                 </span>
               </el-dialog>
 
-              <el-button size="medium" type="danger" @click="handleDelete(scope.$index, scope.row)">删除 </el-button>
+              <el-button size="small" type="danger" @click="handleDelete(scope.$index, scope.row)">删除 </el-button>
             </template>
           </el-table-column>
         </el-table>

@@ -2,7 +2,7 @@
   <div>
     <el-table
       :data="[summary]"
-      size="medium"
+      size="small"
       style="width: 100%"
       border
       stripe
@@ -57,7 +57,7 @@
             <p>HttpRunner: {{ scope.row.platform.httprunner_version }}</p>
             <p>Python: {{ scope.row.platform.python_version }}</p>
             <div slot="reference" class="name-wrapper">
-              <el-tag size="medium">{{ scope.row.platform.platform }}</el-tag>
+              <el-tag>{{ scope.row.platform.platform }}</el-tag>
             </div>
           </el-popover>
         </template>

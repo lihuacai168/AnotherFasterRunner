@@ -22,114 +22,31 @@
                 <div id="form-msg">注册账号</div>
                 <div id="form-inputs">
                   <div class="form-input-div">
-                    <i
-                      class="iconfont"
-                      style="
-                        position: absolute;
-                        bottom: 375px;
-                        padding-left: 10px;
-                      "
-                      >&#xe61c;</i
-                    >
-                    <input
-                      placeholder="用户名"
-                      type="text"
-                      id="user"
-                      v-model="registerForm.username"
-                    />
-                    <div
-                      class="err_msg"
-                      id="user_err"
-                      v-html="usernameInvalid"
-                      @mouseover="usernameInvalid = ''"
-                    ></div>
+                    <i class="iconfont" style="position: absolute; bottom: 375px; padding-left: 10px">&#xe61c;</i>
+                    <input placeholder="用户名" type="text" id="user" v-model="registerForm.username" />
+                    <div class="err_msg" id="user_err" v-html="usernameInvalid" @mouseover="usernameInvalid = ''"></div>
                   </div>
                   <div class="form-input-div">
-                    <i
-                      class="iconfont"
-                      style="
-                        position: absolute;
-                        bottom: 312px;
-                        padding-left: 10px;
-                      "
-                      >&#xe652;</i
-                    >
-                    <input
-                      placeholder="密码"
-                      type="password"
-                      id="pwd"
-                      v-model="registerForm.password"
-                    />
-                    <div
-                      class="err_msg"
-                      id="pwd_err"
-                      v-html="passwordInvalid"
-                      @mouseover="passwordInvalid = ''"
-                    ></div>
+                    <i class="iconfont" style="position: absolute; bottom: 312px; padding-left: 10px">&#xe652;</i>
+                    <input placeholder="密码" type="password" id="pwd" v-model="registerForm.password" />
+                    <div class="err_msg" id="pwd_err" v-html="passwordInvalid" @mouseover="passwordInvalid = ''"></div>
                   </div>
                   <div class="form-input-div">
-                    <i
-                      class="iconfont"
-                      style="
-                        position: absolute;
-                        bottom: 250px;
-                        padding-left: 10px;
-                      "
-                      >&#xe652;</i
-                    >
-                    <input
-                      placeholder="确认密码"
-                      type="password"
-                      id="repwd"
-                      v-model="registerForm.repwd"
-                    />
-                    <div
-                      class="err_msg"
-                      id="repwd_err"
-                      v-html="repwdInvalid"
-                      @mouseover="repwdInvalid = ''"
-                    ></div>
+                    <i class="iconfont" style="position: absolute; bottom: 250px; padding-left: 10px">&#xe652;</i>
+                    <input placeholder="确认密码" type="password" id="repwd" v-model="registerForm.repwd" />
+                    <div class="err_msg" id="repwd_err" v-html="repwdInvalid" @mouseover="repwdInvalid = ''"></div>
                   </div>
                   <div class="form-input-div">
-                    <i
-                      class="iconfont"
-                      style="
-                        position: absolute;
-                        bottom: 190px;
-                        padding-left: 10px;
-                      "
-                      >&#xe668;</i
-                    >
-                    <input
-                      placeholder="邮箱"
-                      type="email"
-                      id="email"
-                      v-model="registerForm.email"
-                    />
-                    <div
-                      class="err_msg"
-                      id="email_err"
-                      v-html="emailInvalid"
-                      @mouseover="emailInvalid = ''"
-                    ></div>
+                    <i class="iconfont" style="position: absolute; bottom: 190px; padding-left: 10px">&#xe668;</i>
+                    <input placeholder="邮箱" type="email" id="email" v-model="registerForm.email" />
+                    <div class="err_msg" id="email_err" v-html="emailInvalid" @mouseover="emailInvalid = ''"></div>
                   </div>
                   <div class="form-submit">
-                    <button
-                      type="button"
-                      class="btn btn-primary"
-                      id="submitBtn"
-                      @click="submitForm"
-                    >
-                      立即注册
-                    </button>
+                    <button type="button" class="btn btn-primary" id="submitBtn" @click="submitForm">立即注册</button>
                   </div>
                 </div>
                 <div class="form-foot">
-                  <span
-                    >已有账户，<router-link to="/fastrunner/login"
-                      >立即登陆</router-link
-                    ></span
-                  >
+                  <span>已有账户，<router-link to="/fastrunner/login">立即登陆</router-link></span>
                 </div>
               </div>
             </form>
@@ -190,8 +107,7 @@ export default {
     },
 
     validateEmail() {
-      const ePattern =
-        /^([A-Za-z0-9_\-.])+@([A-Za-z0-9_\-.])+\.([A-Za-z]{2,4})$/;
+      const ePattern = /^([A-Za-z0-9_\-.])+@([A-Za-z0-9_\-.])+\.([A-Za-z]{2,4})$/;
       if (!ePattern.test(this.registerForm.email)) {
         this.emailInvalid = "邮箱格式不正确";
         return false;
@@ -211,12 +127,7 @@ export default {
       }
     },
     submitForm() {
-      if (
-        this.validateUser() &&
-        this.validatePassword() &&
-        this.validateRepwd() &&
-        this.validateEmail()
-      ) {
+      if (this.validateUser() && this.validatePassword() && this.validateRepwd() && this.validateEmail()) {
         this.$api.register(this.registerForm).then((resp) => {
           this.handleRegisterSuccess(resp);
         });

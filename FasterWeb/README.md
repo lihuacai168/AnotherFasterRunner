@@ -25,6 +25,7 @@ pnpm dev
 ### Compile and Minify for Production
 
 ```sh
+export NODE_OPTIONS="--max-old-space-size=2048"
 pnpm build
 ```
 

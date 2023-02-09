@@ -3,7 +3,7 @@
     <el-header style="padding-top: 8px; padding-left: 10px; height: 50px">
       <el-row :gutter="30"
         ><el-col :span="6">
-          <el-input placeholder="请输入配置名称" clearable v-model="search" size="medium">
+          <el-input placeholder="请输入配置名称" clearable v-model="search" size="small">
             <el-button slot="append" icon="el-icon-search" @click="getConfigList"></el-button>
           </el-input> </el-col
       ></el-row>

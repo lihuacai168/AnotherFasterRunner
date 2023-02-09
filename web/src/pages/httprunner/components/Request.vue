@@ -20,13 +20,13 @@
         <!--Request params-->
         <el-table-column label="请求Key">
           <template v-slot="scope">
-            <el-input clearable size="medium" v-model="scope.row.key" placeholder="Key"></el-input>
+            <el-input clearable size="small" v-model="scope.row.key" placeholder="Key"></el-input>
           </template>
         </el-table-column>
         <!--Request 表单-->
         <el-table-column v-if="dataType === 'data'" label="类型" width="120">
           <template v-slot="scope">
-            <el-select v-model="scope.row.type" size="medium">
+            <el-select v-model="scope.row.type" size="small">
               <el-option v-for="item in dataTypeOptions" :key="item.value" :label="item.label" :value="item.value">
               </el-option>
             </el-select>
@@ -35,7 +35,13 @@
 
         <el-table-column label="请求Value">
           <template v-slot="scope">
-            <el-input v-show="scope.row.type !== 5" clearable v-model="scope.row.value" placeholder="Value"></el-input>
+            <el-input
+              v-show="scope.row.type !== 5"
+              clearable
+              v-model="scope.row.value"
+              size="small"
+              placeholder="Value"
+            ></el-input>
 
             <el-row v-show="scope.row.type === 5">
               <el-col :span="7">
@@ -63,23 +69,24 @@
 
         <el-table-column label="描述" width="200">
           <template v-slot="scope">
-            <el-input clearable v-model="scope.row.desc" placeholder="参数简要描述"></el-input>
+            <el-input clearable v-model="scope.row.desc" size="small" placeholder="参数简要描述"></el-input>
           </template>
         </el-table-column>
 
         <el-table-column>
           <template v-slot="scope">
-            <el-row v-show="scope.row === currentRow">
+            <el-row v-show="true">
               <el-button
                 icon="el-icon-circle-plus-outline"
                 size="mini"
-                type="info"
+                circle
                 @click="handleEdit(scope.$index, scope.row)"
               >
               </el-button>
               <el-button
                 icon="el-icon-document-copy"
                 size="mini"
+                circle
                 type="info"
                 @click="handleCopy(scope.$index, scope.row)"
               >
@@ -87,6 +94,7 @@
               <el-button
                 icon="el-icon-delete"
                 size="mini"
+                circle
                 type="danger"
                 v-show="scope.$index !== 0"
                 @click="handleDelete(scope.$index, scope.row)"
@@ -163,7 +171,7 @@ export default {
       dataOptions: [
         { label: "data", value: "表单" },
         { label: "json", value: "json" },
-        { label: "params", value: "params"}
+        { label: "params", value: "params" }
       ],
       dataType: "json",
       timeStamp: ""
