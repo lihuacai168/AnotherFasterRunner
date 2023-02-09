@@ -10,7 +10,7 @@
 <template>
   <div>
     <el-table
-      size="medium"
+      size="small"
       :data="tableData"
       :stripe="true"
       :border="false"

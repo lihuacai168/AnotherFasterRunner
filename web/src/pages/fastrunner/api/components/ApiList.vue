@@ -8,19 +8,18 @@
         <div class="recordapi__header--item">
           <el-input
             placeholder="请输入接口名称"
-            size="medium"
+            size="small"
             clearable
             v-model="search"
             @keyup.enter.native="getAPIList"
-            style="min-width: 100px"
           >
             <el-button slot="append" icon="el-icon-search" @click="getAPIList"></el-button>
           </el-input>
         </div>
-        <el-button type="primary" size="medium" @click="resetSearch">重置 </el-button>
+        <el-button type="primary" size="small" @click="resetSearch">重置 </el-button>
         <div class="recordapi__header--item">
           <el-dropdown @command="tagChangeHandle">
-            <el-button type="primary" size="medium">状态<i class="el-icon-arrow-down"></i> </el-button>
+            <el-button type="primary" size="small">状态<i class="el-icon-arrow-down"></i> </el-button>
             <el-dropdown-menu slot="dropdown">
               <el-dropdown-item command="1">成功</el-dropdown-item>
               <el-dropdown-item command="0">未知</el-dropdown-item>
@@ -31,7 +30,7 @@
           </el-dropdown>
           <el-dropdown @command="dropdownMenuChangeHandle">
             <!--                  <span><i class="el-icon-more">选中操作</i></span>-->
-            <el-button type="info" size="medium">操作<i class="el-icon-more"></i></el-button>
+            <el-button type="info" size="small">操作<i class="el-icon-more"></i></el-button>
             <el-dropdown-menu slot="dropdown">
               <el-dropdown-item disabled style="background-color: #e2e2e2"
                 >选中({{ selectAPI.length }} 条)</el-dropdown-item
@@ -110,7 +109,7 @@
             <el-input
               placeholder="输入节点名称进行过滤"
               v-model="filterText"
-              size="medium"
+              size="small"
               clearable
               prefix-icon="el-icon-search"
             >
@@ -145,7 +144,7 @@
             <el-input
               placeholder="输入节点名称进行过滤"
               v-model="filterText"
-              size="medium"
+              size="small"
               clearable
               prefix-icon="el-icon-search"
             >
@@ -163,7 +162,7 @@
               ref="tree"
             >
               <span class="custom-tree-node" slot-scope="{ node, data }">
-                <span><i class="iconfont" v-html="expand"></i>&nbsp&nbsp{{ node.label }}</span>
+                <span><i class="iconfont" v-html="expand"></i>&nbsp;&nbsp;{{ node.label }}</span>
               </span>
             </el-tree>
           </div>
@@ -176,6 +175,7 @@
 
       <el-table
         highlight-current-row
+        size="small"
         element-loading-text="正在玩命加载"
         ref="multipleTable"
         :data="apiData.results"
@@ -186,8 +186,8 @@
         }"
         @cell-mouse-enter="cellMouseEnter"
         @cell-mouse-leave="cellMouseLeave"
-        style="width: 100%"
-        height="600"
+        style="width: 100%; height: auto"
+        max-height="900"
         @selection-change="handleSelectionChange"
         v-loading="loading"
       >
@@ -244,6 +244,7 @@
                   YAPI
                 </span>
               </div>
+              <span class="block-summary-description">{{ scope.row.relation_name }}</span>
               <span class="block-method block_url">{{ scope.row.url }}</span>
               <span class="block-summary-description">{{ scope.row.name }}</span>
               <div>

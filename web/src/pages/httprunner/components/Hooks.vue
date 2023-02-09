@@ -3,6 +3,7 @@
     highlight-current-row
     :cell-style="{ paddingTop: '4px', paddingBottom: '4px' }"
     strpe
+    size="small"
     :height="height"
     :data="tableData"
     style="width: 100%"
@@ -13,6 +14,7 @@
       <template v-slot="scope">
         <el-input
           clearable
+          size="small"
           v-model="scope.row.setup"
           placeholder="${ setup_hooks function($request, *args, **kwargs) }"
         >
@@ -24,6 +26,7 @@
       <template v-slot="scope">
         <el-input
           clearable
+          size="small"
           v-model="scope.row.teardown"
           placeholder="${ teardown_hooks function(response, *args, **kwargs) }"
         >
@@ -33,10 +36,11 @@
 
     <el-table-column width="120">
       <template v-slot="scope">
-        <el-row v-show="scope.row === currentRow">
+        <el-row v-show="true">
           <el-button
             icon="el-icon-circle-plus-outline"
             size="mini"
+            circle
             type="info"
             @click="handleEdit(scope.$index, scope.row)"
           >
@@ -45,6 +49,7 @@
           <el-button
             icon="el-icon-delete"
             size="mini"
+            circle
             style="margin-left: 0"
             type="danger"
             v-show="scope.$index !== 0"

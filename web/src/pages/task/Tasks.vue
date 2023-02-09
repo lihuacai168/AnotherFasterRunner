@@ -25,7 +25,7 @@
         <div>
           <el-input
             placeholder="请输入任务名称"
-            size="medium"
+            size="small"
             clearable
             v-model="searchTaskName"
             @keyup.enter.native="getTaskList"
@@ -36,7 +36,7 @@
           <span style="margin-left: 10px">创建人: </span>
           <el-select
             v-model="selectUser"
-            size="medium"
+            size="small"
             placeholder="请选择创建人"
             filterable
             :style="{ width: '120px' }"
@@ -49,7 +49,7 @@
               :disabled="item.disabled"
             ></el-option>
           </el-select>
-          <el-button type="primary" @click="resetSearch" size="medium">重置</el-button>
+          <el-button type="primary" @click="resetSearch" size="small">重置</el-button>
         </div>
       </div>
     </el-header>

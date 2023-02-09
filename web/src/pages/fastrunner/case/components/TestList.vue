@@ -5,7 +5,7 @@
         <div v-if="testData.count >= 0">
           <el-input
             placeholder="请输入用例名称"
-            size="medium"
+            size="small"
             clearable
             v-model="search"
             @keyup.enter.native="getTestList"
@@ -22,7 +22,7 @@
 
         <div style="margin: 0 5px">
           <el-dropdown @command="caseTypeChangeHandle">
-            <el-button size="medium" type="primary"
+            <el-button size="small" type="primary"
               >类型
               <i class="el-icon-arrow-down el-icon--right"></i>
             </el-button>
@@ -36,12 +36,12 @@
           </el-dropdown>
         </div>
         <div>
-          <el-button type="primary" size="medium" @click="resetSearch">重置 </el-button>
+          <el-button type="primary" size="small" @click="resetSearch">重置 </el-button>
         </div>
         <div style="margin: 0 5px">
           <el-dropdown @command="dropdownMenuChangeHandle">
             <!--                        <span><i class="el-icon-more"></i></span>-->
-            <el-button type="info" size="medium"
+            <el-button type="info" size="small"
               >操作
               <i class="el-icon-more el-icon--right"></i>
             </el-button>

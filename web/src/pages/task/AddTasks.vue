@@ -6,14 +6,14 @@
           <el-col :span="12">
             <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px">
               <el-form-item label="任务名称" prop="name">
-                <el-input v-model="ruleForm.name" size="medium" placeholder="请输入任务名称" clearable=""></el-input>
+                <el-input v-model="ruleForm.name" size="small" placeholder="请输入任务名称" clearable=""></el-input>
               </el-form-item>
 
               <el-form-item label="时间配置" prop="crontab">
                 <el-input
                   clearable
                   v-model="ruleForm.crontab"
-                  size="medium"
+                  size="small"
                   placeholder="请输入cortab表达式，例如 2 12 * * *"
                 ></el-input>
               </el-form-item>
@@ -21,7 +21,7 @@
               <el-form-item label="运行配置" prop="config">
                 <el-select
                   placeholder="请选择"
-                  size="medium"
+                  size="small"
                   tyle="margin-left: -6px"
                   v-model="ruleForm.config"
                   value-key="id"
@@ -40,7 +40,7 @@
               <el-form-item label="CI环境" prop="ci_env">
                 <el-select
                   placeholder="请选择"
-                  size="medium"
+                  size="small"
                   tyle="margin-left: -6px"
                   v-model="ruleForm.ci_env"
                   value-key="id"
@@ -56,7 +56,7 @@
               <el-form-item label="Gitlab项目id" prop="ci_project_ids">
                 <el-input
                   clearable
-                  size="medium"
+                  size="small"
                   v-model="ruleForm.ci_project_ids"
                   placeholder="请输入Gitlab项目id,多个用逗号分隔，例如: 1,2"
                 ></el-input>
@@ -108,8 +108,8 @@
               </el-form-item>
 
               <el-form-item>
-                <el-button type="primary" @click="submitForm('ruleForm')">下一步</el-button>
-                <el-button @click="resetForm('ruleForm')">重置</el-button>
+                <el-button size="small" type="primary" @click="submitForm('ruleForm')">下一步</el-button>
+                <el-button size="small" @click="resetForm('ruleForm')">重置</el-button>
               </el-form-item>
             </el-form>
           </el-col>
@@ -164,8 +164,8 @@
               </el-pagination>
             </el-col>
             <el-col :span="12">
-              <el-button type="success" v-if="testData.length > 0" @click="saveTask" size="medium">保存</el-button>
-              <el-button v-if="testData.length > 0" @click="next = false" size="medium">上一步</el-button>
+              <el-button type="success" v-if="testData.length > 0" @click="saveTask" size="small">保存</el-button>
+              <el-button v-if="testData.length > 0" @click="next = false" size="small">上一步</el-button>
             </el-col>
           </el-row>
         </div>

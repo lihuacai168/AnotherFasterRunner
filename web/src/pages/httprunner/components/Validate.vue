@@ -9,9 +9,9 @@
     @cell-mouse-enter="cellMouseEnter"
     @cell-mouse-leave="cellMouseLeave"
   >
-    <el-table-column label="实际返回值">
+    <el-table-column label="实际返回值" width="180">
       <template v-slot="scope">
-        <el-input clearable v-model.trim="scope.row.actual" placeholder="实际返回值" size="medium"></el-input>
+        <el-input clearable v-model.trim="scope.row.actual" placeholder="实际返回值" size="small"></el-input>
       </template>
     </el-table-column>
 
@@ -24,7 +24,7 @@
           placement="bottom"
           :disabled="scope.row.comparator === '' ? 'disabled' : false"
         >
-          <el-autocomplete size="medium" clearable v-model="scope.row.comparator" :fetch-suggestions="querySearch">
+          <el-autocomplete size="small" clearable v-model="scope.row.comparator" :fetch-suggestions="querySearch">
           </el-autocomplete>
         </el-tooltip>
       </template>
@@ -32,7 +32,7 @@
 
     <el-table-column label="期望类型" width="120">
       <template v-slot="scope">
-        <el-select v-model="scope.row.type" size="medium">
+        <el-select v-model="scope.row.type" size="small">
           <el-option v-for="item in dataTypeOptions" :key="item.value" :label="item.label" :value="item.value">
           </el-option>
         </el-select>
@@ -45,7 +45,7 @@
           clearable
           v-model.trim="scope.row.expect === null ? 'None' : scope.row.expect"
           placeholder="期望返回值"
-          size="medium"
+          size="small"
         >
         </el-input>
       </template>
@@ -57,7 +57,7 @@
           clearable
           v-model.trim="scope.row.desc === null ? 'None' : scope.row.desc"
           placeholder="断言描述"
-          size="medium"
+          size="small"
         >
         </el-input>
       </template>
@@ -65,18 +65,19 @@
 
     <el-table-column width="160">
       <template v-slot="scope">
-        <el-row v-show="scope.row === currentRow">
+        <el-row v-show="true">
           <el-button
             icon="el-icon-circle-plus-outline"
             size="mini"
+            circle
             style="margin-left: 0"
-            type="info"
             @click="handleEdit(scope.$index, scope.row)"
           >
           </el-button>
           <el-button
             icon="el-icon-document-copy"
             size="mini"
+            circle
             style="margin-left: 0"
             type="info"
             title="复制断言"
@@ -86,6 +87,7 @@
           <el-button
             icon="el-icon-delete"
             size="mini"
+            circle
             style="margin-left: 0"
             type="danger"
             v-show="scope.$index !== 0"

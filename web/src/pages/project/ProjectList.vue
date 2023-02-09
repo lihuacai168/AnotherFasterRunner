@@ -87,8 +87,8 @@
           </el-form-item>
         </el-form>
         <span slot="footer" class="dialog-footer">
-          <el-button @click="closeAddDialog">取 消</el-button>
-          <el-button type="primary" @click="handleConfirm('projectForm')">确 定</el-button>
+          <el-button size="small" @click="closeAddDialog">取 消</el-button>
+          <el-button size="small" type="primary" @click="handleConfirm('projectForm')">确 定</el-button>
         </span>
       </el-dialog>
     </div>
@@ -196,8 +196,8 @@
                 </el-form-item>
               </el-form>
               <span slot="footer" class="dialog-footer">
-                <el-button size="medium" @click="closeEditDialog">取 消</el-button>
-                <el-button size="medium" type="primary" @click="handleConfirm('projectForm')">确 定</el-button>
+                <el-button size="small" @click="closeEditDialog">取 消</el-button>
+                <el-button size="small" type="primary" @click="handleConfirm('projectForm')">确 定</el-button>
               </span>
             </el-dialog>
             <el-button

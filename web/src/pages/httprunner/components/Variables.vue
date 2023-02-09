@@ -9,15 +9,15 @@
     @cell-mouse-enter="cellMouseEnter"
     @cell-mouse-leave="cellMouseLeave"
   >
-    <el-table-column label="变量名">
+    <el-table-column label="变量名" width="150">
       <template v-slot="scope">
-        <el-input clearable v-model="scope.row.key" placeholder="Key" size="medium"></el-input>
+        <el-input clearable v-model="scope.row.key" placeholder="Key" size="small"></el-input>
       </template>
     </el-table-column>
 
     <el-table-column label="类型" width="120">
       <template v-slot="scope">
-        <el-select v-model="scope.row.type" size="medium">
+        <el-select v-model="scope.row.type" size="small">
           <el-option v-for="item in dataTypeOptions" :key="item.value" :label="item.label" :value="item.value">
           </el-option>
         </el-select>
@@ -26,23 +26,23 @@
 
     <el-table-column label="变量值">
       <template v-slot="scope">
-        <el-input clearable v-model="scope.row.value" placeholder="Value" size="medium"></el-input>
+        <el-input clearable v-model="scope.row.value" placeholder="Value" size="small"></el-input>
       </template>
     </el-table-column>
 
     <el-table-column label="内容">
       <template v-slot="scope">
-        <el-input clearable v-model="scope.row.desc" placeholder="变量简要描述" size="medium"></el-input>
+        <el-input clearable v-model="scope.row.desc" placeholder="变量简要描述" size="small"></el-input>
       </template>
     </el-table-column>
 
     <el-table-column width="160">
       <template v-slot="scope">
-        <el-row v-show="scope.row === currentRow">
+        <el-row v-show="true">
           <el-button
             icon="el-icon-circle-plus-outline"
             size="mini"
-            type="info"
+            circle
             title="增加变量"
             @click="handleEdit(scope.$index, scope.row)"
           >
@@ -50,6 +50,7 @@
           <el-button
             icon="el-icon-document-copy"
             size="mini"
+            circle
             style="margin-left: 0"
             type="info"
             title="复制变量"
@@ -59,6 +60,7 @@
           <el-button
             icon="el-icon-delete"
             size="mini"
+            circle
             style="margin-left: 0"
             type="danger"
             title="删除变量"

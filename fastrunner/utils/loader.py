@@ -250,8 +250,8 @@ def parse_tests(testcases, debugtalk, name=None, config=None, project=None):
 
 
 def load_debugtalk(project):
-    """import debugtalk.py in sys. path and reload
-        project: int
+    """
+    import debugtalk.py in sys. path and reload project: int
     """
     # debugtalk.py
     code = models.Debugtalk.objects.get(project__id=project).code
@@ -272,7 +272,8 @@ def load_debugtalk(project):
 
 
 def merge_parallel_result(results: list, duration):
-    """合并并行的结果，保持和串行运行结果一样
+    """
+    合并并行的结果，保持和串行运行结果一样
     """
     base_result: dict = results.pop()
     for result in results:
@@ -320,11 +321,11 @@ def debug_suite_parallel(test_sets: list):
 def debug_suite(suite, project, obj, config=None, save=True, user='',
                 report_type=1, report_name="", allow_parallel=False):
     """
-            suite : list[list[dict]], 用例列表
-            project: int, 项目id
-            obj: dict {'case_id': int 'case_name': str}, 用例的名称和id
-            config: list[dict], 每个用例运行的配置
-            report_type: int, 默认类型是调试
+    suite : list[list[dict]], 用例列表
+    project: int, 项目id
+    obj: dict {'case_id': int 'case_name': str}, 用例的名称和id
+    config: list[dict], 每个用例运行的配置
+    report_type: int, 默认类型是调试
     """
     if len(suite) == 0:
         return TEST_NOT_EXISTS

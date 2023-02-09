@@ -9,37 +9,38 @@
     @cell-mouse-leave="cellMouseLeave"
     :cell-style="{ paddingTop: '4px', paddingBottom: '4px' }"
   >
-    <el-table-column label="变量名">
+    <el-table-column label="变量名" width="160">
       <template v-slot="scope">
-        <el-input clearable v-model.trim="scope.row.key" placeholder="接收抽取值后的变量名" size="medium"></el-input>
+        <el-input clearable v-model.trim="scope.row.key" placeholder="接收抽取值后的变量名" size="small"></el-input>
       </template>
     </el-table-column>
     <el-table-column label="抽取表达式">
       <template v-slot="scope">
-        <el-input clearable v-model.trim="scope.row.value" placeholder="抽取表达式" size="medium"></el-input>
+        <el-input clearable v-model.trim="scope.row.value" placeholder="抽取表达式" size="small"></el-input>
       </template>
     </el-table-column>
 
     <el-table-column label="描述" width="160">
       <template v-slot="scope">
-        <el-input clearable v-model="scope.row.desc" placeholder="抽取值简要描述" size="medium"></el-input>
+        <el-input clearable v-model="scope.row.desc" placeholder="抽取值简要描述" size="small"></el-input>
       </template>
     </el-table-column>
 
     <el-table-column width="160">
       <template v-slot="scope">
-        <el-row v-show="scope.row === currentRow">
+        <el-row v-show="true">
           <el-button
             icon="el-icon-circle-plus-outline"
             size="mini"
+            circle
             style="margin-left: 0"
-            type="info"
             @click="handleEdit(scope.$index, scope.row)"
           >
           </el-button>
           <el-button
             icon="el-icon-document-copy"
             size="mini"
+            circle
             style="margin-left: 0"
             type="info"
             @click="handleCopy(scope.$index, scope.row)"
@@ -48,6 +49,7 @@
           <el-button
             icon="el-icon-delete"
             size="mini"
+            circle
             style="margin-left: 0"
             type="danger"
             v-show="scope.$index !== 0"
