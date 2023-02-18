@@ -1,4 +1,28 @@
 version: '3.8'
+
+x-env: &env
+  # db
+  MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+  MYSQL_DATABASE: ${MYSQL_DATABASE}
+  MYSQL_USER: ${MYSQL_USER}
+  MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+  # mq
+  RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
+  RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
+  MQ_PORT: ${MQ_PORT}
+  MQ_HOST: ${MQ_HOST:-mq}
+  MQ_ADMIN_PORT: ${MQ_ADMIN_PORT}
+
+  # celery-worker
+  SERVER_IP: ${SERVER_IP}
+  DJANGO_API_PORT: ${DJANGO_API_PORT}
+
+  # app
+  EMAIL_HOST: ${EMAIL_HOST}
+  EMAIL_PORT: ${EMAIL_PORT}
+  EMAIL_HOST_USER: ${EMAIL_HOST_USER}
+  EMAIL_HOST_PASSWORD: ${EMAIL_HOST_PASSWORD}
+
 services:
   db:
     #image: mysql:8.0.21
@@ -6,10 +30,7 @@ services:
     # privileged: true
     environment:
       # 设置默认数据库和root默认密码,如果宿主机中/var/lib/mysql已经存在,这两个设置都不会生效
-      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
-      - MYSQL_USER=${MYSQL_USER}
-      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
-      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      <<: *env
     volumes:
 #      - "/var/lib/mysql:/var/lib/mysql" # 挂载宿主机的mysql数据到docker中
       - ./db/my.cnf:/etc/mysql/mysql.conf.d/mysqld.cnf
@@ -27,14 +48,7 @@ services:
       context: .
       dockerfile: Dockerfile
     environment:
-#      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
-      - MYSQL_USER=${MYSQL_USER}
-      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
-      - MYSQL_DATABASE=${MYSQL_DATABASE}
-      - RABBITMQ_DEFAULT_USER=${RABBITMQ_DEFAULT_USER}
-      - RABBITMQ_DEFAULT_PASS=${RABBITMQ_DEFAULT_PASS}
-      - MQ_PORT=${MQ_PORT}
-      - SENTRY_DSN=${SENTRY_DSN}
+      <<: *env
     entrypoint: /app/start.sh
     command: "app"
     depends_on:
@@ -46,14 +60,7 @@ services:
       context: .
       dockerfile: Dockerfile
     environment:
-      - MYSQL_USER=${MYSQL_USER}
-      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
-      - MYSQL_DATABASE=${MYSQL_DATABASE}
-      - RABBITMQ_DEFAULT_USER=${RABBITMQ_DEFAULT_USER}
-      - RABBITMQ_DEFAULT_PASS=${RABBITMQ_DEFAULT_PASS}
-      - MQ_PORT=${MQ_PORT}
-      - SERVER_IP=${SERVER_IP}
-      - DJANGO_API_PORT=${DJANGO_API_PORT}
+      <<: *env
     entrypoint: /app/start.sh
     command: "celery-worker"
     restart: always
@@ -66,12 +73,7 @@ services:
       context: .
       dockerfile: Dockerfile
     environment:
-      - MYSQL_USER=${MYSQL_USER}
-      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
-      - MYSQL_DATABASE=${MYSQL_DATABASE}
-      - RABBITMQ_DEFAULT_USER=${RABBITMQ_DEFAULT_USER}
-      - RABBITMQ_DEFAULT_PASS=${RABBITMQ_DEFAULT_PASS}
-      - MQ_PORT=${MQ_PORT}
+      <<: *env
     entrypoint: /app/start.sh
     command: "celery-beat"
     restart: always
@@ -88,11 +90,7 @@ services:
       - app
     restart: always
     environment:
-      - MYSQL_USER=${MYSQL_USER}
-      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
-      - MYSQL_DATABASE=${MYSQL_DATABASE}
-
-
+      <<: *env
   web:
     build:
       context: ./web
@@ -109,9 +107,7 @@ services:
   mq:
     image: rabbitmq:management-alpine
     environment:
-      - RABBITMQ_DEFAULT_USER=${RABBITMQ_DEFAULT_USER}
-      - RABBITMQ_DEFAULT_PASS=${RABBITMQ_DEFAULT_PASS}
-      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      <<: *env
     restart: always
     ports:
       - "${MQ_ADMIN_PORT}:15672"

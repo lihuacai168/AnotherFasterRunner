@@ -15,11 +15,19 @@ service := $(word 1,$(MAKECMDGOALS))
 up:
 	$(cmd) up -d  --build --remove-orphans
 	$(cmd) restart nginx
+	$(cmd) restart web
+
+.PHONY: up-no-build
+up-no-build:
+	$(cmd) up -d --remove-orphans
+	$(cmd) restart nginx
+	$(cmd) restart web
 
 .PHONY: up-tag
 up-tag:
 	export TAG=$(tag); $(cmd) up -d  --build --remove-orphans
 	$(cmd) restart nginx
+	$(cmd) restart web
 
 
 .PHONY: down

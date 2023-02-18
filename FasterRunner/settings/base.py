@@ -59,6 +59,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    "fastrunner.utils.middleware.ExceptionMiddleware",
     "django.middleware.gzip.GZipMiddleware",
     "log_request_id.middleware.RequestIDMiddleware",
     "django.middleware.security.SecurityMiddleware",
@@ -270,6 +271,16 @@ LOGGING = {
             "formatter": "color",
             "filters": ["request_id"],
         },
+        "error": {
+            "level": "ERROR",
+            "class": "logging.handlers.RotatingFileHandler",
+            # 'filename': os.path.join(BASE_DIR, 'logs/../../logs/debug.log'),
+            "filename": os.path.join(BASE_DIR, "logs/error.log"),
+            "maxBytes": 1024 * 1024 * 50,
+            "backupCount": 5,
+            "formatter": "color",
+            "filters": ["request_id"],
+        },
         "console": {
             "level": "DEBUG",
             "class": "logging.StreamHandler",
@@ -279,17 +290,17 @@ LOGGING = {
     },
     "loggers": {
         "django": {
-            "handlers": ["default", "console"],
+            "handlers": ["default", "console", "error"],
             "level": "INFO",
             "propagate": True,
         },
         "fastrunner": {
-            "handlers": ["default", "console"],
+            "handlers": ["default", "console", "error"],
             "level": "INFO",
             "propagate": True,
         },
         "httprunner": {
-            "handlers": ["default", "console"],
+            "handlers": ["default", "console", "error"],
             "level": "INFO",
             "propagate": True,
         },
@@ -302,3 +313,12 @@ REQUEST_ID_RESPONSE_HEADER = "RESPONSE_HEADER_NAME"
 
 # https://github.com/celery/celery/issues/4796
 DJANGO_CELERY_BEAT_TZ_AWARE = False
+
+
+# 邮箱配置
+EMAIL_USE_SSL = True
+EMAIL_HOST = os.environ.get("EMAIL_HOST", "smtp.qq.com")  # 如果是 163 改成 smtp.163.com
+EMAIL_PORT = os.environ.get("EMAIL_PORT", 465)  # 默认是qq邮箱端口
+EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER")  # 配置邮箱
+EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD")  # 对应的授权码
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
