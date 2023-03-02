@@ -52,7 +52,7 @@ class ScheduleView(GenericViewSet):
             copy: str
             project: int
         }
-        """
+    """
         re_gx = '(@(annually|yearly|monthly|weekly|daily|hourly|reboot))|(@every (\d+(ns|us|µs|ms|s|m|h))+)|((((\d+,)+\d+|(\d+(\/|-)\d+)|\d+|\*) ?){5,7})'
         ser = serializers.ScheduleDeSerializer(data=request.data)
         if ser.is_valid():
