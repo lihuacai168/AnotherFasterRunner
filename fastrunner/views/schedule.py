@@ -1,5 +1,7 @@
 import json
 
+import croniter
+
 from django.utils.decorators import method_decorator
 from django_celery_beat import models
 from rest_framework.viewsets import GenericViewSet
@@ -20,6 +22,15 @@ class ScheduleView(GenericViewSet):
     queryset = models.PeriodicTask.objects
     serializer_class = serializers.PeriodicTaskSerializer
     pagination_class = pagination.MyPageNumberPagination
+
+    @staticmethod
+    def check_crontab_expr(expr: str) -> bool:
+        try:
+            # check crontab
+            croniter.croniter(expr)
+        except (croniter.CroniterNotAlphaError, croniter.CroniterBadCronError, croniter.CroniterBadDateError):
+            return False
+        return True
 
     @method_decorator(request_log(level="DEBUG"))
     def list(self, request):
@@ -53,14 +64,11 @@ class ScheduleView(GenericViewSet):
             project: int
         }
     """
-        re_gx = '(@(annually|yearly|monthly|weekly|daily|hourly|reboot))|(@every (\d+(ns|us|µs|ms|s|m|h))+)|((((\d+,)+\d+|(\d+(\/|-)\d+)|\d+|\*) ?){5,7})'
-        re_gx = '(@(annually|yearly|monthly|weekly|daily|hourly|reboot))|(@every (\d+(ns|us|µs|ms|s|m|h))+)|((((\d+,)+\d+|(\d+(\/|-)\d+)|\d+|\*) ?){5,7})'
         ser = serializers.ScheduleDeSerializer(data=request.data)
         if ser.is_valid():
+            if not self.check_crontab_expr(request.data.get("crontab")):
+                return Response({"code": "0101", "success": False, "msg": f"{request.data.get('crontab')}, 不合法的定时任务表达式"})
             request.data.update({"creator": request.user.username})
-            match = re.match(re_gx, request.data.get("crontab"))
-            if match is None:
-                return Response({"code": "0101", "success": False, "msg": "定时任务表达式不符合规范"})
             task = Task(**request.data)
             resp = task.add_task()
             return Response(resp)
@@ -91,11 +99,9 @@ class ScheduleView(GenericViewSet):
         :return:
         """
         ser = serializers.ScheduleDeSerializer(data=request.data)
-        re_gx = '(@(annually|yearly|monthly|weekly|daily|hourly|reboot))|(@every (\d+(ns|us|µs|ms|s|m|h))+)|((((\d+,)+\d+|(\d+(\/|-)\d+)|\d+|\*) ?){5,7})'
         if ser.is_valid():
-            match = re.match(re_gx, request.data.get("crontab"))
-            if match is None:
-                return Response({"code": "0101", "success": False, "msg": "定时任务表达式不符合规范"})
+            if not self.check_crontab_expr(request.data.get("crontab")):
+                return Response({"code": "0101", "success": False, "msg": f"{request.data.get('crontab')}, 不合法的定时任务表达式"})
             task = Task(**request.data)
             resp = task.update_task(kwargs["pk"])
             return Response(resp)
