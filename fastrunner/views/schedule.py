@@ -54,6 +54,7 @@ class ScheduleView(GenericViewSet):
         }
     """
         re_gx = '(@(annually|yearly|monthly|weekly|daily|hourly|reboot))|(@every (\d+(ns|us|µs|ms|s|m|h))+)|((((\d+,)+\d+|(\d+(\/|-)\d+)|\d+|\*) ?){5,7})'
+        re_gx = '(@(annually|yearly|monthly|weekly|daily|hourly|reboot))|(@every (\d+(ns|us|µs|ms|s|m|h))+)|((((\d+,)+\d+|(\d+(\/|-)\d+)|\d+|\*) ?){5,7})'
         ser = serializers.ScheduleDeSerializer(data=request.data)
         if ser.is_valid():
             request.data.update({"creator": request.user.username})
@@ -90,7 +91,12 @@ class ScheduleView(GenericViewSet):
         :return:
         """
         ser = serializers.ScheduleDeSerializer(data=request.data)
+        re_gx = '(@(annually|yearly|monthly|weekly|daily|hourly|reboot))|(@every (\d+(ns|us|µs|ms|s|m|h))+)|((((\d+,)+\d+|(\d+(\/|-)\d+)|\d+|\*) ?){5,7})'
+
         if ser.is_valid():
+            match = re.match(re_gx, request.data.get("crontab"))
+            if match is None:
+                return Response({"code": "0101", "success": False, "msg": "定时任务表达式不符合规范"})
             task = Task(**request.data)
             resp = task.update_task(kwargs["pk"])
             return Response(resp)
