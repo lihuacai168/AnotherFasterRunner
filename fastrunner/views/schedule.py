@@ -59,7 +59,6 @@ class ScheduleView(GenericViewSet):
             request.data.update({"creator": request.user.username})
             match = re.match(re_gx, request.data.get("crontab"))
             if match is None:
-
                 return Response({"code": "0101", "success": False, "msg": "定时任务表达式不符合规范"})
             task = Task(**request.data)
             resp = task.add_task()
