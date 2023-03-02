@@ -28,7 +28,7 @@ class ScheduleView(GenericViewSet):
         try:
             # check crontab
             croniter.croniter(expr)
-        except croniter.CroniterError:
+        except (croniter.CroniterNotAlphaError, croniter.CroniterBadCronError, croniter.CroniterBadDateError):
             return False
         return True
 
