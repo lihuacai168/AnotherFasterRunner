@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <el-aside style="width: 240px; margin-top: 10px">
+  <el-container>
+    <el-aside style="width: 240px; margin-top: 5px">
       <div class="nav-api-side">
         <div class="api-tree">
           <el-input
@@ -30,7 +30,7 @@
       </div>
     </el-aside>
 
-    <el-main style="margin-left: 235px; padding-top: 0">
+    <el-main style="padding: 5px 10px 10px 5px">
       <el-row :gutter="5" v-if="!editTestStepActivate">
         <el-col :span="12">
           <div class="recordapi__header">
@@ -167,66 +167,61 @@
                   <div class="block block_test" v-if="test.body.method !== 'config'">
                     <span class="block-method block_method_test block_method_color">Step_{{ index }}</span>
                     <input class="block-test-name" v-model="test.body.name" />
+                    <el-row style="position: absolute; right: 5px; top: 4px" v-show="currentTest === index">
+                      <el-button
+                        type="info"
+                        icon="el-icon-edit"
+                        title="编辑"
+                        circle
+                        size="mini"
+                        @click="editTestStepActivate = true"
+                      >
+                      </el-button>
 
-                    <el-button
-                      style="position: absolute; right: 156px; top: 8px"
-                      v-show="currentTest === index"
-                      type="info"
-                      icon="el-icon-edit"
-                      title="编辑"
-                      circle
-                      size="mini"
-                      @click="editTestStepActivate = true"
-                    >
-                    </el-button>
+                      <el-button
+                        type="success"
+                        icon="el-icon-caret-right"
+                        circle
+                        size="mini"
+                        style="margin-left: 0"
+                        title="单个运行"
+                        @click="handleSingleRun()"
+                      >
+                      </el-button>
 
-                    <el-button
-                      style="position: absolute; right: 84px; top: 8px"
-                      v-show="currentTest === index"
-                      type="success"
-                      icon="el-icon-caret-right"
-                      circle
-                      size="mini"
-                      title="单个运行"
-                      @click="handleSingleRun()"
-                    >
-                    </el-button>
+                      <el-button
+                        type="primary"
+                        icon="el-icon-caret-right"
+                        circle
+                        size="mini"
+                        style="margin-left: 0"
+                        title="运行开始到当前位置的所有api"
+                        @click="handlePartialRun(index)"
+                      >
+                      </el-button>
 
-                    <el-button
-                      style="position: absolute; right: 48px; top: 8px"
-                      v-show="currentTest === index"
-                      type="primary"
-                      icon="el-icon-caret-right"
-                      circle
-                      size="mini"
-                      title="运行开始到当前位置的所有api"
-                      @click="handlePartialRun(index)"
-                    >
-                    </el-button>
+                      <el-button
+                        type="danger"
+                        icon="el-icon-document-copy"
+                        title="复制当前步骤"
+                        circle
+                        size="mini"
+                        style="margin-left: 0"
+                        @click="handleCopyStep(index)"
+                      >
+                      </el-button>
 
-                    <el-button
-                      style="position: absolute; right: 120px; top: 8px"
-                      v-show="currentTest === index"
-                      type="danger"
-                      icon="el-icon-document-copy"
-                      title="复制当前步骤"
-                      circle
-                      size="mini"
-                      @click="handleCopyStep(index)"
-                    >
-                    </el-button>
-
-                    <el-button
-                      style="position: absolute; right: 12px; top: 8px"
-                      v-show="currentTest === index"
-                      type="danger"
-                      icon="el-icon-delete"
-                      title="删除"
-                      circle
-                      size="mini"
-                      @click="testData.splice(index, 1)"
-                    >
-                    </el-button>
+                      <el-button
+                        type="danger"
+                        icon="el-icon-delete"
+                        title="删除"
+                        circle
+                        size="mini"
+                        style="margin-left: 0"
+                        @click="testData.splice(index, 1)"
+                      >
+                      </el-button>
+                    </el-row>
                   </div>
                 </div>
               </draggable>
@@ -258,7 +253,7 @@
       >
       </http-runner>
     </el-main>
-  </div>
+  </el-container>
 </template>
 
 <script>

@@ -27,6 +27,9 @@ class DingMessage:
                       '=16c4dbf613c5f1f288bbf695c1997ad41d37ad580d94ff1a0b7ceae6797bbc70 '
             # webhook = 'https://oapi.dingtalk.com/robot/send?access_token
             # =cb1ece248f594144a11bc0cf467ae4fd0f73beb3133f6a79b16d07ef23da0a59' # 调试机器人
+        else:
+            webhook = 'https://oapi.dingtalk.com/robot/send?access_token \
+            =cb1ece248f594144a11bc0cf467ae4fd0f73beb3133f6a79b16d07ef23da0a59' # 调试机器人
         self.robot = DingtalkChatbot(webhook)
 
     def send_ding_msg(self, summary, report_name=None):
@@ -57,7 +60,7 @@ class DingMessage:
 
 
 if __name__ == '__main__':
-    robot = DingMessage()
+    robot = DingMessage('deploy')
     summary = {
         'stat':{
             'testsRun': 2,

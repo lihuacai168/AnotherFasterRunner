@@ -4,18 +4,9 @@
       <el-main style="padding-top: 0">
         <div style="margin-top: 10px">
           <el-col :span="12">
-            <el-form
-              :model="ruleForm"
-              :rules="rules"
-              ref="ruleForm"
-              label-width="100px"
-            >
+            <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px">
               <el-form-item label="任务名称" prop="name">
-                <el-input
-                  v-model="ruleForm.name"
-                  placeholder="请输入任务名称"
-                  clearable=""
-                ></el-input>
+                <el-input v-model="ruleForm.name" placeholder="请输入任务名称" clearable=""></el-input>
               </el-form-item>
 
               <el-form-item label="时间配置" prop="crontab">
@@ -34,18 +25,12 @@
                   v-model="ruleForm.config"
                   value-key="id"
                 >
-                  <el-option
-                    v-for="item in configOptions"
-                    :key="item.id"
-                    :label="item.name"
-                    :value="item.name"
-                  >
+                  <el-option v-for="item in configOptions" :key="item.id" :label="item.name" :value="item.name">
                   </el-option>
                 </el-select>
                 <el-tooltip placement="top">
                   <div slot="content">
-                    指定任务运行的配置<br />请选择: 使用用例中的配置
-                    <br />选择其他配置: 当前选择配置覆盖用例中的配置
+                    指定任务运行的配置<br />请选择: 使用用例中的配置 <br />选择其他配置: 当前选择配置覆盖用例中的配置
                   </div>
                   <span class="el-icon-question"></span>
                 </el-tooltip>
@@ -59,18 +44,10 @@
                   v-model="ruleForm.ci_env"
                   value-key="id"
                 >
-                  <el-option
-                    v-for="item in CIEnvOptions"
-                    :key="item"
-                    :label="item"
-                    :value="item"
-                  >
-                  </el-option>
+                  <el-option v-for="item in CIEnvOptions" :key="item" :label="item" :value="item"> </el-option>
                 </el-select>
                 <el-tooltip placement="top">
-                  <div slot="content">
-                    CI触发环境<br />Gitlab项目id且CI环境相等时，才会运行任务
-                  </div>
+                  <div slot="content">CI触发环境<br />Gitlab项目id且CI环境相等时，才会运行任务</div>
                   <span class="el-icon-question"></span>
                 </el-tooltip>
               </el-form-item>
@@ -89,16 +66,11 @@
 
               <el-form-item label="运行模式" prop="is_parallel">
                 <template>
-                  <el-radio v-model="ruleForm.is_parallel" :label="false"
-                    >串行</el-radio
-                  >
-                  <el-radio v-model="ruleForm.is_parallel" :label="true"
-                    >并行</el-radio
-                  >
+                  <el-radio v-model="ruleForm.is_parallel" :label="false">串行</el-radio>
+                  <el-radio v-model="ruleForm.is_parallel" :label="true">并行</el-radio>
                   <el-tooltip placement="top">
                     <div slot="content">
-                      用例运行模式<br />任务中的用例默认是一个接着一个运行；并行时，同时执行用例,
-                      不分先后
+                      用例运行模式<br />任务中的用例默认是一个接着一个运行；并行时，同时执行用例, 不分先后
                     </div>
                     <span class="el-icon-question"></span>
                   </el-tooltip>
@@ -134,9 +106,7 @@
               </el-form-item>
 
               <el-form-item>
-                <el-button type="primary" @click="submitForm('ruleForm')"
-                  >下一步</el-button
-                >
+                <el-button type="primary" @click="submitForm('ruleForm')">下一步</el-button>
                 <el-button @click="resetForm('ruleForm')">重置</el-button>
               </el-form-item>
             </el-form>
@@ -169,11 +139,7 @@
               ref="tree2"
             >
               <span class="custom-tree-node" slot-scope="{ node, data }">
-                <span
-                  ><i class="iconfont" v-html="expand"></i>&nbsp;&nbsp;{{
-                    node.label
-                  }}</span
-                >
+                <span><i class="iconfont" v-html="expand"></i>&nbsp;&nbsp;{{ node.label }}</span>
               </span>
             </el-tree>
           </div>
@@ -196,15 +162,8 @@
               </el-pagination>
             </el-col>
             <el-col :span="12">
-              <el-button
-                type="primary"
-                v-if="testData.length > 0"
-                @click="saveTask"
-                >保存</el-button
-              >
-              <el-button v-if="testData.length > 0" @click="next = false"
-                >上一步</el-button
-              >
+              <el-button type="primary" v-if="testData.length > 0" @click="saveTask">保存</el-button>
+              <el-button v-if="testData.length > 0" @click="next = false">上一步</el-button>
             </el-col>
           </el-row>
         </div>
@@ -220,30 +179,20 @@
                 :key="index"
               >
                 <div class="block block_options">
-                  <span
-                    class="block-method block_method_options block_method_color"
-                    >Case</span
-                  >
+                  <span class="block-method block_method_options block_method_color">Case</span>
                   <span class="block_name">{{ item.name }}</span>
                   <i
                     class="el-icon-success"
                     style="color: green"
                     v-if="item.tasks.length > 0"
-                    :title="
-                      '已加入定时任务: ' +
-                      item.tasks.map((task) => task.name).join('，')
-                    "
+                    :title="'已加入定时任务: ' + item.tasks.map((task) => task.name).join('，')"
                   >
                   </i>
                 </div>
               </div>
             </el-col>
             <el-col :span="12">
-              <div
-                style="max-height: 1000px; overflow: auto"
-                @drop="drop($event)"
-                @dragover="allowDrop($event)"
-              >
+              <div style="max-height: 1000px; overflow: auto" @drop="drop($event)" @dragover="allowDrop($event)">
                 <span v-if="testData.length === 0" style="color: red"
                   >温馨提示：<br />选择左侧相应用例节点显示可拖拽的用例<br />从左边拖拽用例至此区域组成任务列表<br />
                   上下拖动此区域任务调整监控调用顺序
@@ -262,10 +211,7 @@
                       @mousemove="currentTest = index"
                     >
                       <!--编辑用例列表-->
-                      <span
-                        class="block-method block_method_test block_method_color"
-                        >Task</span
-                      >
+                      <span class="block-method block_method_test block_method_color">Task</span>
                       <span class="block-test-name">{{ test.name }}</span>
                       <!--<el-button-->
                       <!--style="position: absolute; right: 48px; top: 8px"-->
@@ -302,7 +248,7 @@
 
 <script>
 import draggable from "vuedraggable";
-import { isNumArray } from "../../validator";
+import { isNumArray } from "../../util/validator";
 
 export default {
   name: "AddTasks",
@@ -405,16 +351,14 @@ export default {
           }
         });
       } else {
-        this.$api
-          .updateTask(this.scheduleId, { project: this.$route.params.id }, form)
-          .then((resp) => {
-            if (resp.success) {
-              this.$emit("changeStatus", false);
-              this.$notify.success("更新定时任务成功");
-            } else {
-              this.$notify.error(resp.msg);
-            }
-          });
+        this.$api.updateTask(this.scheduleId, { project: this.$route.params.id }, form).then((resp) => {
+          if (resp.success) {
+            this.$emit("changeStatus", false);
+            this.$notify.success("更新定时任务成功");
+          } else {
+            this.$notify.error(resp.msg);
+          }
+        });
       }
     },
 
@@ -479,11 +423,9 @@ export default {
       return data.label.indexOf(value) !== -1;
     },
     getTree() {
-      this.$api
-        .getTree(this.$route.params.id, { params: { type: 2 } })
-        .then((resp) => {
-          this.dataTree = resp.tree;
-        });
+      this.$api.getTree(this.$route.params.id, { params: { type: 2 } }).then((resp) => {
+        this.dataTree = resp.tree;
+      });
     },
 
     handleNodeClick(node) {

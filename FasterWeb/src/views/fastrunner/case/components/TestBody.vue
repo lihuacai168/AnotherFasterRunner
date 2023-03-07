@@ -4,6 +4,7 @@
       <div>
         <el-input
           style="width: 60%; min-width: 500px"
+          size="small"
           placeholder="请输入接口名称"
           v-model="name"
           clearable
@@ -13,20 +14,16 @@
         <el-button
           slot="append"
           type="success"
-          size="medium"
+          size="small"
+          style="margin-left: 5px"
           @click="save = !save"
           :disabled="disabledSave"
           :title="disabledSave ? '不能修改其他人的用例' : '保存用例步骤'"
-          >Save
+          >保 存
         </el-button>
 
-        <el-button
-          style="margin-left: 5px"
-          size="medium"
-          slot="append"
-          type="danger"
-          @click="esc = !esc"
-          >Back
+        <el-button style="margin-left: 5px" size="small" slot="append" type="danger" @click="esc = !esc"
+          >返 回
         </el-button>
 
         <!-- <el-button
@@ -43,39 +40,27 @@
           v-model="url"
           clearable
           style="width: 60%; min-width: 500px"
+          size="small"
         >
           <el-select slot="prepend" v-model="method" size="small">
-            <el-option
-              v-for="item of httpOptions"
-              :label="item.label"
-              :value="item.label"
-              :key="item.value"
-            >
+            <el-option v-for="item of httpOptions" :label="item.label" :value="item.label" :key="item.value">
             </el-option>
           </el-select>
         </el-input>
 
-        <el-tooltip
-          effect="dark"
-          content="循环次数"
-          placement="bottom"
-          style="width: 10%"
-        >
+        <el-tooltip effect="dark" content="循环次数" placement="bottom" style="width: 10%">
           <el-input-number
             v-model="times"
             controls-position="right"
             :min="1"
             :max="100"
-            style="width: 120px"
+            style="width: 120px; margin-left: 5px"
+            size="small"
           >
           </el-input-number>
         </el-tooltip>
       </div>
-      <el-dialog
-        v-if="dialogTableVisible"
-        :visible.sync="dialogTableVisible"
-        width="70%"
-      >
+      <el-dialog v-if="dialogTableVisible" :visible.sync="dialogTableVisible" width="70%">
         <report :summary="summary"></report>
       </el-dialog>
     </div>
@@ -85,71 +70,43 @@
         <el-tab-pane label="Header" name="first">
           <span slot="label">
             Header
-            <el-badge
-              slot="label"
-              :value="handleBadgeValue(response.body.header, 'key')"
-            ></el-badge>
+            <el-badge slot="label" :value="handleBadgeValue(response.body.header, 'key')"></el-badge>
           </span>
-          <headers :save="save" v-on:header="handleHeader" :header="header">
-          </headers>
+          <headers :save="save" v-on:header="handleHeader" :header="header"> </headers>
         </el-tab-pane>
 
         <el-tab-pane label="Request" name="second">
-          <request :save="save" v-on:request="handleRequest" :request="request">
-          </request>
+          <request :save="save" v-on:request="handleRequest" :request="request"> </request>
         </el-tab-pane>
 
         <el-tab-pane label="Extract" name="third">
           <span slot="label">
             Extract
-            <el-badge
-              slot="label"
-              :value="handleBadgeValue(response.body.extract, 'key')"
-            ></el-badge>
+            <el-badge slot="label" :value="handleBadgeValue(response.body.extract, 'key')"></el-badge>
           </span>
-          <extract :save="save" v-on:extract="handleExtract" :extract="extract">
-          </extract>
+          <extract :save="save" v-on:extract="handleExtract" :extract="extract"> </extract>
         </el-tab-pane>
 
         <el-tab-pane label="Validate" name="fourth">
           <span slot="label">
             Validate
-            <el-badge
-              slot="label"
-              :value="handleBadgeValue(response.body.validate, 'actual')"
-            ></el-badge>
+            <el-badge slot="label" :value="handleBadgeValue(response.body.validate, 'actual')"></el-badge>
           </span>
-          <validate
-            :save="save"
-            v-on:validate="handleValidate"
-            :validate="validate"
-          >
-          </validate>
+          <validate :save="save" v-on:validate="handleValidate" :validate="validate"> </validate>
         </el-tab-pane>
 
         <el-tab-pane label="Variables" name="five">
           <span slot="label">
             Variables
-            <el-badge
-              slot="label"
-              :value="handleBadgeValue(response.body.variables, 'key')"
-            ></el-badge>
+            <el-badge slot="label" :value="handleBadgeValue(response.body.variables, 'key')"></el-badge>
           </span>
-          <variables
-            :save="save"
-            v-on:variables="handleVariables"
-            :variables="variables"
-          >
-          </variables>
+          <variables :save="save" v-on:variables="handleVariables" :variables="variables"> </variables>
         </el-tab-pane>
 
         <el-tab-pane label="Hooks" name="six">
           <span slot="label">
             Hooks
-            <el-badge
-              slot="label"
-              :value="handleHooksBadge(response.body.hooks)"
-            ></el-badge>
+            <el-badge slot="label" :value="handleHooksBadge(response.body.hooks)"></el-badge>
           </span>
           <hooks :save="save" v-on:hooks="handleHooks" :hooks="hooks"> </hooks>
         </el-tab-pane>

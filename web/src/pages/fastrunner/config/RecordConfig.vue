@@ -5,13 +5,13 @@
         <el-button type="primary" size="small" icon="el-icon-circle-plus-outline" @click="addConfig"
           >新增配置
         </el-button>
-        <!--                    <el-button type="primary" plain size="small" icon="el-icon-upload">导入配置</el-button>-->
-        <!--                    <el-button type="info" plain size="small" icon="el-icon-download">导出配置</el-button>-->
+        <!-- <el-button type="primary" plain size="small" icon="el-icon-upload">导入配置</el-button>-->
+        <!-- <el-button type="info" plain size="small" icon="el-icon-download">导出配置</el-button>-->
         <el-button style="margin-left: 20px" type="danger" icon="el-icon-delete" circle size="mini" @click="del = !del">
         </el-button>
         <el-button
           :disabled="!addConfigActivate"
-          type="primary"
+          type="info"
           size="small"
           icon="el-icon-back"
           style="position: absolute; right: 20px"

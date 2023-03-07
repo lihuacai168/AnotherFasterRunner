@@ -11,7 +11,7 @@
     "apexcharts": "^3.36.3",
     "axios": "^1.1.3",
     "echarts": "4",
-    "element-ui": "^2.15.10",
+    "element-ui": "^2.15.13",
     "monaco-editor": "^0.34.1",
     "node-sass": "^8.0.0",
     "pinia": "^2.0.16",
@@ -27,7 +27,7 @@
   },
   "devDependencies": {
     "@rushstack/eslint-patch": "^1.1.0",
-    "@vitejs/plugin-legacy": "^2.0.0",
+    "@vitejs/plugin-legacy": "^4.0.1",
     "@vitejs/plugin-vue2": "^1.1.2",
     "@vue/eslint-config-prettier": "^7.0.0",
     "eslint": "^8.5.0",
@@ -35,6 +35,6 @@
     "prettier": "^2.5.1",
     "sass": "^1.56.1",
     "terser": "^5.14.2",
-    "vite": "^3.0.2"
+    "vite": "^4.1.4"
   }
 }

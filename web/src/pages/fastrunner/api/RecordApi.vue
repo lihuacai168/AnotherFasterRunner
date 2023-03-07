@@ -189,7 +189,7 @@
       </div></el-header
     >
 
-    <div>
+    <el-container>
       <el-aside style="width: 250px" v-show="!addAPIFlag">
         <div class="nav-api-side">
           <div class="api-tree">
@@ -247,7 +247,6 @@
         >
         </api-body>
         <api-list
-          style="margin-left: 255px"
           v-show="!addAPIFlag"
           v-on:api="handleAPI"
           :pNode="currentNode !== '' ? currentNode.id : ''"
@@ -268,7 +267,7 @@
         >
         </api-list>
       </el-main>
-    </div>
+    </el-container>
   </div>
 </template>
 

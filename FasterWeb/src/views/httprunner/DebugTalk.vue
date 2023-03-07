@@ -1,66 +1,38 @@
 <template>
-  <el-container>
-    <el-header style="background-color: #f7f7f7; padding: 0; height: 50px">
-      <div style="padding-top: 10px; margin-left: 10px">
-        <el-row>
-          <el-col :span="15">
-            <el-button
-              type="primary"
-              size="small"
-              icon="el-icon-circle-check"
-              @click="handleConfirm"
-            >
-              点击保存
-            </el-button>
+  <div>
+    <div class="nav-api-header" style="padding: 10px 0 0 10px">
+      <el-button type="success" size="small" icon="el-icon-circle-check" @click="handleConfirm">点击保存</el-button>
+      <el-button icon="el-icon-caret-right" type="info" size="small" style="margin-left: 5px" @click="handleRunCode">
+        在线运行
+      </el-button>
+    </div>
+    <div>
+      <MonacoEditor
+        ref="editor"
+        :height="codeHeight"
+        language="python"
+        :code="code.code"
+        :value="code.code"
+        :options="options"
+        @mounted="onMounted"
+        @codeChange="onCodeChange"
+        :key="timeStamp"
+      >
+      </MonacoEditor>
 
-            <el-button
-              icon="el-icon-caret-right"
-              type="info"
-              size="small"
-              style="margin-left: 5px"
-              @click="handleRunCode"
-            >
-              在线运行
-            </el-button>
-          </el-col>
-        </el-row>
-      </div>
-    </el-header>
-
-    <el-container>
-      <el-main style="padding: 0; margin-left: 10px">
-        <el-row>
-          <el-col :span="24">
-            <MonacoEditor
-              ref="editor"
-              :height="codeHeight"
-              language="python"
-              :code="code.code"
-              :value="code.code"
-              :options="options"
-              @mounted="onMounted"
-              @codeChange="onCodeChange"
-              :key="timeStamp"
-            >
-            </MonacoEditor>
-          </el-col>
-
-          <el-col :span="14">
-            <el-drawer
-              style="margin-top: 100px"
-              :height="codeHeight"
-              :destroy-on-close="true"
-              :with-header="false"
-              :modal="false"
-              :visible.sync="isShowDebug"
-            >
-              <RunCodeResult :msg="resp.msg"></RunCodeResult>
-            </el-drawer>
-          </el-col>
-        </el-row>
-      </el-main>
-    </el-container>
-  </el-container>
+      <el-drawer
+        size="50%"
+        style="margin-top: 90px"
+        :height="codeHeight"
+        :destroy-on-close="true"
+        :with-header="false"
+        :modal="false"
+        :visible.sync="isShowDebug"
+      >
+        <RunCodeResult :msg="resp.msg"></RunCodeResult>
+      </el-drawer>
+    </div>
+  </div>
 </template>
 
 <script>

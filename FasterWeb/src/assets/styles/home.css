@@ -162,3 +162,39 @@ input, button, select, textarea {
     line-height: 1.42857143;
     color: #333;
 }
+
+.scroll-content {
+    height: calc(100vh - 100px);
+    overflow-y: scroll;
+}
+/* 自定义滚动条 */
+.scroll-content::-webkit-scrollbar {
+    /*滚动条整体样式*/
+    -webkit-appearance: none;
+    width: 10px;
+    height: 10px;
+  }
+
+  .scroll-content::-webkit-scrollbar-thumb {
+    /*滚动条里面小方块*/
+    cursor: pointer;
+    border-radius: 5px;
+    background: rgba(0, 0, 0, 0.25);
+    -webkit-transition: color 0.2s ease;
+    transition: color 0.2s ease;
+  }
+
+  .scroll-content::-webkit-scrollbar-thumb:hover {
+    background: #949a9d;
+  }
+
+  .scroll-content::-webkit-scrollbar-track {
+    /*滚动条里面轨道*/
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 0;
+  }
+
+  ::selection {
+    background-color: #cce2ff;
+    color: rgba(0, 0, 0, 0.87);
+  }

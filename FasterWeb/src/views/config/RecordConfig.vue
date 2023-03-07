@@ -3,19 +3,11 @@
     <el-header style="background: #fff; padding: 0; height: 50px">
       <div class="nav-api-header">
         <div style="padding-top: 10px; margin-left: 20px">
-          <el-button
-            type="warning"
-            size="small"
-            icon="el-icon-circle-plus-outline"
-            @click="initResponse = true"
+          <el-button type="warning" size="small" icon="el-icon-circle-plus-outline" @click="initResponse = true"
             >新增配置</el-button
           >
-          <el-button type="primary" plain size="small" icon="el-icon-upload"
-            >导入配置</el-button
-          >
-          <el-button type="info" plain size="small" icon="el-icon-download"
-            >导出配置</el-button
-          >
+          <el-button type="primary" plain size="small" icon="el-icon-upload">导入配置</el-button>
+          <el-button type="info" plain size="small" icon="el-icon-download">导出配置</el-button>
           <el-button
             style="margin-left: 20px"
             type="danger"
@@ -26,8 +18,8 @@
           ></el-button>
           <el-button
             :disabled="!addConfigActivate"
-            type="text"
-            style="position: absolute; right: 30px"
+            type="info"
+            style="position: absolute; right: 20px"
             @click="addConfigActivate = false"
             >返回列表</el-button
           >

@@ -15,18 +15,9 @@ const getHints = (model) => {
   let id = model.id.substring(6);
   return (global[id] && global[id].hints) || [];
 };
-monaco.languages.registerCompletionItemProvider(
-  "sql",
-  createSqlCompleter(getHints)
-);
-monaco.languages.registerCompletionItemProvider(
-  "javascript",
-  createJavascriptCompleter(getHints)
-);
-monaco.languages.registerCompletionItemProvider(
-  "python",
-  createPythonCompleter(getHints)
-);
+monaco.languages.registerCompletionItemProvider("sql", createSqlCompleter(getHints));
+monaco.languages.registerCompletionItemProvider("javascript", createJavascriptCompleter(getHints));
+monaco.languages.registerCompletionItemProvider("python", createPythonCompleter(getHints));
 registerLanguage(monaco);
 /**
  * monaco options
@@ -34,23 +25,33 @@ registerLanguage(monaco);
  */
 export default {
   props: {
-    options: { type: Object, default() { return {}; },},
+    options: {
+      type: Object,
+      default() {
+        return {};
+      },
+    },
     value: { type: String, required: true },
-    language: { type: String, default: 'javascript' },
-    theme: { type: String, default: 'vs-dark' }, // vs, hc-black
+    language: { type: String, default: "javascript" },
+    theme: { type: String, default: "vs-dark" }, // vs, hc-black
     hints: {
       type: Array,
       default() {
         return [];
       },
     },
-    width: { type: [String, Number], default: '100%' },
-    height: { type: [String, Number], default: '100%' },
-    highlighted: { type: Array, default: () => [{
-      number: 0,
-      class: ''
-    }] },
-    changeThrottle: { type: Number, default: 0 }
+    width: { type: [String, Number], default: "100%" },
+    height: { type: [String, Number], default: "100%" },
+    highlighted: {
+      type: Array,
+      default: () => [
+        {
+          number: 0,
+          class: "",
+        },
+      ],
+    },
+    changeThrottle: { type: Number, default: 0 },
   },
   name: "BaseMonacoEditor",
   data() {
@@ -107,35 +108,29 @@ export default {
         },
       };
 
-      this.editorInstance = monaco.editor.create(
-        this.$refs.editor,
-        this.getOptions()
-      );
+      this.editorInstance = monaco.editor.create(this.$refs.editor, this.getOptions());
       this.editorInstance.onContextMenu((e) => {
         this.$emit("contextmenu", e);
       });
       this.editorInstance.onDidChangeModelContent(() => {
         this.onValueChange();
       });
-      this.editorInstance.addCommand(
-        monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_S,
-        () => {
-          this.$emit("save", this.editorInstance.getValue());
-        }
-      );
+      this.editorInstance.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_S, () => {
+        this.$emit("save", this.editorInstance.getValue());
+      });
     },
   },
   computed: {
     style() {
       const { width, height } = this;
-      const fixedWidth = width.toString().indexOf('%') !== -1 ? width : `${width}px`;
-      const fixedHeight = height.toString().indexOf('%') !== -1 ? height : `${height}px`;
+      const fixedWidth = width.toString().indexOf("%") !== -1 ? width : `${width}px`;
+      const fixedHeight = height.toString().indexOf("%") !== -1 ? height : `${height}px`;
       return {
         width: fixedWidth,
         height: fixedHeight,
       };
     },
-  }
+  },
 };
 </script>
 

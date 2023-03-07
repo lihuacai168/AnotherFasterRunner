@@ -250,7 +250,7 @@
 
 <script>
 import draggable from "vuedraggable";
-import { isNumArray } from "../../validator";
+import { isNumArray } from "../../util/validator";
 
 export default {
   name: "AddTasks",

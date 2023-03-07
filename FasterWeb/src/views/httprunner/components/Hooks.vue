@@ -37,6 +37,7 @@
           <el-button
             icon="el-icon-circle-plus-outline"
             size="mini"
+            circle
             type="info"
             @click="handleEdit(scope.$index, scope.row)"
           >
@@ -45,6 +46,7 @@
           <el-button
             icon="el-icon-delete"
             size="mini"
+            circle
             style="margin-left: 5px"
             type="danger"
             v-show="scope.$index !== 0"

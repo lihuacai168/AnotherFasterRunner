@@ -1,11 +1,5 @@
 <template>
-  <MonacoEditor
-    :height="codeHeight"
-    language="text"
-    :code="msg"
-    :options="options"
-  >
-  </MonacoEditor>
+  <MonacoEditor :height="codeHeight" language="text" :code="msg" :options="options"> </MonacoEditor>
 </template>
 
 <script>

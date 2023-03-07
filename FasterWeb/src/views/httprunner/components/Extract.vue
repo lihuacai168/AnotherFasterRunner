@@ -11,33 +11,18 @@
   >
     <el-table-column label="变量名">
       <template v-slot="scope">
-        <el-input
-          clearable
-          v-model.trim="scope.row.key"
-          placeholder="接收抽取值后的变量名"
-          size="medium"
-        ></el-input>
+        <el-input clearable v-model.trim="scope.row.key" placeholder="接收抽取值后的变量名" size="medium"></el-input>
       </template>
     </el-table-column>
     <el-table-column label="抽取表达式">
       <template v-slot="scope">
-        <el-input
-          clearable
-          v-model.trim="scope.row.value"
-          placeholder="抽取表达式"
-          size="medium"
-        ></el-input>
+        <el-input clearable v-model.trim="scope.row.value" placeholder="抽取表达式" size="medium"></el-input>
       </template>
     </el-table-column>
 
     <el-table-column label="描述" width="160">
       <template v-slot="scope">
-        <el-input
-          clearable
-          v-model="scope.row.desc"
-          placeholder="抽取值简要描述"
-          size="medium"
-        ></el-input>
+        <el-input clearable v-model="scope.row.desc" placeholder="抽取值简要描述" size="medium"></el-input>
       </template>
     </el-table-column>
 
@@ -47,6 +32,8 @@
           <el-button
             icon="el-icon-circle-plus-outline"
             size="mini"
+            circle
+            title="新增"
             style="margin-left: 5px"
             type="info"
             @click="handleEdit(scope.$index, scope.row)"
@@ -55,6 +42,8 @@
           <el-button
             icon="el-icon-document-copy"
             size="mini"
+            circle
+            title="复制"
             style="margin-left: 5px"
             type="info"
             @click="handleCopy(scope.$index, scope.row)"
@@ -63,6 +52,8 @@
           <el-button
             icon="el-icon-delete"
             size="mini"
+            circle
+            title="删除"
             style="margin-left: 5px"
             type="danger"
             v-show="scope.$index !== 0"
@@ -164,11 +155,7 @@ export default {
   mounted() {
     bus.$on("extractRequest", (extractOjb) => {
       // 当抽取列表为空时，先删除第一个
-      if (
-        this.tableData.length === 1 &&
-        this.tableData[0].key === "" &&
-        this.tableData[0].value === ""
-      ) {
+      if (this.tableData.length === 1 && this.tableData[0].key === "" && this.tableData[0].value === "") {
         this.tableData.pop();
       }
       this.tableData.push(extractOjb);

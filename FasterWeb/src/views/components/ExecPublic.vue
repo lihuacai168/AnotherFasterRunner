@@ -346,10 +346,7 @@ export default {
     },
     rowClick(row, column) {
       // 点击行触发，编辑点击的所在列，排除selection选择框
-      if (
-        column.type !== "selection" &&
-        this.columObj.columnData[column.index].editRow === null
-      ) {
+      if (column.type !== "selection" && this.columObj.columnData[column.index].editRow === null) {
         this.columObj.columnData[column.index].editRow = row.rowIndex;
       }
     },

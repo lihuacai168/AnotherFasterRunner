@@ -1,22 +1,18 @@
 <template>
-  <el-container>
+  <div>
     <el-header style="background: #fff; padding: 0; height: 50px">
       <div class="nav-api-header">
         <div style="padding-top: 10px; margin-left: 10px">
-          <el-button
-            type="primary"
-            size="small"
-            icon="el-icon-circle-plus-outline"
-            @click="handleAddTask"
+          <el-button type="primary" size="small" icon="el-icon-circle-plus-outline" @click="handleAddTask"
             >添加任务
           </el-button>
 
           <el-button
             :disabled="!addTasks"
-            type="primary"
+            type="info"
             size="small"
             icon="el-icon-back"
-            style="position: absolute; right: 10px"
+            style="position: absolute; right: 20px"
             @click="addTasks = false"
             >返回列表
           </el-button>
@@ -36,11 +32,7 @@
               @keyup.enter.native="getTaskList"
               style="width: 260px"
             >
-              <el-button
-                slot="append"
-                icon="el-icon-search"
-                @click="getTaskList"
-              ></el-button>
+              <el-button slot="append" icon="el-icon-search" @click="getTaskList"></el-button>
             </el-input>
             <span style="margin-left: 10px">创建人: </span>
             <el-select
@@ -58,20 +50,11 @@
                 :disabled="item.disabled"
               ></el-option>
             </el-select>
-            <el-button
-              type="primary"
-              @click="resetSearch"
-              size="medium"
-              style="margin-left: 5px"
-              >重置</el-button
-            >
+            <el-button type="primary" @click="resetSearch" size="medium" style="margin-left: 5px">重置</el-button>
           </div>
         </div>
       </el-header>
-      <el-main
-        style="padding: 0; margin-left: 10px; margin-top: 10px"
-        v-if="!addTasks"
-      >
+      <el-main style="padding: 0; margin-left: 10px; margin-top: 10px" v-if="!addTasks">
         <div>
           <el-table
             v-if="!addTasks"
@@ -104,11 +87,7 @@
             <el-table-column width="150" label="下次执行时间">
               <template v-slot="scope">
                 <div>
-                  {{
-                    scope.row.kwargs.next_execute_time
-                      ? scope.row.kwargs.next_execute_time
-                      : "" | timestampToTime
-                  }}
+                  {{ scope.row.kwargs.next_execute_time ? scope.row.kwargs.next_execute_time : "" | timestampToTime }}
                 </div>
               </template>
             </el-table-column>
@@ -122,11 +101,7 @@
             <el-table-column width="70" label="CI环境">
               <template v-slot="scope">
                 <div>
-                  {{
-                    scope.row.kwargs.ci_env === "请选择"
-                      ? ""
-                      : scope.row.kwargs.ci_env
-                  }}
+                  {{ scope.row.kwargs.ci_env === "请选择" ? "" : scope.row.kwargs.ci_env }}
                 </div>
               </template>
             </el-table-column>
@@ -134,11 +109,7 @@
             <el-table-column min-width="100" label="运行配置">
               <template v-slot="scope">
                 <div>
-                  {{
-                    scope.row.kwargs.config === "请选择"
-                      ? "用例配置"
-                      : scope.row.kwargs.config
-                  }}
+                  {{ scope.row.kwargs.config === "请选择" ? "用例配置" : scope.row.kwargs.config }}
                 </div>
               </template>
             </el-table-column>
@@ -261,7 +232,7 @@
       >
       </add-tasks>
     </el-container>
-  </el-container>
+  </div>
 </template>
 
 <script>

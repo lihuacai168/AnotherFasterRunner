@@ -3,7 +3,7 @@ import { createPinia, PiniaVuePlugin } from "pinia";
 import ElementUI from "./util/element";
 import VJsoneditor from "v-jsoneditor";
 import VueClipboard from "vue-clipboard2";
-import echarts from "echarts";
+// import echarts from "echarts";
 import VueApexCharts from "vue-apexcharts";
 import "element-ui/lib/theme-chalk/index.css";
 import "./assets/theme/index.css";
@@ -28,7 +28,7 @@ Vue.use(VueClipboard);
 Vue.use(VueApexCharts);
 Vue.config.productionTip = false;
 Vue.prototype.$api = api;
-Vue.prototype.$echarts = echarts;
+// Vue.prototype.$echarts = echarts;
 Vue.prototype.setLocalValue = function (name, value) {
   if (window.localStorage) {
     localStorage.setItem(name, value);
@@ -50,14 +50,8 @@ Vue.prototype.getLocalValue = function (name) {
 };
 Vue.prototype.getViewportSize = function () {
   return {
-    width:
-      window.innerWidth ||
-      document.documentElement.clientWidth ||
-      document.body.clientWidth,
-    height:
-      window.innerHeight ||
-      document.documentElement.clientHeight ||
-      document.body.clientHeight,
+    width: window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth,
+    height: window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight,
   };
 };
 router.beforeEach((to, from, next) => {

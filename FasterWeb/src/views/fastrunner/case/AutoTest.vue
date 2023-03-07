@@ -1,5 +1,5 @@
 <template>
-  <el-container>
+  <div>
     <el-header style="background: #fff; padding: 0; height: 50px">
       <div class="nav-api-header">
         <div style="padding-top: 10px; margin-left: 10px">
@@ -13,19 +13,8 @@
             >新建节点
           </el-button>
 
-          <el-dialog
-            title="新建节点"
-            :visible.sync="dialogVisible"
-            width="30%"
-            align="center"
-          >
-            <el-form
-              :model="nodeForm"
-              :rules="rules"
-              ref="nodeForm"
-              label-width="100px"
-              class="project"
-            >
+          <el-dialog title="新建节点" :visible.sync="dialogVisible" width="30%" align="center">
+            <el-form :model="nodeForm" :rules="rules" ref="nodeForm" label-width="100px" class="project">
               <el-form-item label="节点名称" prop="name">
                 <el-input v-model="nodeForm.name"></el-input>
               </el-form-item>
@@ -37,15 +26,8 @@
             </el-radio-group>
 
             <span slot="footer" class="dialog-footer">
-              <el-button size="small" @click="dialogVisible = false"
-                >取 消</el-button
-              >
-              <el-button
-                size="small"
-                type="primary"
-                @click="handleConfirm('nodeForm')"
-                >确 定</el-button
-              >
+              <el-button size="small" @click="dialogVisible = false">取 消</el-button>
+              <el-button size="small" type="primary" @click="handleConfirm('nodeForm')">确 定</el-button>
             </span>
           </el-dialog>
 
@@ -73,43 +55,27 @@
             type="primary"
             plain
             size="small"
-            style="margin-left: 5px;"
+            style="margin-left: 5px"
             icon="el-icon-circle-plus-outline"
             @click="buttonActivate = false"
             :disabled="buttonActivate"
             >添加用例
           </el-button>
-          <span v-show="this.$store.state.show_hosts" style="margin-left: 5px;">
-            &nbspHosts:
-            <el-select
-              placeholder="请选择"
-              size="small"
-              v-model="currentHost"
-            >
-              <el-option
-                v-for="item in hostOptions"
-                :key="item.id"
-                :label="item.name"
-                :value="item.name"
-              >
-              </el-option>
+          <span v-show="this.$store.state.show_hosts" style="margin-left: 5px">
+            &nbsp;Hosts:
+            <el-select placeholder="请选择" size="small" v-model="currentHost">
+              <el-option v-for="item in hostOptions" :key="item.id" :label="item.name" :value="item.name"> </el-option>
             </el-select>
           </span>
           <!--                    <span style="margin-left: 10px">配置:</span>-->
           <el-select
             placeholder="请选择配置"
             size="small"
-            style="width: 100px"
+            style="width: 100px; margin-left: 5px"
             v-model="currentConfig"
             :disabled="addTestActivate"
           >
-            <el-option
-              v-for="item in configOptions"
-              :key="item.id"
-              :label="item.name"
-              :value="item.name"
-            >
-            </el-option>
+            <el-option v-for="item in configOptions" :key="item.id" :label="item.name" :value="item.name"> </el-option>
           </el-select>
           <el-button
             v-if="addTestActivate"
@@ -165,7 +131,7 @@
             plain
             size="small"
             icon="el-icon-back"
-            style="position: absolute; right: 10px"
+            style="position: absolute; right: 20px"
             @click="handleBackList"
             >返回列表
           </el-button>
@@ -174,7 +140,7 @@
     </el-header>
 
     <el-container>
-      <el-aside style="margin-top: 10px; width: 240px" v-show="addTestActivate">
+      <el-aside style="width: 240px" v-show="addTestActivate">
         <div class="nav-api-side">
           <div class="api-tree">
             <el-input
@@ -205,19 +171,11 @@
                 @mouseleave="mouseleave"
                 style="display: flex; width: 180px"
               >
-                <span
-                  style="overflow: hidden; text-overflow: ellipsis; flex: 1"
-                >
-                  <i class="iconfont" v-html="expand"></i>&nbsp;&nbsp;{{
-                    node.label
-                  }}
+                <span style="overflow: hidden; text-overflow: ellipsis; flex: 1">
+                  <i class="iconfont" v-html="expand"></i>&nbsp;&nbsp;{{ node.label }}
                 </span>
                 <span class="icon-group" v-show="node.id === mouseNodeId">
-                  <i
-                    class="el-icon-folder-add"
-                    @click="dialogVisible = true"
-                    disabled="!addTestActivate"
-                  ></i>
+                  <i class="el-icon-folder-add" @click="dialogVisible = true" disabled="!addTestActivate"></i>
                   <i class="el-icon-edit" @click="renameNode(node)"></i>
                   <i class="el-icon-delete" @click="deleteNode(node)"></i>
                 </span>
@@ -260,7 +218,7 @@
         </edit-test>
       </el-main>
     </el-container>
-  </el-container>
+  </div>
 </template>
 
 <script>
@@ -350,13 +308,11 @@ export default {
       this.addTestActivate = false;
     },
     getTree() {
-      this.$api
-        .getTree(this.$route.params.id, { params: { type: 2 } })
-        .then((resp) => {
-          this.dataTree = resp["tree"];
-          this.treeId = resp["id"];
-          this.maxId = resp["max"];
-        });
+      this.$api.getTree(this.$route.params.id, { params: { type: 2 } }).then((resp) => {
+        this.dataTree = resp["tree"];
+        this.treeId = resp["id"];
+        this.maxId = resp["max"];
+      });
     },
 
     updateTree(mode) {
@@ -445,11 +401,7 @@ export default {
         label: this.nodeForm.name,
         children: [],
       };
-      if (
-        data === "" ||
-        this.dataTree.length === 0 ||
-        this.radio === "同级节点"
-      ) {
+      if (data === "" || this.dataTree.length === 0 || this.radio === "同级节点") {
         this.dataTree.push(newChild);
         return;
       }

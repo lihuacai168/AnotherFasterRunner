@@ -1,6 +1,6 @@
 <template>
   <el-container>
-    <el-aside style="width: 240px; margin-top: 10px">
+    <el-aside style="width: 240px">
       <div class="nav-api-side">
         <div class="api-tree">
           <el-input
@@ -23,41 +23,30 @@
             ref="tree2"
           >
             <span class="custom-tree-node" slot-scope="{ node, data }">
-              <span
-                ><i class="iconfont" v-html="expand"></i>&nbsp;&nbsp;{{
-                  node.label
-                }}</span
-              >
+              <span><i class="iconfont" v-html="expand"></i>&nbsp;&nbsp;{{ node.label }}</span>
             </span>
           </el-tree>
         </div>
       </div>
     </el-aside>
 
-    <el-main>
-      <div v-show="!editTestStepActivate" class="recordapi__header">
-        <div class="recordapi__header" :style="{ flex: 1 }">
-          <div class="recordapi__header--item">
+    <el-main style="padding: 5px 5px 0 5px; max-width: 1500px">
+      <el-row :gutter="5" v-if="!editTestStepActivate">
+        <el-col :span="12">
+          <div class="recordapi__header">
             <el-input
               placeholder="请输入接口名称"
-              style="min-width: 150px; text-align: center"
-              size="medium"
+              min-width="100"
+              size="small"
               clearable
               @input="inputVal"
               :value="search"
               @keyup.enter.native="getAPIList"
             >
             </el-input>
-          </div>
-          <div class="recordapi__header--item">
-            <el-button type="primary" size="medium" @click="resetSearch"
-              >重置</el-button
-            >
-          </div>
-
-          <div class="recordapi__header--item">
-            <el-dropdown @command="tagChangeHandle">
-              <el-button type="primary" size="medium"
+            <el-button type="primary" size="small" style="margin-left: 5px" @click="resetSearch">重置</el-button>
+            <el-dropdown @command="tagChangeHandle" style="margin-left: 5px">
+              <el-button type="primary" size="small"
                 >状态
                 <i class="el-icon-arrow-down el-icon--right"></i>
               </el-button>
@@ -68,15 +57,7 @@
                 <el-dropdown-item command="">所有</el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
-          </div>
-          <div class="recordapi__header--item">
-            <el-select
-              v-model="selectUser"
-              placeholder="创建人"
-              filterable
-              size="medium"
-              :style="{ width: '100px' }"
-            >
+            <el-select v-model="selectUser" placeholder="创建人" filterable size="small" style="margin-left: 5px">
               <el-option
                 v-for="(item, index) in users"
                 :key="index"
@@ -86,245 +67,179 @@
               ></el-option>
             </el-select>
           </div>
-        </div>
-        <div class="recordapi__header" :style="{ flex: 1 }">
-          <div class="recordapi__header--item">
+        </el-col>
+        <el-col :span="12">
+          <div class="recordapi__header" :style="{ flex: 1 }">
             <el-input
               style="min-width: 150px; text-align: center"
-              size="medium"
+              size="small"
               placeholder="请输入测试用例名称"
               v-model="testName"
               clearable
-              v-if="testData.length > 0"
             >
-              <el-select
-                v-model="testTag"
-                slot="prepend"
-                placeholder="请选择"
-                style="width: 105px"
-              >
-                <el-option
-                  v-for="value in tagOptions"
-                  :key="value"
-                  :label="value"
-                  :value="value"
-                ></el-option>
+              <el-select v-model="testTag" slot="prepend" placeholder="请选择" style="width: 105px">
+                <el-option v-for="value in tagOptions" :key="value" :label="value" :value="value"></el-option>
               </el-select>
             </el-input>
-          </div>
-
-          <el-button
-            slot="append"
-            type="success"
-            size="medium"
-            @click="handleClickSave"
-            :title="disabledSave ? '不能修改其他人的用例' : '保存用例'"
-            :disabled="disabledSave"
-            >Save
-          </el-button>
-
-          <div class="recordapi__header--item">
             <el-button
-              type="primary"
-              size="medium"
-              v-loading="suite_loading"
-              @click="handleClickRun"
-              >Send
+              slot="append"
+              type="success"
+              size="small"
+              style="margin-left: 5px"
+              @click="handleClickSave"
+              :title="disabledSave ? '不能修改其他人的用例' : '保存用例'"
+              :disabled="disabledSave && testData.length > 0"
+              >保 存
             </el-button>
+            <el-button type="primary" size="small" v-loading="suite_loading" @click="handleClickRun">发 送</el-button>
           </div>
-        </div>
-      </div>
+        </el-col>
+      </el-row>
 
-      <div v-show="!editTestStepActivate" style="margin-top: 10px">
-        <el-row :gutter="20">
-          <el-col :span="12">
-            <div
-              v-for="(item, index) in apiData.results"
-              draggable="true"
-              @dragstart="currentAPI = JSON.parse(JSON.stringify(item))"
-              style="cursor: pointer; margin-top: 10px; overflow: auto"
-              :key="index"
-            >
-              <!--编辑用例时的API列表-->
-              <div
-                class="block edit__block"
-                :class="`block_${item.method.toLowerCase()}`"
-              >
-                <span
-                  class="block-method block_method_color"
-                  :class="`block_method_${item.method.toLowerCase()}`"
-                >
-                  {{ item.method.toUpperCase() }}
-                </span>
-                <span
-                  class="block-method block_method_color block_method_options"
-                  v-if="item.creator === 'yapi'"
-                  :title="'从YAPI导入的接口'"
-                >
-                  YAPI
-                </span>
-
-                <div class="edit__block--inner">
-                  <span class="block-method block_url">{{ item.url }}</span>
-                  <span class="block-summary-description">{{ item.name }}</span>
-                </div>
-                <div>
-                  <span
-                    class="el-icon-s-flag"
-                    v-if="item.cases.length > 0"
-                    :title="
-                      'API已经被用例引用,共计: ' + item.cases.length + '次'
-                    "
-                  >
-                  </span>
-                </div>
-              </div>
-            </div>
-          </el-col>
-          <el-col :span="12" class="el-col">
-            <el-dialog
-              v-if="dialogTableVisible"
-              :visible.sync="dialogTableVisible"
-              width="70%"
-            >
-              <report :summary="summary"></report>
-            </el-dialog>
-
-            <div
-              style="max-height: 1000px; overflow: auto"
-              @drop="drop($event)"
-              @dragover="allowDrop($event)"
-            >
-              <div class="test-list">
-                <span v-if="testData.length === 0" style="color: red"
-                  >温馨提示：<br />选择左侧相应API节点显示可拖拽的API<br />从左边拖拽API至此区域组成业务用例<br />
-                  上下拖动此区域接口调整接口调用顺序
-                </span>
-                <div
-                  v-if="isConfigExist"
-                  class="block block_test"
-                  @mousemove="currentTest = -1"
-                >
-                  <span
-                    class="block-method block_method_config block_method_color"
-                    >{{ testData[0].body.method }}</span
-                  >
-                  <input
-                    class="block-test-name"
-                    v-model="testData[0].body.name"
-                    disabled
-                  />
-
-                  <el-button
-                    style="position: absolute; right: 12px; top: 8px"
-                    v-show="currentTest === -1"
-                    type="danger"
-                    icon="el-icon-delete"
-                    title="删除"
-                    circle
-                    size="mini"
-                    @click="testData.splice(index, 1)"
-                  >
-                  </el-button>
-                </div>
-                <draggable
-                  v-model="testData"
-                  @end="dragEnd"
-                  @start="length = testData.length"
-                  v-bind="{ animation: 200 }"
-                >
-                  <div
-                    v-for="(test, index) in testData"
-                    :key="index"
-                    class="block block_test"
-                    @mousemove="currentTest = index"
-                    v-if="test.body.method !== 'config'"
-                  >
-                    <span
-                      class="block-method block_method_test block_method_color"
-                      >Step_{{ index }}</span
-                    >
-                    <input class="block-test-name" v-model="test.body.name" />
-
-                    <el-button
-                      style="position: absolute; right: 156px; top: 8px"
-                      v-show="currentTest === index"
-                      type="info"
-                      icon="el-icon-edit"
-                      title="编辑"
-                      circle
-                      size="mini"
-                      @click="editTestStepActivate = true"
-                    >
-                    </el-button>
-
-                    <el-button
-                      style="position: absolute; right: 84px; top: 8px"
-                      v-show="currentTest === index"
-                      type="success"
-                      icon="el-icon-caret-right"
-                      circle
-                      size="mini"
-                      title="单个运行"
-                      @click="handleSingleRun()"
-                    >
-                    </el-button>
-
-                    <el-button
-                      style="position: absolute; right: 48px; top: 8px"
-                      v-show="currentTest === index"
-                      type="primary"
-                      icon="el-icon-caret-right"
-                      circle
-                      size="mini"
-                      title="运行开始到当前位置的所有api"
-                      @click="handlePartialRun(index)"
-                    >
-                    </el-button>
-
-                    <el-button
-                      style="position: absolute; right: 120px; top: 8px"
-                      v-show="currentTest === index"
-                      type="danger"
-                      icon="el-icon-document-copy"
-                      title="复制当前步骤"
-                      circle
-                      size="mini"
-                      @click="handleCopyStep(index)"
-                    >
-                    </el-button>
-
-                    <el-button
-                      style="position: absolute; right: 12px; top: 8px"
-                      v-show="currentTest === index"
-                      type="danger"
-                      icon="el-icon-delete"
-                      title="删除"
-                      circle
-                      size="mini"
-                      @click="testData.splice(index, 1)"
-                    >
-                    </el-button>
-                  </div>
-                </draggable>
-              </div>
-            </div>
-          </el-col>
-        </el-row>
-        <div class="recordapi__header--item">
-          <el-pagination
-            :page-size="11"
-            v-show="apiData.count !== 0"
-            background
-            @current-change="handlePageChange"
-            :current-page.sync="currentPage"
-            layout="total, prev, pager, next, jumper"
-            :total="apiData.count"
-            style="margin-top: 5px"
+      <el-row :gutter="5" v-if="!editTestStepActivate">
+        <el-col :span="12">
+          <div
+            v-for="(item, index) in apiData.results"
+            draggable="true"
+            @dragstart="currentAPI = JSON.parse(JSON.stringify(item))"
+            style="cursor: pointer; margin-top: 6px; overflow: auto"
+            :key="index"
           >
-          </el-pagination>
-        </div>
-      </div>
+            <!--编辑用例时的API列表-->
+            <div class="block edit__block" :class="`block_${item.method.toLowerCase()}`">
+              <span class="block-method block_method_color" :class="`block_method_${item.method.toLowerCase()}`">
+                {{ item.method.toUpperCase() }}
+              </span>
+              <span
+                class="block-method block_method_color block_method_options"
+                v-if="item.creator === 'yapi'"
+                :title="'从YAPI导入的接口'"
+                >YAPI</span
+              >
+              <div class="edit__block--inner">
+                <span class="block-method block_url">{{ item.url }}</span>
+                <span class="block-summary-description">{{ item.name }}</span>
+              </div>
+
+              <span
+                class="el-icon-s-flag"
+                v-if="item.cases.length > 0"
+                :title="'API已经被用例引用,共计: ' + item.cases.length + '次'"
+              >
+              </span>
+            </div>
+          </div>
+        </el-col>
+        <el-col :span="12" class="el-col">
+          <el-dialog v-if="dialogTableVisible" :visible.sync="dialogTableVisible" width="70%">
+            <report :summary="summary"></report>
+          </el-dialog>
+
+          <div style="max-height: 1000px; overflow: auto" @drop="drop($event)" @dragover="allowDrop($event)">
+            <div class="test-list">
+              <span v-if="testData.length === 0" style="color: red"
+                >温馨提示：<br />选择左侧相应API节点显示可拖拽的API<br />从左边拖拽API至此区域组成业务用例<br />
+                上下拖动此区域接口调整接口调用顺序
+              </span>
+              <div v-if="isConfigExist" class="block block_test" @mousemove="currentTest = -1">
+                <span class="block-method block_method_config block_method_color">{{ testData[0].body.method }}</span>
+                <input class="block-test-name" v-model="testData[0].body.name" disabled />
+
+                <el-button
+                  style="position: absolute; right: 5px; top: 4px"
+                  v-show="currentTest === -1"
+                  type="danger"
+                  icon="el-icon-delete"
+                  title="删除"
+                  circle
+                  size="mini"
+                  @click="testData.splice(index, 1)"
+                >
+                </el-button>
+              </div>
+              <draggable
+                v-model="testData"
+                @end="dragEnd"
+                @start="length = testData.length"
+                v-bind="{ animation: 200 }"
+              >
+                <div v-for="(test, index) in testData" :key="index" @mousemove="currentTest = index">
+                  <div class="block block_test" v-if="test.body.method !== 'config'">
+                    <span class="block-method block_method_test block_method_color">Step_{{ index }}</span>
+                    <input class="block-test-name" v-model="test.body.name" />
+                    <el-row v-show="currentTest === index" style="position: absolute; right: 5px; top: 4px">
+                      <el-button
+                        type="info"
+                        icon="el-icon-edit"
+                        title="编辑"
+                        circle
+                        size="mini"
+                        @click="editTestStepActivate = true"
+                      >
+                      </el-button>
+
+                      <el-button
+                        type="success"
+                        icon="el-icon-caret-right"
+                        circle
+                        size="mini"
+                        style="margin-left: 5px"
+                        title="单个运行"
+                        @click="handleSingleRun()"
+                      >
+                      </el-button>
+
+                      <el-button
+                        type="primary"
+                        icon="el-icon-caret-right"
+                        circle
+                        size="mini"
+                        style="margin-left: 5px"
+                        title="运行开始到当前位置的所有api"
+                        @click="handlePartialRun(index)"
+                      >
+                      </el-button>
+
+                      <el-button
+                        type="danger"
+                        icon="el-icon-document-copy"
+                        title="复制当前步骤"
+                        circle
+                        size="mini"
+                        style="margin-left: 5px"
+                        @click="handleCopyStep(index)"
+                      >
+                      </el-button>
+
+                      <el-button
+                        type="danger"
+                        icon="el-icon-delete"
+                        title="删除"
+                        circle
+                        size="mini"
+                        style="margin-left: 5px"
+                        @click="testData.splice(index, 1)"
+                      >
+                      </el-button>
+                    </el-row>
+                  </div>
+                </div>
+              </draggable>
+            </div>
+          </div>
+        </el-col>
+      </el-row>
+      <el-pagination
+        v-if="!editTestStepActivate"
+        :page-size="11"
+        v-show="apiData.count !== 0"
+        background
+        @current-change="handlePageChange"
+        :current-page.sync="currentPage"
+        layout="total, prev, pager, next, jumper"
+        :total="apiData.count"
+      >
+      </el-pagination>
 
       <http-runner
         :host="host"
@@ -395,11 +310,7 @@ export default {
   watch: {
     config() {
       const temp = { body: { name: this.config, method: "config" } };
-      if (
-        (this.testData.length === 0 ||
-          this.testData[0].body.method !== "config") &&
-        this.config !== "请选择"
-      ) {
+      if ((this.testData.length === 0 || this.testData[0].body.method !== "config") && this.config !== "请选择") {
         this.testData.splice(0, 0, temp);
       } else {
         if (this.config !== "请选择") {
@@ -492,10 +403,7 @@ export default {
       }
       // 用例创建人和超级管理员可以编辑并保存用例
       // 其他人只能打开用例，无法保存
-      if (
-        this.isSuperuser ||
-        this.testStepResp.case.creator === this.userName
-      ) {
+      if (this.isSuperuser || this.testStepResp.case.creator === this.userName) {
         this.disabledSave = false;
       } else {
         this.disabledSave = true;
@@ -541,10 +449,7 @@ export default {
         return false;
       }
 
-      if (
-        this.testData[0].body.method === "config" &&
-        this.testData.length === 1
-      ) {
+      if (this.testData[0].body.method === "config" && this.testData.length === 1) {
         this.$notify.warning({
           title: "提示",
           duration: this.$store.state.duration,
@@ -553,10 +458,7 @@ export default {
         return false;
       }
 
-      if (
-        this.testData[0].body.name === "请选择" ||
-        this.testData[0].body.method !== "config"
-      ) {
+      if (this.testData[0].body.name === "请选择" || this.testData[0].body.method !== "config") {
         this.$notify.warning({
           title: "提示",
           duration: this.$store.state.duration,
@@ -698,10 +600,7 @@ export default {
     handleSingleRun() {
       this.loading = true;
       var config = null;
-      if (
-        this.testData.length > 0 &&
-        this.testData[0].body.method === "config"
-      ) {
+      if (this.testData.length > 0 && this.testData[0].body.method === "config") {
         config = this.testData[0].body;
       }
       this.$api
@@ -759,9 +658,7 @@ export default {
       });
     },
     resetSearch() {
-      (this.selectUser = this.$store.state.user),
-        (this.currentNode = ""),
-        this.$emit("update:search", "");
+      (this.selectUser = this.$store.state.user), (this.currentNode = ""), this.$emit("update:search", "");
       this.$emit("update:tag", "");
       this.$emit("update:rigEnv", "");
       this.getAPIList();
@@ -871,7 +768,7 @@ export default {
 }
 
 .block_test {
-  margin-top: 10px;
+  margin-top: 6px;
   border: 1px solid #49cc90;
   background-color: rgba(236, 248, 238, 0.4);
 }
@@ -916,7 +813,7 @@ export default {
 }
 
 .edit__block {
-  height: auto;
+  height: 45px;
   padding: 0 5px;
   line-height: 1;
 }

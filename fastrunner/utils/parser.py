@@ -115,6 +115,7 @@ class Format(object):
         """
         返回标准化HttpRunner "desc" 字段运行需去除
         """
+        test = dict()
         if not hasattr(self, 'rig_id'):
             self.rig_id = None
 
