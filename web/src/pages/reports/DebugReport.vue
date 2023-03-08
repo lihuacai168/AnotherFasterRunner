@@ -259,7 +259,7 @@ export default {
       // TODO 修复产生2个editor
       if (tab.label === "Content") {
         for (let i = 0; i < this.expandedRows; i++) {
-          debugger;
+          // debugger;
           console.log(i);
           this.$refs.jsonEditor[i * 2].editor.expandAll();
         }
@@ -313,7 +313,9 @@ export default {
       });
       try {
         request["body"] = JSON.parse(request["body"]);
-      } catch (e) {}
+      } catch (e) {
+        ("");
+      }
 
       return request;
     },
@@ -321,7 +323,9 @@ export default {
     handleContent(content) {
       try {
         content = JSON.parse(content);
-      } catch (e) {}
+      } catch (e) {
+        ("");
+      }
       return content;
     },
 

@@ -1,262 +1,201 @@
 <template>
-  <el-container>
-    <el-header style="background: #fff; padding: 0">
-      <div class="nav-api-header">
-        <div style="padding-top: 10px; margin-left: 10px">
-          <el-button
-            :disabled="addAPIFlag"
-            type="primary"
-            size="small"
-            icon="el-icon-plus"
-            @click="dialogVisible = true"
-          >
-            新建节点
-          </el-button>
+  <div>
+    <el-header style="background: #fff; padding: 0; height: 50px">
+      <div class="nav-api-header" style="padding-top: 10px; margin-left: 10px">
+        <el-button
+          :disabled="addAPIFlag"
+          type="primary"
+          size="small"
+          icon="el-icon-circle-plus"
+          @click="dialogVisible = true"
+          >新建节点
+        </el-button>
 
-          <el-dialog
-            title="新建节点"
-            :visible.sync="dialogVisible"
-            width="30%"
-            align="center"
-          >
-            <el-form
-              :model="nodeForm"
-              :rules="rules"
-              ref="nodeForm"
-              label-width="100px"
-              class="project"
-            >
-              <el-form-item label="节点名称" prop="name">
-                <el-input v-model="nodeForm.name"></el-input>
-              </el-form-item>
-            </el-form>
+        <el-dialog title="新建节点" :visible.sync="dialogVisible" width="30%" align="center">
+          <el-form :model="nodeForm" :rules="rules" ref="nodeForm" label-width="100px" class="project">
+            <el-form-item label="节点名称" prop="name">
+              <el-input v-model="nodeForm.name"></el-input>
+            </el-form-item>
+          </el-form>
 
-            <el-radio-group v-model="radio" size="small">
-              <el-radio-button label="根节点"></el-radio-button>
-              <el-radio-button label="子节点"></el-radio-button>
-            </el-radio-group>
+          <el-radio-group v-model="radio" size="small">
+            <el-radio-button label="根节点"></el-radio-button>
+            <el-radio-button label="子节点"></el-radio-button>
+          </el-radio-group>
 
-            <span slot="footer" class="dialog-footer">
-              <el-button size="small" @click="dialogVisible = false"
-                >取 消</el-button
-              >
-              <el-button
-                size="small"
-                type="primary"
-                @click="handleConfirm('nodeForm')"
-                >确 定</el-button
-              >
-            </span>
-          </el-dialog>
-
-          <el-button
-            v-show="isSuperuser && false"
-            :disabled="currentNode === '' || !isSuperuser"
-            :title="isSuperuser ? '删除所选节点' : '删除节点权限不足'"
-            type="danger"
-            size="small"
-            icon="el-icon-delete"
-            style="margin-left: 5px"
-            @click="deleteNode"
-            >删除节点
-          </el-button>
-
-          <el-button
-            v-show="false"
-            :disabled="currentNode === '' || addAPIFlag"
-            type="info"
-            size="small"
-            style="margin-left: 5px"
-            icon="el-icon-edit-outline"
-            @click="renameNode(currentNode)"
-            >重命名
-          </el-button>
-
-          <el-button
-            :disabled="currentNode === '' || addAPIFlag"
-            type="primary"
-            plain
-            size="small"
-            icon="el-icon-circle-plus"
-            @click="initResponse = true"
-            style="margin-left: 5px"
-            >添加接口
-          </el-button>
-
-          <el-button
-            v-show="userName === projectInfo.responsible || isSuperuser"
-            type="primary"
-            size="small"
-            icon="el-icon-circle-plus-outline"
-            style="margin-left: 5px"
-            @click="importYAPIdialogVisible = true"
-            >导入接口
-          </el-button>
-
-          <el-dialog
-            width="30%"
-            title="导入YAPI接口"
-            align="center"
-            :visible.sync="importYAPIdialogVisible"
-          >
-            <el-form
-              ref="elForm"
-              :model="YAPIformData"
-              :rules="rules"
-              size="medium"
-              label-width="100px"
-            >
-              <el-form-item label="YAPI的地址" prop="yapi_base_url">
-                <el-input
-                  v-model="YAPIformData.yapi_base_url"
-                  readonly
-                  placeholder="http://yapi.xxx.com"
-                  clearable
-                  :style="{ width: '100%' }"
-                ></el-input>
-              </el-form-item>
-              <el-form-item label="token" prop="yapi_openapi_token">
-                <el-input
-                  v-model="YAPIformData.yapi_openapi_token"
-                  readonly
-                  placeholder="yapi项目的openapi token"
-                  clearable
-                  :style="{ width: '100%' }"
-                ></el-input>
-              </el-form-item>
-            </el-form>
-            <div slot="footer">
-              <el-button @click="importYAPIdialogVisible = false"
-                >取消</el-button
-              >
-              <el-button
-                type="primary"
-                @click="handleConfirmYAPI"
-                :title="
-                  YAPIformData.yapi_openapi_token ===
-                    YAPIformDataDefaultValue ||
-                  YAPIformData.yapi_base_url === YAPIformDataDefaultValue
-                    ? '请到项目详情中配置yapi信息'
-                    : '导入YAPI节点和接口'
-                "
-                :disabled="
-                  YAPIformData.yapi_openapi_token ===
-                    YAPIformDataDefaultValue ||
-                  YAPIformData.yapi_base_url === YAPIformDataDefaultValue
-                "
-              >
-                导入
-              </el-button>
-            </div>
-          </el-dialog>
-          <span v-show="this.$store.state.show_hosts">
-            &nbspHosts:
-            <el-select
-              placeholder="请选择"
-              size="small"
-              style="width: 100%; margin-left: -6px"
-              v-model="currentHost"
-            >
-              <el-option
-                v-for="item in hostOptions"
-                :key="item.id"
-                :label="item.name"
-                :value="item.name"
-              >
-              </el-option>
-            </el-select>
+          <span slot="footer" class="dialog-footer">
+            <el-button size="small" @click="dialogVisible = false">取 消</el-button>
+            <el-button size="small" type="primary" @click="handleConfirm('nodeForm')">确 定</el-button>
           </span>
+        </el-dialog>
 
-          <el-button
-            v-if="!addAPIFlag"
-            style="margin-left: 20px"
-            type="primary"
-            icon="el-icon-caret-right"
-            circle
-            title="批量运行"
-            size="small"
-            @click="run = !run"
-          >
-          </el-button>
-          <el-button
-            v-if="!addAPIFlag"
-            :disabled="!(!addAPIFlag && onlyMe && isSelectAPI)"
-            style="margin-left: 5px"
-            type="success"
-            circle
-            size="small"
-            icon="el-icon-s-promotion"
-            @click="move = !move"
-            :title="'移动API到指定节点'"
-          >
-          </el-button>
+        <el-button
+          v-show="isSuperuser && false"
+          :disabled="currentNode === '' || !isSuperuser"
+          :title="isSuperuser ? '删除所选节点' : '删除节点权限不足'"
+          type="danger"
+          size="small"
+          icon="el-icon-delete"
+          style="margin-left: 5px"
+          @click="deleteNode"
+          >删除节点
+        </el-button>
 
-          <el-button
-            v-if="isSuperuser"
-            type="danger"
-            icon="el-icon-delete"
-            circle
-            style="margin-left: 5px"
-            size="small"
-            :title="
-              isSuperuser === true ? '批量删除所选API' : '管理员才能批量删除API'
-            "
-            :disabled="!isSuperuser"
-            @click="del = !del"
-          ></el-button>
-          &nbsp配置:
-          <el-select
-            placeholder="请选择"
-            size="small"
-            style="width: 100px"
-            v-model="currentConfig"
-            value-key="id"
-          >
-            <el-option
-              v-for="item in configOptions"
-              :key="item.id"
-              :label="item.name"
-              :value="item"
+        <el-button
+          v-show="false"
+          :disabled="currentNode === '' || addAPIFlag"
+          type="info"
+          size="small"
+          style="margin-left: 5px"
+          icon="el-icon-edit-outline"
+          @click="renameNode(currentNode)"
+          >重命名
+        </el-button>
+
+        <el-button
+          :disabled="currentNode === '' || addAPIFlag"
+          type="primary"
+          plain
+          size="small"
+          icon="el-icon-circle-plus"
+          @click="initResponse = true"
+          style="margin-left: 5px"
+          >添加接口
+        </el-button>
+
+        <el-button
+          v-show="userName === projectInfo.responsible || isSuperuser"
+          type="primary"
+          size="small"
+          icon="el-icon-circle-plus-outline"
+          style="margin-left: 5px"
+          @click="importYAPIdialogVisible = true"
+          >导入接口
+        </el-button>
+
+        <el-dialog width="30%" title="导入YAPI接口" align="center" :visible.sync="importYAPIdialogVisible">
+          <el-form ref="elForm" :model="YAPIformData" :rules="rules" size="medium" label-width="100px">
+            <el-form-item label="YAPI的地址" prop="yapi_base_url">
+              <el-input
+                v-model="YAPIformData.yapi_base_url"
+                readonly
+                placeholder="http://yapi.xxx.com"
+                clearable
+                :style="{ width: '100%' }"
+              ></el-input>
+            </el-form-item>
+            <el-form-item label="token" prop="yapi_openapi_token">
+              <el-input
+                v-model="YAPIformData.yapi_openapi_token"
+                readonly
+                placeholder="yapi项目的openapi token"
+                clearable
+                :style="{ width: '100%' }"
+              ></el-input>
+            </el-form-item>
+          </el-form>
+          <div slot="footer">
+            <el-button @click="importYAPIdialogVisible = false">取消</el-button>
+            <el-button
+              type="primary"
+              @click="handleConfirmYAPI"
+              :title="
+                YAPIformData.yapi_openapi_token === YAPIformDataDefaultValue ||
+                YAPIformData.yapi_base_url === YAPIformDataDefaultValue
+                  ? '请到项目详情中配置yapi信息'
+                  : '导入YAPI节点和接口'
+              "
+              :disabled="
+                YAPIformData.yapi_openapi_token === YAPIformDataDefaultValue ||
+                YAPIformData.yapi_base_url === YAPIformDataDefaultValue
+              "
             >
-            </el-option>
+              导入
+            </el-button>
+          </div>
+        </el-dialog>
+        <span v-show="this.$store.state.show_hosts">
+          &nbsp;Hosts:
+          <el-select placeholder="请选择" size="small" style="width: 100%; margin-left: -6px" v-model="currentHost">
+            <el-option v-for="item in hostOptions" :key="item.id" :label="item.name" :value="item.name"> </el-option>
           </el-select>
+        </span>
 
-          <el-switch
-            style="margin-left: 10px"
-            v-model="onlyMe"
-            v-if="!addAPIFlag"
-            active-color="#13ce66"
-            inactive-color="#ff4949"
-            active-text="只看我的"
-          >
-          </el-switch>
+        <el-button
+          v-if="!addAPIFlag"
+          style="margin-left: 20px"
+          type="primary"
+          icon="el-icon-caret-right"
+          circle
+          title="批量运行"
+          size="small"
+          @click="run = !run"
+        >
+        </el-button>
+        <el-button
+          v-if="!addAPIFlag"
+          :disabled="!(!addAPIFlag && onlyMe && isSelectAPI)"
+          style="margin-left: 5px"
+          type="success"
+          circle
+          size="small"
+          icon="el-icon-s-promotion"
+          @click="move = !move"
+          :title="'移动API到指定节点'"
+        >
+        </el-button>
 
-          <el-switch
-            style="margin-left: 10px"
-            v-model="showYAPI"
-            v-if="!addAPIFlag"
-            active-color="#13ce66"
-            inactive-color="#ff4949"
-            active-text="显示YAPI"
-          >
-          </el-switch>
+        <el-button
+          v-if="isSuperuser"
+          type="danger"
+          icon="el-icon-delete"
+          circle
+          style="margin-left: 5px"
+          size="small"
+          :title="isSuperuser === true ? '批量删除所选API' : '管理员才能批量删除API'"
+          :disabled="!isSuperuser"
+          @click="del = !del"
+        ></el-button>
+        &nbsp;配置:
+        <el-select placeholder="请选择" size="small" style="width: 100px" v-model="currentConfig" value-key="id">
+          <el-option v-for="item in configOptions" :key="item.id" :label="item.name" :value="item"> </el-option>
+        </el-select>
 
-          <el-button
-            :disabled="!addAPIFlag"
-            type="info"
-            plain
-            size="small"
-            icon="el-icon-back"
-            style="position: absolute; right: 10px"
-            @click="handleBackList"
-            >返回列表
-          </el-button>
-        </div>
+        <el-switch
+          style="margin-left: 10px"
+          v-model="onlyMe"
+          v-if="!addAPIFlag"
+          active-color="#13ce66"
+          inactive-color="#ff4949"
+          active-text="只看我的"
+        >
+        </el-switch>
+
+        <el-switch
+          style="margin-left: 10px"
+          v-model="showYAPI"
+          v-if="!addAPIFlag"
+          active-color="#13ce66"
+          inactive-color="#ff4949"
+          active-text="显示YAPI"
+        >
+        </el-switch>
+
+        <el-button
+          :disabled="!addAPIFlag"
+          type="info"
+          plain
+          size="small"
+          icon="el-icon-back"
+          style="position: absolute; right: 20px"
+          @click="handleBackList"
+          >返回列表
+        </el-button>
       </div>
     </el-header>
 
     <el-container>
-      <el-aside style="width: 240px; margin-top: 10px">
+      <el-aside style="width: 240px" v-show="!addAPIFlag">
         <div class="nav-api-side">
           <div class="api-tree">
             <el-input
@@ -286,18 +225,11 @@
                 @mouseleave="mouseleave"
                 style="display: flex; width: 180px"
               >
-                <span
-                  style="overflow: hidden; text-overflow: ellipsis; flex: 1"
-                >
-                  <i class="iconfont" v-html="expand"></i>&nbsp;&nbsp;{{
-                    node.label
-                  }}
+                <span style="overflow: hidden; text-overflow: ellipsis; flex: 1">
+                  <i class="iconfont" v-html="expand"></i>&nbsp;&nbsp;{{ node.label }}
                 </span>
                 <span class="icon-group" v-show="node.id === mouseNodeId">
-                  <i
-                    class="el-icon-folder-add"
-                    @click="dialogVisible = true"
-                  ></i>
+                  <i class="el-icon-folder-add" @click="dialogVisible = true"></i>
                   <i class="el-icon-edit" @click="renameNode(node)"></i>
                   <i class="el-icon-delete" @click="deleteNode(node)"></i>
                 </span>
@@ -307,7 +239,7 @@
         </div>
       </el-aside>
 
-      <el-main style="padding: 0">
+      <el-main style="padding: 5px 0 0 0">
         <api-body
           v-show="addAPIFlag"
           :isSaveAs="isSaveAs"
@@ -341,7 +273,7 @@
         </api-list>
       </el-main>
     </el-container>
-  </el-container>
+  </div>
 </template>
 
 <script>
@@ -380,9 +312,7 @@ export default {
               params: [{ key: "", value: "", desc: "", type: 1 }],
               json_data: "",
             },
-            validate: [
-              { expect: "", actual: "", comparator: "equals", type: 1 },
-            ],
+            validate: [{ expect: "", actual: "", comparator: "equals", type: 1 }],
             variables: [{ key: "", value: "", desc: "", type: 1 }],
             extract: [{ key: "", value: "", desc: "" }],
             hooks: [{ setup: "", teardown: "" }],
@@ -412,12 +342,8 @@ export default {
         name: "",
       },
       rules: {
-        yapi_base_url: [
-          { required: true, message: "yapi的openapi url", trigger: "blur" },
-        ],
-        yapi_openapi_token: [
-          { required: true, message: "yapi的openapi token", trigger: "blur" },
-        ],
+        yapi_base_url: [{ required: true, message: "yapi的openapi url", trigger: "blur" }],
+        yapi_openapi_token: [{ required: true, message: "yapi的openapi token", trigger: "blur" }],
         name: [
           { required: true, message: "请输入节点名称", trigger: "blur" },
           { min: 1, max: 50, message: "最多不超过50个字符", trigger: "blur" },
@@ -471,13 +397,11 @@ export default {
     },
 
     getTree() {
-      this.$api
-        .getTree(this.$route.params.id, { params: { type: 1 } })
-        .then((resp) => {
-          this.dataTree = resp["tree"];
-          this.treeId = resp["id"];
-          this.maxId = resp["max"];
-        });
+      this.$api.getTree(this.$route.params.id, { params: { type: 1 } }).then((resp) => {
+        this.dataTree = resp["tree"];
+        this.treeId = resp["id"];
+        this.maxId = resp["max"];
+      });
     },
     getConfig() {
       this.$api.getAllConfig(this.$route.params.id).then((resp) => {
@@ -485,9 +409,7 @@ export default {
         this.configOptions.unshift({
           name: "请选择",
         });
-        const _config = this.configOptions.filter(
-          (item) => item.is_default === true
-        );
+        const _config = this.configOptions.filter((item) => item.is_default === true);
         if (_config.length) {
           this.currentConfig = _config[0];
         } else {
@@ -599,11 +521,7 @@ export default {
         label: this.nodeForm.name,
         children: [],
       };
-      if (
-        data === "" ||
-        this.dataTree.length === 0 ||
-        this.radio === "根节点"
-      ) {
+      if (data === "" || this.dataTree.length === 0 || this.radio === "根节点") {
         this.dataTree.push(newChild);
         return;
       }

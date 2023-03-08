@@ -24,12 +24,13 @@ ul li {
 
 .nav-api-side {
     overflow: auto;
+    max-height: 600px;
     border: 1px solid #ddd;
-    width: 240px;
-    margin-left: 10px;
+    /* width: 240px; */
+    margin: 5px 0 5px 10px;
     border-radius: 4px;
-    position: fixed;
-    top: 110px;
+    /* position: fixed; */
+    top: 90px;
     bottom: 0;
 
 }

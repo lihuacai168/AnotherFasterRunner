@@ -20,20 +20,20 @@ ul li {
     border-bottom: 1px solid #ddd;
     background-color: #F7F7F7;
     background: #fff;
-    padding: 0;
+    /* padding: 0;
     position: fixed;
     top: 36;
     width: 100%;
-    z-index: 10;
+    z-index: 10; */
 }
 
 .nav-api-side {
     overflow: auto;
     border: 1px solid #ddd;
-    width: 240px;
+    /* width: 240px; */
     margin-left: 10px;
     border-radius: 4px;
-    position: fixed;
+    /* position: fixed; */
     top: 90px;
     bottom: 0;
 

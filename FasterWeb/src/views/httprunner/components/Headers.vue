@@ -25,23 +25,13 @@
 
     <el-table-column label="内容" min-width="280" style="margin-left: 5px">
       <template v-slot="scope">
-        <el-input
-          clearable
-          v-model="scope.row.value"
-          placeholder="头部内容"
-          size="medium"
-        ></el-input>
+        <el-input clearable v-model="scope.row.value" placeholder="头部内容" size="medium"></el-input>
       </template>
     </el-table-column>
 
     <el-table-column label="描述" width="180">
       <template v-slot="scope">
-        <el-input
-          clearable
-          v-model="scope.row.desc"
-          placeholder="头部信息简要描述"
-          size="medium"
-        ></el-input>
+        <el-input clearable v-model="scope.row.desc" placeholder="头部信息简要描述" size="medium"></el-input>
       </template>
     </el-table-column>
 
@@ -51,6 +41,7 @@
           <el-button
             icon="el-icon-circle-plus-outline"
             size="mini"
+            circle
             type="info"
             style="margin-left: 5px"
             @click="handleEdit(scope.$index, scope.row)"
@@ -59,6 +50,7 @@
           <el-button
             icon="el-icon-delete"
             size="mini"
+            circle
             type="danger"
             v-show="scope.$index !== 0"
             style="margin-left: 5px"
@@ -82,19 +74,13 @@ export default {
   methods: {
     querySearch(queryString, cb) {
       let headerOptions = this.headerOptions;
-      let results = queryString
-        ? headerOptions.filter(this.createFilter(queryString))
-        : headerOptions;
+      let results = queryString ? headerOptions.filter(this.createFilter(queryString)) : headerOptions;
       cb(results);
     },
 
     createFilter(queryString) {
       return (headerOptions) => {
-        return (
-          headerOptions.value
-            .toLowerCase()
-            .indexOf(queryString.toLowerCase()) === 0
-        );
+        return headerOptions.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0;
       };
     },
 

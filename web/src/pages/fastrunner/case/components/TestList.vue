@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-header style="padding-top: 10px; height: 50px">
+    <el-header style="padding-top: 4px; height: 40px">
       <div style="display: flex; align-items: center">
         <div v-if="testData.count >= 0">
           <el-input

@@ -18,9 +18,7 @@
         </li>
         <li class="pull-left">
           <p class="title-p">
-            <i class="iconfont">&#xe61f;</i> &nbsp;{{
-              projectInfo.case_step_count
-            }}
+            <i class="iconfont">&#xe61f;</i> &nbsp;{{ projectInfo.case_step_count }}
             个监控接口
           </p>
           <p class="desc-p">监控接口个数</p>
@@ -47,17 +45,12 @@
         <!--                <p class="desc-p">环境总数</p>-->
         <!--            </li>            -->
         <li class="pull-left">
-          <p class="title-p">
-            <i class="iconfont">&#xe609;</i> &nbsp;{{
-              projectInfo.api_cover_rate
-            }}% 接口覆盖率
-          </p>
+          <p class="title-p"><i class="iconfont">&#xe609;</i> &nbsp;{{ projectInfo.api_cover_rate }}% 接口覆盖率</p>
           <p class="desc-p">用例步骤和接口总数的比例</p>
         </li>
         <li class="pull-left">
           <p class="title-p">
-            <i class="iconfont">&#xe66e;</i> 共
-            {{ projectInfo.report_count }} 个报告
+            <i class="iconfont">&#xe66e;</i> 共 {{ projectInfo.report_count }} 个报告
             {{ projectInfo.report_success }} 成功,{{ projectInfo.report_fail }}
             失败
           </p>
@@ -65,18 +58,14 @@
         </li>
         <li class="pull-left">
           <p class="title-p">
-            <i class="iconfont">&#xee32;</i> &nbsp;{{
-              projectInfo.config_count
-            }}
+            <i class="iconfont">&#xee32;</i> &nbsp;{{ projectInfo.config_count }}
             套配置
           </p>
           <p class="desc-p">配置总数</p>
         </li>
         <li class="pull-left">
           <p class="title-p">
-            <i class="iconfont">&#xe692;</i> &nbsp;{{
-              projectInfo.variables_count
-            }}
+            <i class="iconfont">&#xe692;</i> &nbsp;{{ projectInfo.variables_count }}
             对变量
           </p>
           <p class="desc-p">全局变量对数</p>
@@ -91,18 +80,12 @@
           </div>
           <el-row type="flex">
             <el-col :span="16">
-              <ApexCharts
-                :options="apiPieOptions"
-                :series="apiPieSeries"
-              ></ApexCharts>
+              <ApexCharts :options="apiPieOptions" :series="apiPieSeries"></ApexCharts>
             </el-col>
           </el-row>
           <el-row type="flex" justify="end">
             <el-col :span="12">
-              <ApexCharts
-                :options="apiCoverRateOptions"
-                :series="apiCoverRateSeries"
-              ></ApexCharts>
+              <ApexCharts :options="apiCoverRateOptions" :series="apiCoverRateSeries"></ApexCharts>
             </el-col>
           </el-row>
         </el-card>
@@ -114,50 +97,33 @@
           </div>
           <el-row type="flex">
             <el-col :span="16">
-              <ApexCharts
-                :options="casePieOptions"
-                :series="casePieSeries"
-              ></ApexCharts>
+              <ApexCharts :options="casePieOptions" :series="casePieSeries"></ApexCharts>
             </el-col>
           </el-row>
 
           <el-row type="flex" justify="end">
             <el-col :span="12">
-              <ApexCharts
-                :options="coreCaseCoverRateOptions"
-                :series="coreCaseCoverRateSeries"
-              ></ApexCharts>
+              <ApexCharts :options="coreCaseCoverRateOptions" :series="coreCaseCoverRateSeries"></ApexCharts>
             </el-col>
           </el-row>
         </el-card>
       </div>
 
-      <div
-        style="display: flex; justify-content: space-around; margin-top: 10px"
-        v-if="false"
-      >
+      <div style="display: flex; justify-content: space-around; margin-top: 10px" v-if="false">
         <el-card style="width: 33%">
           <div slot="header">
             <span>API每日创建</span>
             <i class="iconfont">&#xe74a;</i>
           </div>
 
-          <ApexCharts
-            type="area"
-            :options="apiAreaOptions"
-            :series="apiAreaSeries"
-          ></ApexCharts>
+          <ApexCharts type="area" :options="apiAreaOptions" :series="apiAreaSeries"></ApexCharts>
         </el-card>
         <el-card style="width: 33%">
           <div slot="header">
             <span>Case每日创建</span>
             <i class="iconfont">&#xe6da;</i>
           </div>
-          <ApexCharts
-            type="area"
-            :options="caseAreaOptions"
-            :series="caseAreaSeries"
-          ></ApexCharts>
+          <ApexCharts type="area" :options="caseAreaOptions" :series="caseAreaSeries"></ApexCharts>
         </el-card>
         <el-card style="width: 33%">
           <div slot="header">
@@ -166,11 +132,7 @@
             <!--                    TODO 日期选择-->
             <!--                    <el-button style="float: right; padding: 3px 0" type="text">操作按钮</el-button>-->
           </div>
-          <ApexCharts
-            type="area"
-            :options="reportAreaOptions"
-            :series="reportAreaSeries"
-          ></ApexCharts>
+          <ApexCharts type="area" :options="reportAreaOptions" :series="reportAreaSeries"></ApexCharts>
         </el-card>
       </div>
       <div style="display: flex; margin: 10px">
@@ -179,10 +141,7 @@
             <span>Report</span>
             <i class="iconfont">&#xe66e;</i>
           </div>
-          <ApexCharts
-            :options="reportPieOptions"
-            :series="reportPieSeries"
-          ></ApexCharts>
+          <ApexCharts :options="reportPieOptions" :series="reportPieSeries"></ApexCharts>
         </el-card>
         <el-card style="width: 500px; height: 430px">
           <div slot="header"><span>每日数据</span></div>

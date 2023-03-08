@@ -11,24 +11,14 @@
   >
     <el-table-column label="变量名">
       <template v-slot="scope">
-        <el-input
-          clearable
-          v-model="scope.row.key"
-          placeholder="Key"
-          size="medium"
-        ></el-input>
+        <el-input clearable v-model="scope.row.key" placeholder="Key" size="medium"></el-input>
       </template>
     </el-table-column>
 
     <el-table-column label="类型" width="120">
       <template v-slot="scope">
         <el-select v-model="scope.row.type" size="medium">
-          <el-option
-            v-for="item in dataTypeOptions"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value"
-          >
+          <el-option v-for="item in dataTypeOptions" :key="item.value" :label="item.label" :value="item.value">
           </el-option>
         </el-select>
       </template>
@@ -36,23 +26,13 @@
 
     <el-table-column label="变量值">
       <template v-slot="scope">
-        <el-input
-          clearable
-          v-model="scope.row.value"
-          placeholder="Value"
-          size="medium"
-        ></el-input>
+        <el-input clearable v-model="scope.row.value" placeholder="Value" size="medium"></el-input>
       </template>
     </el-table-column>
 
     <el-table-column label="内容">
       <template v-slot="scope">
-        <el-input
-          clearable
-          v-model="scope.row.desc"
-          placeholder="变量简要描述"
-          size="medium"
-        ></el-input>
+        <el-input clearable v-model="scope.row.desc" placeholder="变量简要描述" size="medium"></el-input>
       </template>
     </el-table-column>
 
@@ -62,6 +42,7 @@
           <el-button
             icon="el-icon-circle-plus-outline"
             size="mini"
+            circle
             type="info"
             title="增加变量"
             @click="handleEdit(scope.$index, scope.row)"
@@ -70,6 +51,7 @@
           <el-button
             icon="el-icon-document-copy"
             size="mini"
+            circle
             style="margin-left: 5px"
             type="info"
             title="复制变量"
@@ -79,6 +61,7 @@
           <el-button
             icon="el-icon-delete"
             size="mini"
+            circle
             style="margin-left: 5px"
             type="danger"
             title="删除变量"
@@ -159,11 +142,7 @@ export default {
     // 类型转换
     parseType(type, value) {
       let tempValue;
-      const msg =
-        value +
-        " => " +
-        this.dataTypeOptions[type - 1].label +
-        " 转换异常, 该数据自动剔除";
+      const msg = value + " => " + this.dataTypeOptions[type - 1].label + " 转换异常, 该数据自动剔除";
       switch (type) {
         case 1:
           tempValue = value;

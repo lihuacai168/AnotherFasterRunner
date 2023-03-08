@@ -33,3 +33,4 @@ pnpm-lock.yaml
 templates/FasterWeb/index.html
 templates/TyAdmin/index.html
 ComposeDeploy/DockerMySQL/Redis/data/
+tyadmin/pnpm-lock.yaml

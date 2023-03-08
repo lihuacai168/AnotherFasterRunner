@@ -64,7 +64,7 @@
 .block {
     position: relative;
     border-radius: 4px;
-    height: 43px;
+    height: 38px;
     overflow: hidden;
     padding: 5px;
     display: flex;
@@ -104,10 +104,10 @@
 }
 
 .block-method {
-    font-size: 14px;
+    font-size: 12px;
     font-weight: 600;
     min-width: 50px;
-    padding: 5px 10px;
+    padding: 3px 0px;
     text-align: center;
     border-radius: 3px;
     text-shadow: 0 1px 0 rgba(0, 0, 0, .1);

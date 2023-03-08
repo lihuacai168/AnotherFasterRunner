@@ -94,11 +94,11 @@
     </div>
 
     <el-drawer
-      style="margin-top: 36px"
+      style="margin-top: 37px"
       :destroy-on-close="true"
       :with-header="false"
       :modal="false"
-      size="89%"
+      size="90%"
       :visible.sync="dashBoardVisible"
     >
       <ProjectDashBoard></ProjectDashBoard>
@@ -147,7 +147,7 @@
             <el-button
               size="small"
               type="primary"
-              style="margin-left: 0"
+              style="margin-left: 5px"
               :title="isSuperuser || userName === scope.row.responsible ? '编辑项目' : '权限不足，请联系管理员'"
               :disabled="!(isSuperuser || userName === scope.row.responsible)"
               description="这个框不用管他会自动消失的"
@@ -203,6 +203,7 @@
             <el-button
               size="small"
               type="danger"
+              style="margin-left: 5px"
               v-show="isSuperuser"
               :title="isSuperuser ? '删除项目' : '权限不足，请联系管理员'"
               :disabled="!isSuperuser"
@@ -221,7 +222,7 @@ import ProjectDashBoard from "./ProjectDashBoard.vue";
 
 export default {
   components: {
-    ProjectDashBoard
+    ProjectDashBoard,
   },
   data() {
     return {
@@ -239,24 +240,24 @@ export default {
         yapi_base_url: "",
         yapi_openapi_token: "",
         jira_bearer_token: "",
-        jira_project_key: ""
+        jira_project_key: "",
       },
       responsibleOptions: [],
       rules: {
         name: [
           { required: true, message: "请输入项目名称", trigger: "blur" },
-          { min: 1, max: 50, message: "最多不超过50个字符", trigger: "blur" }
+          { min: 1, max: 50, message: "最多不超过50个字符", trigger: "blur" },
         ],
         desc: [
           { required: true, message: "简要描述下该项目", trigger: "blur" },
-          { min: 1, max: 100, message: "最多不超过100个字符", trigger: "blur" }
+          { min: 1, max: 100, message: "最多不超过100个字符", trigger: "blur" },
         ],
         responsible: [{ required: true, message: "请选择项目负责人", trigger: "change" }],
         yapi_base_url: [{ required: false, message: "YAPI openapi的url", trigger: "blur" }],
         yapi_openapi_token: [{ required: false, message: "YAPI openapi的token", trigger: "blur" }],
         jira_bearer_token: [{ required: false, message: "JIRA bearer_token", trigger: "blur" }],
-        jira_project_key: [{ required: false, message: "jira_project_key", trigger: "blur" }]
-      }
+        jira_project_key: [{ required: false, message: "jira_project_key", trigger: "blur" }],
+      },
     };
   },
   methods: {
@@ -270,7 +271,7 @@ export default {
       this.setLocalValue("projectId", row.id);
       this.$router.push({
         name: "ProjectDetail",
-        params: { id: row["id"] }
+        params: { id: row["id"] },
       });
     },
     handleEdit(index, row) {
@@ -288,7 +289,7 @@ export default {
       this.$confirm("此操作将永久删除该项目, 是否继续?", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
-        type: "warning"
+        type: "warning",
       }).then(() => {
         this.$api.deleteProject({ data: { id: row["id"] } }).then((resp) => {
           if (resp["success"]) {
@@ -336,13 +337,13 @@ export default {
       this.$notify({
         message: resp["msg"],
         type: "success",
-        duration: this.$store.state.duration
+        duration: this.$store.state.duration,
       });
     },
     failure(resp) {
       this.$notify.error({
         message: resp["msg"],
-        duration: this.$store.state.duration
+        duration: this.$store.state.duration,
       });
     },
     getProjectList() {
@@ -378,17 +379,17 @@ export default {
         for (let i = 0; i < resp.length; i++) {
           this.responsibleOptions.push({
             label: resp[i].username,
-            value: resp[i].username
+            value: resp[i].username,
           });
         }
       });
-    }
+    },
   },
   created() {
     this.getProjectList();
     this.getUserList();
   },
-  name: "ProjectList"
+  name: "ProjectList",
 };
 </script>
 

@@ -326,9 +326,8 @@ export const runAPIByPk = (url, params) => {
   return axios.get("/api/fastrunner/run_api_pk/" + url + "/", params).then((res) => res.data);
 };
 
-export const runAPITree = async (params) => {
-  const res = await axios.post("/api/fastrunner/run_api_tree/", params);
-  return res.data;
+export const runAPITree = (params) => {
+  return axios.post("/api/fastrunner/run_api_tree/", params).then((res) => res.data);
 };
 
 export const moveAPI = async (params) => {

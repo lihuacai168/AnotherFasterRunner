@@ -18,7 +18,7 @@
           ></el-button>
           <el-button
             :disabled="!addConfigActivate"
-            type="text"
+            type="info"
             style="position: absolute; right: 20px"
             @click="addConfigActivate = false"
             >返回列表</el-button

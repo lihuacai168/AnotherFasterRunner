@@ -1,28 +1,19 @@
 <template>
-  <el-container>
-    <el-header style="padding-top: 10px; height: 50px">
+  <div>
+    <el-header style="padding-top: 4px; height: 40px">
       <div style="display: flex; align-items: center">
         <div v-if="testData.count >= 0">
           <el-input
             placeholder="请输入用例名称"
-            size="medium"
+            size="small"
             clearable
             v-model="search"
             @keyup.enter.native="getTestList"
             class="input-with-select"
           >
-            <el-button
-              slot="append"
-              icon="el-icon-search"
-              @click="getTestList"
-            ></el-button>
+            <el-button slot="append" icon="el-icon-search" @click="getTestList"></el-button>
 
-            <el-select
-              v-model="searchType"
-              slot="prepend"
-              placeholder="用例"
-              @change="searchTypeChangeHandle"
-            >
+            <el-select v-model="searchType" slot="prepend" placeholder="用例" @change="searchTypeChangeHandle">
               <el-option label="用例" value="1"></el-option>
               <el-option label="API" value="2"></el-option>
             </el-select>
@@ -31,7 +22,7 @@
 
         <div style="margin: 0 5px">
           <el-dropdown @command="caseTypeChangeHandle">
-            <el-button size="medium" type="primary"
+            <el-button size="small" type="primary"
               >类型
               <i class="el-icon-arrow-down el-icon--right"></i>
             </el-button>
@@ -45,14 +36,12 @@
           </el-dropdown>
         </div>
         <div>
-          <el-button type="primary" size="medium" @click="resetSearch"
-            >重置
-          </el-button>
+          <el-button type="primary" size="small" @click="resetSearch">重置 </el-button>
         </div>
         <div style="margin: 0 5px">
           <el-dropdown @command="dropdownMenuChangeHandle">
             <!--                        <span><i class="el-icon-more"></i></span>-->
-            <el-button type="info" size="medium"
+            <el-button type="info" size="small"
               >操作
               <i class="el-icon-more el-icon--right"></i>
             </el-button>
@@ -60,26 +49,10 @@
               <el-dropdown-item disabled style="background-color: #e2e2e2">
                 {{ selectTest.length }} 条更新为
               </el-dropdown-item>
-              <el-dropdown-item
-                :disabled="selectTest.length === 0"
-                command="core"
-                >核心用例
-              </el-dropdown-item>
-              <el-dropdown-item
-                :disabled="selectTest.length === 0"
-                command="integrated"
-                >集成用例
-              </el-dropdown-item>
-              <el-dropdown-item
-                :disabled="selectTest.length === 0"
-                command="smoke"
-                >冒烟用例
-              </el-dropdown-item>
-              <el-dropdown-item
-                :disabled="selectTest.length === 0"
-                command="monitor"
-                >监控脚本
-              </el-dropdown-item>
+              <el-dropdown-item :disabled="selectTest.length === 0" command="core">核心用例 </el-dropdown-item>
+              <el-dropdown-item :disabled="selectTest.length === 0" command="integrated">集成用例 </el-dropdown-item>
+              <el-dropdown-item :disabled="selectTest.length === 0" command="smoke">冒烟用例 </el-dropdown-item>
+              <el-dropdown-item :disabled="selectTest.length === 0" command="monitor">监控脚本 </el-dropdown-item>
             </el-dropdown-menu>
           </el-dropdown>
         </div>
@@ -124,18 +97,8 @@
                 <el-row :gutter="20">
                   <el-col :span="10"><span>配置: </span></el-col>
                   <el-col :span="10">
-                    <el-select
-                      placeholder="请选择"
-                      size="small"
-                      v-model="currentConfigId"
-                      style="width: 200px"
-                    >
-                      <el-option
-                        v-for="item in configOptions"
-                        :key="item.id"
-                        :label="item.name"
-                        :value="item.id"
-                      >
+                    <el-select placeholder="请选择" size="small" v-model="currentConfigId" style="width: 200px">
+                      <el-option v-for="item in configOptions" :key="item.id" :label="item.name" :value="item.id">
                       </el-option>
                     </el-select>
                   </el-col>
@@ -186,11 +149,7 @@
                   ref="tree"
                 >
                   <span class="custom-tree-node" slot-scope="{ node, data }">
-                    <span
-                      ><i class="iconfont" v-html="expand"></i> &nbsp;&nbsp;{{
-                        node.label
-                      }}</span
-                    >
+                    <span><i class="iconfont" v-html="expand"></i> &nbsp;&nbsp;{{ node.label }}</span>
                   </span>
                 </el-tree>
               </div>
@@ -229,19 +188,13 @@
                   ref="tree"
                 >
                   <span class="custom-tree-node" slot-scope="{ node, data }">
-                    <span
-                      ><i class="iconfont" v-html="expand"></i> &nbsp;&nbsp;{{
-                        node.label
-                      }}</span
-                    >
+                    <span><i class="iconfont" v-html="expand"></i> &nbsp;&nbsp;{{ node.label }}</span>
                   </span>
                 </el-tree>
               </div>
             </div>
             <span slot="footer" class="dialog-footer">
-              <el-button @click="dialogTreeMoveCaseVisible = false"
-                >取 消</el-button
-              >
+              <el-button @click="dialogTreeMoveCaseVisible = false">取 消</el-button>
               <el-button type="primary" @click="moveCase">确 定</el-button>
             </span>
           </el-dialog>
@@ -293,10 +246,7 @@
                     class="el-icon-success"
                     style="color: green; margin-left: 5px"
                     v-if="scope.row.tasks.length > 0"
-                    :title="
-                      '已加入定时任务: ' +
-                      scope.row.tasks.map((task) => task.name).join('，')
-                    "
+                    :title="'已加入定时任务: ' + scope.row.tasks.map((task) => task.name).join('，')"
                   >
                   </i>
                 </div>
@@ -313,18 +263,10 @@
 
             <el-table-column label="用例类型" width="100">
               <template v-slot="scope">
-                <el-tag v-if="scope.row.tag === '冒烟用例'">{{
-                  scope.row.tag
-                }}</el-tag>
-                <el-tag v-if="scope.row.tag === '集成用例'" type="info">{{
-                  scope.row.tag
-                }}</el-tag>
-                <el-tag v-if="scope.row.tag === '监控脚本'" type="danger">{{
-                  scope.row.tag
-                }}</el-tag>
-                <el-tag v-if="scope.row.tag === '核心用例'" type="success">{{
-                  scope.row.tag
-                }}</el-tag>
+                <el-tag v-if="scope.row.tag === '冒烟用例'">{{ scope.row.tag }}</el-tag>
+                <el-tag v-if="scope.row.tag === '集成用例'" type="info">{{ scope.row.tag }}</el-tag>
+                <el-tag v-if="scope.row.tag === '监控脚本'" type="danger">{{ scope.row.tag }}</el-tag>
+                <el-tag v-if="scope.row.tag === '核心用例'" type="success">{{ scope.row.tag }}</el-tag>
               </template>
             </el-table-column>
 
@@ -386,13 +328,7 @@
                     size="mini"
                     style="margin-left: 5px"
                     title="异步运行用例"
-                    @click="
-                      handleAsyncRunTest(
-                        scope.row.id,
-                        scope.row.name,
-                        scope.row.relation
-                      )
-                    "
+                    @click="handleAsyncRunTest(scope.row.id, scope.row.name, scope.row.relation)"
                   ></el-button>
 
                   <el-popover style="margin-left: 5px" trigger="hover">
@@ -411,14 +347,8 @@
                       <el-button
                         type="danger"
                         icon="el-icon-delete"
-                        :title="
-                          userName === scope.row.creator || isSuperuser
-                            ? '删除'
-                            : '只有用例创建者才能删除'
-                        "
-                        :disabled="
-                          userName !== scope.row.creator && !isSuperuser
-                        "
+                        :title="userName === scope.row.creator || isSuperuser ? '删除' : '只有用例创建者才能删除'"
+                        :disabled="userName !== scope.row.creator && !isSuperuser"
                         circle
                         size="mini"
                         style="margin-left: 5px"
@@ -430,13 +360,9 @@
                         type="warning"
                         icon="el-icon-refresh"
                         :title="
-                          userName === scope.row.creator || isSuperuser
-                            ? '从API同步用例步骤'
-                            : '只有用例创建者才能同步'
+                          userName === scope.row.creator || isSuperuser ? '从API同步用例步骤' : '只有用例创建者才能同步'
                         "
-                        :disabled="
-                          userName !== scope.row.creator && !isSuperuser
-                        "
+                        :disabled="userName !== scope.row.creator && !isSuperuser"
                         circle
                         size="mini"
                         style="margin-left: 5px"
@@ -444,13 +370,7 @@
                       >
                       </el-button>
                     </div>
-                    <el-button
-                      icon="el-icon-more"
-                      title="更多"
-                      circle
-                      size="mini"
-                      slot="reference"
-                    ></el-button>
+                    <el-button icon="el-icon-more" title="更多" circle size="mini" slot="reference"></el-button>
                   </el-popover>
                 </el-row>
               </template>
@@ -486,7 +406,7 @@
         </div>
       </el-footer>
     </el-container>
-  </el-container>
+  </div>
 </template>
 
 <script>
@@ -602,17 +522,15 @@ export default {
 
   methods: {
     getTree(showType) {
-      this.$api
-        .getTree(this.$route.params.id, { params: { type: 2 } })
-        .then((resp) => {
-          this.dataTree = resp.tree;
-          // run是批量运行case弹窗，其他是批量更新case relation弹窗
-          if (showType === "run") {
-            this.dialogTreeVisible = true;
-          } else {
-            this.dialogTreeMoveCaseVisible = true;
-          }
-        });
+      this.$api.getTree(this.$route.params.id, { params: { type: 2 } }).then((resp) => {
+        this.dataTree = resp.tree;
+        // run是批量运行case弹窗，其他是批量更新case relation弹窗
+        if (showType === "run") {
+          this.dialogTreeVisible = true;
+        } else {
+          this.dialogTreeMoveCaseVisible = true;
+        }
+      });
     },
 
     filterNode(value, data) {
@@ -848,7 +766,7 @@ export default {
 
     caseTypeChangeHandle(command) {
       this.caseType = command;
-      debugger;
+      // debugger;
       this.getTestList();
     },
 

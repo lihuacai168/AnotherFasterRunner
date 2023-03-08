@@ -10,18 +10,23 @@ import monacoLoader from "./util/MonacoLoader";
 
 export default {
   props: {
-    width: { type: [String, Number], default: '100%' },
-    height: { type: [String, Number], default: '100%' },
-    code: { type: String, default: '// code \n' },
+    width: { type: [String, Number], default: "100%" },
+    height: { type: [String, Number], default: "100%" },
+    code: { type: String, default: "// code \n" },
     srcPath: { type: String },
-    language: { type: String, default: 'javascript' },
-    theme: { type: String, default: 'vs-dark' }, // vs, hc-black
+    language: { type: String, default: "javascript" },
+    theme: { type: String, default: "vs-dark" }, // vs, hc-black
     options: { type: Object, default: () => {} },
-    highlighted: { type: Array, default: () => [{
-      number: 0,
-      class: ''
-    }] },
-    changeThrottle: { type: Number, default: 0 }
+    highlighted: {
+      type: Array,
+      default: () => [
+        {
+          number: 0,
+          class: "",
+        },
+      ],
+    },
+    changeThrottle: { type: Number, default: 0 },
   },
   mounted() {
     this.fetchEditor();
@@ -32,8 +37,8 @@ export default {
   computed: {
     style() {
       const { width, height } = this;
-      const fixedWidth = width.toString().indexOf('%') !== -1 ? width : `${width}px`;
-      const fixedHeight = height.toString().indexOf('%') !== -1 ? height : `${height}px`;
+      const fixedWidth = width.toString().indexOf("%") !== -1 ? width : `${width}px`;
+      const fixedHeight = height.toString().indexOf("%") !== -1 ? height : `${height}px`;
       return {
         width: fixedWidth,
         height: fixedHeight,
@@ -43,9 +48,9 @@ export default {
       return Object.assign({}, this.defaults, this.options, {
         value: this.code,
         language: this.language,
-        theme: this.theme
+        theme: this.theme,
       });
-    }
+    },
   },
   data() {
     return {
@@ -53,19 +58,19 @@ export default {
         selectOnLineNumbers: true,
         roundedSelection: false,
         readOnly: false,
-        cursorStyle: 'line',
+        cursorStyle: "line",
         automaticLayout: false,
-        glyphMargin: true
-      }
-    }
+        glyphMargin: true,
+      },
+    };
   },
   watch: {
     highlighted: {
       handler(lines) {
         this.highlightLines(lines);
       },
-      deep: true
-    }
+      deep: true,
+    },
   },
   methods: {
     highlightLines(lines) {
@@ -81,7 +86,7 @@ export default {
         }
 
         const number = parseInt(line.number);
-        if (!this.editor && number < 1 || isNaN(number)) {
+        if ((!this.editor && number < 1) || isNaN(number)) {
           return;
         }
 
@@ -94,21 +99,16 @@ export default {
     editorHasLoaded(editor, monaco) {
       this.editor = editor;
       this.monaco = monaco;
-      this.editor.onDidChangeModelContent(event =>
-        this.codeChangeHandler(editor, event)
-      );
-      this.$emit('mounted', editor);
+      this.editor.onDidChangeModelContent((event) => this.codeChangeHandler(editor, event));
+      this.$emit("mounted", editor);
     },
-    codeChangeHandler: function(editor) {
+    codeChangeHandler: function (editor) {
       if (this.codeChangeEmitter) {
         this.codeChangeEmitter(editor);
       } else {
-        this.codeChangeEmitter = debounce(
-          function(editor) {
-            this.$emit('codeChange', editor);
-          },
-          this.changeThrottle
-        );
+        this.codeChangeEmitter = debounce(function (editor) {
+          this.$emit("codeChange", editor);
+        }, this.changeThrottle);
         this.codeChangeEmitter(editor);
       }
     },
@@ -120,10 +120,10 @@ export default {
       this.editorHasLoaded(this.editor, window.monaco);
     },
     destroyMonaco() {
-      if (typeof this.editor !== 'undefined') {
+      if (typeof this.editor !== "undefined") {
         this.editor.dispose();
       }
-    }
-  }
+    },
+  },
 };
 </script>

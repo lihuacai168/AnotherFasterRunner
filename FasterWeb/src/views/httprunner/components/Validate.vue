@@ -11,12 +11,7 @@
   >
     <el-table-column label="实际返回值">
       <template v-slot="scope">
-        <el-input
-          clearable
-          v-model.trim="scope.row.actual"
-          placeholder="实际返回值"
-          size="medium"
-        ></el-input>
+        <el-input clearable v-model.trim="scope.row.actual" placeholder="实际返回值" size="medium"></el-input>
       </template>
     </el-table-column>
 
@@ -29,12 +24,7 @@
           placement="bottom"
           :disabled="scope.row.comparator === '' ? 'disabled' : false"
         >
-          <el-autocomplete
-            size="medium"
-            clearable
-            v-model="scope.row.comparator"
-            :fetch-suggestions="querySearch"
-          >
+          <el-autocomplete size="medium" clearable v-model="scope.row.comparator" :fetch-suggestions="querySearch">
           </el-autocomplete>
         </el-tooltip>
       </template>
@@ -43,12 +33,7 @@
     <el-table-column label="期望类型" width="120">
       <template v-slot="scope">
         <el-select v-model="scope.row.type" size="medium">
-          <el-option
-            v-for="item in dataTypeOptions"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value"
-          >
+          <el-option v-for="item in dataTypeOptions" :key="item.value" :label="item.label" :value="item.value">
           </el-option>
         </el-select>
       </template>
@@ -84,6 +69,7 @@
           <el-button
             icon="el-icon-circle-plus-outline"
             size="mini"
+            circle
             style="margin-left: 5px"
             type="info"
             @click="handleEdit(scope.$index, scope.row)"
@@ -92,6 +78,7 @@
           <el-button
             icon="el-icon-document-copy"
             size="mini"
+            circle
             style="margin-left: 5px"
             type="info"
             title="复制断言"
@@ -101,6 +88,7 @@
           <el-button
             icon="el-icon-delete"
             size="mini"
+            circle
             style="margin-left: 5px"
             type="danger"
             v-show="scope.$index !== 0"
@@ -142,19 +130,13 @@ export default {
   methods: {
     querySearch(queryString, cb) {
       let validateOptions = this.validateOptions;
-      let results = queryString
-        ? validateOptions.filter(this.createFilter(queryString))
-        : validateOptions;
+      let results = queryString ? validateOptions.filter(this.createFilter(queryString)) : validateOptions;
       cb(results);
     },
 
     createFilter(queryString) {
       return (validateOptions) => {
-        return (
-          validateOptions.value
-            .toLowerCase()
-            .indexOf(queryString.toLowerCase()) === 0
-        );
+        return validateOptions.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0;
       };
     },
 
@@ -190,11 +172,7 @@ export default {
     // 类型转换
     parseType(type, value) {
       let tempValue;
-      const msg =
-        value +
-        " => " +
-        this.dataTypeOptions[type - 1].label +
-        " 转换异常, 该数据自动剔除";
+      const msg = value + " => " + this.dataTypeOptions[type - 1].label + " 转换异常, 该数据自动剔除";
       switch (type) {
         case 1:
           tempValue = value;
@@ -255,13 +233,7 @@ export default {
           }
           break;
       }
-      if (
-        tempValue !== 0 &&
-        !tempValue &&
-        type !== 4 &&
-        type !== 1 &&
-        type !== 7
-      ) {
+      if (tempValue !== 0 && !tempValue && type !== 4 && type !== 1 && type !== 7) {
         this.$notify.error({
           title: "类型转换错误",
           message: msg,
@@ -283,11 +255,7 @@ export default {
           if (expect === "exception") {
             continue;
           }
-          obj[content["comparator"]] = [
-            content["actual"],
-            expect,
-            content["desc"],
-          ];
+          obj[content["comparator"]] = [content["actual"], expect, content["desc"]];
           validate.validate.push(obj);
         }
       }

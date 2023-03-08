@@ -9,7 +9,7 @@
 
           <el-button
             :disabled="!addTasks"
-            type="primary"
+            type="info"
             size="small"
             icon="el-icon-back"
             style="position: absolute; right: 20px"

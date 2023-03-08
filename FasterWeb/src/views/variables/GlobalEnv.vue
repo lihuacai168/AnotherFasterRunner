@@ -21,59 +21,27 @@
             @click="delSelectionVariables"
           ></el-button>
 
-          <el-dialog
-            title="添加变量"
-            :visible.sync="dialogVisible"
-            width="30%"
-            align="center"
-          >
-            <el-form
-              :model="variablesForm"
-              :rules="rules"
-              ref="variablesForm"
-              label-width="100px"
-              class="project"
-            >
+          <el-dialog title="添加变量" :visible.sync="dialogVisible" width="30%" align="center">
+            <el-form :model="variablesForm" :rules="rules" ref="variablesForm" label-width="100px" class="project">
               <el-form-item label="变量名" prop="key">
-                <el-input
-                  v-model="variablesForm.key"
-                  clearable
-                  placeholder="请输入变量名"
-                ></el-input>
+                <el-input v-model="variablesForm.key" clearable placeholder="请输入变量名"></el-input>
               </el-form-item>
 
               <el-form-item label="变量值" prop="value">
-                <el-input
-                  v-model="variablesForm.value"
-                  clearable
-                  placeholder="请输入变量值"
-                ></el-input>
+                <el-input v-model="variablesForm.value" clearable placeholder="请输入变量值"></el-input>
               </el-form-item>
 
               <el-form-item label="变量描述" prop="description">
-                <el-input
-                  v-model="variablesForm.description"
-                  clearable
-                  placeholder="请输入变量描述"
-                ></el-input>
+                <el-input v-model="variablesForm.description" clearable placeholder="请输入变量描述"></el-input>
               </el-form-item>
             </el-form>
             <span slot="footer" class="dialog-footer">
-              <el-button @click="resetForm('variablesForm', 'dialogVisible')"
-                >取 消</el-button
-              >
-              <el-button type="primary" @click="handleConfirm('variablesForm')"
-                >确 定</el-button
-              >
+              <el-button @click="resetForm('variablesForm', 'dialogVisible')">取 消</el-button>
+              <el-button type="primary" @click="handleConfirm('variablesForm')">确 定</el-button>
             </span>
           </el-dialog>
 
-          <el-dialog
-            title="编辑变量"
-            :visible.sync="editdialogVisible"
-            width="30%"
-            align="center"
-          >
+          <el-dialog title="编辑变量" :visible.sync="editdialogVisible" width="30%" align="center">
             <el-form
               :model="editVariablesForm"
               :rules="rules"
@@ -82,37 +50,18 @@
               class="project"
             >
               <el-form-item label="变量名" prop="key">
-                <el-input
-                  v-model="editVariablesForm.key"
-                  clearable
-                  placeholder="请输入变量名"
-                ></el-input>
+                <el-input v-model="editVariablesForm.key" clearable placeholder="请输入变量名"></el-input>
               </el-form-item>
               <el-form-item label="变量值" prop="value">
-                <el-input
-                  v-model="editVariablesForm.value"
-                  clearable
-                  placeholder="请输入变量值"
-                ></el-input>
+                <el-input v-model="editVariablesForm.value" clearable placeholder="请输入变量值"></el-input>
               </el-form-item>
               <el-form-item label="变量描述" prop="description">
-                <el-input
-                  v-model="editVariablesForm.description"
-                  clearable
-                  placeholder="请输入变量描述"
-                ></el-input>
+                <el-input v-model="editVariablesForm.description" clearable placeholder="请输入变量描述"></el-input>
               </el-form-item>
             </el-form>
             <span slot="footer" class="dialog-footer">
-              <el-button
-                @click="resetForm('editVariablesForm', 'editdialogVisible')"
-                >取 消</el-button
-              >
-              <el-button
-                type="primary"
-                @click="handleEditConfirm('editVariablesForm')"
-                >确 定</el-button
-              >
+              <el-button @click="resetForm('editVariablesForm', 'editdialogVisible')">取 消</el-button>
+              <el-button type="primary" @click="handleEditConfirm('editVariablesForm')">确 定</el-button>
             </span>
           </el-dialog>
         </div>
@@ -131,17 +80,11 @@
                 size="medium"
                 v-model="search"
               >
-                <el-button
-                  slot="append"
-                  icon="el-icon-search"
-                  @click="getVariablesList"
-                ></el-button>
+                <el-button slot="append" icon="el-icon-search" @click="getVariablesList"></el-button>
               </el-input>
             </el-col>
             <el-col :span="2" style="padding-left: 5px">
-              <el-button type="primary" size="medium" @click="resetSearch"
-                >重置</el-button
-              >
+              <el-button type="primary" size="medium" @click="resetSearch">重置</el-button>
             </el-col>
             <!--                        <el-col :span="7">-->
             <!--                            <el-pagination-->
@@ -440,18 +383,16 @@ export default {
       this.$refs[formName].validate((valid) => {
         if (valid) {
           this.editdialogVisible = false;
-          this.$api
-            .updateVariables(this.$route.params.id, this.editVariablesForm)
-            .then((resp) => {
-              if (!resp.success) {
-                this.$message.info({
-                  message: resp.msg,
-                  duration: this.$store.state.duration,
-                });
-              } else {
-                this.getVariablesList();
-              }
-            });
+          this.$api.updateVariables(this.$route.params.id, this.editVariablesForm).then((resp) => {
+            if (!resp.success) {
+              this.$message.info({
+                message: resp.msg,
+                duration: this.$store.state.duration,
+              });
+            } else {
+              this.getVariablesList();
+            }
+          });
         }
       });
     },

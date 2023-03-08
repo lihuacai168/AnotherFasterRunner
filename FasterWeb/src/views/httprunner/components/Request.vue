@@ -2,12 +2,7 @@
   <div>
     <div style="margin-left: 200px">
       <el-radio-group v-model="dataType">
-        <el-radio
-          v-for="item of dataOptions"
-          :label="item.label"
-          :key="item.value"
-          >{{ item.value }}
-        </el-radio>
+        <el-radio v-for="item of dataOptions" :label="item.label" :key="item.value">{{ item.value }} </el-radio>
       </el-radio-group>
     </div>
     <div style="margin-top: 5px">
@@ -25,24 +20,14 @@
         <!--Request params-->
         <el-table-column label="请求Key">
           <template v-slot="scope">
-            <el-input
-              clearable
-              size="medium"
-              v-model="scope.row.key"
-              placeholder="Key"
-            ></el-input>
+            <el-input clearable size="medium" v-model="scope.row.key" placeholder="Key"></el-input>
           </template>
         </el-table-column>
         <!--Request 表单-->
         <el-table-column v-if="dataType === 'data'" label="类型" width="120">
           <template v-slot="scope">
             <el-select v-model="scope.row.type" size="medium">
-              <el-option
-                v-for="item in dataTypeOptions"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
-              >
+              <el-option v-for="item in dataTypeOptions" :key="item.value" :label="item.label" :value="item.value">
               </el-option>
             </el-select>
           </template>
@@ -50,12 +35,7 @@
 
         <el-table-column label="请求Value">
           <template v-slot="scope">
-            <el-input
-              v-show="scope.row.type !== 5"
-              clearable
-              v-model="scope.row.value"
-              placeholder="Value"
-            ></el-input>
+            <el-input v-show="scope.row.type !== 5" clearable v-model="scope.row.value" placeholder="Value"></el-input>
 
             <el-row v-show="scope.row.type === 5">
               <el-col :span="7">
@@ -68,12 +48,7 @@
                   :on-error="uploadError"
                   :on-success="uploadSuccess"
                 >
-                  <el-button
-                    size="small"
-                    type="primary"
-                    @click="currentIndex = scope.$index"
-                    >选择文件
-                  </el-button>
+                  <el-button size="small" type="primary" @click="currentIndex = scope.$index">选择文件 </el-button>
                 </el-upload>
               </el-col>
 
@@ -88,11 +63,7 @@
 
         <el-table-column label="描述" width="200">
           <template v-slot="scope">
-            <el-input
-              clearable
-              v-model="scope.row.desc"
-              placeholder="参数简要描述"
-            ></el-input>
+            <el-input clearable v-model="scope.row.desc" placeholder="参数简要描述"></el-input>
           </template>
         </el-table-column>
 
@@ -102,6 +73,7 @@
               <el-button
                 icon="el-icon-circle-plus-outline"
                 size="mini"
+                circle
                 type="info"
                 @click="handleEdit(scope.$index, scope.row)"
               >
@@ -109,6 +81,7 @@
               <el-button
                 icon="el-icon-document-copy"
                 size="mini"
+                circle
                 type="info"
                 @click="handleCopy(scope.$index, scope.row)"
               >
@@ -116,6 +89,7 @@
               <el-button
                 icon="el-icon-delete"
                 size="mini"
+                circle
                 type="danger"
                 v-show="scope.$index !== 0"
                 @click="handleDelete(scope.$index, scope.row)"
@@ -418,11 +392,7 @@ export default {
     // 类型转换
     parseType(type, value) {
       let tempValue;
-      const msg =
-        value +
-        " => " +
-        this.dataTypeOptions[type - 1].label +
-        " 转换异常, 该数据自动剔除";
+      const msg = value + " => " + this.dataTypeOptions[type - 1].label + " 转换异常, 该数据自动剔除";
       switch (type) {
         case 1:
           tempValue = value;

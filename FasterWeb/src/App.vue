@@ -1,6 +1,8 @@
 <template>
   <div id="app">
-    <router-view />
+    <keep-alive>
+      <router-view />
+    </keep-alive>
   </div>
 </template>
 
@@ -23,7 +25,7 @@ body {
 
 body {
   color: #333;
-  font-family: "PingFang SC", "Helvetica Neue", Helvetica, "Hiragino Sans GB",
-    STHeitiSC-Light, "Microsoft YaHei", "微软雅黑", Arial, sans-serif;
+  font-family: "PingFang SC", "Helvetica Neue", Helvetica, "Hiragino Sans GB", STHeitiSC-Light, "Microsoft YaHei",
+    "微软雅黑", Arial, sans-serif;
 }
 </style>
