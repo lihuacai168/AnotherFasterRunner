@@ -19,7 +19,7 @@ export default {
           index: 1,
           date: "2016/5/02 11:32:05",
           source: "App",
-          result: "这是演示数据，王小虎:上海市普陀区金沙江路 1518 弄",
+          result: JSON.stringify({ test: "这是演示数据，王小虎:上海市普陀区金沙江路 1518 弄" }),
           eventName: "test event name",
           remark: "",
         },
