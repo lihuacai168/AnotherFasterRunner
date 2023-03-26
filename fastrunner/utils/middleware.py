@@ -39,6 +39,8 @@ class VisitTimesMiddleware(MiddlewareMixin):
             # <QueryDict: {'page': ['1'], 'node': [''], 'project': ['11'], 'search': [''], 'tag': ['']}>
             for k, v in request.GET.items():
                 query_params += f'{k}={v}&'
+            if len(query_params)>200:
+                query_params = ''
             url += query_params[:-1]
         else:
             query_params = ''

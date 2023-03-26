@@ -14,6 +14,7 @@ export default {
       textArea: "",
       socketBaseUrl: baseUrl.replace("http", "ws"),
       debugCodeImg: "https://m.caibeike.com/qr.html?l=logo&c=https//sa-viewer-{}.caibeike.net/salog/sa",
+      debugImgUrl: "",
       resultData: [
         {
           index: 1,
@@ -164,9 +165,14 @@ export default {
       }
       msg = window.decodeURIComponent(msg);
       try {
-        if (msg.includes("/salog/sa.gif")) {
-          const decode = this.h5Desc(msg.split("&")[1].split("=")[1]);
-          this.addResultData(decode, "H5");
+        if (msg.includes("eyJkaXN")) {
+          const decode = Base64.decode(msg);
+          if ("event" in JSON.parse(decode)) {
+            const eventName = JSON.parse(decode).event;
+            this.addResultData(decode, "H5", eventName);
+          } else {
+            this.addResultData(decode, "H5");
+          }
         } else if (msg.includes("H4sIAAAAAAAA")) {
           // const decode = this.appDesc(saLine);
           // this.addResultData(decode);
@@ -209,7 +215,12 @@ export default {
       if (data.includes("userId")) {
         const userId = data.split("-")[1];
         console.log(data, userId, typeof userId);
-        this.debugCodeImg = this.debugCodeImg.replace("{}", userId);
+        this.debugCodeImg =
+          "https://m.caibeike.com/qr.html?l=logo&c=https%3A%2F%2Fsa-viewer-{}.caibeike.net%2Fsalog%2Fsa".replace(
+            "{}",
+            userId
+          );
+        this.debugImgUrl = "https//sa-viewer-{}.caibeike.net/salog/sa".replace("{}", userId);
         this.resultDialog = true;
       } else {
         this.appDecode(data);
@@ -228,6 +239,21 @@ export default {
     },
     onError() {
       console.log("error");
+    },
+    //复制
+    handleCopyText(url) {
+      // 创建一个 Input标签
+      const cInput = document.createElement("input");
+      cInput.value = url;
+      document.body.appendChild(cInput);
+      cInput.select(); // 选取文本域内容;
+      // 执行浏览器复制命令
+      // 复制命令会将当前选中的内容复制到剪切板中（这里就是创建的input标签）
+      // Input要在正常的编辑状态下原生复制方法才会生效
+      document.execCommand("Copy");
+      this.$message.success("复制成功");
+      /// 复制成功后再将构造的标签 移除
+      cInput.remove();
     },
   },
   destroyed() {
@@ -265,9 +291,9 @@ export default {
     <el-table :data="resultData" border style="padding: 5px" max-height="600">
       <el-table-column property="index" label="ID" width="60"></el-table-column>
       <el-table-column property="date" label="时间" width="90"></el-table-column>
-      <el-table-column property="source" label="客户端" width="90"></el-table-column>
+      <el-table-column property="source" label="客户端" width="70"></el-table-column>
       <el-table-column property="result" label="解码文本"></el-table-column>
-      <el-table-column property="eventName" label="事件名"></el-table-column>
+      <el-table-column property="eventName" label="事件名" width="150"></el-table-column>
       <el-table-column property="remark" label="操作" width="100">
         <template v-slot="scope">
           <el-button icon="el-icon-search" circle size="mini" @click="handleJsonView(scope.row)"></el-button>
@@ -293,8 +319,10 @@ export default {
         <el-table-column property="address" label="地址"></el-table-column>
       </el-table>
     </el-drawer>
-    <el-dialog title="请扫描二维码" :visible.sync="resultDialog" direction="rtl" width="80">
-      <p>{{ debugCodeImg }}</p>
+    <el-dialog title="请扫描二维码" :visible.sync="resultDialog" direction="rtl" width="340px">
+      <el-input :readonly="true" v-model="debugImgUrl" style="margin-bottom: 10px">
+        <el-button slot="append" @click="handleCopyText(debugImgUrl)" icon="el-icon-document-copy"></el-button>
+      </el-input>
       <img :src="debugCodeImg" alt="调试二维码" />
     </el-dialog>
   </el-main>

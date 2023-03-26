@@ -94,7 +94,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = "FasterRunner.wsgi.application"
-WEBSOCKET_FACTORY_CLASS = "dwebsocket.backends.uwsgi.factory.uWsgiWebSocketFactory"
 
 # Password validation
 # https://docs.djangoproject.com/en/2.1/ref/settings/#auth-password-valid

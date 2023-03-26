@@ -147,11 +147,11 @@ def link(request):
 
 def send(request):
     if request.method == 'GET':
-        user_id = request.GET.get('user_id')
-        msg = request.GET.get('data_list')
-        if not clients:
-            return JsonResponse({"code": "0002", "success": False, "msg": "message send failed"})
-        clients[user_id].send(msg.encode('utf-8'))
+        data = request.GET.get('data')
+        track_id = request.headers.get('X-Custom-TrackId')
+        if track_id not in clients:
+            return JsonResponse({"code": "0003", "success": False, "msg": "socket user not exits"})
+        clients[track_id].send(data.encode('utf-8'))
         return JsonResponse({"code": "0000", "success": True, "msg": "message send success"})
     elif request.method == 'POST':
         track_id = request.headers.get('X-Custom-TrackId')
