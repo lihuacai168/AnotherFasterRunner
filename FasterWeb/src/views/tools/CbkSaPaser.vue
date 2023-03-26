@@ -18,7 +18,7 @@ export default {
       resultData: [
         {
           index: 1,
-          date: "2016/5/02 11:32:05",
+          date: new Date().toLocaleTimeString(),
           source: "App",
           result: JSON.stringify({ test: "这是演示数据，王小虎:上海市普陀区金沙江路 1518 弄" }),
           eventName: "test event name",
@@ -120,7 +120,7 @@ export default {
 
     addResultData(decodeStr, source = "App", event = "") {
       this.resultData.unshift({
-        date: new Date().toLocaleString(),
+        date: new Date().toLocaleTimeString(),
         index: this.resultData.length + 1,
         result: decodeStr,
         remark: "",
@@ -220,7 +220,7 @@ export default {
             "{}",
             userId
           );
-        this.debugImgUrl = "https//sa-viewer-{}.caibeike.net/salog/sa".replace("{}", userId);
+        this.debugImgUrl = "https//sa-viewer-{}.caibeike.net".replace("{}", userId);
         this.resultDialog = true;
       } else {
         this.appDecode(data);
@@ -264,15 +264,16 @@ export default {
     height() {
       return (window.screen.height - 464).toString() + "px";
     },
+    tableHeight() {
+      return (document.body.clientHeight - 190).toString();
+    },
   },
 };
 </script>
 
 <template>
   <el-main style="height: 100%">
-    测试按钮：
-    <el-button type="text" @click="table = true">嵌套表格的演示Drawer</el-button>
-    <el-button type="text" @click="resultDialog = true">打开弹窗</el-button>
+    <el-button type="text" @click="table = true" v-if="false">嵌套表格的演示Drawer</el-button>
 
     <el-input
       type="textarea"
@@ -286,14 +287,15 @@ export default {
     <el-button type="success" size="small" @click="h5Decode('App')">APP解码</el-button>
     <el-button type="primary" size="small" @click="init()">自动跟踪</el-button>
     <el-button size="small" @click="resultData = []">清空</el-button>
+    <el-button type="text" @click="resultDialog = true">打开弹窗</el-button>
     <p>&nbsp;</p>
 
-    <el-table :data="resultData" border style="padding: 5px" max-height="600">
+    <el-table :data="resultData" border style="padding: 5px" :max-height="tableHeight">
       <el-table-column property="index" label="ID" width="60"></el-table-column>
       <el-table-column property="date" label="时间" width="90"></el-table-column>
       <el-table-column property="source" label="客户端" width="70"></el-table-column>
-      <el-table-column property="result" label="解码文本"></el-table-column>
-      <el-table-column property="eventName" label="事件名" width="150"></el-table-column>
+      <el-table-column property="result" label="解码文本" :show-overflow-tooltip="true"></el-table-column>
+      <el-table-column property="eventName" label="事件名" min-width="100"></el-table-column>
       <el-table-column property="remark" label="操作" width="100">
         <template v-slot="scope">
           <el-button icon="el-icon-search" circle size="mini" @click="handleJsonView(scope.row)"></el-button>
@@ -323,7 +325,16 @@ export default {
       <el-input :readonly="true" v-model="debugImgUrl" style="margin-bottom: 10px">
         <el-button slot="append" @click="handleCopyText(debugImgUrl)" icon="el-icon-document-copy"></el-button>
       </el-input>
-      <img :src="debugCodeImg" alt="调试二维码" />
+      <div style="text-align: center"><img :src="debugCodeImg" alt="调试二维码" /></div>
+      <div style="text-align: center">
+        <a href="http://cbkbuy.cn/vi6jIv" target="_blank" title="知识库链接">如何设置？</a>
+      </div>
     </el-dialog>
   </el-main>
 </template>
+
+<style>
+.el-tooltip__popper {
+  max-width: 50%;
+}
+</style>

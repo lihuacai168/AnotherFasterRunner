@@ -31,6 +31,7 @@ const router = new VueRouter({
     {
       path: "/sapaser",
       name: "SaPaser",
+      meta: { title: "EventViewer" },
       component: () => import("../views/tools/CbkSaPaser.vue"),
     },
     {
