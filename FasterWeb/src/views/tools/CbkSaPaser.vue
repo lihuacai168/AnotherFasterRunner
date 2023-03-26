@@ -16,14 +16,14 @@ export default {
       debugCodeImg: "https://m.caibeike.com/qr.html?l=logo&c=https//sa-viewer-{}.caibeike.net/salog/sa",
       debugImgUrl: "",
       resultData: [
-        {
-          index: 1,
-          date: new Date().toLocaleTimeString(),
-          source: "App",
-          result: JSON.stringify({ test: "这是演示数据，王小虎:上海市普陀区金沙江路 1518 弄" }),
-          eventName: "test event name",
-          remark: "",
-        },
+        // {
+        //   index: 1,
+        //   date: new Date().toLocaleTimeString(),
+        //   source: "App",
+        //   result: JSON.stringify({ test: "这是演示数据，王小虎:上海市普陀区金沙江路 1518 弄" }),
+        //   eventName: "test event name",
+        //   remark: "",
+        // },
       ],
       jsonOptions: {
         onModeChange(newMode, oldMode) {

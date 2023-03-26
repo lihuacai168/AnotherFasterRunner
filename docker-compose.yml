@@ -57,8 +57,8 @@ services:
       dockerfile: Dockerfile
     ports:
       - "${WEB_PORT}:8888"
-    volumes:
-      - ./FasterWeb/dist:/usr/share/nginx/html
+    # volumes:
+    #   - ./FasterWeb/dist:/usr/share/nginx/html
 
   mq:
     image: rabbitmq:management-alpine
