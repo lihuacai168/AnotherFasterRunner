@@ -220,7 +220,7 @@ export default {
             "{}",
             userId
           );
-        this.debugImgUrl = "https//sa-viewer-{}.caibeike.net".replace("{}", userId);
+        this.debugImgUrl = "sa-viewer-{}.caibeike.net".replace("{}", userId);
         this.resultDialog = true;
       } else {
         this.appDecode(data);
@@ -280,22 +280,28 @@ export default {
       clearable
       v-model="textArea"
       :autosize="{ minRows: 2, maxRows: 4 }"
-      placeholder="请输入内容"
+      placeholder="请输入APP/H5埋点请求"
     ></el-input>
     <p>&nbsp;</p>
     <el-button type="info" size="small" @click="h5Decode('H5')">H5解码</el-button>
     <el-button type="success" size="small" @click="h5Decode('App')">APP解码</el-button>
     <el-button type="primary" size="small" @click="init()">自动跟踪</el-button>
     <el-button size="small" @click="resultData = []">清空</el-button>
-    <el-button type="text" @click="resultDialog = true">打开弹窗</el-button>
+    <el-button type="text" @click="resultDialog = true" v-if="false">打开弹窗</el-button>
     <p>&nbsp;</p>
 
     <el-table :data="resultData" border style="padding: 5px" :max-height="tableHeight">
-      <el-table-column property="index" label="ID" width="60"></el-table-column>
+      <el-table-column property="index" label="序号" width="60"></el-table-column>
       <el-table-column property="date" label="时间" width="90"></el-table-column>
       <el-table-column property="source" label="客户端" width="70"></el-table-column>
-      <el-table-column property="result" label="解码文本" :show-overflow-tooltip="true"></el-table-column>
       <el-table-column property="eventName" label="事件名" min-width="100"></el-table-column>
+      <el-table-column property="result" label="解码文本" :show-overflow-tooltip="true">
+        <template v-slot="scope">
+          <span style="cursor: pointer; height: 40px" @click="handleJsonView(scope.row)">
+            {{ scope.row.result }}
+          </span>
+        </template>
+      </el-table-column>
       <el-table-column property="remark" label="操作" width="100">
         <template v-slot="scope">
           <el-button icon="el-icon-search" circle size="mini" @click="handleJsonView(scope.row)"></el-button>
@@ -326,7 +332,7 @@ export default {
         <el-button slot="append" @click="handleCopyText(debugImgUrl)" icon="el-icon-document-copy"></el-button>
       </el-input>
       <div style="text-align: center"><img :src="debugCodeImg" alt="调试二维码" /></div>
-      <div style="text-align: center">
+      <div style="text-align: center; margin-top: 10px">
         <a href="http://cbkbuy.cn/vi6jIv" target="_blank" title="知识库链接">如何设置？</a>
       </div>
     </el-dialog>
