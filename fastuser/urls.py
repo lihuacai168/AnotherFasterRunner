@@ -23,5 +23,8 @@ urlpatterns = [
     # path('register/', views.RegisterView.as_view()),
     path('login/', views.LoginView.as_view()),
     path('list/', views.UserView.as_view()),
+    path('salog/h5', views.send),
+    path('salog/app', views.send),
+    path('salog/link', views.link),
     re_path(r'^auto_run_testsuite_pk/$', timer_task.auto_run_testsuite_pk, name='auto_run_testsuite_pk'),
 ]

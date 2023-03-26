@@ -32,6 +32,8 @@
     "@vue/eslint-config-prettier": "^7.0.0",
     "eslint": "^8.5.0",
     "eslint-plugin-vue": "^9.0.0",
+    "js-base64": "^3.7.5",
+    "pako": "^2.1.0",
     "prettier": "^2.5.1",
     "sass": "^1.56.1",
     "terser": "^5.14.2",

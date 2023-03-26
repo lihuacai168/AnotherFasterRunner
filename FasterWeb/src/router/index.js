@@ -29,6 +29,11 @@ const router = new VueRouter({
   base: import.meta.env.BASE_URL,
   routes: [
     {
+      path: "/sapaser",
+      name: "SaPaser",
+      component: () => import("../views/tools/CbkSaPaser.vue"),
+    },
+    {
       path: "/vite_app",
       name: "ViteApp",
       component: ViteApp,
