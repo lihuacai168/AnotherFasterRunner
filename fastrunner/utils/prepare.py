@@ -1,4 +1,5 @@
 import json
+import logging
 from typing import Any, Union
 
 import pydash
@@ -6,12 +7,15 @@ import requests
 # from django.core.cache import cache
 from django.db.models import Sum, Count, Q
 from django.db.models.functions import Concat
-import django_celery_beat.models as celery_models
-from loguru import logger
+from django_celery_beat.models import PeriodicTask as celery_models
+# from loguru import logger
+# import django_celery_beat.models as celery_models
 
 from fastrunner import models
 from fastrunner.utils.day import get_day, get_week, get_month
 from fastrunner.utils.parser import Format
+
+logger = logging.getLogger(__name__)
 
 
 def get_counter(model, pk=None):
@@ -58,7 +62,7 @@ def complete_list(arr, date_type):
 
 
 def get_sql_dateformat(date_type):
-    create_time = ''
+    create_time = ""
     if date_type == "week":
         create_time = "YEARWEEK(create_time,'%%Y-%%m-%%d')"
     elif date_type == "month":

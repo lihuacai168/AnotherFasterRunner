@@ -1,5 +1,7 @@
 import json
 
+import croniter
+
 from django.utils.decorators import method_decorator
 from django_celery_beat import models
 from rest_framework.viewsets import GenericViewSet
@@ -20,6 +22,15 @@ class ScheduleView(GenericViewSet):
     queryset = models.PeriodicTask.objects
     serializer_class = serializers.PeriodicTaskSerializer
     pagination_class = pagination.MyPageNumberPagination
+
+    @staticmethod
+    def check_crontab_expr(expr: str) -> bool:
+        try:
+            # check crontab
+            croniter.croniter(expr)
+        except (croniter.CroniterNotAlphaError, croniter.CroniterBadCronError, croniter.CroniterBadDateError):
+            return False
+        return True
 
     @method_decorator(request_log(level="DEBUG"))
     def list(self, request):
@@ -52,16 +63,17 @@ class ScheduleView(GenericViewSet):
             copy: str
             project: int
         }
-        """
-
+    """
         ser = serializers.ScheduleDeSerializer(data=request.data)
         if ser.is_valid():
+            if not self.check_crontab_expr(request.data.get("crontab")):
+                return Response({"code": "0101", "success": False, "msg": f"{request.data.get('crontab')}, 不合法的定时任务表达式"})
             request.data.update({"creator": request.user.username})
             task = Task(**request.data)
             resp = task.add_task()
             return Response(resp)
         else:
-            return Response(ser.errors)
+            return Response({"code": "0101", "success": False, "msg": "参数校验失败"})
 
     @method_decorator(request_log(level="INFO"))
     def copy(self, request, **kwargs):
@@ -88,6 +100,8 @@ class ScheduleView(GenericViewSet):
         """
         ser = serializers.ScheduleDeSerializer(data=request.data)
         if ser.is_valid():
+            if not self.check_crontab_expr(request.data.get("crontab")):
+                return Response({"code": "0101", "success": False, "msg": f"{request.data.get('crontab')}, 不合法的定时任务表达式"})
             task = Task(**request.data)
             resp = task.update_task(kwargs["pk"])
             return Response(resp)

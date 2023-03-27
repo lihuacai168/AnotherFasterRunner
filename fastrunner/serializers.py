@@ -1,4 +1,5 @@
 import json
+import logging
 from typing import Union
 import datetime
 
@@ -12,6 +13,8 @@ from fastrunner import models
 from fastrunner.utils.parser import Parse
 
 from fastrunner.utils.tree import get_tree_relation_name
+
+logger = logging.getLogger(__name__)
 
 
 class ProjectSerializer(serializers.ModelSerializer):
@@ -344,7 +347,13 @@ class HostIPSerializer(serializers.ModelSerializer):
 
 def get_cron_next_execute_time(crontab_expr: str) -> int:
     now = datetime.datetime.now()
-    cron = croniter.croniter(crontab_expr, now)
+    try:
+        cron = croniter.croniter(crontab_expr, now)
+    except croniter.CroniterNotAlphaError:
+        logger.warning(f"解析定时任务{crontab_expr=} 错误，返回0")
+        # 解析定时任务错误，返回0
+        return 0
+
     next_time: datetime.datetime = cron.get_next(datetime.datetime)
     return int(next_time.timestamp())
 

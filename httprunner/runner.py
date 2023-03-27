@@ -1,14 +1,17 @@
 # encoding: utf-8
 import threading
+import logging
 
 import pydash
 import time
 from unittest.case import SkipTest
 
-from httprunner import exceptions, logger, response, utils
+from httprunner import exceptions, response, utils
 from httprunner.client import HttpSession
 from httprunner.compat import OrderedDict
 from httprunner.context import Context
+
+logger = logging.getLogger(__name__)
 
 
 class Runner(object):
@@ -129,7 +132,7 @@ class Runner(object):
 
     def do_hook_actions(self, actions):
         for action in actions:
-            logger.log_debug("call hook: {}".format(action))
+            logger.debug("call hook: {}".format(action))
             # TODO: check hook function if valid
             self.context.eval_content(action)
 
@@ -198,11 +201,11 @@ class Runner(object):
         if method.upper() not in valid_methods:
             err_msg = u"Invalid HTTP method! => {}\n".format(method)
             err_msg += "Available HTTP methods: {}".format("/".join(valid_methods))
-            logger.log_error(err_msg)
+            logger.error(err_msg)
             raise exceptions.ParamsError(err_msg)
 
-        logger.log_info("{method} {url}".format(method=method, url=url))
-        logger.log_debug("request kwargs(raw): {kwargs}".format(kwargs=parsed_request))
+        logger.info("{method} {url}".format(method=method, url=url))
+        logger.debug("request kwargs(raw): {kwargs}".format(kwargs=parsed_request))
 
         user_timeout: str = str(pydash.get(parsed_request, 'headers.timeout'))
         if user_timeout and user_timeout.isdigit():
@@ -223,7 +226,7 @@ class Runner(object):
         teardown_hooks_duration = 0
         teardown_hooks_start = time.time()
         if teardown_hooks:
-            logger.log_info("start to run teardown hooks")
+            logger.info("start to run teardown hooks")
             self.context.update_teststep_variables_mapping("response", resp_obj)
             self.do_hook_actions(teardown_hooks)
             teardown_hooks_duration = time.time() - teardown_hooks_start
@@ -243,14 +246,14 @@ class Runner(object):
             err_req_msg += "headers: {}\n".format(parsed_request.pop("headers", {}))
             for k, v in parsed_request.items():
                 err_req_msg += "{}: {}\n".format(k, repr(v))
-            logger.log_error(err_req_msg)
+            logger.error(err_req_msg)
 
             # log response
             err_resp_msg = "response: \n"
             err_resp_msg += "status_code: {}\n".format(resp_obj.status_code)
             err_resp_msg += "headers: {}\n".format(resp_obj.headers)
             err_resp_msg += "body: {}\n".format(repr(resp_obj.text))
-            logger.log_error(err_resp_msg)
+            logger.error(err_resp_msg)
 
             raise
 
@@ -262,7 +265,7 @@ class Runner(object):
         output = {}
         for variable in output_variables_list:
             if variable not in variables_mapping:
-                logger.log_warning(
+                logger.warning(
                     "variable '{}' can not be found in variables mapping, failed to output!"\
                         .format(variable)
                 )

@@ -1,16 +1,18 @@
 # encoding: utf-8
 
+import logging
 import os
 import unittest
 
-from httprunner import (exceptions, loader, logger, parser, report, runner,
-                        utils, validator)
+from httprunner import (exceptions, loader, parser, report, runner, utils,
+                        validator)
+
+logger = logging.getLogger(__name__)
 
 
 class HttpRunner(object):
-
     def __init__(self, **kwargs):
-        """ initialize HttpRunner.
+        """initialize HttpRunner.
 
         Args:
             kwargs (dict): key-value arguments used to initialize TextTestRunner.
@@ -41,7 +43,7 @@ class HttpRunner(object):
         self.summary = None
 
     def _add_tests(self, testcases):
-        """ initialize testcase with Runner() and add to test suite.
+        """initialize testcase with Runner() and add to test suite.
 
         Args:
             testcases (list): parsed testcases list
@@ -50,9 +52,10 @@ class HttpRunner(object):
             tuple: unittest.TestSuite()
 
         """
+
         def _add_teststep(test_runner, config, teststep_dict):
-            """ add teststep to testcase.
-            """
+            """add teststep to testcase."""
+
             def test(self):
                 try:
                     test_runner.run_test(teststep_dict)
@@ -68,7 +71,7 @@ class HttpRunner(object):
                 teststep_dict["name"] = parser.parse_data(
                     teststep_dict["name"],
                     config.get("variables", {}),
-                    config.get("functions", {})
+                    config.get("functions", {}),
                 )
             except exceptions.VariableNotFound:
                 pass
@@ -80,14 +83,14 @@ class HttpRunner(object):
         for testcase in testcases:
             config = testcase.get("config", {})
             test_runner = runner.Runner(config, self.http_client_session)
-            TestSequense = type('TestSequense', (unittest.TestCase,), {})
+            TestSequense = type("TestSequense", (unittest.TestCase,), {})
 
             teststeps = testcase.get("teststeps", [])
             for index, teststep_dict in enumerate(teststeps):
                 for times_index in range(int(teststep_dict.get("times", 1))):
                     # suppose one testcase should not have more than 9999 steps,
                     # and one step should not run more than 999 times.
-                    test_method_name = 'test_{:04}_{:03}'.format(index, times_index)
+                    test_method_name = "test_{:04}_{:03}".format(index, times_index)
                     test_method = _add_teststep(test_runner, config, teststep_dict)
                     setattr(TestSequense, test_method_name, test_method)
 
@@ -100,7 +103,7 @@ class HttpRunner(object):
         return test_suite
 
     def _run_suite(self, test_suite):
-        """ run tests in test_suite
+        """run tests in test_suite
 
         Args:
             test_suite: unittest.TestSuite()
@@ -113,7 +116,7 @@ class HttpRunner(object):
 
         for testcase in test_suite:
             testcase_name = testcase.config.get("name")
-            logger.log_info("Start to run testcase: {}".format(testcase_name))
+            logger.info("Start to run testcase: {}".format(testcase_name))
 
             result = self.unittest_runner.run(testcase)
             tests_results.append((testcase, result))
@@ -121,7 +124,7 @@ class HttpRunner(object):
         return tests_results
 
     def _aggregate(self, tests_results):
-        """ aggregate results
+        """aggregate results
 
         Args:
             tests_results (list): list of (testcase, result)
@@ -132,7 +135,7 @@ class HttpRunner(object):
             "stat": {},
             "time": {},
             "platform": report.get_platform(),
-            "details": []
+            "details": [],
         }
 
         for tests_result in tests_results:
@@ -141,7 +144,9 @@ class HttpRunner(object):
 
             self.summary["success"] &= testcase_summary["success"]
             testcase_summary["name"] = testcase.config.get("name")
-            testcase_summary["base_url"] = testcase.config.get("request", {}).get("base_url", "")
+            testcase_summary["base_url"] = testcase.config.get("request", {}).get(
+                "base_url", ""
+            )
 
             in_out = utils.get_testcase_io(testcase)
             utils.print_io(in_out)
@@ -153,7 +158,7 @@ class HttpRunner(object):
             self.summary["details"].append(testcase_summary)
 
     def _run_tests(self, testcases, mapping=None):
-        """ start to run test with variables mapping.
+        """start to run test with variables mapping.
 
         Args:
             testcases (list): list of testcase_dict, each testcase is corresponding to a YAML/JSON file
@@ -210,7 +215,7 @@ class HttpRunner(object):
         return self
 
     def run(self, path_or_testcases, dot_env_path=None, mapping=None):
-        """ main interface, run testcases with variables mapping.
+        """main interface, run testcases with variables mapping.
 
         Args:
             path_or_testcases (str/list/dict): testcase file/foler path, or valid testcases.
@@ -236,7 +241,7 @@ class HttpRunner(object):
         return self._run_tests(testcases, mapping)
 
     def gen_html_report(self, html_report_name=None, html_report_template=None):
-        """ generate html report and return report path.
+        """generate html report and return report path.
 
         Args:
             html_report_name (str): output html report file name
@@ -247,11 +252,11 @@ class HttpRunner(object):
 
         """
         if not self.summary:
-            raise exceptions.MyBaseError("run method should be called before gen_html_report.")
+            raise exceptions.MyBaseError(
+                "run method should be called before gen_html_report."
+            )
 
         self.exception_stage = "generate report"
         return report.render_html_report(
-            self.summary,
-            html_report_name,
-            html_report_template
+            self.summary, html_report_name, html_report_template
         )

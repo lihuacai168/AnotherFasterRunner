@@ -16,9 +16,10 @@ MQ_PORT = environ.get('MQ_PORT')
 # 数据库账号密码
 # FASTER_HOST = environ.get('FASTER_HOST')
 DB_NAME = environ.get('MYSQL_DATABASE')
-# DB_PORT = environ.get('MYSQL_PORT', 3306)
+DB_PORT = environ.get('MYSQL_PORT', 3306)
+DB_HOST = environ.get('MYSQL_HOST', 'db')
 DB_USER = environ.get('MYSQL_USER', 'root')
-DB_PASSWORD = environ.get('MYSQL_PASSWORD')
+DB_PASSWORD = environ.get('MYSQL_PASSWORD', 'root')
 PLATFORM_NAME = environ.get('PLATFORM_NAME')
 if PLATFORM_NAME:
     IM_REPORT_SETTING.update({'platform_name': PLATFORM_NAME})
@@ -45,8 +46,8 @@ if SENTRY_DSN:
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'HOST': 'db',
-        'PORT': 3306,
+        'HOST': DB_HOST,
+        'PORT': DB_PORT,
         'NAME': DB_NAME,  # 新建数据库名
         'USER': DB_USER,  # 数据库登录名
         'PASSWORD': DB_PASSWORD,  # 数据库登录密码
@@ -63,7 +64,7 @@ DATABASES = {
 # broker_url = f'amqp://{mq_user}:{mq_password}@mq:5672//'
 broker_url = f'amqp://{MQ_USER}:{MQ_PASSWORD}@mq:{MQ_PORT}//'
 
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+# STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 SERVER_IP = environ.get('SERVER_IP', '')
 DJANGO_API_PORT = environ.get('DJANGO_API_PORT', '8000')

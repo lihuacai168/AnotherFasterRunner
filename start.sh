@@ -33,7 +33,7 @@ nohup python -m celery -A FasterRunner.mycelery beat -l info > ./logs/beat.log 2
 
 # if [ $1 = "celery-worker" ]; then
 #     echo "start celery"
-#     export DJANGO_SETTINGS_MODULE=FasterRunner.settings.docker; /usr/local/bin/python -m celery -A FasterRunner.mycelery worker -l info
+#     export DJANGO_SETTINGS_MODULE=FasterRunner.settings.docker; /usr/local/bin/python -m celery -A FasterRunner.mycelery worker -l info --concurrency=4
 # fi
 
 # if [ $1 = "celery-beat" ]; then

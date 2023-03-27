@@ -4,10 +4,13 @@ import io
 import multiprocessing
 import os
 import sys
+import logging
 
-from httprunner.logger import color_print
+# from httprunner.logger import color_print
 from httprunner import loader
 from locust.main import main
+
+logger = logging.getLogger(__name__)
 
 
 def parse_locustfile(file_path):
@@ -16,7 +19,8 @@ def parse_locustfile(file_path):
         if file_path is a YAML/JSON file, convert it to locustfile
     """
     if not os.path.isfile(file_path):
-        color_print("file path invalid, exit.", "RED")
+        # color_print("file path invalid, exit.", "RED")
+        logger.error("file path invalid, exit.", "RED")
         sys.exit(1)
 
     file_suffix = os.path.splitext(file_path)[1]

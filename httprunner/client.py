@@ -4,10 +4,11 @@ import re
 
 import curlify
 import time
+import logging
 
 import requests
 import urllib3
-from httprunner import logger
+# from httprunner import logger
 from httprunner.exceptions import ParamsError
 from requests import Request, Response
 from requests.exceptions import (InvalidSchema, InvalidURL, MissingSchema,
@@ -16,6 +17,9 @@ from requests.exceptions import (InvalidSchema, InvalidURL, MissingSchema,
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 absolute_http_url_regexp = re.compile(r"^https?://", re.I)
+
+
+logger = logging.getLogger(__name__)
 
 
 class ApiResponse(Response):
@@ -118,7 +122,7 @@ class HttpSession(requests.Session):
             msg = "\n================== {} details ==================\n".format(request_response)
             for key, value in self.meta_data[request_response].items():
                 msg += "{:<16} : {}\n".format(key, repr(value))
-            logger.log_debug(msg)
+            logger.debug(msg)
 
         # record original request info
         self.meta_data["request"]["method"] = method
@@ -175,9 +179,9 @@ class HttpSession(requests.Session):
         try:
             response.raise_for_status()
         except RequestException as e:
-            logger.log_error(u"{exception}".format(exception=str(e)))
+            logger.error(u"{exception}".format(exception=str(e)))
         else:
-            logger.log_info(
+            logger.info(
                 """status_code: {}, response_time(ms): {} ms, response_length: {} bytes""".format(
                     self.meta_data["response"]["status_code"],
                     self.meta_data["response"]["response_time_ms"],
@@ -196,7 +200,7 @@ class HttpSession(requests.Session):
             msg = "processed request:\n"
             msg += "> {method} {url}\n".format(method=method, url=url)
             msg += "> kwargs: {kwargs}".format(kwargs=kwargs)
-            logger.log_debug(msg)
+            logger.debug(msg)
             return requests.Session.request(self, method, url, **kwargs)
         except (MissingSchema, InvalidSchema, InvalidURL):
             raise

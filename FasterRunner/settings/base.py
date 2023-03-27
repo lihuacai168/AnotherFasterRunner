@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/2.1/ref/settings/
 """
 
+import datetime as datetime
 import os
 from django.db.models import AutoField
 import datetime as datetime
@@ -63,8 +64,10 @@ TY_ADMIN_CONFIG = {
 }
 
 MIDDLEWARE = [
-    "django.middleware.security.SecurityMiddleware",
+    "fastrunner.utils.middleware.ExceptionMiddleware",
     "django.middleware.gzip.GZipMiddleware",
+    "log_request_id.middleware.RequestIDMiddleware",
+    "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -73,6 +76,13 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "fastrunner.utils.middleware.VisitTimesMiddleware",
 ]
+# Static files (CSS, JavaScript, Images)
+# https://docs.djangoproject.com/en/2.1/howto/static-files/
+STATIC_URL = "/static/"
+
+STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]  # 指定static文件的路径，缺少这个配置，collect static 无法加载extent.js
+
+STATIC_ROOT = os.path.join(BASE_DIR, "static_root")  # collect static 之后的文件存放路径
 
 ROOT_URLCONF = "FasterRunner.urls"
 
@@ -128,7 +138,7 @@ USE_TZ = False
 
 # The 'CELERY_TIMEZONE' setting is deprecated and scheduled for removal in version 6.0.0.
 #  Use the timezone instead
-# CELERY_TIMEZONE = TIME_ZONE 
+# CELERY_TIMEZONE = TIME_ZONE
 # https://github.com/celery/celery/issues/4796
 DJANGO_CELERY_BEAT_TZ_AWARE = False
 CELERY_BEAT_SCHEDULER="django_celery_beat.schedulers:DatabaseScheduler"
@@ -257,12 +267,29 @@ LOGGING = {
     "disable_existing_loggers": True,
     "formatters": {
         "standard": {
-            "format": "%(asctime)s [%(levelname)s] - %(message)s",
+            "format": "%(levelname)-2s [%(asctime)s] [%(request_id)s] %(name)s: %(message)s",
             "datefmt": "%Y-%m-%d %H:%M:%S",
+        },
+        "color": {
+            "()": "colorlog.ColoredFormatter",
+            "format": "%(green)s%(asctime)s [%(request_id)s] %(name)s %(log_color)s%(levelname)s [pid:%(process)d] "
+            "[%(filename)s->%(funcName)s:%(lineno)s] %(cyan)s%(message)s",
+            "log_colors": {
+                "DEBUG": "black",
+                "INFO": "white",
+                "WARNING": "yellow",
+                "ERROR": "red",
+                "CRITICAL": "bold_red",
+            },
         }
         # 日志格式
     },
-    "filters": {},
+    "filters": {
+        "request_id": {"()": "log_request_id.filters.RequestIDFilter"},
+        "require_debug_true": {
+            "()": "django.utils.log.RequireDebugTrue",  # 过滤器，只有当setting的DEBUG = True时生效
+        },
+    },
     "handlers": {
         "mail_admins": {
             "level": "ERROR",
@@ -273,55 +300,55 @@ LOGGING = {
             "level": "DEBUG",
             "class": "logging.handlers.RotatingFileHandler",
             # 'filename': os.path.join(BASE_DIR, 'logs/../../logs/debug.log'),
-            "filename": os.path.join(BASE_DIR, "logs/debug.log"),
+            "filename": os.path.join(BASE_DIR, "logs/info.log"),
             "maxBytes": 1024 * 1024 * 50,
             "backupCount": 5,
-            "formatter": "standard",
+            "formatter": "color",
+            "filters": ["request_id"],
+        },
+        "error": {
+            "level": "ERROR",
+            "class": "logging.handlers.RotatingFileHandler",
+            # 'filename': os.path.join(BASE_DIR, 'logs/../../logs/debug.log'),
+            "filename": os.path.join(BASE_DIR, "logs/error.log"),
+            "maxBytes": 1024 * 1024 * 50,
+            "backupCount": 5,
+            "formatter": "color",
+            "filters": ["request_id"],
         },
         "console": {
             "level": "DEBUG",
             "class": "logging.StreamHandler",
-            "formatter": "standard",
-        },
-        "request_handler": {
-            "level": "INFO",
-            "class": "logging.handlers.RotatingFileHandler",
-            # 'filename': os.path.join(BASE_DIR, 'logs/../../logs/run.log'),
-            "filename": os.path.join(BASE_DIR, "logs/run.log"),
-            "maxBytes": 1024 * 1024 * 50,
-            "backupCount": 5,
-            "formatter": "standard",
-        },
-        "scprits_handler": {
-            "level": "INFO",
-            "class": "logging.handlers.RotatingFileHandler",
-            # 'filename': os.path.join(BASE_DIR, 'logs/../../logs/run.log'),
-            "filename": os.path.join(BASE_DIR, "logs/run.log"),
-            "maxBytes": 1024 * 1024 * 100,
-            "backupCount": 5,
-            "formatter": "standard",
+            "formatter": "color",
+            "filters": ["request_id"],
         },
     },
     "loggers": {
         "django": {
-            "handlers": ["default", "console"],
+            "handlers": ["default", "console", "error"],
             "level": "INFO",
             "propagate": True,
         },
-        "FasterRunner.app": {
-            "handlers": ["default", "console"],
+        "fastrunner": {
+            "handlers": ["default", "console", "error"],
             "level": "INFO",
             "propagate": True,
         },
-        "django.request": {
-            "handlers": ["request_handler"],
-            "level": "INFO",
-            "propagate": True,
-        },
-        "FasterRunner": {
-            "handlers": ["scprits_handler", "console"],
+        "httprunner": {
+            "handlers": ["default", "console", "error"],
             "level": "INFO",
             "propagate": True,
         },
     },
 }
+LOG_REQUEST_ID_HEADER = "HTTP_X_REQUEST_ID"
+GENERATE_REQUEST_ID_IF_NOT_IN_HEADER = True
+REQUEST_ID_RESPONSE_HEADER = "RESPONSE_HEADER_NAME"
+
+# 邮箱配置
+EMAIL_USE_SSL = True
+EMAIL_HOST = os.environ.get("EMAIL_HOST", "smtp.qq.com")  # 如果是 163 改成 smtp.163.com
+EMAIL_PORT = os.environ.get("EMAIL_PORT", 465)  # 默认是qq邮箱端口
+EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER")  # 配置邮箱
+EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD")  # 对应的授权码
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER

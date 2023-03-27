@@ -7,10 +7,11 @@ start.sh.bak
 tempWorkDir
 mysql
 
-# .env
+.env
 /venv/
 /static/
 nohup.out
+/CACHE/
 
 # web
 .DS_Store

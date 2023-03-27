@@ -21,3 +21,7 @@
 **/secrets.dev.yaml
 **/values.dev.yaml
 README.md
+Dockerfile
+.dockerignore
+node_modules
+dist

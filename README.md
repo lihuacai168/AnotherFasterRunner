@@ -23,7 +23,7 @@
 >
 > `V2`版本使用`django-celery-beat`代替`djcelery`, 需要手动执行sql文件夹中的`django_celery_beat_init.sql`
 
-## [使用文档](https://www.yuque.com/lihuacai/sggdx7/cn5ncg)
+## [使用文档](https://www.yuque.com/lihuacai/fasterunner)
 
 - 使用文档 <https://www.yuque.com/lihuacai/fasterunner>
 
@@ -68,7 +68,10 @@ cp .env.example $HOME/.env
 ```
 
 ```shell
-# 指定配置文件启动, .env是绝对路径
+# 使用makefile命令快速启动
+make up
+
+# 或者使用docker-compose原始的命令, 指定配置文件启动, .env是绝对路径
 docker-compose --env-file=$HOME/.env up --build -d
 ```
 
@@ -104,3 +107,15 @@ or
 # 版权声明：本文为CSDN博主「gblfy」的原创文章，遵循CC 4.0 BY-SA版权协议，转载请附上原文出处链接及本声明。
 # 原文链接：https://blog.csdn.net/weixin_40816738/article/details/121512708
 ```
+
+# Star History
+
+![Star History Chart](https://api.star-history.com/svg?repos=lihuacai168/AnotherFasterRunner&type=Date)
+
+# 鸣谢
+
+感谢 JetBrains 对开源项目的支持
+
+<a href="https://jb.gg/OpenSourceSupport">
+  <img src="https://user-images.githubusercontent.com/8643542/160519107-199319dc-e1cf-4079-94b7-01b6b8d23aa6.png" align="left" height="150" width="150" alt="JetBrains">
+</a>

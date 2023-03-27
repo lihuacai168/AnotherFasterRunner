@@ -5,7 +5,9 @@
 # @File: yapi.py
 # @Time : 2021/3/31 22:56
 # @Email: lihuacai168@gmail.com
-from loguru import logger
+# from loguru import logger
+import logging
+
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django_bulk_update.helper import bulk_update
@@ -13,6 +15,8 @@ from django_bulk_update.helper import bulk_update
 from fastrunner.utils.parser import Yapi
 from fastrunner.utils import response
 from fastrunner import models
+
+logger = logging.getLogger(__name__)
 
 
 class YAPIView(APIView):

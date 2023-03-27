@@ -4,4 +4,4 @@ FROM nginx:stable-alpine
 
 RUN rm /etc/nginx/conf.d/default.conf
 COPY nginx.conf /etc/nginx/conf.d
-COPY --from=Base  /app/static  /www/FasterRunner/static
+COPY --from=Base  /app/static_root  /www/FasterRunner/static
