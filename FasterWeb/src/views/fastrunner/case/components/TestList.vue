@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-header style="padding-top: 4px; height: 40px">
+    <el-header style="padding: 5px 0 0 10px; height: 40px">
       <div style="display: flex; align-items: center">
         <div v-if="testData.count >= 0">
           <el-input
@@ -71,341 +71,325 @@
       </div>
     </el-header>
 
-    <el-container>
-      <el-main style="padding: 0; margin-left: 10px; margin-bottom: 10px">
+    <el-main style="padding: 0 10px">
+      <el-dialog
+        v-if="dialogTableVisible"
+        title="Test Result"
+        :visible.sync="dialogTableVisible"
+        width="70%"
+        :modal-append-to-body="false"
+      >
+        <report :summary="summary"></report>
+      </el-dialog>
+
+      <el-dialog
+        title="Run Case"
+        :visible.sync="dialogTreeVisible"
+        width="45%"
+        :modal-append-to-body="false"
+        @close="onCloseRunCase"
+        @open="onOpenRunCase"
+      >
         <div>
-          <el-dialog
-            v-if="dialogTableVisible"
-            title="Test Result"
-            :visible.sync="dialogTableVisible"
-            width="70%"
-            :modal-append-to-body="false"
-          >
-            <report :summary="summary"></report>
-          </el-dialog>
-
-          <el-dialog
-            title="Run Case"
-            :visible.sync="dialogTreeVisible"
-            width="45%"
-            :modal-append-to-body="false"
-            @close="onCloseRunCase"
-            @open="onOpenRunCase"
-          >
-            <div>
-              <div>
-                <el-row :gutter="20">
-                  <el-col :span="10"><span>配置: </span></el-col>
-                  <el-col :span="10">
-                    <el-select placeholder="请选择" size="small" v-model="currentConfigId" style="width: 200px">
-                      <el-option v-for="item in configOptions" :key="item.id" :label="item.name" :value="item.id">
-                      </el-option>
-                    </el-select>
-                  </el-col>
-                </el-row>
-                <el-row :gutter="20" style="margin-top: 10px">
-                  <el-col :span="10">
-                    <el-switch
-                      v-model="asyncs"
-                      active-color="#13ce66"
-                      inactive-color="#ff4949"
-                      active-text="异步执行"
-                      inactive-text="同步执行"
-                    >
-                    </el-switch>
-                  </el-col>
-                  <el-col :span="10">
-                    <el-input
-                      v-show="asyncs"
-                      size="small"
-                      clearable
-                      placeholder="请输入报告名称"
-                      v-model="reportName"
-                      :disabled="false"
-                    >
-                    </el-input>
-                  </el-col>
-                </el-row>
-              </div>
-              <div style="margin-top: 20px">
+          <div>
+            <el-row :gutter="20">
+              <el-col :span="10"><span>配置: </span></el-col>
+              <el-col :span="10">
+                <el-select placeholder="请选择" size="small" v-model="currentConfigId" style="width: 200px">
+                  <el-option v-for="item in configOptions" :key="item.id" :label="item.name" :value="item.id">
+                  </el-option>
+                </el-select>
+              </el-col>
+            </el-row>
+            <el-row :gutter="20" style="margin-top: 10px">
+              <el-col :span="10">
+                <el-switch
+                  v-model="asyncs"
+                  active-color="#13ce66"
+                  inactive-color="#ff4949"
+                  active-text="异步执行"
+                  inactive-text="同步执行"
+                >
+                </el-switch>
+              </el-col>
+              <el-col :span="10">
                 <el-input
-                  placeholder="输入关键字进行过滤"
-                  v-model="filterText"
+                  v-show="asyncs"
                   size="small"
                   clearable
-                  prefix-icon="el-icon-search"
+                  placeholder="请输入报告名称"
+                  v-model="reportName"
+                  :disabled="false"
                 >
                 </el-input>
+              </el-col>
+            </el-row>
+          </div>
+          <div style="margin-top: 20px">
+            <el-input
+              placeholder="输入关键字进行过滤"
+              v-model="filterText"
+              size="small"
+              clearable
+              prefix-icon="el-icon-search"
+            >
+            </el-input>
 
-                <el-tree
-                  :filter-node-method="filterNode"
-                  :data="dataTree"
-                  show-checkbox
-                  node-key="id"
-                  :expand-on-click-node="false"
-                  check-on-click-node
-                  :check-strictly="true"
-                  :highlight-current="true"
-                  ref="tree"
-                >
-                  <span class="custom-tree-node" slot-scope="{ node, data }">
-                    <span><i class="iconfont" v-html="expand"></i> &nbsp;&nbsp;{{ node.label }}</span>
-                  </span>
-                </el-tree>
-              </div>
-            </div>
-            <span slot="footer" class="dialog-footer">
-              <el-button @click="dialogTreeVisible = false">取 消</el-button>
-              <el-button type="primary" @click="runTree">确 定</el-button>
-            </span>
-          </el-dialog>
-          <el-dialog
-            title="Move Case"
-            :visible.sync="dialogTreeMoveCaseVisible"
-            width="45%"
-            :modal-append-to-body="false"
-          >
-            <div>
-              <div style="margin-top: 20px">
-                <el-input
-                  placeholder="输入关键字进行过滤"
-                  v-model="filterText"
-                  size="small"
-                  clearable
-                  prefix-icon="el-icon-search"
-                >
-                </el-input>
+            <el-tree
+              :filter-node-method="filterNode"
+              :data="dataTree"
+              show-checkbox
+              node-key="id"
+              :expand-on-click-node="false"
+              check-on-click-node
+              :check-strictly="true"
+              :highlight-current="true"
+              ref="tree"
+            >
+              <span class="custom-tree-node" slot-scope="{ node, data }">
+                <span><i class="iconfont" v-html="expand"></i> &nbsp;&nbsp;{{ node.label }}</span>
+              </span>
+            </el-tree>
+          </div>
+        </div>
+        <span slot="footer" class="dialog-footer">
+          <el-button @click="dialogTreeVisible = false">取 消</el-button>
+          <el-button type="primary" @click="runTree">确 定</el-button>
+        </span>
+      </el-dialog>
+      <el-dialog title="Move Case" :visible.sync="dialogTreeMoveCaseVisible" width="45%" :modal-append-to-body="false">
+        <div>
+          <div style="margin-top: 20px">
+            <el-input
+              placeholder="输入关键字进行过滤"
+              v-model="filterText"
+              size="small"
+              clearable
+              prefix-icon="el-icon-search"
+            >
+            </el-input>
 
-                <el-tree
-                  :filter-node-method="filterNode"
-                  :data="dataTree"
-                  show-checkbox
-                  node-key="id"
-                  :expand-on-click-node="false"
-                  check-on-click-node
-                  :check-strictly="true"
-                  :highlight-current="true"
-                  ref="tree"
-                >
-                  <span class="custom-tree-node" slot-scope="{ node, data }">
-                    <span><i class="iconfont" v-html="expand"></i> &nbsp;&nbsp;{{ node.label }}</span>
-                  </span>
-                </el-tree>
-              </div>
-            </div>
-            <span slot="footer" class="dialog-footer">
-              <el-button @click="dialogTreeMoveCaseVisible = false">取 消</el-button>
-              <el-button type="primary" @click="moveCase">确 定</el-button>
-            </span>
-          </el-dialog>
-          <el-table
-            style="width: 100%; height: auto"
-            highlight-current-row
-            v-loading="loading"
-            ref="multipleTable"
-            :data="testData.results"
-            :show-header="testData.count !== 0"
-            stripe
-            max-height="900"
-            @cell-mouse-enter="cellMouseEnter"
-            @cell-mouse-leave="cellMouseLeave"
-            @selection-change="handleSelectionChange"
-          >
-            <el-table-column type="selection" width="35"></el-table-column>
-            <!--                        <el-table-column width="25">-->
-            <!--                            <template v-slot="scope">-->
-            <!--                                <el-dropdown-->
-            <!--                                    @command="dropdownMenuChangeHandle"-->
-            <!--                                >-->
-            <!--                                    <span><i class="el-icon-more"></i></span>-->
-            <!--                                    <el-dropdown-menu slot="dropdown">-->
-            <!--                                        <el-dropdown-item disabled style="background-color: #e2e2e2">-->
-            <!--                                            {{ selectTest.length }} 条更新为-->
-            <!--                                        </el-dropdown-item>-->
-
-            <!--                                        <el-dropdown-item :disabled="selectTest.length === 0" command="core">核心用例-->
-            <!--                                        </el-dropdown-item>-->
-            <!--                                        <el-dropdown-item :disabled="selectTest.length === 0" command="integrated">集成用例-->
-            <!--                                        </el-dropdown-item>-->
-            <!--                                        <el-dropdown-item :disabled="selectTest.length === 0" command="smoke">-->
-            <!--                                            冒烟用例-->
-            <!--                                        </el-dropdown-item>-->
-            <!--                                        <el-dropdown-item :disabled="selectTest.length === 0" command="monitor">-->
-            <!--                                            监控脚本-->
-            <!--                                        </el-dropdown-item>-->
-            <!--                                    </el-dropdown-menu>-->
-            <!--                                </el-dropdown>-->
-            <!--                            </template>-->
-            <!--                        </el-table-column>-->
-
-            <el-table-column label="用例名称" min-width="200">
+            <el-tree
+              :filter-node-method="filterNode"
+              :data="dataTree"
+              show-checkbox
+              node-key="id"
+              :expand-on-click-node="false"
+              check-on-click-node
+              :check-strictly="true"
+              :highlight-current="true"
+              ref="tree"
+            >
+              <span class="custom-tree-node" slot-scope="{ node, data }">
+                <span><i class="iconfont" v-html="expand"></i> &nbsp;&nbsp;{{ node.label }}</span>
+              </span>
+            </el-tree>
+          </div>
+        </div>
+        <span slot="footer" class="dialog-footer">
+          <el-button @click="dialogTreeMoveCaseVisible = false">取 消</el-button>
+          <el-button type="primary" @click="moveCase">确 定</el-button>
+        </span>
+      </el-dialog>
+      <el-table
+        highlight-current-row
+        v-loading="loading"
+        ref="multipleTable"
+        :data="testData.results"
+        :show-header="testData.count !== 0"
+        stripe
+        max-height="900"
+        @cell-mouse-enter="cellMouseEnter"
+        @cell-mouse-leave="cellMouseLeave"
+        @selection-change="handleSelectionChange"
+      >
+        <el-table-column type="selection" width="35"></el-table-column>
+        <!-- <el-table-column width="25">
               <template v-slot="scope">
-                <div>
-                  {{ scope.row.name }}
-                  <i
-                    class="el-icon-success"
-                    style="color: green; margin-left: 5px"
-                    v-if="scope.row.tasks.length > 0"
-                    :title="'已加入定时任务: ' + scope.row.tasks.map((task) => task.name).join('，')"
+                <el-dropdown @command="dropdownMenuChangeHandle">
+                  <span><i class="el-icon-more"></i></span>
+                  <el-dropdown-menu slot="dropdown">
+                    <el-dropdown-item disabled style="background-color: #e2e2e2">
+                      {{ selectTest.length }} 条更新为
+                    </el-dropdown-item>
+
+                    <el-dropdown-item :disabled="selectTest.length === 0" command="core">核心用例 </el-dropdown-item>
+                    <el-dropdown-item :disabled="selectTest.length === 0" command="integrated"
+                      >集成用例
+                    </el-dropdown-item>
+                    <el-dropdown-item :disabled="selectTest.length === 0" command="smoke"> 冒烟用例 </el-dropdown-item>
+                    <el-dropdown-item :disabled="selectTest.length === 0" command="monitor">
+                      监控脚本
+                    </el-dropdown-item>
+                  </el-dropdown-menu>
+                </el-dropdown>
+              </template>
+            </el-table-column> -->
+
+        <el-table-column label="用例名称" min-width="200">
+          <template v-slot="scope">
+            <div>
+              {{ scope.row.name }}
+              <i
+                class="el-icon-success"
+                style="color: green; margin-left: 5px"
+                v-if="scope.row.tasks.length > 0"
+                :title="'已加入定时任务: ' + scope.row.tasks.map((task) => task.name).join('，')"
+              >
+              </i>
+            </div>
+          </template>
+        </el-table-column>
+
+        <el-table-column label="步骤" width="50">
+          <template v-slot="scope">
+            <div style="text-align: center">
+              {{ scope.row.length }}
+            </div>
+          </template>
+        </el-table-column>
+
+        <el-table-column label="用例类型" width="100">
+          <template v-slot="scope">
+            <el-tag v-if="scope.row.tag === '冒烟用例'">{{ scope.row.tag }}</el-tag>
+            <el-tag v-if="scope.row.tag === '集成用例'" type="info">{{ scope.row.tag }}</el-tag>
+            <el-tag v-if="scope.row.tag === '监控脚本'" type="danger">{{ scope.row.tag }}</el-tag>
+            <el-tag v-if="scope.row.tag === '核心用例'" type="success">{{ scope.row.tag }}</el-tag>
+          </template>
+        </el-table-column>
+
+        <el-table-column label="更新时间" width="105">
+          <template v-slot="scope">
+            <div>
+              {{ scope.row.update_time | datetimeFormat("MM-DD hh:mm") }}
+            </div>
+          </template>
+        </el-table-column>
+
+        <el-table-column label="创建时间" width="105">
+          <template v-slot="scope">
+            <div>
+              {{ scope.row.create_time | datetimeFormat("MM-DD hh:mm") }}
+            </div>
+          </template>
+        </el-table-column>
+
+        <el-table-column label="创建人" width="80">
+          <template v-slot="scope">
+            <div>{{ scope.row.creator }}</div>
+          </template>
+        </el-table-column>
+
+        <el-table-column label="更新人" width="80">
+          <template v-slot="scope">
+            <div>{{ scope.row.updater }}</div>
+          </template>
+        </el-table-column>
+
+        <el-table-column label="用例操作" width="180">
+          <template v-slot="scope">
+            <el-row v-show="currentRow === scope.row">
+              <el-button
+                type="info"
+                icon="el-icon-edit"
+                circle
+                size="mini"
+                style="margin-left: 5px"
+                title="编辑"
+                @click="handleEditTest(scope.row.id)"
+              ></el-button>
+
+              <el-button
+                type="primary"
+                icon="el-icon-caret-right"
+                circle
+                size="mini"
+                style="margin-left: 5px"
+                title="同步运行用例"
+                @click="handleRunTest(scope.row.id, scope.row.name)"
+              ></el-button>
+
+              <el-button
+                type="primary"
+                icon="el-icon-video-play"
+                circle
+                size="mini"
+                style="margin-left: 5px"
+                title="异步运行用例"
+                @click="handleAsyncRunTest(scope.row.id, scope.row.name, scope.row.relation)"
+              ></el-button>
+
+              <el-popover style="margin-left: 5px" trigger="hover">
+                <div style="text-align: left">
+                  <el-button
+                    type="success"
+                    icon="el-icon-document-copy"
+                    circle
+                    size="mini"
+                    style="margin-left: 5px"
+                    title="复制用例"
+                    @click="handleCopyTest(scope.row.id, scope.row.name)"
                   >
-                  </i>
-                </div>
-              </template>
-            </el-table-column>
+                  </el-button>
 
-            <el-table-column label="步骤" width="50">
-              <template v-slot="scope">
-                <div style="text-align: center">
-                  {{ scope.row.length }}
-                </div>
-              </template>
-            </el-table-column>
-
-            <el-table-column label="用例类型" width="100">
-              <template v-slot="scope">
-                <el-tag v-if="scope.row.tag === '冒烟用例'">{{ scope.row.tag }}</el-tag>
-                <el-tag v-if="scope.row.tag === '集成用例'" type="info">{{ scope.row.tag }}</el-tag>
-                <el-tag v-if="scope.row.tag === '监控脚本'" type="danger">{{ scope.row.tag }}</el-tag>
-                <el-tag v-if="scope.row.tag === '核心用例'" type="success">{{ scope.row.tag }}</el-tag>
-              </template>
-            </el-table-column>
-
-            <el-table-column label="更新时间" width="105">
-              <template v-slot="scope">
-                <div>
-                  {{ scope.row.update_time | datetimeFormat("MM-DD hh:mm") }}
-                </div>
-              </template>
-            </el-table-column>
-
-            <el-table-column label="创建时间" width="105">
-              <template v-slot="scope">
-                <div>
-                  {{ scope.row.create_time | datetimeFormat("MM-DD hh:mm") }}
-                </div>
-              </template>
-            </el-table-column>
-
-            <el-table-column label="创建人" width="80">
-              <template v-slot="scope">
-                <div>{{ scope.row.creator }}</div>
-              </template>
-            </el-table-column>
-
-            <el-table-column label="更新人" width="80">
-              <template v-slot="scope">
-                <div>{{ scope.row.updater }}</div>
-              </template>
-            </el-table-column>
-
-            <el-table-column label="用例操作" width="180">
-              <template v-slot="scope">
-                <el-row v-show="currentRow === scope.row">
                   <el-button
-                    type="info"
-                    icon="el-icon-edit"
+                    type="danger"
+                    icon="el-icon-delete"
+                    :title="userName === scope.row.creator || isSuperuser ? '删除' : '只有用例创建者才能删除'"
+                    :disabled="userName !== scope.row.creator && !isSuperuser"
                     circle
                     size="mini"
                     style="margin-left: 5px"
-                    title="编辑"
-                    @click="handleEditTest(scope.row.id)"
-                  ></el-button>
+                    @click="handleDelTest(scope.row.id)"
+                  >
+                  </el-button>
 
                   <el-button
-                    type="primary"
-                    icon="el-icon-caret-right"
+                    type="warning"
+                    icon="el-icon-refresh"
+                    :title="
+                      userName === scope.row.creator || isSuperuser ? '从API同步用例步骤' : '只有用例创建者才能同步'
+                    "
+                    :disabled="userName !== scope.row.creator && !isSuperuser"
                     circle
                     size="mini"
                     style="margin-left: 5px"
-                    title="同步运行用例"
-                    @click="handleRunTest(scope.row.id, scope.row.name)"
-                  ></el-button>
-
-                  <el-button
-                    type="primary"
-                    icon="el-icon-video-play"
-                    circle
-                    size="mini"
-                    style="margin-left: 5px"
-                    title="异步运行用例"
-                    @click="handleAsyncRunTest(scope.row.id, scope.row.name, scope.row.relation)"
-                  ></el-button>
-
-                  <el-popover style="margin-left: 5px" trigger="hover">
-                    <div style="text-align: left">
-                      <el-button
-                        type="success"
-                        icon="el-icon-document-copy"
-                        circle
-                        size="mini"
-                        style="margin-left: 5px"
-                        title="复制用例"
-                        @click="handleCopyTest(scope.row.id, scope.row.name)"
-                      >
-                      </el-button>
-
-                      <el-button
-                        type="danger"
-                        icon="el-icon-delete"
-                        :title="userName === scope.row.creator || isSuperuser ? '删除' : '只有用例创建者才能删除'"
-                        :disabled="userName !== scope.row.creator && !isSuperuser"
-                        circle
-                        size="mini"
-                        style="margin-left: 5px"
-                        @click="handleDelTest(scope.row.id)"
-                      >
-                      </el-button>
-
-                      <el-button
-                        type="warning"
-                        icon="el-icon-refresh"
-                        :title="
-                          userName === scope.row.creator || isSuperuser ? '从API同步用例步骤' : '只有用例创建者才能同步'
-                        "
-                        :disabled="userName !== scope.row.creator && !isSuperuser"
-                        circle
-                        size="mini"
-                        style="margin-left: 5px"
-                        @click="handleSyncCaseStep(scope.row.id)"
-                      >
-                      </el-button>
-                    </div>
-                    <el-button icon="el-icon-more" title="更多" circle size="mini" slot="reference"></el-button>
-                  </el-popover>
-                </el-row>
-              </template>
-            </el-table-column>
-          </el-table>
-          <!--                    <div style="margin: 0 5px;">-->
-          <!--                        <el-pagination-->
-          <!--                            style="margin-top: 5px"-->
-          <!--                            @current-change="handleCurrentChange"-->
-          <!--                            :current-page.sync="currentPage"-->
-          <!--                            :page-size="11"-->
-          <!--                            v-show="testData.count !== 0"-->
-          <!--                            background-->
-          <!--                            layout="total, prev, pager, next, jumper"-->
-          <!--                            :total="testData.count"-->
-          <!--                        >-->
-          <!--                        </el-pagination>-->
-          <!--                    </div>-->
-        </div>
-      </el-main>
-      <el-footer>
-        <div style="margin: 5px 5px">
-          <el-pagination
-            @current-change="handleCurrentChange"
-            :current-page.sync="currentPage"
-            :page-size="11"
-            v-show="testData.count !== 0"
-            background
-            layout="total, prev, pager, next, jumper"
-            :total="testData.count"
-          >
-          </el-pagination>
-        </div>
-      </el-footer>
-    </el-container>
+                    @click="handleSyncCaseStep(scope.row.id)"
+                  >
+                  </el-button>
+                </div>
+                <el-button icon="el-icon-more" title="更多" circle size="mini" slot="reference"></el-button>
+              </el-popover>
+            </el-row>
+          </template>
+        </el-table-column>
+      </el-table>
+      <!--                    <div style="margin: 0 5px;">-->
+      <!--                        <el-pagination-->
+      <!--                            style="margin-top: 5px"-->
+      <!--                            @current-change="handleCurrentChange"-->
+      <!--                            :current-page.sync="currentPage"-->
+      <!--                            :page-size="11"-->
+      <!--                            v-show="testData.count !== 0"-->
+      <!--                            background-->
+      <!--                            layout="total, prev, pager, next, jumper"-->
+      <!--                            :total="testData.count"-->
+      <!--                        >-->
+      <!--                        </el-pagination>-->
+      <!--                    </div>-->
+    </el-main>
+    <div style="margin: 5px 0">
+      <el-pagination
+        @current-change="handleCurrentChange"
+        :current-page.sync="currentPage"
+        :page-size="11"
+        v-show="testData.count !== 0"
+        background
+        layout="total, prev, pager, next, jumper"
+        :total="testData.count"
+      >
+      </el-pagination>
+    </div>
   </div>
 </template>
 

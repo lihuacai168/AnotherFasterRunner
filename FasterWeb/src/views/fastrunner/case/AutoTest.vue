@@ -1,187 +1,181 @@
 <template>
   <div>
-    <el-header style="background: #fff; padding: 0; height: 50px">
-      <div class="nav-api-header">
-        <div style="padding-top: 10px; margin-left: 10px">
-          <el-button
-            v-if="true"
-            type="primary"
-            size="small"
-            icon="el-icon-circle-plus"
-            @click="dialogVisible = true"
-            :disabled="!addTestActivate"
-            >新建节点
-          </el-button>
+    <el-header style="padding: 10px 10px; height: 48px" class="nav-api-header">
+      <el-button
+        v-if="true"
+        type="primary"
+        size="small"
+        icon="el-icon-circle-plus"
+        @click="dialogVisible = true"
+        :disabled="!addTestActivate"
+        >新建节点
+      </el-button>
 
-          <el-dialog title="新建节点" :visible.sync="dialogVisible" width="30%" align="center">
-            <el-form :model="nodeForm" :rules="rules" ref="nodeForm" label-width="100px" class="project">
-              <el-form-item label="节点名称" prop="name">
-                <el-input v-model="nodeForm.name"></el-input>
-              </el-form-item>
-            </el-form>
+      <el-dialog title="新建节点" :visible.sync="dialogVisible" width="30%" align="center">
+        <el-form :model="nodeForm" :rules="rules" ref="nodeForm" label-width="100px" class="project">
+          <el-form-item label="节点名称" prop="name">
+            <el-input v-model="nodeForm.name"></el-input>
+          </el-form-item>
+        </el-form>
 
-            <el-radio-group v-model="radio" size="small">
-              <el-radio-button label="根节点"></el-radio-button>
-              <el-radio-button label="子节点"></el-radio-button>
-            </el-radio-group>
+        <el-radio-group v-model="radio" size="small">
+          <el-radio-button label="根节点"></el-radio-button>
+          <el-radio-button label="子节点"></el-radio-button>
+        </el-radio-group>
 
-            <span slot="footer" class="dialog-footer">
-              <el-button size="small" @click="dialogVisible = false">取 消</el-button>
-              <el-button size="small" type="primary" @click="handleConfirm('nodeForm')">确 定</el-button>
-            </span>
-          </el-dialog>
+        <span slot="footer" class="dialog-footer">
+          <el-button size="small" @click="dialogVisible = false">取 消</el-button>
+          <el-button size="small" type="primary" @click="handleConfirm('nodeForm')">确 定</el-button>
+        </span>
+      </el-dialog>
 
-          <el-button
-            v-if="false"
-            type="danger"
-            size="small"
-            icon="el-icon-delete"
-            @click="deleteNode"
-            :disabled="buttonActivate"
-            >删除节点
-          </el-button>
+      <el-button
+        v-if="false"
+        type="danger"
+        size="small"
+        icon="el-icon-delete"
+        @click="deleteNode"
+        :disabled="buttonActivate"
+        >删除节点
+      </el-button>
 
-          <el-button
-            v-if="false"
-            :disabled="currentNode === ''"
-            type="info"
-            size="small"
-            icon="el-icon-edit-outline"
-            @click="renameNode(currentNode)"
-            >重命名
-          </el-button>
+      <el-button
+        v-if="false"
+        :disabled="currentNode === ''"
+        type="info"
+        size="small"
+        icon="el-icon-edit-outline"
+        @click="renameNode(currentNode)"
+        >重命名
+      </el-button>
 
-          <el-button
-            type="primary"
-            plain
-            size="small"
-            style="margin-left: 5px"
-            icon="el-icon-circle-plus-outline"
-            @click="buttonActivate = false"
-            :disabled="buttonActivate"
-            >添加用例
-          </el-button>
-          <span v-show="this.$store.state.show_hosts" style="margin-left: 5px">
-            &nbsp;Hosts:
-            <el-select placeholder="请选择" size="small" v-model="currentHost">
-              <el-option v-for="item in hostOptions" :key="item.id" :label="item.name" :value="item.name"> </el-option>
-            </el-select>
-          </span>
-          <!--                    <span style="margin-left: 10px">配置:</span>-->
-          <el-select
-            placeholder="请选择配置"
-            size="small"
-            style="width: 100px; margin-left: 5px"
-            v-model="currentConfig"
-            :disabled="addTestActivate"
-          >
-            <el-option v-for="item in configOptions" :key="item.id" :label="item.name" :value="item.name"> </el-option>
-          </el-select>
-          <el-button
-            v-if="addTestActivate"
-            style="margin-left: 20px"
-            circle
-            type="primary"
-            size="small"
-            icon="el-icon-caret-right"
-            title="批量运行用例"
-            @click="run = !run"
-          >
-          </el-button>
+      <el-button
+        type="primary"
+        plain
+        size="small"
+        style="margin-left: 5px"
+        icon="el-icon-circle-plus-outline"
+        @click="buttonActivate = false"
+        :disabled="buttonActivate"
+        >添加用例
+      </el-button>
+      <span v-show="this.$store.state.show_hosts" style="margin-left: 5px">
+        &nbsp;Hosts:
+        <el-select placeholder="请选择" size="small" v-model="currentHost">
+          <el-option v-for="item in hostOptions" :key="item.id" :label="item.name" :value="item.name"> </el-option>
+        </el-select>
+      </span>
+      <!--                    <span style="margin-left: 10px">配置:</span>-->
+      <el-select
+        placeholder="请选择配置"
+        size="small"
+        style="width: 100px; margin-left: 5px"
+        v-model="currentConfig"
+        :disabled="addTestActivate"
+      >
+        <el-option v-for="item in configOptions" :key="item.id" :label="item.name" :value="item.name"> </el-option>
+      </el-select>
+      <el-button
+        v-if="addTestActivate"
+        style="margin-left: 20px"
+        circle
+        type="primary"
+        size="small"
+        icon="el-icon-caret-right"
+        title="批量运行用例"
+        @click="run = !run"
+      >
+      </el-button>
 
-          <el-button
-            v-if="addTestActivate"
-            :disabled="!isSelectCase"
-            style="margin-left: 5px"
-            type="success"
-            size="small"
-            circle
-            icon="el-icon-s-promotion"
-            title="移动用例到指定节点"
-            @click="move = !move"
-          >
-          </el-button>
+      <el-button
+        v-if="addTestActivate"
+        :disabled="!isSelectCase"
+        style="margin-left: 5px"
+        type="success"
+        size="small"
+        circle
+        icon="el-icon-s-promotion"
+        title="移动用例到指定节点"
+        @click="move = !move"
+      >
+      </el-button>
 
-          <el-button
-            v-if="addTestActivate"
-            :disabled="!(onlyMe && isSelectCase)"
-            style="margin-left: 5px"
-            circle
-            type="danger"
-            icon="el-icon-delete"
-            size="small"
-            title="批量删除当前用户的用例"
-            @click="del = !del"
-          >
-          </el-button>
+      <el-button
+        v-if="addTestActivate"
+        :disabled="!(onlyMe && isSelectCase)"
+        style="margin-left: 5px"
+        circle
+        type="danger"
+        icon="el-icon-delete"
+        size="small"
+        title="批量删除当前用户的用例"
+        @click="del = !del"
+      >
+      </el-button>
 
-          <el-switch
-            style="margin-left: 20px"
-            v-model="onlyMe"
-            v-if="addTestActivate"
-            active-color="#13ce66"
-            inactive-color="#ff4949"
-            active-text="只看我的"
-          >
-          </el-switch>
+      <el-switch
+        style="margin-left: 20px"
+        v-model="onlyMe"
+        v-if="addTestActivate"
+        active-color="#13ce66"
+        inactive-color="#ff4949"
+        active-text="只看我的"
+      >
+      </el-switch>
 
-          <el-button
-            :disabled="addTestActivate"
-            type="info"
-            plain
-            size="small"
-            icon="el-icon-back"
-            style="position: absolute; right: 20px"
-            @click="handleBackList"
-            >返回列表
-          </el-button>
-        </div>
-      </div>
+      <el-button
+        :disabled="addTestActivate"
+        type="info"
+        plain
+        size="small"
+        icon="el-icon-back"
+        style="float: right"
+        @click="handleBackList"
+        >返回列表
+      </el-button>
     </el-header>
 
     <el-container>
       <el-aside style="width: 240px" v-show="addTestActivate">
-        <div class="nav-api-side">
-          <div class="api-tree">
-            <el-input
-              placeholder="输入关键字进行过滤"
-              v-model="filterText"
-              size="small"
-              clearable
-              prefix-icon="el-icon-search"
-            >
-            </el-input>
+        <div class="nav-api-side api-tree">
+          <el-input
+            placeholder="输入关键字进行过滤"
+            v-model="filterText"
+            size="small"
+            clearable
+            prefix-icon="el-icon-search"
+          >
+          </el-input>
 
-            <el-tree
-              @node-click="handleNodeClick"
-              :data="dataTree"
-              node-key="id"
-              :default-expand-all="false"
-              :expand-on-click-node="true"
-              draggable
-              highlight-current
-              :filter-node-method="filterNode"
-              ref="tree2"
-              @node-drag-end="handleDragEnd"
+          <el-tree
+            @node-click="handleNodeClick"
+            :data="dataTree"
+            node-key="id"
+            :default-expand-all="false"
+            :expand-on-click-node="true"
+            draggable
+            highlight-current
+            :filter-node-method="filterNode"
+            ref="tree2"
+            @node-drag-end="handleDragEnd"
+          >
+            <span
+              class="custom-tree-node"
+              slot-scope="{ node, data }"
+              @mouseenter="mouseenter(node)"
+              @mouseleave="mouseleave"
+              style="display: flex; width: 180px"
             >
-              <span
-                class="custom-tree-node"
-                slot-scope="{ node, data }"
-                @mouseenter="mouseenter(node)"
-                @mouseleave="mouseleave"
-                style="display: flex; width: 180px"
-              >
-                <span style="overflow: hidden; text-overflow: ellipsis; flex: 1">
-                  <i class="iconfont" v-html="expand"></i>&nbsp;&nbsp;{{ node.label }}
-                </span>
-                <span class="icon-group" v-show="node.id === mouseNodeId">
-                  <i class="el-icon-folder-add" @click="dialogVisible = true" disabled="!addTestActivate"></i>
-                  <i class="el-icon-edit" @click="renameNode(node)"></i>
-                  <i class="el-icon-delete" @click="deleteNode(node)"></i>
-                </span>
+              <span style="overflow: hidden; text-overflow: ellipsis; flex: 1">
+                <i class="iconfont" v-html="expand"></i>&nbsp;&nbsp;{{ node.label }}
               </span>
-            </el-tree>
-          </div>
+              <span class="icon-group" v-show="node.id === mouseNodeId">
+                <i class="el-icon-folder-add" @click="dialogVisible = true" disabled="!addTestActivate"></i>
+                <i class="el-icon-edit" @click="renameNode(node)"></i>
+                <i class="el-icon-delete" @click="deleteNode(node)"></i>
+              </span>
+            </span>
+          </el-tree>
         </div>
       </el-aside>
 

@@ -152,7 +152,12 @@ export default {
             const decodeList = JSON.parse(this.appDesc(saLine));
             decodeList.map((decode) => {
               const eventName = decode.event;
-              this.addResultData(JSON.stringify(decode), "App", eventName);
+              const eventType = decode.lib.$lib;
+              if (eventType && eventType === "js") {
+                this.addResultData(JSON.stringify(decode), "H5", eventName);
+              } else {
+                this.addResultData(JSON.stringify(decode), "App", eventName);
+              }
             });
           });
         }
@@ -185,7 +190,12 @@ export default {
           const decodeList = JSON.parse(this.appDesc(msg));
           decodeList.map((decode) => {
             const eventName = decode.event;
-            this.addResultData(JSON.stringify(decode), "App", eventName);
+            const eventType = decode.lib.$lib;
+            if (eventType && eventType === "js") {
+              this.addResultData(JSON.stringify(decode), "H5", eventName);
+            } else {
+              this.addResultData(JSON.stringify(decode), "App", eventName);
+            }
           });
         }
       } catch (error) {
@@ -228,6 +238,7 @@ export default {
           );
         this.debugImgUrl = "sa-viewer-{}.caibeike.net".replace("{}", userId);
         this.resultDialog = true;
+        this.setCookieValue("UUID", userId);
       } else {
         this.appDecode(data);
       }
@@ -241,7 +252,7 @@ export default {
     handleJsonView(index) {
       this.jsonViewTmp = JSON.parse(index.result);
       this.jsonViewDialog = true;
-      console.log(index);
+      // console.log(index);
     },
     onError() {
       console.log("error");

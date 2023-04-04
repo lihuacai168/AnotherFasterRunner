@@ -765,7 +765,7 @@ export default {
   min-height: 1px;
 }
 .test-list {
-  height: 750px;
+  height: 570px;
 }
 
 .block_test {

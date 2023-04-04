@@ -140,9 +140,7 @@ const hints = [
 function createCompleter(getExtraHints) {
   const createSuggestions = function (model, textUntilPosition) {
     let text = model.getValue();
-    textUntilPosition = textUntilPosition
-      .replace(/[*[\]@$()]/g, "")
-      .replace(/(\s+|\.)/g, " ");
+    textUntilPosition = textUntilPosition.replace(/[*[\]@$()]/g, "").replace(/(\s+|\.)/g, " ");
     let arr = textUntilPosition.split(/[\s;]/);
     let activeStr = arr[arr.length - 1];
     let len = activeStr.length;
@@ -155,16 +153,11 @@ function createCompleter(getExtraHints) {
           let search = ele.search(rexp);
           return ele.substr(search);
         });
-    let mergeHints = Array.from(
-      new Set([...hints, ...textHints, ...getExtraHints(model)])
-    )
+    let mergeHints = Array.from(new Set([...hints, ...textHints, ...getExtraHints(model)]))
       .sort()
       .filter((ele) => {
         let rexp = new RegExp(ele.substr(0, len), "gim");
-        return (match && match.length === 1 && ele === activeStr) ||
-          ele.length === 1
-          ? false
-          : activeStr.match(rexp);
+        return (match && match.length === 1 && ele === activeStr) || ele.length === 1 ? false : activeStr.match(rexp);
       });
     return mergeHints.map((ele) => ({
       label: ele,

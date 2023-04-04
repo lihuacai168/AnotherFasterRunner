@@ -132,7 +132,7 @@ export default {
   },
   computed: {
     height() {
-      return window.screen.height - 440;
+      return window.innerHeight - 250 + "px";
     },
   },
   data() {

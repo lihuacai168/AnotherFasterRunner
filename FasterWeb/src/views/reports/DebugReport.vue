@@ -68,14 +68,10 @@
     <br />
 
     <slot v-for="item in summary.details">
-      <span :key="item.id" style="font-weight: bold; font-size: medium">{{
-        item.name
-      }}</span>
+      <span :key="item.id" style="font-weight: bold; font-size: medium">{{ item.name }}</span>
       <el-popover placement="top-start" width="400" trigger="hover">
         <pre class="code-block">{{ item.in_out }}</pre>
-        <el-button slot="reference" round type="text"
-          >parameters & output</el-button
-        >
+        <el-button slot="reference" round type="text">parameters & output</el-button>
       </el-popover>
 
       <el-table
@@ -91,16 +87,10 @@
           <template slot-scope="props">
             <el-tabs @tab-click="handleClick">
               <el-tab-pane label="Request">
-                <pre
-                  class="code-block"
-                  v-html="handleRequest(props.row.meta_data.request)"
-                ></pre>
+                <pre class="code-block" v-html="handleRequest(props.row.meta_data.request)"></pre>
               </el-tab-pane>
 
-              <el-tab-pane
-                label="Content"
-                v-if="props.row.meta_data.response.jsonCopy !== null"
-              >
+              <el-tab-pane label="Content" v-if="props.row.meta_data.response.jsonCopy !== null">
                 <v-jsoneditor
                   ref="jsonEditor"
                   v-model="props.row.meta_data.response.jsonCopy"
@@ -113,50 +103,18 @@
               </el-tab-pane>
 
               <el-tab-pane label="Response">
-                <pre
-                  class="code-block"
-                  v-text="handleResponse(props.row.meta_data.response)"
-                ></pre>
+                <pre class="code-block" v-text="handleResponse(props.row.meta_data.response)"></pre>
               </el-tab-pane>
-              <el-tab-pane
-                label="Validators"
-                v-if="props.row.meta_data.validators.length !== 0"
-              >
+              <el-tab-pane label="Validators" v-if="props.row.meta_data.validators.length !== 0">
                 <!--                                <pre class="code-block" v-html="props.row.meta_data.validators"></pre>-->
-                <el-table
-                  :data="props.row.meta_data.validators"
-                  stripe
-                  border
-                  style="width: 100%"
-                >
-                  <el-table-column
-                    prop="check_result"
-                    label="是否通过"
-                    width="80"
-                  >
+                <el-table :data="props.row.meta_data.validators" stripe border style="width: 100%">
+                  <el-table-column prop="check_result" label="是否通过" width="80"> </el-table-column>
+                  <el-table-column prop="check" label="取值表达式" width="350"> </el-table-column>
+                  <el-table-column prop="check_value" label="实际值" :formatter="checkValueFormatter">
                   </el-table-column>
-                  <el-table-column prop="check" label="取值表达式" width="350">
-                  </el-table-column>
-                  <el-table-column
-                    prop="check_value"
-                    label="实际值"
-                    :formatter="checkValueFormatter"
-                  >
-                  </el-table-column>
-                  <el-table-column prop="comparator" label="比较器">
-                  </el-table-column>
-                  <el-table-column
-                    prop="expect"
-                    label="期望值"
-                    :formatter="expectValueFormatter"
-                  >
-                  </el-table-column>
-                  <el-table-column
-                    prop="desc"
-                    label="描述"
-                    :formatter="descValueFormatter"
-                  >
-                  </el-table-column>
+                  <el-table-column prop="comparator" label="比较器"> </el-table-column>
+                  <el-table-column prop="expect" label="期望值" :formatter="expectValueFormatter"> </el-table-column>
+                  <el-table-column prop="desc" label="描述" :formatter="descValueFormatter"> </el-table-column>
                 </el-table>
               </el-tab-pane>
               <el-tab-pane label="Exception" v-if="props.row.attachment !== ''">
@@ -180,9 +138,7 @@
 
         <el-table-column label="请求方法" width="100px">
           <template v-slot="scope">
-            <span :class="scope.row.meta_data.request.method">{{
-              scope.row.meta_data.request.method
-            }}</span>
+            <span :class="scope.row.meta_data.request.method">{{ scope.row.meta_data.request.method }}</span>
           </template>
         </el-table-column>
 
@@ -202,21 +158,13 @@
           <template v-slot="scope">
             <el-popover placement="right-start" width="400" trigger="hover">
               <pre class="code-block">{{ scope.row.meta_data.boomer }}</pre>
-              <el-button
-                slot="reference"
-                round
-                type="text"
-                @click="copyDataText(scope.row.meta_data.boomer, 'boomer')"
+              <el-button slot="reference" round type="text" @click="copyDataText(scope.row.meta_data.boomer, 'boomer')"
                 >boomer
               </el-button>
             </el-popover>
             <el-popover placement="right-start" width="400" trigger="hover">
               <pre class="code-block">{{ scope.row.meta_data.curl }}</pre>
-              <el-button
-                slot="reference"
-                round
-                type="text"
-                @click="copyDataText(scope.row.meta_data.curl, 'curl')"
+              <el-button slot="reference" round type="text" @click="copyDataText(scope.row.meta_data.curl, 'curl')"
                 >curl
               </el-button>
             </el-popover>

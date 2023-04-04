@@ -1,5 +1,5 @@
 <template>
-  <div style="margin-left: 10px">
+  <div style="padding: 5px 10px">
     <div>
       <div>
         <el-input
@@ -45,7 +45,7 @@
 
       <div>
         <el-input
-          style="width: 60%; margin-top: 10px; min-width: 500px"
+          style="width: 60%; margin-top: 5px; min-width: 500px"
           size="small"
           placeholder="请输入接口请求地址"
           v-model="url"
@@ -379,7 +379,7 @@ export default {
 
 <style scoped>
 .request {
-  margin-top: 15px;
+  margin-top: 5px;
   border: 1px solid #ddd;
 }
 </style>

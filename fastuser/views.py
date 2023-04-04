@@ -136,11 +136,15 @@ clients = {}
 @accept_websocket
 def link(request):
     if request.is_websocket():
-        user_id = str(uuid.uuid1())[:8]
+        message = request.COOKIES.get("UUID")
+        if message and len(message) == 8:
+            user_id = message
+        else:
+            user_id = str(uuid.uuid1())[:8]
         print("客户端链接成功：" + user_id)
         clients[user_id] = request.websocket
         clients[user_id].send('userId-' + user_id)
-        message = request.websocket.wait()
+        result = request.websocket.wait()
     else:
         return HttpResponse('请使用socket访问！')
 

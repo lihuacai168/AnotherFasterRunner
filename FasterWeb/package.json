@@ -20,7 +20,6 @@
     "vue-apexcharts": "^1.6.2",
     "vue-clipboard2": "^0.3.3",
     "vue-codemirror": "4",
-    "vue-monaco-editor": "^0.0.19",
     "vue-router": "^3.5.4",
     "vuedraggable": "^2.24.3",
     "vuex": "3"
@@ -28,7 +27,7 @@
   "devDependencies": {
     "@rushstack/eslint-patch": "^1.1.0",
     "@vitejs/plugin-legacy": "^4.0.1",
-    "@vitejs/plugin-vue2": "^1.1.2",
+    "@vitejs/plugin-vue2": "^2.2.0",
     "@vue/eslint-config-prettier": "^7.0.0",
     "eslint": "^8.5.0",
     "eslint-plugin-vue": "^9.0.0",

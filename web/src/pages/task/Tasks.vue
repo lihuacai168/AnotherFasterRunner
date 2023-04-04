@@ -12,7 +12,7 @@
             type="info"
             size="small"
             icon="el-icon-back"
-            style="position: absolute; right: 20px"
+            style="float: right; margin-right: 10px"
             @click="addTasks = false"
             >返回列表
           </el-button>

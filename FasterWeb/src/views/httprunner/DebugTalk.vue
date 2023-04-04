@@ -5,9 +5,10 @@
       <el-button icon="el-icon-caret-right" type="info" size="small" style="margin-left: 5px" @click="handleRunCode">
         在线运行
       </el-button>
+      <el-button type="text" size="small" @click="isBaseMonacoShow = true">打开Monaco</el-button>
     </div>
     <div>
-      <MonacoEditor
+      <BaseMonacoEditor
         ref="editor"
         :height="codeHeight"
         language="python"
@@ -18,11 +19,11 @@
         @codeChange="onCodeChange"
         :key="timeStamp"
       >
-      </MonacoEditor>
+      </BaseMonacoEditor>
 
       <el-drawer
         size="50%"
-        style="margin-top: 90px"
+        style="margin-top: 85px"
         :height="codeHeight"
         :destroy-on-close="true"
         :with-header="false"
@@ -31,6 +32,20 @@
       >
         <RunCodeResult :msg="resp.msg"></RunCodeResult>
       </el-drawer>
+      <el-dialog :visible.sync="isBaseMonacoShow" width="70%">
+        <MonacoEditor
+          ref="editor"
+          :height="codeHeight"
+          language="python"
+          :code="code.code"
+          :value="code.code"
+          :options="options"
+          @mounted="onMounted"
+          @codeChange="onCodeChange"
+          :key="timeStamp"
+        >
+        </MonacoEditor>
+      </el-dialog>
     </div>
   </div>
 </template>
@@ -50,6 +65,7 @@ export default {
     return {
       timeStamp: "",
       isShowDebug: false,
+      isBaseMonacoShow: false,
       options: {
         selectOnLineNumbers: false,
       },
@@ -100,7 +116,7 @@ export default {
 
   computed: {
     codeHeight() {
-      return window.screen.height - 248;
+      return window.innerHeight - 110;
     },
   },
 

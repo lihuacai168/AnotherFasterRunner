@@ -1,10 +1,8 @@
 <template>
   <div>
-    <el-header style="padding: 0; height: 40px">
+    <el-header style="padding: 5px 0 0 25px; height: 40px">
       <div class="recordapi__header">
-        <div class="recordapi__header--item" :style="{ paddingLeft: '2px' }">
-          <el-checkbox v-if="apiData.count > 0" v-model="checked"> </el-checkbox>
-        </div>
+        <el-checkbox v-if="apiData.count > 0" v-model="checked" style="margin-right: 12px"> </el-checkbox>
         <div class="recordapi__header--item">
           <el-input
             placeholder="请输入接口名称"
@@ -75,7 +73,7 @@
       </div>
     </el-header>
 
-    <el-main style="padding: 0; height: 100%">
+    <el-main style="padding: 0 10px; height: 100%">
       <el-dialog v-if="dialogTableVisible" :visible.sync="dialogTableVisible" width="70%">
         <report :summary="summary"></report>
       </el-dialog>

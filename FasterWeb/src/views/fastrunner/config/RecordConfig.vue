@@ -1,47 +1,40 @@
 <template>
   <div>
-    <el-header style="background: #fff; padding: 0; height: 50px">
-      <div style="padding-top: 10px; margin-left: 10px" class="nav-api-header">
-        <el-button type="primary" size="small" icon="el-icon-circle-plus-outline" @click="addConfig"
-          >新增配置
-        </el-button>
-        <!-- <el-button type="primary" plain size="small" icon="el-icon-upload">导入配置</el-button>-->
-        <!-- <el-button type="info" plain size="small" icon="el-icon-download">导出配置</el-button>-->
-        <el-button style="margin-left: 20px" type="danger" icon="el-icon-delete" circle size="mini" @click="del = !del">
-        </el-button>
-        <el-button
-          :disabled="!addConfigActivate"
-          type="info"
-          size="small"
-          icon="el-icon-back"
-          style="position: absolute; right: 20px"
-          @click="addConfigActivate = false"
-          >返回列表
-        </el-button>
-      </div>
+    <el-header style="padding: 10px 10px; height: 48px" class="nav-api-header">
+      <el-button type="primary" size="small" icon="el-icon-circle-plus-outline" @click="addConfig">新增配置 </el-button>
+      <!-- <el-button type="primary" plain size="small" icon="el-icon-upload">导入配置</el-button>-->
+      <!-- <el-button type="info" plain size="small" icon="el-icon-download">导出配置</el-button>-->
+      <el-button type="danger" icon="el-icon-delete" circle size="mini" @click="del = !del"> </el-button>
+      <el-button
+        :disabled="!addConfigActivate"
+        type="info"
+        size="small"
+        icon="el-icon-back"
+        style="float: right"
+        @click="addConfigActivate = false"
+        >返回列表
+      </el-button>
     </el-header>
 
-    <el-container>
-      <el-main style="padding: 0; margin-left: 5px">
-        <config-body
-          v-show="addConfigActivate"
-          :project="$route.params.id"
-          :response="respConfig"
-          :type="type"
-          v-on:addSuccess="handleAddSuccess"
-        >
-        </config-body>
+    <el-main style="padding: 0">
+      <config-body
+        v-show="addConfigActivate"
+        :project="$route.params.id"
+        :response="respConfig"
+        :type="type"
+        v-on:addSuccess="handleAddSuccess"
+      >
+      </config-body>
 
-        <config-list
-          v-if="!addConfigActivate"
-          :project="$route.params.id"
-          v-on:respConfig="handleRespConfig"
-          :del="del"
-          :back="back"
-        >
-        </config-list>
-      </el-main>
-    </el-container>
+      <config-list
+        v-if="!addConfigActivate"
+        :project="$route.params.id"
+        v-on:respConfig="handleRespConfig"
+        :del="del"
+        :back="back"
+      >
+      </config-list>
+    </el-main>
   </div>
 </template>
 
