@@ -1,4 +1,4 @@
-import * as monaco from "monaco-editor";
+import * as monaco from "monaco-editor/esm/vs/editor/editor.api";
 // js 有内置提示
 function createCompleter(getExtraHints) {
   const createSuggestions = function (model, textUntilPosition) {

@@ -22,12 +22,7 @@
       @row-click="rowClick"
     >
       <!-- 选择框是否开启，selectable控制是否单行禁用 -->
-      <el-table-column
-        v-if="columObj.selection"
-        type="selection"
-        :selectable="columObj.selectable"
-        width="50px"
-      />
+      <el-table-column v-if="columObj.selection" type="selection" :selectable="columObj.selectable" width="50px" />
       <!-- 普通列 -->
       <el-table-column
         v-for="(column, columIndex) in columObj.columnData"
@@ -43,47 +38,27 @@
       >
         <template v-slot="{ row, $index }">
           <!-- 默认展示 -->
-          <span v-if="column.text && column.editRow !== $index">{{
-            row[column.prop]
-          }}</span>
+          <span v-if="column.text && column.editRow !== $index">{{ row[column.prop] }}</span>
           <!-- 状态对象展示 -->
-          <span v-if="column.status && row[column.prop]">{{
-            row[column.prop].msg
-          }}</span>
+          <span v-if="column.status && row[column.prop]">{{ row[column.prop].msg }}</span>
           <!-- 自定义内容 -->
-          <span v-if="column.ownDefined">{{
-            column.ownDefinedReturn(row, $index)
-          }}</span>
+          <span v-if="column.ownDefined">{{ column.ownDefinedReturn(row, $index) }}</span>
           <!-- switch开关 -->
           <el-switch
             v-if="column.switch"
             v-model="row[column.prop]"
-            :inactive-text="
-              row[column.prop] ? column.openText : column.closeText
-            "
+            :inactive-text="row[column.prop] ? column.openText : column.closeText"
             @change="switchChange(row, $index, column.prop)"
           />
           <!-- 图片展示 -->
           <el-popover trigger="hover" placement="top" popper-class="popper">
             <img v-if="column.image" :src="viewUrl + row[column.prop]" />
-            <el-image
-              slot="reference"
-              v-if="column.image"
-              :src="viewUrl + row[column.prop]"
-            />
+            <el-image slot="reference" v-if="column.image" :src="viewUrl + row[column.prop]" />
           </el-popover>
 
           <!-- 图片数组 -->
-          <el-popover
-            v-if="column.imageArr"
-            trigger="hover"
-            placement="top"
-            popper-class="popper"
-          >
-            <img
-              v-if="row[column.prop].length > 0"
-              :src="row[column.prop][0]"
-            />
+          <el-popover v-if="column.imageArr" trigger="hover" placement="top" popper-class="popper">
+            <img v-if="row[column.prop].length > 0" :src="row[column.prop][0]" />
             <el-image
               slot="reference"
               v-if="row[column.prop].length > 0"
@@ -100,11 +75,7 @@
             @blur="editInputBlur(row, $index, column.prop, columIndex)"
           />
           <!-- 操作按钮 -->
-          <span
-            v-if="column.isOperation"
-            v-for="(operations, index) in column.operation"
-            :key="index"
-          >
+          <span v-if="column.isOperation" v-for="(operations, index) in column.operation" :key="index">
             <el-button
               v-if="operations.isShow(row, $index)"
               :icon="operations.icon"

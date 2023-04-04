@@ -30,7 +30,7 @@
       </div>
     </el-aside>
 
-    <el-main style="padding: 5px 5px 0 5px; max-width: 1500px">
+    <el-main style="padding: 5px 5px 0 5px">
       <el-row :gutter="5" v-if="!editTestStepActivate">
         <el-col :span="12">
           <div class="recordapi__header">
@@ -123,6 +123,7 @@
 
               <span
                 class="el-icon-s-flag"
+                style="position: absolute; right: 5px; top: 13px"
                 v-if="item.cases.length > 0"
                 :title="'API已经被用例引用,共计: ' + item.cases.length + '次'"
               >
@@ -135,7 +136,7 @@
             <report :summary="summary"></report>
           </el-dialog>
 
-          <div style="max-height: 1000px; overflow: auto" @drop="drop($event)" @dragover="allowDrop($event)">
+          <div style="overflow: auto" @drop="drop($event)" @dragover="allowDrop($event)">
             <div class="test-list">
               <span v-if="testData.length === 0" style="color: red"
                 >温馨提示：<br />选择左侧相应API节点显示可拖拽的API<br />从左边拖拽API至此区域组成业务用例<br />

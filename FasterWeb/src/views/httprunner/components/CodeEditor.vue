@@ -10,7 +10,7 @@
 </template>
 
 <script>
-import { codemirror } from "vue-codemirror";
+import codemirror from "vue-codemirror";
 import "codemirror/mode/javascript/javascript.js";
 import "codemirror/lib/codemirror.css";
 import "codemirror/theme/cobalt.css";

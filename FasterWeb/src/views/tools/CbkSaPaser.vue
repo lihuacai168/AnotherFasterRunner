@@ -12,6 +12,8 @@ export default {
       jsonViewDialog: false,
       jsonViewTmp: "",
       textArea: "",
+      tableSearch: "",
+      onlyCustomEvent: false,
       socketBaseUrl: baseUrl.replace("http", "ws"),
       debugCodeImg: "https://m.caibeike.com/qr.html?l=logo&c=https//sa-viewer-{}.caibeike.net/salog/sa",
       debugImgUrl: "",
@@ -37,14 +39,16 @@ export default {
             // 当前点击的位置有value，复制value
             if (value) {
               self.jsonPathOrValue = value;
-              self.copyData("复制json value成功");
             } else {
               // 当前点击的位置是key，复制key的jsonpath
               let arr = node.path;
               arr.unshift("content");
-              self.jsonPathOrValue = arr.join(".");
-              self.copyData("复制jsonpath成功");
+              value = arr.join(".");
             }
+            navigator.clipboard
+              .writeText(value)
+              .then(() => console.log("复制json value成功"))
+              .catch(() => console.log("复制json value失败"));
           }
         },
         mode: "view",
@@ -138,7 +142,8 @@ export default {
         if (saType === "H5") {
           saList.map((saLine) => {
             const decode = this.h5Desc(saLine.split("&")[1].split("=")[1]);
-            this.addResultData(decode, "H5");
+            const eventName = JSON.parse(decode).event;
+            this.addResultData(decode, "H5", eventName);
           });
         } else if (saType === "App") {
           saList.map((saLine) => {
@@ -146,7 +151,13 @@ export default {
             // this.addResultData(decode);
             const decodeList = JSON.parse(this.appDesc(saLine));
             decodeList.map((decode) => {
-              this.addResultData(JSON.stringify(decode));
+              const eventName = decode.event;
+              const eventType = decode.lib.$lib;
+              if (eventType && eventType === "js") {
+                this.addResultData(JSON.stringify(decode), "H5", eventName);
+              } else {
+                this.addResultData(JSON.stringify(decode), "App", eventName);
+              }
             });
           });
         }
@@ -179,7 +190,12 @@ export default {
           const decodeList = JSON.parse(this.appDesc(msg));
           decodeList.map((decode) => {
             const eventName = decode.event;
-            this.addResultData(JSON.stringify(decode), "App", eventName);
+            const eventType = decode.lib.$lib;
+            if (eventType && eventType === "js") {
+              this.addResultData(JSON.stringify(decode), "H5", eventName);
+            } else {
+              this.addResultData(JSON.stringify(decode), "App", eventName);
+            }
           });
         }
       } catch (error) {
@@ -222,6 +238,7 @@ export default {
           );
         this.debugImgUrl = "sa-viewer-{}.caibeike.net".replace("{}", userId);
         this.resultDialog = true;
+        this.setCookieValue("UUID", userId);
       } else {
         this.appDecode(data);
       }
@@ -235,7 +252,7 @@ export default {
     handleJsonView(index) {
       this.jsonViewTmp = JSON.parse(index.result);
       this.jsonViewDialog = true;
-      console.log(index);
+      // console.log(index);
     },
     onError() {
       console.log("error");
@@ -251,7 +268,7 @@ export default {
       // 复制命令会将当前选中的内容复制到剪切板中（这里就是创建的input标签）
       // Input要在正常的编辑状态下原生复制方法才会生效
       document.execCommand("Copy");
-      this.$message.success("复制成功");
+      this.$message.success("复制成功:" + url);
       /// 复制成功后再将构造的标签 移除
       cInput.remove();
     },
@@ -265,7 +282,7 @@ export default {
       return (window.screen.height - 464).toString() + "px";
     },
     tableHeight() {
-      return (document.body.clientHeight - 190).toString();
+      return (document.body.clientHeight - 210).toString();
     },
   },
 };
@@ -288,9 +305,28 @@ export default {
     <el-button type="primary" size="small" @click="init()">自动跟踪</el-button>
     <el-button size="small" @click="resultData = []">清空</el-button>
     <el-button type="text" @click="resultDialog = true" v-if="false">打开弹窗</el-button>
+    <el-checkbox v-model="onlyCustomEvent" style="position: absolute; right: 200px; padding: 7px 15px">
+      仅自定义埋点
+    </el-checkbox>
+    <el-input
+      v-model="tableSearch"
+      clearable
+      placeholder="请输入事件名进行搜索"
+      style="width: 180px; position: absolute; right: 20px"
+      size="small"
+    ></el-input>
     <p>&nbsp;</p>
 
-    <el-table :data="resultData" border style="padding: 5px" :max-height="tableHeight">
+    <el-table
+      :data="
+        resultData
+          .filter((data) => !tableSearch || data.eventName.toLowerCase().includes(tableSearch.toLowerCase()))
+          .filter((data) => !(onlyCustomEvent && data.eventName.includes('$')))
+      "
+      border
+      style="padding: 5px"
+      :max-height="tableHeight"
+    >
       <el-table-column property="index" label="序号" width="60"></el-table-column>
       <el-table-column property="date" label="时间" width="90"></el-table-column>
       <el-table-column property="source" label="客户端" width="70"></el-table-column>

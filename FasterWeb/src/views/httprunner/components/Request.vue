@@ -215,7 +215,7 @@ export default {
 
   computed: {
     height() {
-      return (window.screen.height - 464).toString() + "px";
+      return window.innerHeight - 275 + "px";
     },
   },
 

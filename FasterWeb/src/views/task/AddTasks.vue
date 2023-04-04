@@ -6,7 +6,7 @@
           <el-col :span="12">
             <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px">
               <el-form-item label="任务名称" prop="name">
-                <el-input v-model="ruleForm.name" placeholder="请输入任务名称" clearable=""></el-input>
+                <el-input v-model="ruleForm.name" placeholder="请输入任务名称" clearable="" size="small"></el-input>
               </el-form-item>
 
               <el-form-item label="时间配置" prop="crontab">
@@ -14,6 +14,7 @@
                   clearable
                   v-model="ruleForm.crontab"
                   placeholder="请输入cortab表达式，例如 2 12 * * *"
+                  size="small"
                 ></el-input>
               </el-form-item>
 
@@ -57,6 +58,7 @@
                   clearable
                   v-model="ruleForm.ci_project_ids"
                   placeholder="请输入Gitlab项目id,多个用逗号分隔，例如: 1,2"
+                  size="small"
                 ></el-input>
               </el-form-item>
 
@@ -106,8 +108,8 @@
               </el-form-item>
 
               <el-form-item>
-                <el-button type="primary" @click="submitForm('ruleForm')">下一步</el-button>
-                <el-button @click="resetForm('ruleForm')">重置</el-button>
+                <el-button type="primary" @click="submitForm('ruleForm')" size="small">下一步</el-button>
+                <el-button @click="resetForm('ruleForm')" size="small">重置</el-button>
               </el-form-item>
             </el-form>
           </el-col>
@@ -116,7 +118,7 @@
     </template>
 
     <template v-if="next">
-      <el-aside style="margin-top: 10px">
+      <el-aside>
         <div class="nav-api-side">
           <div class="api-tree">
             <el-input
@@ -145,102 +147,98 @@
           </div>
         </div>
       </el-aside>
-      <el-main style="padding-top: 0px">
-        <div>
-          <el-row :gutter="20">
-            <el-col :span="12">
-              <el-pagination
-                :page-size="11"
-                v-show="suiteData.count !== 0"
-                background
-                @current-change="handlePageChange"
-                :current-page.sync="currentPage"
-                layout="total, prev, pager, next, jumper"
-                :total="suiteData.count"
-                style="text-align: center"
-              >
-              </el-pagination>
-            </el-col>
-            <el-col :span="12">
-              <el-button type="primary" v-if="testData.length > 0" @click="saveTask">保存</el-button>
-              <el-button v-if="testData.length > 0" @click="next = false">上一步</el-button>
-            </el-col>
-          </el-row>
-        </div>
+      <el-main style="padding: 10px">
+        <el-row :gutter="10">
+          <el-col :span="12">
+            <el-pagination
+              :page-size="11"
+              v-show="suiteData.count !== 0"
+              background
+              @current-change="handlePageChange"
+              :current-page.sync="currentPage"
+              layout="total, prev, pager, next, jumper"
+              :total="suiteData.count"
+              style="text-align: center"
+            >
+            </el-pagination>
+          </el-col>
+          <el-col :span="12">
+            <el-button type="success" v-if="testData.length > 0" @click="saveTask" size="small">保存</el-button>
+            <el-button v-if="testData.length > 0" @click="next = false" size="small">上一步</el-button>
+          </el-col>
+        </el-row>
 
-        <div>
-          <el-row :gutter="20">
-            <el-col :span="12">
-              <div
-                v-for="(item, index) in suiteData.results"
-                draggable="true"
-                @dragstart="currentSuite = JSON.parse(JSON.stringify(item))"
-                style="cursor: pointer; margin-top: 10px; overflow: auto"
-                :key="index"
-              >
-                <div class="block block_options">
-                  <span class="block-method block_method_options block_method_color">Case</span>
-                  <span class="block_name">{{ item.name }}</span>
-                  <i
-                    class="el-icon-success"
-                    style="color: green"
-                    v-if="item.tasks.length > 0"
-                    :title="'已加入定时任务: ' + item.tasks.map((task) => task.name).join('，')"
-                  >
-                  </i>
-                </div>
+        <el-row :gutter="10">
+          <el-col :span="12">
+            <div
+              v-for="(item, index) in suiteData.results"
+              draggable="true"
+              @dragstart="currentSuite = JSON.parse(JSON.stringify(item))"
+              style="cursor: pointer; margin-top: 10px; overflow: auto"
+              :key="index"
+            >
+              <div class="block block_options">
+                <span class="block-method block_method_options block_method_color">Case</span>
+                <span class="block_name">{{ item.name }}</span>
+                <i
+                  class="el-icon-success"
+                  style="color: green"
+                  v-if="item.tasks.length > 0"
+                  :title="'已加入定时任务: ' + item.tasks.map((task) => task.name).join('，')"
+                >
+                </i>
               </div>
-            </el-col>
-            <el-col :span="12">
-              <div style="max-height: 1000px; overflow: auto" @drop="drop($event)" @dragover="allowDrop($event)">
-                <span v-if="testData.length === 0" style="color: red"
-                  >温馨提示：<br />选择左侧相应用例节点显示可拖拽的用例<br />从左边拖拽用例至此区域组成任务列表<br />
-                  上下拖动此区域任务调整监控调用顺序
-                </span>
-                <div class="test-list">
-                  <draggable
-                    v-model="testData"
-                    @end="dragEnd"
-                    @start="length = testData.length"
-                    v-bind="{ animation: 200 }"
+            </div>
+          </el-col>
+          <el-col :span="12">
+            <div style="max-height: 1000px; overflow: auto" @drop="drop($event)" @dragover="allowDrop($event)">
+              <span v-if="testData.length === 0" style="color: red"
+                >温馨提示：<br />选择左侧相应用例节点显示可拖拽的用例<br />从左边拖拽用例至此区域组成任务列表<br />
+                上下拖动此区域任务调整监控调用顺序
+              </span>
+              <div class="test-list">
+                <draggable
+                  v-model="testData"
+                  @end="dragEnd"
+                  @start="length = testData.length"
+                  v-bind="{ animation: 200 }"
+                >
+                  <div
+                    v-for="(test, index) in testData"
+                    :key="index"
+                    class="block block_test"
+                    @mousemove="currentTest = index"
                   >
-                    <div
-                      v-for="(test, index) in testData"
-                      :key="index"
-                      class="block block_test"
-                      @mousemove="currentTest = index"
+                    <!--编辑用例列表-->
+                    <span class="block-method block_method_test block_method_color">Task</span>
+                    <span class="block-test-name">{{ test.name }}</span>
+                    <!--<el-button-->
+                    <!--style="position: absolute; right: 48px; top: 8px"-->
+                    <!--v-show="currentTest === index"-->
+                    <!--type="info"-->
+                    <!--icon="el-icon-edit"-->
+                    <!--circle size="mini"-->
+                    <!--@click="handleEditTestCase"-->
+                    <!--title="编辑"-->
+                    <!--&gt;-->
+                    <!--</el-button>-->
+                    <el-button
+                      style="position: absolute; right: 12px; top: 4px"
+                      v-show="currentTest === index"
+                      type="danger"
+                      icon="el-icon-delete"
+                      title="删除"
+                      circle
+                      size="mini"
+                      @click="testData.splice(index, 1)"
                     >
-                      <!--编辑用例列表-->
-                      <span class="block-method block_method_test block_method_color">Task</span>
-                      <span class="block-test-name">{{ test.name }}</span>
-                      <!--<el-button-->
-                      <!--style="position: absolute; right: 48px; top: 8px"-->
-                      <!--v-show="currentTest === index"-->
-                      <!--type="info"-->
-                      <!--icon="el-icon-edit"-->
-                      <!--circle size="mini"-->
-                      <!--@click="handleEditTestCase"-->
-                      <!--title="编辑"-->
-                      <!--&gt;-->
-                      <!--</el-button>-->
-                      <el-button
-                        style="position: absolute; right: 12px; top: 8px"
-                        v-show="currentTest === index"
-                        type="danger"
-                        icon="el-icon-delete"
-                        title="删除"
-                        circle
-                        size="mini"
-                        @click="testData.splice(index, 1)"
-                      >
-                      </el-button>
-                    </div>
-                  </draggable>
-                </div>
+                    </el-button>
+                  </div>
+                </draggable>
               </div>
-            </el-col>
-          </el-row>
-        </div>
+            </div>
+          </el-col>
+        </el-row>
       </el-main>
     </template>
   </el-container>

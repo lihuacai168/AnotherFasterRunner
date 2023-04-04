@@ -1,4 +1,4 @@
-import * as monaco from "monaco-editor";
+import * as monaco from "monaco-editor/esm/vs/editor/editor.api";
 const hints = [
   // This section is the result of running
   // `for k in keyword.kwlist: print('  "' + k + '",')` in a Python REPL,

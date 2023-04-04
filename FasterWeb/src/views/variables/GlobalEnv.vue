@@ -1,197 +1,159 @@
 <template>
-  <el-container>
-    <el-header style="background: #fff; padding: 0; height: 50px">
-      <div class="nav-api-header">
-        <div style="padding-top: 10px; margin-left: 10px">
-          <el-button
-            type="primary"
-            size="small"
-            icon="el-icon-circle-plus-outline"
-            @click="openFormModal('variablesForm', 'dialogVisible')"
-            >新增变量
-          </el-button>
+  <div>
+    <el-header style="height: 48px; padding: 10px 10px" class="nav-api-header">
+      <el-button
+        type="primary"
+        size="small"
+        icon="el-icon-circle-plus-outline"
+        @click="openFormModal('variablesForm', 'dialogVisible')"
+        >新增变量
+      </el-button>
 
-          <el-button
-            v-show="variablesData.count !== 0"
-            style="margin-left: 20px"
-            type="danger"
-            icon="el-icon-delete"
-            circle
-            size="mini"
-            @click="delSelectionVariables"
-          ></el-button>
+      <el-button
+        v-show="variablesData.count !== 0"
+        type="danger"
+        icon="el-icon-delete"
+        circle
+        size="mini"
+        @click="delSelectionVariables"
+      ></el-button>
 
-          <el-dialog title="添加变量" :visible.sync="dialogVisible" width="30%" align="center">
-            <el-form :model="variablesForm" :rules="rules" ref="variablesForm" label-width="100px" class="project">
-              <el-form-item label="变量名" prop="key">
-                <el-input v-model="variablesForm.key" clearable placeholder="请输入变量名"></el-input>
-              </el-form-item>
+      <el-dialog title="添加变量" :visible.sync="dialogVisible" width="30%" align="center">
+        <el-form :model="variablesForm" :rules="rules" ref="variablesForm" label-width="100px" class="project">
+          <el-form-item label="变量名" prop="key">
+            <el-input v-model="variablesForm.key" clearable placeholder="请输入变量名"></el-input>
+          </el-form-item>
 
-              <el-form-item label="变量值" prop="value">
-                <el-input v-model="variablesForm.value" clearable placeholder="请输入变量值"></el-input>
-              </el-form-item>
+          <el-form-item label="变量值" prop="value">
+            <el-input v-model="variablesForm.value" clearable placeholder="请输入变量值"></el-input>
+          </el-form-item>
 
-              <el-form-item label="变量描述" prop="description">
-                <el-input v-model="variablesForm.description" clearable placeholder="请输入变量描述"></el-input>
-              </el-form-item>
-            </el-form>
-            <span slot="footer" class="dialog-footer">
-              <el-button @click="resetForm('variablesForm', 'dialogVisible')">取 消</el-button>
-              <el-button type="primary" @click="handleConfirm('variablesForm')">确 定</el-button>
-            </span>
-          </el-dialog>
+          <el-form-item label="变量描述" prop="description">
+            <el-input v-model="variablesForm.description" clearable placeholder="请输入变量描述"></el-input>
+          </el-form-item>
+        </el-form>
+        <span slot="footer" class="dialog-footer">
+          <el-button @click="resetForm('variablesForm', 'dialogVisible')">取 消</el-button>
+          <el-button type="primary" @click="handleConfirm('variablesForm')">确 定</el-button>
+        </span>
+      </el-dialog>
 
-          <el-dialog title="编辑变量" :visible.sync="editdialogVisible" width="30%" align="center">
-            <el-form
-              :model="editVariablesForm"
-              :rules="rules"
-              ref="editVariablesForm"
-              label-width="100px"
-              class="project"
-            >
-              <el-form-item label="变量名" prop="key">
-                <el-input v-model="editVariablesForm.key" clearable placeholder="请输入变量名"></el-input>
-              </el-form-item>
-              <el-form-item label="变量值" prop="value">
-                <el-input v-model="editVariablesForm.value" clearable placeholder="请输入变量值"></el-input>
-              </el-form-item>
-              <el-form-item label="变量描述" prop="description">
-                <el-input v-model="editVariablesForm.description" clearable placeholder="请输入变量描述"></el-input>
-              </el-form-item>
-            </el-form>
-            <span slot="footer" class="dialog-footer">
-              <el-button @click="resetForm('editVariablesForm', 'editdialogVisible')">取 消</el-button>
-              <el-button type="primary" @click="handleEditConfirm('editVariablesForm')">确 定</el-button>
-            </span>
-          </el-dialog>
-        </div>
-      </div>
+      <el-dialog title="编辑变量" :visible.sync="editdialogVisible" width="30%" align="center">
+        <el-form :model="editVariablesForm" :rules="rules" ref="editVariablesForm" label-width="100px" class="project">
+          <el-form-item label="变量名" prop="key">
+            <el-input v-model="editVariablesForm.key" clearable placeholder="请输入变量名"></el-input>
+          </el-form-item>
+          <el-form-item label="变量值" prop="value">
+            <el-input v-model="editVariablesForm.value" clearable placeholder="请输入变量值"></el-input>
+          </el-form-item>
+          <el-form-item label="变量描述" prop="description">
+            <el-input v-model="editVariablesForm.description" clearable placeholder="请输入变量描述"></el-input>
+          </el-form-item>
+        </el-form>
+        <span slot="footer" class="dialog-footer">
+          <el-button @click="resetForm('editVariablesForm', 'editdialogVisible')">取 消</el-button>
+          <el-button type="primary" @click="handleEditConfirm('editVariablesForm')">确 定</el-button>
+        </span>
+      </el-dialog>
     </el-header>
 
-    <el-container>
-      <el-header style="padding: 0; height: 50px">
-        <div style="padding-top: 8px; padding-left: 10px; overflow: hidden">
-          <el-row :gutter="40">
-            <el-col :span="6" style="padding-right: 0">
-              <el-input
-                placeholder="请输入变量名称"
-                v-if="variablesData.count >= 0"
-                clearable
-                size="medium"
-                v-model="search"
-              >
-                <el-button slot="append" icon="el-icon-search" @click="getVariablesList"></el-button>
-              </el-input>
-            </el-col>
-            <el-col :span="2" style="padding-left: 5px">
-              <el-button type="primary" size="medium" @click="resetSearch">重置</el-button>
-            </el-col>
-            <!--                        <el-col :span="7">-->
-            <!--                            <el-pagination-->
-            <!--                                :page-size="11"-->
-            <!--                                v-show="variablesData.count !== 0 "-->
-            <!--                                background-->
-            <!--                                @current-change="handleCurrentChange"-->
-            <!--                                :current-page.sync="currentPage"-->
-            <!--                                layout="total, prev, pager, next, jumper"-->
-            <!--                                :total="variablesData.count"-->
-            <!--                            ></el-pagination>-->
-            <!--                        </el-col>-->
-          </el-row>
-        </div>
-      </el-header>
+    <el-main style="padding: 10px 10px">
+      <el-input
+        placeholder="请输入变量名称"
+        v-if="variablesData.count >= 0"
+        clearable
+        size="small"
+        v-model="search"
+        style="width: 280px; margin: 0 10px 10px 0"
+      >
+        <el-button slot="append" icon="el-icon-search" @click="getVariablesList"></el-button>
+      </el-input>
+      <el-button type="primary" size="small" @click="resetSearch">重置</el-button>
+      <el-table
+        style="width: 100%; height: auto"
+        highlight-current-row
+        :data="variablesData.results"
+        :show-header="variablesData.results.length !== 0"
+        stripe
+        @cell-mouse-enter="cellMouseEnter"
+        @cell-mouse-leave="cellMouseLeave"
+        @selection-change="handleSelectionChange"
+      >
+        <el-table-column type="selection" width="45"></el-table-column>
 
-      <el-container>
-        <el-main style="padding: 0; margin-left: 10px; margin-top: 10px">
-          <div>
-            <el-table
-              style="width: 100%; height: auto"
-              highlight-current-row
-              :data="variablesData.results"
-              :show-header="variablesData.results.length !== 0"
-              stripe
-              @cell-mouse-enter="cellMouseEnter"
-              @cell-mouse-leave="cellMouseLeave"
-              @selection-change="handleSelectionChange"
-            >
-              <el-table-column type="selection" width="45"></el-table-column>
+        <el-table-column label="变量名">
+          <template v-slot="scope">
+            <div>{{ scope.row.key }}</div>
+          </template>
+        </el-table-column>
 
-              <el-table-column label="变量名">
-                <template v-slot="scope">
-                  <div>{{ scope.row.key }}</div>
-                </template>
-              </el-table-column>
+        <el-table-column label="变量值">
+          <template v-slot="scope">
+            <div>{{ scope.row.value }}</div>
+          </template>
+        </el-table-column>
 
-              <el-table-column label="变量值">
-                <template v-slot="scope">
-                  <div>{{ scope.row.value }}</div>
-                </template>
-              </el-table-column>
+        <el-table-column label="变量描述">
+          <template v-slot="scope">
+            <div>{{ scope.row.description }}</div>
+          </template>
+        </el-table-column>
 
-              <el-table-column label="变量描述">
-                <template v-slot="scope">
-                  <div>{{ scope.row.description }}</div>
-                </template>
-              </el-table-column>
+        <el-table-column label="更新时间">
+          <template v-slot="scope">
+            <div>{{ scope.row.update_time | datetimeFormat }}</div>
+          </template>
+        </el-table-column>
 
-              <el-table-column label="更新时间">
-                <template v-slot="scope">
-                  <div>{{ scope.row.update_time | datetimeFormat }}</div>
-                </template>
-              </el-table-column>
+        <el-table-column width="120">
+          <template v-slot="scope">
+            <el-row v-show="currentRow === scope.row">
+              <el-button
+                type="info"
+                icon="el-icon-edit"
+                title="编辑"
+                circle
+                size="mini"
+                @click="handleEditVariables(scope.row)"
+              ></el-button>
 
-              <el-table-column width="120">
-                <template v-slot="scope">
-                  <el-row v-show="currentRow === scope.row">
-                    <el-button
-                      type="info"
-                      icon="el-icon-edit"
-                      title="编辑"
-                      circle
-                      size="mini"
-                      @click="handleEditVariables(scope.row)"
-                    ></el-button>
+              <el-button
+                type="success"
+                icon="el-icon-document-copy"
+                title="复制"
+                circle
+                size="mini"
+                style="margin-left: 5px"
+                @click="handleCopyVariables(scope.row)"
+              ></el-button>
 
-                    <el-button
-                      type="success"
-                      icon="el-icon-document-copy"
-                      title="复制"
-                      circle
-                      size="mini"
-                      style="margin-left: 5px"
-                      @click="handleCopyVariables(scope.row)"
-                    ></el-button>
-
-                    <el-button
-                      v-show="variablesData.count !== 0"
-                      type="danger"
-                      icon="el-icon-delete"
-                      title="删除"
-                      circle
-                      size="mini"
-                      style="margin-left: 5px"
-                      @click="handleDelVariables(scope.row.id)"
-                    ></el-button>
-                  </el-row>
-                </template>
-              </el-table-column>
-            </el-table>
-            <div style="margin: 5px 5px">
-              <el-pagination
-                :page-size="11"
+              <el-button
                 v-show="variablesData.count !== 0"
-                background
-                @current-change="handleCurrentChange"
-                :current-page.sync="currentPage"
-                layout="total, prev, pager, next, jumper"
-                :total="variablesData.count"
-              ></el-pagination>
-            </div>
-          </div>
-        </el-main>
-      </el-container>
-    </el-container>
-  </el-container>
+                type="danger"
+                icon="el-icon-delete"
+                title="删除"
+                circle
+                size="mini"
+                style="margin-left: 5px"
+                @click="handleDelVariables(scope.row.id)"
+              ></el-button>
+            </el-row>
+          </template>
+        </el-table-column>
+      </el-table>
+      <div style="margin: 5px 5px">
+        <el-pagination
+          :page-size="11"
+          v-show="variablesData.count !== 0"
+          background
+          @current-change="handleCurrentChange"
+          :current-page.sync="currentPage"
+          layout="total, prev, pager, next, jumper"
+          :total="variablesData.count"
+        ></el-pagination>
+      </div>
+    </el-main>
+  </div>
 </template>
 
 <script>

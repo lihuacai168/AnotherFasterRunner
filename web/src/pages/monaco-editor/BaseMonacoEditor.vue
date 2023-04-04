@@ -3,7 +3,7 @@
 </template>
 
 <script>
-import * as monaco from "monaco-editor";
+import * as monaco from "monaco-editor/esm/vs/editor/editor.api";
 import createSqlCompleter from "./util/sql-completion";
 import createJavascriptCompleter from "./util/javascript-completion";
 import createPythonCompleter from "./util/python-completion";

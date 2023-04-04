@@ -25,19 +25,25 @@ export default defineConfig({
     outDir: "dist",
     assetsDir: "assets",
     sourcemap: false,
-    minify: "esbuild",
-    // terserOptions: {
-    //   compress: {
-    //     drop_console: true,
-    //     drop_debugger: true,
-    //   },
-    // },
+    minify: "terser",
+    terserOptions: {
+      compress: {
+        drop_console: true,
+        drop_debugger: true,
+      },
+    },
     rollupOptions: {
       output: {
         manualChunks(id) {
           if (id.includes("node_modules/.pnpm/")) {
             return id.toString().split("node_modules/.pnpm/")[1].split("/")[0].split("@")[0].toString();
           }
+        },
+        chunkFileNames: (chunkInfo) => {
+          const facadeModuleId = chunkInfo.facadeModuleId ? chunkInfo.facadeModuleId.split("/") : [];
+          const fileName = facadeModuleId[facadeModuleId.length - 2] || "[name]";
+          // return `assets/js/${fileName}/[name].[hash].js`;
+          return `assets/js/${fileName}.[hash].js`;
         },
       },
     },
