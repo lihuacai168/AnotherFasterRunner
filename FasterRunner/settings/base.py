@@ -55,8 +55,7 @@ INSTALLED_APPS = [
     # 'djcelery',
     "django_celery_beat",
     "rest_framework_swagger",
-    "drf_yasg",
-    "captcha", "tyadmin_api_cli", "tyadmin_api"
+    "drf_yasg"
 ]
 
 TY_ADMIN_CONFIG = {

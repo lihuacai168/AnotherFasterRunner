@@ -25,7 +25,6 @@ yarn-error.log*
 pnpm-lock.yaml
 
 # Editor directories and files
-.idea
 .vscode
 *.suo
 *.ntvs*

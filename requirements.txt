@@ -2,7 +2,6 @@ setuptools~=57.5.0
 aiocontextvars==0.2.2
 amqp
 # anyjson==0.3.3
-tyadmin-api-cli==0.8.2
 beautifulsoup4==4.6.3
 # billiard==3.3.0.23
 celery~=5.2.7

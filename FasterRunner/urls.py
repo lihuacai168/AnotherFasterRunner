@@ -42,8 +42,6 @@ urlpatterns = [
     path(r"login", obtain_jwt_token),
     path('api/admin/', admin.site.urls),
     # re_path('^fastrunner/.*', project.IndexPageView.as_view()),
-    # re_path('^xadmin/.*', AdminIndexView.as_view()),
-    path('api/xadmin/v1/', include('tyadmin_api.urls')),
     # url(r'^static/(?P<path>.*)$', serve, {"document_root": STATIC_ROOT}),
     url(r'^api/docs/', schema_view, name="docs"),
     url(r'^accounts/', include('rest_framework.urls',)),
