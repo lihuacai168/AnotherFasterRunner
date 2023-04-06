@@ -51,16 +51,13 @@ INSTALLED_APPS = [
     "fastrunner.apps.FastrunnerConfig",
     "fastuser",
     "rest_framework",
+    "rest_framework_simplejwt",
     "corsheaders",
     # 'djcelery',
     "django_celery_beat",
-    "rest_framework_swagger",
     "drf_yasg"
 ]
 
-TY_ADMIN_CONFIG = {
-    'GEN_APPS': ['fastuser', 'fastrunner']
-}
 
 MIDDLEWARE = [
     "fastrunner.utils.middleware.ExceptionMiddleware",
@@ -154,12 +151,15 @@ STATIC_URL = "/static/"
 
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 REST_FRAMEWORK = {
+    # 认证类
+    # 先进行token的验证，如果没有携带token就进行session认证，如果没有session就就基本认证
+    # 认证顺序是从上到下，需要哪个加哪个
     # 'DEFAULT_AUTHENTICATION_CLASSES': ['FasterRunner.auth.DeleteAuthenticator', 'FasterRunner.auth.Authenticator', ],
     "DEFAULT_AUTHENTICATION_CLASSES": [
-        "FasterRunner.auth.MyJWTAuthentication",
+        # "FasterRunner.auth.MyJWTAuthentication",
         # 'FasterRunner.auth.DeleteAuthenticator',
         # 'FasterRunner.auth.Authenticator',
-        "rest_framework_jwt.authentication.JSONWebTokenAuthentication",
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
         "rest_framework.authentication.SessionAuthentication",
         "rest_framework.authentication.BasicAuthentication",
     ],
@@ -179,6 +179,12 @@ JWT_AUTH = {
     # 'JWT_SECRET_KEY': SECRET_KEY,
     "JWT_EXPIRATION_DELTA": datetime.timedelta(days=365),
     "JWT_ALLOW_REFRESH": True,
+}
+SIMPLE_JWT = {
+    # token有效时长(返回的 access 有效时长)
+    'ACCESS_TOKEN_LIFETIME': datetime.timedelta(days=30),
+    # token刷新的有效时间(返回的 refresh 有效时长)
+    'REFRESH_TOKEN_LIFETIME': datetime.timedelta(seconds=600),
 }
 AUTH_USER_MODEL = "fastuser.MyUser"
 

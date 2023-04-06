@@ -1,4 +1,3 @@
-import jsonfield
 from django.db import models
 from django_celery_beat.models import PeriodicTask
 
@@ -206,7 +205,7 @@ class Report(BaseTable):
     status = models.BooleanField("报告状态", choices=report_status, blank=True)
     summary = models.TextField("报告基础信息", null=False)
     project = models.ForeignKey(Project, on_delete=models.CASCADE, db_constraint=False)
-    ci_metadata = jsonfield.JSONField()
+    ci_metadata = models.JSONField()
     ci_project_id = models.IntegerField(
         "gitlab的项目id", default=0, null=True, db_index=True
     )
@@ -247,7 +246,7 @@ class Relation(models.Model):
         db_table = "relation"
 
     project = models.ForeignKey(Project, on_delete=models.CASCADE, db_constraint=False)
-    tree = models.TextField("结构主题", null=False, default=[])
+    tree = models.TextField("结构主题", null=False, default="[]")
     type = models.IntegerField("树类型", default=1)
 
 
@@ -264,7 +263,7 @@ class Visit(models.Model):
     user = models.CharField(max_length=100, verbose_name="访问url的用户名", db_index=True)
     ip = models.CharField(max_length=20, verbose_name="用户的ip", db_index=True)
     project = models.CharField(
-        max_length=4, verbose_name="项目id", db_index=True, default=0
+        max_length=4, verbose_name="项目id", db_index=True, default="0"
     )
     url = models.CharField(max_length=255, verbose_name="被访问的url", db_index=True)
     path = models.CharField(
