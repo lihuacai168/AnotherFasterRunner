@@ -279,7 +279,7 @@ export default {
   },
   computed: {
     height() {
-      return (window.screen.height - 464).toString() + "px";
+      return window.innerHeight - 200 + "px";
     },
     tableHeight() {
       return (document.body.clientHeight - 210).toString();
