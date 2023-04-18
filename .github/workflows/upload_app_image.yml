@@ -2,10 +2,10 @@ name: Build APP and Push Docker Image
 
 on:
   workflow_dispatch:
-    pull_request:
-      branches:
-        - master
-      types: [closed]
+  pull_request:
+    branches:
+      - master
+    types: [closed]
 
 jobs:
   build_and_push:
