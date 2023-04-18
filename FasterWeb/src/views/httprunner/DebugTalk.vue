@@ -8,7 +8,7 @@
       <el-button type="text" size="small" @click="isBaseMonacoShow = true">打开Monaco</el-button>
     </div>
     <div>
-      <BaseMonacoEditor
+      <MonacoEditor
         ref="editor"
         :height="codeHeight"
         language="python"
@@ -19,7 +19,7 @@
         @codeChange="onCodeChange"
         :key="timeStamp"
       >
-      </BaseMonacoEditor>
+      </MonacoEditor>
 
       <el-drawer
         size="50%"
@@ -33,7 +33,7 @@
         <RunCodeResult :msg="resp.msg"></RunCodeResult>
       </el-drawer>
       <el-dialog :visible.sync="isBaseMonacoShow" width="70%">
-        <MonacoEditor
+        <BaseMonacoEditor
           ref="editor"
           :height="codeHeight"
           language="python"
@@ -44,7 +44,7 @@
           @codeChange="onCodeChange"
           :key="timeStamp"
         >
-        </MonacoEditor>
+        </BaseMonacoEditor>
       </el-dialog>
     </div>
   </div>

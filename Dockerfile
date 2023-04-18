@@ -33,4 +33,4 @@ ENV PYTHONUNBUFFERED=1
 ENV DJANGO_SETTINGS_MODULE=FasterRunner.settings.docker
 EXPOSE 8000
 
-CMD [ "bash ./start.sh" ]
+CMD [ "bash /opt/workspace/FasterRunner/start.sh" ]

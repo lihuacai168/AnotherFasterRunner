@@ -108,11 +108,11 @@ or
 # 原文链接：https://blog.csdn.net/weixin_40816738/article/details/121512708
 ```
 
-# Star History
+## Star History
 
 ![Star History Chart](https://api.star-history.com/svg?repos=lihuacai168/AnotherFasterRunner&type=Date)
 
-# 鸣谢
+## 鸣谢
 
 感谢 JetBrains 对开源项目的支持
 

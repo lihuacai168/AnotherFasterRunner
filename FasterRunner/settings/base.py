@@ -78,7 +78,7 @@ STATIC_URL = "/static/"
 
 STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]  # 指定static文件的路径，缺少这个配置，collect static 无法加载extent.js
 
-STATIC_ROOT = os.path.join(BASE_DIR, "static_root")  # collect static 之后的文件存放路径
+STATIC_ROOT = os.path.join(BASE_DIR, "/static/")  # collect static 之后的文件存放路径
 
 ROOT_URLCONF = "FasterRunner.urls"
 
