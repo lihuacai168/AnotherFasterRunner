@@ -1,0 +1,29 @@
+name: Build and Deploy Web App
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - master # 指定分支名称
+  pull_request:
+    types: [closed]
+    branches:
+      - master
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+    - name: Install Dependencies
+      run: |
+        cd web
+        yarn install
+    - name: Build
+      run: |
+        cd web
+        npm run build
+    - name: Upload Files
+      uses: actions/upload-artifact@v2
+      with:
+        name: dist
+        path: web/dist
