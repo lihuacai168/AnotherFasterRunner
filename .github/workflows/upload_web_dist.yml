@@ -1,13 +1,14 @@
-name: Build and Deploy Web App
+name: Build and Upload Web dist
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - master # 指定分支名称
   pull_request:
+    paths:
+      - 'web/**'
+      - '!web/dist/**'
     types: [closed]
     branches:
       - master
+
 jobs:
   build:
     runs-on: ubuntu-latest
