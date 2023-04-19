@@ -47,6 +47,9 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        PIP_INDEX_URL: ${PIP_INDEX_URL:-https://pypi.tuna.tsinghua.edu.cn/simple}
+        DEBIAN_REPO: ${DEBIAN_REPO:-mirrors.aliyun.com}
     environment:
       <<: *env
     entrypoint: /app/start.sh
@@ -59,6 +62,9 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        PIP_INDEX_URL: ${PIP_INDEX_URL:-https://pypi.tuna.tsinghua.edu.cn/simple}
+        DEBIAN_REPO: ${DEBIAN_REPO:-mirrors.aliyun.com}
     environment:
       <<: *env
     entrypoint: /app/start.sh
@@ -72,6 +78,9 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        PIP_INDEX_URL: ${PIP_INDEX_URL:-https://pypi.tuna.tsinghua.edu.cn/simple}
+        DEBIAN_REPO: ${DEBIAN_REPO:-mirrors.aliyun.com}
     environment:
       <<: *env
     entrypoint: /app/start.sh
