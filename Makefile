@@ -65,4 +65,4 @@ restart:
 
 .PHONY: exec
 exec:
-	$(cmd) exec $(service) /bin/sh
+	$(cmd) exec $(service) /bin/bash
