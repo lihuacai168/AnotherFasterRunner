@@ -1,7 +1,9 @@
-name: Build APP and Push Docker Image
+name: Build Backend and Push Docker Image
 
 on:
   workflow_dispatch:
+  release:
+    types: [ released ]
   pull_request:
     branches:
       - master
