@@ -1,5 +1,10 @@
 version: '3.8'
 
+# 用来快速启动测试平台的前后端，不包含db和mq
+# 用到本地的代码构建
+# 可以搭配docker-compose-build-db—mq使用
+# 或者已有mq和db也是OK的
+
 x-env: &env
   # db
   MYSQL_DATABASE: ${MYSQL_DATABASE}
