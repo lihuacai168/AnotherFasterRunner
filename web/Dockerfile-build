@@ -1,7 +1,5 @@
 FROM node:16 as build-stage
 
-
-
 # make the 'app' folder the current working directory
 WORKDIR /app
 
@@ -9,16 +7,18 @@ WORKDIR /app
 COPY package*.json ./
 
 # install project dependencies
-RUN yarn install --registry https://registry.npm.taobao.org/
+# RUN yarn install --registry https://registry.npm.taobao.org/
+RUN yarn install
 
 # copy project files and folders to the current working directory (i.e. 'app' folder)
 COPY . .
 
-ENV NODE_OPTIONS="--max_old_space_size=2048"
-ARG API_URL="http://119.91.147.215:8000"
-ENV API_URL=$API_URL
-ENV FasterRunner="myFasterRunner"
+#ENV NODE_OPTIONS="--max_old_space_size=2048"
+#ARG API_URL="http://119.91.147.215:8000"
+#ENV API_URL=$API_URL
+#ENV FasterRunner="myFasterRunner"
 # build app for production with minification
+
 RUN npm run build
 
 FROM nginx:1.21-alpine
