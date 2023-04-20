@@ -13,7 +13,7 @@ jobs:
 
     env:
       DOCKERHUB_USERNAME: rikasai
-      DOCKER_REPOSITORY_NAME: faster-runner
+      DOCKER_REPOSITORY_NAME: fast-runner-backend
 
     steps:
     - name: Check out the repository
