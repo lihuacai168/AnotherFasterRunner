@@ -24,7 +24,8 @@
 
 if [ $1 = "app" ]; then
     echo "start app"
-    /usr/local/bin/python -m gunicorn FasterRunner.wsgi_docker -b 0.0.0.0
+#    /usr/local/bin/python -m gunicorn FasterRunner.wsgi_docker -b 0.0.0.0 -w4
+    /usr/local/bin/python -m gunicorn FasterRunner.wsgi_docker -b 0.0.0.0 -w4 -k gevent
 fi
 
 if [ $1 = "celery-worker" ]; then

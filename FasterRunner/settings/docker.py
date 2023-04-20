@@ -12,6 +12,9 @@ DEBUG = False
 MQ_USER = environ.get('RABBITMQ_DEFAULT_USER')
 MQ_PASSWORD = environ.get('RABBITMQ_DEFAULT_PASS')
 MQ_PORT = environ.get('MQ_PORT')
+MQ_HOST = environ.get('MQ_HOST', 'mq')
+MQ_VHOST = environ.get('MQ_VHOST', '/')
+
 
 # 数据库账号密码
 # FASTER_HOST = environ.get('FASTER_HOST')
@@ -62,7 +65,7 @@ DATABASES = {
 # mq_user = environ.get('FASTER_MQ_USER')
 # mq_password = environ.get('FASTER_MQ_PASSWORD')
 # broker_url = f'amqp://{mq_user}:{mq_password}@mq:5672//'
-broker_url = f'amqp://{MQ_USER}:{MQ_PASSWORD}@mq:{MQ_PORT}//'
+broker_url = f'amqp://{MQ_USER}:{MQ_PASSWORD}@{MQ_HOST}:{MQ_PORT}/{MQ_VHOST}'
 
 # STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
