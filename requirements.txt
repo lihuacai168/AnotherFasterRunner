@@ -52,7 +52,7 @@ sqlparse==0.3.1
 tornado==4.5.3
 uritemplate==3.0.1
 urllib3==1.25.7
-uWSGI==2.0.18
+#uWSGI==2.0.18
 django_mysql
 json5==0.9.5
 django_bulk_update==2.2.0
@@ -68,3 +68,4 @@ gunicorn
 sentry-sdk~=1.5.8
 croniter~=1.3.5 # 计算下一次crontab
 django-log-request-id~=2.0.0
+gevent==22.10.2

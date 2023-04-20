@@ -4,7 +4,19 @@ env := ${env}
 
 env-file := ${HOME}/.env
 
-cmd = docker-compose -f docker-compose.yml --env-file $(env-file)
+
+# 如果外部传入了变量值，覆盖默认值
+ifdef ENV_FILE
+    env-file := $(ENV_FILE)
+endif
+
+compose-file := docker-compose.yml
+
+ifdef COMPOSE_FILE
+    compose-file := $(COMPOSE_FILE)
+endif
+
+cmd = docker-compose -f $(compose-file) --env-file $(env-file)
 
 
 tag := $(tag)
