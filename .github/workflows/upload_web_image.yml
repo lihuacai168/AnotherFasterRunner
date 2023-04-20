@@ -1,4 +1,4 @@
-name: Build APP and Push Docker Image
+name: Build Frontend and Push Docker Image
 
 on:
   workflow_dispatch:
