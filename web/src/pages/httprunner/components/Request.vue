@@ -10,6 +10,16 @@
                 </el-radio>
             </el-radio-group>
         </div>
+        <div>
+            <el-dialog title="批量编辑，每个参数占一行，冒号分隔；Key自动去重" :visible.sync="showDialog">
+                <el-input type="textarea" v-model="textareaData" :autosize="{ minRows: 10, maxRows: 16}"
+                          class="el-textarea__inner"></el-input>
+                <span slot="footer" class="dialog-footer">
+        <el-button @click="showDialog = false">取 消</el-button>
+        <el-button type="primary" @click="handleSubmit">确 定</el-button>
+      </span>
+            </el-dialog>
+        </div>
         <div style="margin-top: 5px">
             <el-table
                 highlight-current-row
@@ -102,8 +112,16 @@
                     </template>
                 </el-table-column>
 
-
                 <el-table-column>
+                    <template slot="header" slot-scope="scope">
+                        <el-button type="info"
+                                   size="small"
+                                   icon="el-icon-edit"
+                                   @click="handleBulkEdit">
+                            批量编辑
+                        </el-button>
+
+                    </template>
                     <template slot-scope="scope">
                         <el-row v-show="scope.row === currentRow">
                             <el-button
@@ -183,6 +201,7 @@ export default {
                 mode: 'code',
                 modes: ['code', 'tree'], // allowed modes
             },
+            showDialog: false,
             editorJsonData: {},
             fileList: [],
             currentIndex: 0,
@@ -229,6 +248,7 @@ export default {
             }],
             dataType: 'json',
             timeStamp: "",
+            textareaData: "",
         }
     },
 
@@ -268,7 +288,34 @@ export default {
         }
     },
     methods: {
+        handleSubmit() {
+            this.showDialog = false
+            const data = this.textareaData.split("\n").map(item => {
+                const [key, value, type, desc] = item.split(":")
+                return {
+                    key,
+                    value,
+                    type: parseInt(type),
+                    desc
+                }
+            })
+            if (this.dataType === 'data') {
+                this.formData = data
+            } else {
+                this.paramsData = data
+            }
+        },
+        handleBulkEdit() {
+            this.showDialog = true
+            const data = this.dataType === 'data' ? this.formData : this.paramsData
+            this.textareaData = data.map(
+                item => {
+                    const flag = ':'
+                    return `${item.key}${flag}${item.value}${flag}${item.type}${flag}${item.desc}`
 
+                }
+            ).join("\n")
+        },
         uploadSuccess(response, file, fileList) {
             let size = file.size;
             if (size >= 1048576) {
@@ -483,4 +530,8 @@ export default {
 /*    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);*/
 /*}*/
 
+.el-textarea__inner {
+    border: none !important; /* 移除.el-textarea类的边框 */
+    font-size: 18px; /* 设置字体大小 */
+}
 </style>
