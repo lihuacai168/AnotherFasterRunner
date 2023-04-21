@@ -1,0 +1,29 @@
+name: Execute remote shell script
+
+on:
+  workflow_dispatch:
+  workflow_run:
+    workflows:
+      - "Build Backend and Push Docker Image"
+      - "Build Frontend and Push Docker Image"
+    types:
+      - completed
+
+jobs:
+  execute_remote_script:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Execute shell script on remote server
+      env:
+        PRIVATE_KEY: ${{ secrets.REMOTE_SERVER_PRIVATE_KEY }}
+        REMOTE_SERVER_USER: ${{ secrets.REMOTE_SERVER_USER }}
+        REMOTE_SERVER_HOST: ${{ secrets.REMOTE_SERVER_HOST }}
+        REMOTE_SCRIPT_PATH: ${{ secrets.REMOTE_SCRIPT_PATH }}
+      run: |
+        echo "$PRIVATE_KEY" > private_key
+        chmod 600 private_key
+        ssh -i private_key -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null $REMOTE_SERVER_USER@$REMOTE_SERVER_HOST "bash -s" < $REMOTE_SCRIPT_PATH
