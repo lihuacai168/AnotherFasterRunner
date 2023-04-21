@@ -232,7 +232,7 @@ class Hrp(object):
             url=base_url + path,
             params=self.faster_req_json.get('params', {}),
             headers=self.get_headers(),
-            body=self.faster_req_json['body'],
+            body=self.faster_req_json.get('body', {}),
             req_json=self.faster_req_json['json'],
             verify=self.faster_req_json['verify'],
         )
