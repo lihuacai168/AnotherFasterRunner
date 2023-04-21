@@ -9,43 +9,25 @@ on:
       - completed
 
 jobs:
-  first_workflow_listener:
-    runs-on: ubuntu-latest
-    if: ${{ github.event.workflow_run.name == 'Build Frontend and Push Docker Image' }}
-    outputs:
-      updated_workflow_count: ${{ steps.update_workflow_count.outputs.updated_count }}
-
-    steps:
-    - name: Checkout repository
-      uses: actions/checkout@v2
-
-    - name: Update workflow count
-      id: update_workflow_count
-      run: |
-        echo "updated_count=1" >> $GITHUB_ENV
-
-  second_workflow_listener:
-    runs-on: ubuntu-latest
-    if: ${{ github.event.workflow_run.name == 'Build Backend and Push Docker Image' }}
-    outputs:
-      updated_workflow_count: ${{ steps.update_workflow_count.outputs.updated_count }}
-
-    steps:
-    - name: Checkout repository
-      uses: actions/checkout@v2
-
-    - name: Update workflow count
-      id: update_workflow_count
-      run: |
-        echo "updated_count=1" >> $GITHUB_ENV
-
   execute_remote_script:
-    needs: [first_workflow_listener, second_workflow_listener]
     runs-on: ubuntu-latest
-    if: ${{ needs.first_workflow_listener.outputs.updated_workflow_count == '1' || needs.second_workflow_listener.outputs.updated_workflow_count == '1' }}
-
+    env:
+      WORKFLOW_COUNT: 0
     steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Update workflow count
+      run: |
+        if [ "${{ github.event.workflow_run.name }}" == "Build Frontend and Push Docker Image" ]; then
+          echo "WORKFLOW_COUNT=$(echo ${{ env.WORKFLOW_COUNT }} + 1 | bc)" >> $GITHUB_ENV
+        elif [ "${{ github.event.workflow_run.name }}" == "Build Backend and Push Docker Image" ]; then
+          echo "WORKFLOW_COUNT=$(echo ${{ env.WORKFLOW_COUNT }} + 1 | bc)" >> $GITHUB_ENV
+        fi
+        echo "Updated workflow count: ${{ env.WORKFLOW_COUNT }}"
+
     - name: Execute shell script on remote server
+      if: ${{ env.WORKFLOW_COUNT >= 1 }}
       env:
         PRIVATE_KEY: ${{ secrets.REMOTE_SERVER_PRIVATE_KEY }}
         REMOTE_SERVER_USER: ${{ secrets.REMOTE_SERVER_USER }}
