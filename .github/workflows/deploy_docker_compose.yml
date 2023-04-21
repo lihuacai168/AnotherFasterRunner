@@ -1,22 +1,50 @@
 name: Execute remote shell script
 
 on:
-  workflow_dispatch:
   workflow_run:
     workflows:
-      - "Build Backend and Push Docker Image"
       - "Build Frontend and Push Docker Image"
+      - "Build Backend and Push Docker Image"
     types:
       - completed
 
 jobs:
-  execute_remote_script:
+  first_workflow_listener:
     runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.name == 'Build Frontend and Push Docker Image' }}
+    outputs:
+      updated_workflow_count: ${{ steps.update_workflow_count.outputs.updated_count }}
 
     steps:
     - name: Checkout repository
       uses: actions/checkout@v2
 
+    - name: Update workflow count
+      id: update_workflow_count
+      run: |
+        echo "updated_count=1" >> $GITHUB_ENV
+
+  second_workflow_listener:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.name == 'Build Backend and Push Docker Image' }}
+    outputs:
+      updated_workflow_count: ${{ steps.update_workflow_count.outputs.updated_count }}
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Update workflow count
+      id: update_workflow_count
+      run: |
+        echo "updated_count=1" >> $GITHUB_ENV
+
+  execute_remote_script:
+    needs: [first_workflow_listener, second_workflow_listener]
+    runs-on: ubuntu-latest
+    if: ${{ needs.first_workflow_listener.outputs.updated_workflow_count == '1' || needs.second_workflow_listener.outputs.updated_workflow_count == '1' }}
+
+    steps:
     - name: Execute shell script on remote server
       env:
         PRIVATE_KEY: ${{ secrets.REMOTE_SERVER_PRIVATE_KEY }}
@@ -24,6 +52,8 @@ jobs:
         REMOTE_SERVER_HOST: ${{ secrets.REMOTE_SERVER_HOST }}
         REMOTE_SCRIPT_PATH: ${{ secrets.REMOTE_SCRIPT_PATH }}
       run: |
-        echo "$PRIVATE_KEY" > private_key
-        chmod 600 private_key
-        ssh -i private_key -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null $REMOTE_SERVER_USER@$REMOTE_SERVER_HOST "bash -s" < $REMOTE_SCRIPT_PATH
+        TEMP_DIR=$(mktemp -d)
+        PRIVATE_KEY_FILE="$TEMP_DIR/private_key"
+        echo "$PRIVATE_KEY" > "$PRIVATE_KEY_FILE"
+        chmod 600 "$PRIVATE_KEY_FILE"
+        ssh -i "$PRIVATE_KEY_FILE" -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null $REMOTE_SERVER_USER@$REMOTE_SERVER_HOST "bash -s" < $REMOTE_SCRIPT_PATH
