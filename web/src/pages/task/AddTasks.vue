@@ -106,7 +106,7 @@
                             <el-form-item label="webhook" prop="webhook">
                                 <el-input type="textarea" v-model="ruleForm.webhook"
                                           :autosize="{ minRows: 1, maxRows: 3}"
-                                          placeholder="飞书机器人webhook地址，多个时换行即可" clearable></el-input>
+                                          placeholder="飞书或者钉钉机器人webhook地址" clearable></el-input>
                             </el-form-item>
 
                             <el-form-item>
