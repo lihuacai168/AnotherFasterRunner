@@ -22,6 +22,9 @@ import {Message} from 'element-ui';
 axios.defaults.withCredentials = true;
 // axios.defaults.baseURL = baseUrl;
 
+const err_msg_duration = 2000 // ms
+
+
 axios.interceptors.request.use(function (config) {
     if (!config.url.startsWith("/api/user/") || config.url === "/api/user/list/") {
         // 在请求拦截中，每次请求，都会加上一个Authorization头
@@ -42,28 +45,28 @@ axios.interceptors.response.use(function (response) {
     return response;
 }, function (error) {
     try {
+
         if (error.response.status === 401) {
             router.replace({
                 name: 'Login'
             })
         }
-
         if (error.response.status === 500) {
             Message.error({
-                message: '服务器内部异常, 请检查',
-                duration: this.$store.state.duration
+                message: '哦豁，服务器出现了一点状况',
+                duration: err_msg_duration
             })
         }
         if (error.response.status === 403) {
             Message.error({
-                message: error.response.data.msg,
-                duration: this.$store.state.duration
+                message: `哦豁，权限方面似乎出了点问题, ${error.response.data.msg}`,
+                duration: err_msg_duration
             })
         }
     } catch (e) {
         Message.error({
             message: '服务器连接超时，请重试',
-            duration: this.$store.state.duration
+            duration: err_msg_duration
         })
     }
 });
