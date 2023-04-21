@@ -26,16 +26,11 @@ jobs:
         fi
         echo "Updated workflow count: ${{ env.WORKFLOW_COUNT }}"
 
-    - name: Execute shell script on remote server
-      if: ${{ env.WORKFLOW_COUNT >= 1 }}
-      env:
-        PRIVATE_KEY: ${{ secrets.REMOTE_SERVER_PRIVATE_KEY }}
-        REMOTE_SERVER_USER: ${{ secrets.REMOTE_SERVER_USER }}
-        REMOTE_SERVER_HOST: ${{ secrets.REMOTE_SERVER_HOST }}
-        REMOTE_SCRIPT_PATH: ${{ secrets.REMOTE_SCRIPT_PATH }}
-      run: |
-        TEMP_DIR=$(mktemp -d)
-        PRIVATE_KEY_FILE="$TEMP_DIR/private_key"
-        echo "$PRIVATE_KEY" > "$PRIVATE_KEY_FILE"
-        chmod 600 "$PRIVATE_KEY_FILE"
-        ssh -i "$PRIVATE_KEY_FILE" -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null $REMOTE_SERVER_USER@$REMOTE_SERVER_HOST "bash -s" < $REMOTE_SCRIPT_PATH
+    - name: executing remote ssh commands using ssh key
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.REMOTE_SERVER_HOST }}
+        username: ${{ secrets.REMOTE_SERVER_USER }}
+        key: ${{ secrets.REMOTE_SERVER_PRIVATE_KEY }}
+        port: ${{ secrets.REMOTE_SERVER_PORT }}
+        script: sh ${{ secrets.REMOTE_SCRIPT_PATH }}
