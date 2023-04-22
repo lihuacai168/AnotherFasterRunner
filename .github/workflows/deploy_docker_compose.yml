@@ -27,12 +27,20 @@ jobs:
         fi
         echo "Updated workflow count: ${{ env.WORKFLOW_COUNT }}"
 
-    - name: executing remote ssh commands using ssh key
+    - name: (nd) executing remote ssh commands using ssh key
       uses: appleboy/ssh-action@master
       with:
         host: ${{ secrets.REMOTE_SERVER_HOST }}
         username: ${{ secrets.REMOTE_SERVER_USER }}
         key: ${{ secrets.REMOTE_SERVER_PRIVATE_KEY }}
-#        password: ${{ secrets.REMOTE_SERVER_PASSWORD }}
+        port: ${{ secrets.REMOTE_SERVER_PORT }}
+        script: sh ${{ secrets.REMOTE_SCRIPT_PATH }}
+
+    - name: (tx) executing remote ssh commands using ssh key
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.TX_REMOTE_SERVER_HOST }}
+        username: ${{ secrets.REMOTE_SERVER_USER }}
+        key: ${{ secrets.TX_REMOTE_SERVER_PRIVATE_KEY }}
         port: ${{ secrets.REMOTE_SERVER_PORT }}
         script: sh ${{ secrets.REMOTE_SCRIPT_PATH }}
