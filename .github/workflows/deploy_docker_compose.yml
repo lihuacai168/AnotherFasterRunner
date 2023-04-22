@@ -31,7 +31,7 @@ jobs:
       with:
         host: ${{ secrets.REMOTE_SERVER_HOST }}
         username: ${{ secrets.REMOTE_SERVER_USER }}
-#        key: ${{ secrets.REMOTE_SERVER_PRIVATE_KEY }}
-        password: ${{ secrets.REMOTE_SERVER_PASSWORD }}
+        key: ${{ secrets.REMOTE_SERVER_PRIVATE_KEY }}
+#        password: ${{ secrets.REMOTE_SERVER_PASSWORD }}
         port: ${{ secrets.REMOTE_SERVER_PORT }}
         script: sh ${{ secrets.REMOTE_SCRIPT_PATH }}
