@@ -24,7 +24,7 @@
                 <el-col :span="24">
                     <div>
                         <div id="form-title">{{ this.$store.state.FasterRunner }}自动化测试平台</div>
-                        <form id="submit-form">
+                        <form id="submit-form" @keydown.enter.prevent="submitForm">
                             <div id="form-content">
                                 <div id="form-msg">登录账号</div>
                                 <div id="form-inputs">
@@ -43,7 +43,7 @@
                                              @mouseover="passwordInvalid= ''"></div>
                                     </div>
                                     <div class="form-submit">
-                                        <button type="button" class="btn btn-primary" id="submitBtn"
+                                        <button type="submit" class="btn btn-primary" id="submitBtn"
                                                 @click="submitForm">立即登录
                                         </button>
                                     </div>
