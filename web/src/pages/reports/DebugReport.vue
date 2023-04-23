@@ -84,7 +84,7 @@
                 :header-cell-style="{textAlign:'center', background: '#F8F8FA'}"
                 :cell-style="{textAlign:'center'}"
             >
-                <el-table-column type="expand" fixed>
+                <el-table-column type="expand">
                     <template slot-scope="props">
                         <el-tabs @tab-click="handleClick">
                             <el-tab-pane label="Request">
@@ -187,12 +187,12 @@
                 <el-table-column label="Convert" width="200px">
 
                     <template slot-scope="scope">
-                        <el-popover placement="right-start" width="400" trigger="hover">
-                            <pre class="code-block">{{ scope.row.meta_data.boomer }}</pre>
-                            <el-button slot="reference" round type="text"
-                                       @click="copyDataText(scope.row.meta_data.boomer, 'boomer')">boomer
-                            </el-button>
-                        </el-popover>
+<!--                        <el-popover placement="right-start" width="400" trigger="hover">-->
+<!--                            <pre class="code-block">{{ scope.row.meta_data.boomer }}</pre>-->
+<!--                            <el-button slot="reference" round type="text"-->
+<!--                                       @click="copyDataText(scope.row.meta_data.boomer, 'boomer')">boomer-->
+<!--                            </el-button>-->
+<!--                        </el-popover>-->
                         <el-popover placement="right-start" width="400" trigger="hover">
                             <pre class="code-block">{{ scope.row.meta_data.curl }}</pre>
                             <el-button slot="reference" round type="text"
