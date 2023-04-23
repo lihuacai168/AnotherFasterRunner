@@ -1,6 +1,8 @@
 name: Build and Upload Web dist
 on:
   workflow_dispatch:
+  release:
+    types: [ released ]
   pull_request:
     paths:
       - 'web/**'
