@@ -87,11 +87,11 @@
                 <el-table-column type="expand" fixed>
                     <template slot-scope="props">
                         <el-tabs @tab-click="handleClick">
-                            <el-tab-pane label="Request">
+                            <el-tab-pane label="Request" name="request">
                                 <pre class="code-block" v-html="handleRequest(props.row.meta_data.request)"></pre>
                             </el-tab-pane>
 
-                            <el-tab-pane label="Content" v-if="props.row.meta_data.response.jsonCopy !== null">
+                            <el-tab-pane label="Content" name="content" v-if="props.row.meta_data.response.jsonCopy !== null">
                                 <v-jsoneditor ref="jsonEditor" v-model="props.row.meta_data.response.jsonCopy"
                                               :options="options" :plus="true"
                                               :height="height"
@@ -99,10 +99,10 @@
                                 </v-jsoneditor>
                             </el-tab-pane>
 
-                            <el-tab-pane label="Response">
+                            <el-tab-pane label="Response" name="response">
                                 <pre class="code-block" v-text="handleResponse(props.row.meta_data.response)"></pre>
                             </el-tab-pane>
-                            <el-tab-pane label="Validators" v-if="props.row.meta_data.validators.length !== 0">
+                            <el-tab-pane label="Validators" name="validators" v-if="props.row.meta_data.validators.length !== 0">
                                 <!--                                <pre class="code-block" v-html="props.row.meta_data.validators"></pre>-->
                                 <el-table
                                     :data="props.row.meta_data.validators"
@@ -144,7 +144,7 @@
                                     </el-table-column>
                                 </el-table>
                             </el-tab-pane>
-                            <el-tab-pane label="Exception" v-if="props.row.attachment !== ''">
+                            <el-tab-pane label="Exception" name="exception" v-if="props.row.attachment !== ''">
                                 <pre class="code-block" v-html="props.row.attachment"></pre>
                             </el-tab-pane>
 
