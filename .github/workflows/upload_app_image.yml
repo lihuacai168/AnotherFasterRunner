@@ -1,5 +1,4 @@
 name: Build Backend and Push Docker Image
-
 on:
   workflow_dispatch:
   release:
@@ -8,7 +7,9 @@ on:
     branches:
       - master
     types: [closed]
-
+    paths:
+      - '**.py'
+      - '!./web/**'
 jobs:
   build_and_push:
     runs-on: ubuntu-latest
