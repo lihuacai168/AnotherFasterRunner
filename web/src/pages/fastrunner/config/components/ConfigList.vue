@@ -1,6 +1,6 @@
 <template>
     <el-container>
-        <el-header style="padding-top: 10px; height: 50px;">
+        <el-header style="padding-top: 10px; height: 50px; overflow-x: hidden">
             <div>
                 <el-row :gutter="50">
                     <el-col :span="6" v-if="configData.count > 11">
