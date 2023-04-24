@@ -44,7 +44,7 @@
                                     </div>
                                     <div class="form-submit">
                                         <button type="submit" class="btn btn-primary" id="submitBtn"
-                                                @click="submitForm">立即登录
+                                                 @click.prevent="submitForm">立即登录
                                         </button>
                                     </div>
                                 </div>
