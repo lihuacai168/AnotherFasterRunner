@@ -9,7 +9,6 @@
                                   style="width: 500px">
                             <el-button slot="append" icon="el-icon-search" @click="getTestList"></el-button>
 
-
                             <el-select v-model="searchType" slot="prepend" placeholder="用例"
                                        @change="searchTypeChangeHandle">
                                 <el-option label="用例" value="1"></el-option>
@@ -47,7 +46,7 @@
                     <el-col :span="7">
                         <el-pagination
                             @current-change="handleCurrentChange"
-                            :current-page.sync="currentPage"
+                            v-model:current-page="currentPage"
                             :page-size="11"
                             v-show="testData.count !== 0 "
                             background
@@ -65,7 +64,7 @@
                 <div style="position: fixed; bottom: 0; right:0; left: 500px; top: 160px">
                     <el-dialog
                         v-if="dialogTableVisible"
-                        :visible.sync="dialogTableVisible"
+                        v-model:visible="dialogTableVisible"
                         width="70%"
                         :modal-append-to-body="false"
                     >
@@ -74,7 +73,7 @@
 
                     <el-dialog
                         title="Run Case"
-                        :visible.sync="dialogTreeVisible"
+                        v-model:visible="dialogTreeVisible"
                         width="45%"
                         :modal-append-to-body="false"
                         @close="onCloseRunCase"
@@ -161,7 +160,7 @@
                     </el-dialog>
                     <el-dialog
                         title="Move Case"
-                        :visible.sync="dialogTreeMoveCaseVisible"
+                        v-model:visible="dialogTreeMoveCaseVisible"
                         width="45%"
                         :modal-append-to-body="false"
                     >
@@ -222,7 +221,7 @@
                         <el-table-column
                             width="25"
                         >
-                            <template slot-scope="scope">
+                            <template v-slot="scope">
                                 <el-dropdown @command="dropdownMenuChangeHandle">
                                     <span><i class="el-icon-more"></i></span>
                                     <el-dropdown-menu slot="dropdown">
@@ -246,12 +245,11 @@
 
                         </el-table-column>
 
-
                         <el-table-column
                             label="用例名称"
                             width="400"
                         >
-                            <template slot-scope="scope">
+                            <template v-slot="scope">
                                 <div>{{ scope.row.name }}
                                     <i class="el-icon-success " style="color: green" v-if="scope.row.tasks.length > 0 "
                                        :title="'已加入定时任务: ' + scope.row.tasks.map(task => task.name).join('，')">
@@ -265,7 +263,7 @@
                             label="步骤"
                             width="50"
                         >
-                            <template slot-scope="scope">
+                            <template v-slot="scope">
                                 <div style="text-align:center">{{ scope.row.length }}</div>
                             </template>
                         </el-table-column>
@@ -274,7 +272,7 @@
                             label="用例类型"
                             width="100"
                         >
-                            <template slot-scope="scope">
+                            <template v-slot="scope">
                                 <el-tag v-if="scope.row.tag==='冒烟用例'">{{ scope.row.tag }}</el-tag>
                                 <el-tag v-if="scope.row.tag==='集成用例'" type="info">{{ scope.row.tag }}</el-tag>
                                 <el-tag v-if="scope.row.tag==='监控脚本'" type="danger">{{ scope.row.tag }}</el-tag>
@@ -286,7 +284,7 @@
                             label="更新时间"
                             width="105"
                         >
-                            <template slot-scope="scope">
+                            <template v-slot="scope">
                                 <div>{{ scope.row.update_time|datetimeFormat('MM-DD hh:mm') }}</div>
                             </template>
                         </el-table-column>
@@ -295,7 +293,7 @@
                             label="创建时间"
                             width="105"
                         >
-                            <template slot-scope="scope">
+                            <template v-slot="scope">
                                 <div>{{ scope.row.create_time|datetimeFormat('MM-DD hh:mm') }}</div>
 
                             </template>
@@ -306,7 +304,7 @@
                             width="100"
 
                         >
-                            <template slot-scope="scope">
+                            <template v-slot="scope">
                                 <div>{{ scope.row.creator }}</div>
 
                             </template>
@@ -317,7 +315,7 @@
                             width="100"
 
                         >
-                            <template slot-scope="scope">
+                            <template v-slot="scope">
                                 <div>{{ scope.row.updater }}</div>
 
                             </template>
@@ -326,7 +324,7 @@
                         <el-table-column
                             label="用例操作"
                         >
-                            <template slot-scope="scope">
+                            <template v-slot="scope">
                                 <el-row v-show="currentRow === scope.row">
                                     <el-button
                                         type="info"
@@ -407,418 +405,416 @@ import Report from '../../../reports/DebugReport'
 
 export default {
 
-    name: "TestList",
-    components: {
-        Report
+  name: 'TestList',
+  components: {
+    Report
+  },
+
+  props: {
+    run: Boolean,
+    // 父组件修改move状态，子组件监听move,调用getTree('move')修改dialogTreeMoveCaseVisible状态，激活移动用例弹窗
+    move: Boolean,
+    back: Boolean,
+    project: {
+      require: true
+    },
+    host: {
+      require: true
+    },
+    node: {
+      require: false
+    },
+    del: Boolean,
+    onlyMe: Boolean,
+    isSelectCase: Boolean
+  },
+
+  watch: {
+    filterText(val) {
+      this.$refs.tree.filter(val)
     },
 
-    props: {
-        run: Boolean,
-        //父组件修改move状态，子组件监听move,调用getTree('move')修改dialogTreeMoveCaseVisible状态，激活移动用例弹窗
-        move: Boolean,
-        back: Boolean,
-        project: {
-            require: true
-        },
-        host: {
-            require: true
-        },
-        node: {
-            require: false
-        },
-        del: Boolean,
-        onlyMe: Boolean,
-        isSelectCase: Boolean
+    run() {
+      this.asyncs = false
+      this.reportName = ''
+      this.getTree('run')
     },
 
-    watch: {
-        filterText(val) {
-            this.$refs.tree.filter(val);
-        },
+    move() {
+      this.getTree('move')
+    },
 
-        run() {
-            this.asyncs = false;
-            this.reportName = "";
-            this.getTree('run');
-        },
+    node() {
+      this.search = ''
+      this.searchType = '1'
+      this.getTestList()
+    },
 
-        move() {
-            this.getTree('move');
-        },
+    // 监听只看自己按钮的状态
+    onlyMe() {
+      this.getTestList()
+    },
 
-        node() {
-            this.search = '';
-            this.searchType = '1';
-            this.getTestList();
-        },
+    back() {
+      this.getTestList()
+    },
 
-        // 监听只看自己按钮的状态
-        onlyMe() {
+    del() {
+      if (this.selectTest.length !== 0) {
+        this.$confirm('此操作将永久删除测试用例集，是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          this.$api.delAllTest({data: this.selectTest}).then(resp => {
             this.getTestList()
-        },
-
-        back() {
-            this.getTestList();
-        },
-
-        del() {
-            if (this.selectTest.length !== 0) {
-                this.$confirm('此操作将永久删除测试用例集，是否继续?', '提示', {
-                    confirmButtonText: '确定',
-                    cancelButtonText: '取消',
-                    type: 'warning',
-                }).then(() => {
-                    this.$api.delAllTest({data: this.selectTest}).then(resp => {
-                        this.getTestList();
-                    })
-                })
-            } else {
-                this.$notify.warning({
-                    title: '提示',
-                    message: '请至少选择一个用例集',
-                    duration: this.$store.state.duration
-                })
-            }
-        },
-
-        search() {
-            this.getTestList()
-        },
-
+          })
+        })
+      } else {
+        this.$notify.warning({
+          title: '提示',
+          message: '请至少选择一个用例集',
+          duration: this.$store.state.duration
+        })
+      }
     },
-    data() {
-        return {
-            isSuperuser: this.$store.state.is_superuser,
-            userName: this.$store.state.user,
-            search: '',
-            reportName: '',
-            asyncs: false,
-            filterText: '',
-            expand: '&#xe65f;',
-            dialogTreeVisible: false,
-            dataTree: {},
-            loading: false,
-            dialogTableVisible: false,
-            dialogTreeMoveCaseVisible: false,
-            selectTest: [],
-            summary: {},
-            currentRow: '',
-            testData: {
-                count: 0,
-                results: []
-            },
-            currentPage: 1,
-            caseType: '',
-            searchType: '1', // 1：用例名称搜索 2：api名称或者api url
-            currentConfigId: '',
-            configOptions: [],
+
+    search() {
+      this.getTestList()
+    }
+
+  },
+  data() {
+    return {
+      isSuperuser: this.$store.state.is_superuser,
+      userName: this.$store.state.user,
+      search: '',
+      reportName: '',
+      asyncs: false,
+      filterText: '',
+      expand: '&#xe65f;',
+      dialogTreeVisible: false,
+      dataTree: {},
+      loading: false,
+      dialogTableVisible: false,
+      dialogTreeMoveCaseVisible: false,
+      selectTest: [],
+      summary: {},
+      currentRow: '',
+      testData: {
+        count: 0,
+        results: []
+      },
+      currentPage: 1,
+      caseType: '',
+      searchType: '1', // 1：用例名称搜索 2：api名称或者api url
+      currentConfigId: '',
+      configOptions: []
+    }
+  },
+
+  methods: {
+    getTree(showType) {
+      this.$api.getTree(this.$route.params.id, {params: {type: 2}}).then(resp => {
+        this.dataTree = resp.tree
+        // run是批量运行case弹窗，其他是批量更新case relation弹窗
+        if (showType === 'run') {
+          this.dialogTreeVisible = true
+        } else {
+          this.dialogTreeMoveCaseVisible = true
         }
+      })
     },
 
-    methods: {
-        getTree(showType) {
-            this.$api.getTree(this.$route.params.id, {params: {type: 2}}).then(resp => {
-                this.dataTree = resp.tree;
-                // run是批量运行case弹窗，其他是批量更新case relation弹窗
-                if (showType === 'run') {
-                    this.dialogTreeVisible = true;
-                } else {
-                    this.dialogTreeMoveCaseVisible = true;
-                }
+    filterNode(value, data) {
+      if (!value) return true
+      return data.label.indexOf(value) !== -1
+    },
+
+    runTree() {
+      this.dialogTreeVisible = false
+      const relation = this.$refs.tree.getCheckedKeys()
+      if (relation.length === 0) {
+        this.$notify.error({
+          title: '提示',
+          message: '请至少选择一个节点',
+          duration: 1500
+        })
+      } else {
+        this.$api.runSuiteTree({
+          'host': this.host,
+          'project': this.project,
+          'relation': relation,
+          'async': this.asyncs,
+          'name': this.reportName,
+          'config_id': this.currentConfigId
+        }).then(resp => {
+          if (resp.hasOwnProperty('status')) {
+            this.$message.info({
+              message: resp.msg,
+              duration: 1500
             })
-        },
+          } else {
+            this.summary = resp
+            this.dialogTableVisible = true
+          }
+        })
+      }
+    },
 
-        filterNode(value, data) {
-            if (!value) return true;
-            return data.label.indexOf(value) !== -1;
-        },
-
-        runTree() {
-            this.dialogTreeVisible = false;
-            const relation = this.$refs.tree.getCheckedKeys();
-            if (relation.length === 0) {
-                this.$notify.error({
-                    title: '提示',
-                    message: '请至少选择一个节点',
-                    duration: 1500
-                });
-            } else {
-                this.$api.runSuiteTree({
-                    "host": this.host,
-                    "project": this.project,
-                    "relation": relation,
-                    "async": this.asyncs,
-                    "name": this.reportName,
-                    "config_id": this.currentConfigId
-                }).then(resp => {
-                    if (resp.hasOwnProperty("status")) {
-                        this.$message.info({
-                            message: resp.msg,
-                            duration: 1500
-                        });
-                    } else {
-                        this.summary = resp;
-                        this.dialogTableVisible = true;
-                    }
-                })
-            }
-        },
-
-        moveCase() {
-            this.dialogTreeVisible = false;
-            const relation = this.$refs.tree.getCheckedKeys();
-            let length = relation.length;
-            if (length === 0) {
-                this.$notify.error({
-                    title: '提示',
-                    message: '请至少选择一个节点',
-                    duration: 1500
-                });
-            } else if (length !== 1) {
-                this.$notify.error({
-                    title: '提示',
-                    message: 'API只能移动到一个节点, 现在选了' + length + '个节点',
-                    duration: 1500
-                });
-            } else {
-                this.$api.moveCase({
-                    "project": this.project,
-                    "relation": relation[0],
-                    "case": this.selectTest
-                }).then(resp => {
-                    if (resp.success) {
-                        this.$message.success({
-                            message: '移动Case成功',
-                            duration: 1500
-                        });
-                        this.dialogTreeMoveCaseVisible = false
-                        this.resetSearch()
-                    } else {
-                        this.$message.error({
-                            message: resp.msg,
-                            duration: 1500
-                        })
-                    }
-                })
-            }
-        },
-
-        // 同步运行单个用例
-        handleRunTest(id, name) {
-            this.loading = true;
-            this.$api.runTestByPk(id, {params: {project: this.project, name: name, host: this.host}}).then(resp => {
-                this.summary = resp;
-                this.dialogTableVisible = true;
-                this.loading = false;
-            }).catch(resp => {
-                this.loading = false;
+    moveCase() {
+      this.dialogTreeVisible = false
+      const relation = this.$refs.tree.getCheckedKeys()
+      const length = relation.length
+      if (length === 0) {
+        this.$notify.error({
+          title: '提示',
+          message: '请至少选择一个节点',
+          duration: 1500
+        })
+      } else if (length !== 1) {
+        this.$notify.error({
+          title: '提示',
+          message: 'API只能移动到一个节点, 现在选了' + length + '个节点',
+          duration: 1500
+        })
+      } else {
+        this.$api.moveCase({
+          'project': this.project,
+          'relation': relation[0],
+          'case': this.selectTest
+        }).then(resp => {
+          if (resp.success) {
+            this.$message.success({
+              message: '移动Case成功',
+              duration: 1500
             })
-        },
+            this.dialogTreeMoveCaseVisible = false
+            this.resetSearch()
+          } else {
+            this.$message.error({
+              message: resp.msg,
+              duration: 1500
+            })
+          }
+        })
+      }
+    },
 
-        /*
+    // 同步运行单个用例
+    handleRunTest(id, name) {
+      this.loading = true
+      this.$api.runTestByPk(id, {params: {project: this.project, name: name, host: this.host}}).then(resp => {
+        this.summary = resp
+        this.dialogTableVisible = true
+        this.loading = false
+      }).catch(resp => {
+        this.loading = false
+      })
+    },
+
+    /*
         * 异步运行单个用例
         * @param id, 用例id
         * @param name，用例名称，测试报告使用这个名称
          */
-        handleAsyncRunTest(id, name) {
-            this.$api.runTestByPk(id, {
-                params: {
-                    project: this.project,
-                    name: name,
-                    host: this.host,
-                    "async": true
-                }
-            }).then(resp => {
-                if (resp.success) {
-                    this.$message.info({
-                        title: '提示',
-                        message: resp.msg,
-                        duration: 2000,
-                        center: true
-                    })
-                } else {
-                    this.$message.error({
-                        message: resp.msg,
-                        duration: 2000,
-                        center: true
-                    })
-                }
-            })
-        },
+    handleAsyncRunTest(id, name) {
+      this.$api.runTestByPk(id, {
+        params: {
+          project: this.project,
+          name: name,
+          host: this.host,
+          'async': true
+        }
+      }).then(resp => {
+        if (resp.success) {
+          this.$message.info({
+            title: '提示',
+            message: resp.msg,
+            duration: 2000,
+            center: true
+          })
+        } else {
+          this.$message.error({
+            message: resp.msg,
+            duration: 2000,
+            center: true
+          })
+        }
+      })
+    },
 
-        handleCurrentChange(val) {
-            this.$api.getTestPaginationBypage({
-                params: {
-                    page: this.currentPage,
-                    project: this.project,
-                    node: this.node,
-                    search: this.search,
-                    searchType: this.searchType,
-                    caseType: this.caseType,
-                    onlyMe: this.onlyMe
-                }
-            }).then(resp => {
-                this.testData = resp;
-            })
-        },
+    handleCurrentChange(val) {
+      this.$api.getTestPaginationBypage({
+        params: {
+          page: this.currentPage,
+          project: this.project,
+          node: this.node,
+          search: this.search,
+          searchType: this.searchType,
+          caseType: this.caseType,
+          onlyMe: this.onlyMe
+        }
+      }).then(resp => {
+        this.testData = resp
+      })
+    },
 
-        handleEditTest(id) {
-            this.$api.editTest(id).then(resp => {
-                this.$emit('testStep', resp);
-            })
-        },
+    handleEditTest(id) {
+      this.$api.editTest(id).then(resp => {
+        this.$emit('testStep', resp)
+      })
+    },
 
-        handleCopyTest(id, name) {
-            this.$prompt('请输入用例集名称', '提示', {
-                confirmButtonText: '确定',
-                inputPattern: /^[\s\S]*.*[^\s][\s\S]*$/,
-                inputErrorMessage: '用例集不能为空',
-                inputValue: name,
-            }).then(({value}) => {
-                this.$api.coptTest(id, {
-                    'name': value,
-                    'relation': this.node,
-                    'project': this.project
-                }).then(resp => {
-                    if (resp.success) {
-                        this.getTestList();
-                    } else {
-                        this.$message.error(resp.msg);
-                    }
-                })
-            })
-        },
-
-        handleSelectionChange(val) {
-            this.selectTest = val;
-            // 更新是否已经选择Case, 父组件依赖这个属性来判断是否显示移动用例按钮
-            if (this.selectTest.length > 0) {
-                this.$emit('update:isSelectCase', true);
-            } else {
-                this.$emit('update:isSelectCase', false);
-            }
-        },
-
-        handleDelTest(id) {
-            this.$confirm('此操作将永久删除该测试用例集，是否继续?', '提示', {
-                confirmButtonText: '确定',
-                cancelButtonText: '取消',
-                type: 'warning',
-            }).then(() => {
-                this.$api.deleteTest(id).then(resp => {
-                    if (resp.success) {
-                        this.getTestList();
-                    } else {
-                        this.$message.error(resp.msg)
-                    }
-                })
-            })
-        },
-        handleSyncCaseStep(id) {
-            this.$confirm('同步测试用例中的用例步骤，是否继续?', '提示', {
-                confirmButtonText: '确定',
-                cancelButtonText: '取消',
-                type: 'warning',
-            }).then(() => {
-                this.$api.syncTest(id).then(resp => {
-                    if (resp.success) {
-                        this.$notify.success("同步用例步骤成功")
-                        this.getTestList();
-                    } else {
-                        this.$message.error(resp.msg)
-                    }
-                })
-            })
-        },
-        resetSearch() {
-            this.searchType = "1",
-                this.search = "",
-                this.node = "",
-                this.caseType = "",
-                this.currentPage = 1,
-                this.$emit('update:onlyMe', true),
-                this.getTestList()
-        },
-
-
-        caseTypeChangeHandle(command) {
-            this.caseType = command
-            debugger
+    handleCopyTest(id, name) {
+      this.$prompt('请输入用例集名称', '提示', {
+        confirmButtonText: '确定',
+        inputPattern: /^[\s\S]*.*[^\s][\s\S]*$/,
+        inputErrorMessage: '用例集不能为空',
+        inputValue: name
+      }).then(({value}) => {
+        this.$api.coptTest(id, {
+          'name': value,
+          'relation': this.node,
+          'project': this.project
+        }).then(resp => {
+          if (resp.success) {
             this.getTestList()
-        },
+          } else {
+            this.$message.error(resp.msg)
+          }
+        })
+      })
+    },
 
-        searchTypeChangeHandle(value) {
-            this.searchType = value
+    handleSelectionChange(val) {
+      this.selectTest = val
+      // 更新是否已经选择Case, 父组件依赖这个属性来判断是否显示移动用例按钮
+      if (this.selectTest.length > 0) {
+        this.$emit('update:isSelectCase', true)
+      } else {
+        this.$emit('update:isSelectCase', false)
+      }
+    },
+
+    handleDelTest(id) {
+      this.$confirm('此操作将永久删除该测试用例集，是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.$api.deleteTest(id).then(resp => {
+          if (resp.success) {
             this.getTestList()
-        },
+          } else {
+            this.$message.error(resp.msg)
+          }
+        })
+      })
+    },
+    handleSyncCaseStep(id) {
+      this.$confirm('同步测试用例中的用例步骤，是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.$api.syncTest(id).then(resp => {
+          if (resp.success) {
+            this.$notify.success('同步用例步骤成功')
+            this.getTestList()
+          } else {
+            this.$message.error(resp.msg)
+          }
+        })
+      })
+    },
+    resetSearch() {
+      this.searchType = '1',
+      this.search = '',
+      this.node = '',
+      this.caseType = '',
+      this.currentPage = 1,
+      this.$emit('update:onlyMe', true),
+      this.getTestList()
+    },
 
+    caseTypeChangeHandle(command) {
+      this.caseType = command
+      debugger
+      this.getTestList()
+    },
 
-        getTestList() {
-            this.$api.testList({
-                params: {
-                    project: this.project,
-                    node: this.node,
-                    search: this.search,
-                    searchType: this.searchType,
-                    caseType: this.caseType,
-                    onlyMe: this.onlyMe,
-                    page: this.currentPage,
-                }
-            }).then(resp => {
-                this.testData = resp;
-            })
-        },
-        cellMouseEnter(row) {
-            this.currentRow = row;
-        },
-        getConfig() {
-            this.$api.getAllConfig(this.$route.params.id).then(resp => {
-                this.configOptions = resp;
-                this.configOptions.push({
-                    name: '请选择',
-                    id: 0
-                })
-            })
-        },
-        cellMouseLeave(row) {
-            this.currentRow = '';
-        },
-        onOpenRunCase() {
-            this.getConfig()
-        },
-        onCloseRunCase() {
-            this.currentConfigId = 0
-        },
-        /*
+    searchTypeChangeHandle(value) {
+      this.searchType = value
+      this.getTestList()
+    },
+
+    getTestList() {
+      this.$api.testList({
+        params: {
+          project: this.project,
+          node: this.node,
+          search: this.search,
+          searchType: this.searchType,
+          caseType: this.caseType,
+          onlyMe: this.onlyMe,
+          page: this.currentPage
+        }
+      }).then(resp => {
+        this.testData = resp
+      })
+    },
+    cellMouseEnter(row) {
+      this.currentRow = row
+    },
+    getConfig() {
+      this.$api.getAllConfig(this.$route.params.id).then(resp => {
+        this.configOptions = resp
+        this.configOptions.push({
+          name: '请选择',
+          id: 0
+        })
+      })
+    },
+    cellMouseLeave(row) {
+      this.currentRow = ''
+    },
+    onOpenRunCase() {
+      this.getConfig()
+    },
+    onCloseRunCase() {
+      this.currentConfigId = 0
+    },
+    /*
         用例批量各类操作
         */
-        dropdownMenuChangeHandle(command) {
-            const opMap = {
-                "smoke": 1,
-                "integrated": 2,
-                "monitor": 3,
-                "core": 4,
-            }
-            const tag = opMap[command]
-            const case_ids = this.selectTest.map(test => test.id)
-            this.$api.tagCase({
-                tag: tag,
-                case_ids: case_ids,
-                project_id: this.$route.params.id
-            }).then(resp => {
-                this.selectTest = []
-                this.$emit('update:isSelectCase', false);
-                if (resp.success) {
-                    this.getTestList();
-                } else {
-                    this.$message.error(resp.msg);
-                }
-            })
+    dropdownMenuChangeHandle(command) {
+      const opMap = {
+        'smoke': 1,
+        'integrated': 2,
+        'monitor': 3,
+        'core': 4
+      }
+      const tag = opMap[command]
+      const case_ids = this.selectTest.map(test => test.id)
+      this.$api.tagCase({
+        tag: tag,
+        case_ids: case_ids,
+        project_id: this.$route.params.id
+      }).then(resp => {
+        this.selectTest = []
+        this.$emit('update:isSelectCase', false)
+        if (resp.success) {
+          this.getTestList()
+        } else {
+          this.$message.error(resp.msg)
         }
-    },
-    mounted() {
-        this.getTestList()
+      })
     }
+  },
+  mounted() {
+    this.getTestList()
+  }
 }
 </script>
 

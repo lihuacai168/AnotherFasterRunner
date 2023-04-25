@@ -8,7 +8,7 @@
                     v-model="name"
                     clearable
                 >
-                    <template slot="prepend">接口信息录入</template>
+                    <template v-slot:prepend>接口信息录入</template>
 
                 </el-input>
                 <el-button
@@ -59,7 +59,6 @@
                     </el-select>
                     <template slot="prepend" > <span style="margin-left: 20px">{{config.base_url}}</span></template>
 
-
                 </el-input>
 
                 <el-tooltip
@@ -84,7 +83,7 @@
 
             <el-dialog
                 v-if="dialogTableVisible"
-                :visible.sync="dialogTableVisible"
+                v-model:visible="dialogTableVisible"
                 width="70%"
             >
                 <report :summary="summary"></report>
@@ -142,7 +141,6 @@
                     </validate>
                 </el-tab-pane>
 
-
                 <el-tab-pane label="Variables" name="five">
                     <span slot="label">
                         Variables
@@ -172,7 +170,6 @@
 
         </div>
 
-
     </div>
 
 </template>
@@ -187,252 +184,251 @@ import Hooks from '../../../httprunner/components/Hooks'
 import Report from '../../../reports/DebugReport'
 
 export default {
-    components: {
-        Headers,
-        Request,
-        Extract,
-        Validate,
-        Variables,
-        Hooks,
-        Report
+  components: {
+    Headers,
+    Request,
+    Extract,
+    Validate,
+    Variables,
+    Hooks,
+    Report
 
+  },
+
+  props: {
+    host: {
+      require: false
+    },
+    nodeId: {
+      require: false
+    },
+    project: {
+      require: false
+    },
+    config: {
+      require: false
+    },
+    response: {
+      require: false
+    },
+    isSaveAs: Boolean
+  },
+  methods: {
+    reverseStatus() {
+      this.save = !this.save
+      this.run = true
     },
 
-    props: {
-        host: {
-            require: false
-        },
-        nodeId: {
-            require: false
-        },
-        project: {
-            require: false
-        },
-        config: {
-            require: false
-        },
-        response: {
-            require: false
-        },
-        isSaveAs: Boolean
+    handleHeader(header) {
+      this.header = header
     },
-    methods: {
-        reverseStatus() {
-            this.save = !this.save;
-            this.run = true;
-        },
+    handleRequest(request) {
+      this.request = request
+    },
+    handleValidate(validate) {
+      this.validate = validate
+    },
+    handleExtract(extract) {
+      this.extract = extract
+    },
+    handleVariables(variables) {
+      this.variables = variables
+    },
 
-        handleHeader(header) {
-            this.header = header;
-        },
-        handleRequest(request) {
-            this.request = request;
-        },
-        handleValidate(validate) {
-            this.validate = validate;
-        },
-        handleExtract(extract) {
-            this.extract = extract;
-        },
-        handleVariables(variables) {
-            this.variables = variables;
-        },
-
-        // 计算标记的数值
-        handleBadgeValue(arr, countKey) {
-            let res = 0
-            for(const v of arr){
-                if(v[countKey]){
-                    res += 1
-                }
-            }
-            return res
-        },
-        // 计算hook数值
-        handleHooksBadge(hook){
-            let res = 0
-            for (const hookElement of hook) {
-                if(hookElement["setup"]){
-                    res +=1
-                }
-                if(hookElement["teardown"]){
-                    res += 1
-                }
-            }
-            return res
-        },
-        handleHooks(hooks) {
-            this.hooks = hooks;
-
-            if (!this.run) {
-                if (this.id === '') {
-                    this.addAPI();
-                } else {
-                    this.updateAPI();
-                }
-            } else {
-                this.runAPI();
-                this.run = false;
-            }
-        },
-        handleSaveAs() {
-            this.save = !this.save;
-            this.id = '';
-        },
-        validateData() {
-            if (this.url === '') {
-                this.$notify.error({
-                    title: 'url错误',
-                    message: '接口请求地址不能为空',
-                    duration: 1500
-                });
-                return false;
-            }
-
-            if (this.name === '') {
-                this.$notify.error({
-                    title: 'name错误',
-                    message: '接口名称不能为空',
-                    duration: 1500
-                });
-                return false;
-            }
-            return true
-        },
-        updateAPI() {
-            if (this.validateData()) {
-                this.$api.updateAPI(this.id, {
-                    header: this.header,
-                    request: this.request,
-                    extract: this.extract,
-                    validate: this.validate,
-                    variables: this.variables,
-                    hooks: this.hooks,
-                    url: this.url,
-                    method: this.method,
-                    name: this.name,
-                    times: this.times,
-                }).then(resp => {
-                    if (resp.success) {
-                        this.$emit('addSuccess');
-                    } else {
-                        this.$message.error({
-                            message: resp.msg,
-                            duration: this.$store.state.duration
-                        })
-                    }
-                })
-            }
-        },
-
-        runAPI() {
-            if (this.validateData()) {
-                this.loading = true;
-                this.$api.runSingleAPI({
-                    header: this.header,
-                    request: this.request,
-                    extract: this.extract,
-                    validate: this.validate,
-                    variables: this.variables,
-                    hooks: this.hooks,
-                    url: this.url,
-                    method: this.method,
-                    name: this.name,
-                    times: this.times,
-                    project: this.project,
-                    config: this.config.name,
-                    host: this.host
-                }).then(resp => {
-                    this.summary = resp;
-                    this.dialogTableVisible = true;
-                    this.loading = false;
-                }).catch(resp => {
-                    this.loading = false;
-                })
-            }
-        },
-
-        addAPI() {
-            if (this.validateData()) {
-
-                this.$api.addAPI({
-                    header: this.header,
-                    request: this.request,
-                    extract: this.extract,
-                    validate: this.validate,
-                    variables: this.variables,
-                    hooks: this.hooks,
-                    url: this.url,
-                    method: this.method,
-                    name: this.name,
-                    times: this.times,
-                    // 另存为时，使用response的值
-                    nodeId: this.response.relation || this.nodeId,
-                    project: this.response.project || this.project,
-                }).then(resp => {
-                    if (resp.success) {
-                        this.$emit('addSuccess');
-                    } else {
-                        this.$message.error({
-                            message: resp.msg,
-                            duration: this.$store.state.duration
-                        })
-                    }
-                })
-            }
+    // 计算标记的数值
+    handleBadgeValue(arr, countKey) {
+      let res = 0
+      for (const v of arr) {
+        if (v[countKey]) {
+          res += 1
         }
+      }
+      return res
+    },
+    // 计算hook数值
+    handleHooksBadge(hook) {
+      let res = 0
+      for (const hookElement of hook) {
+        if (hookElement['setup']) {
+          res += 1
+        }
+        if (hookElement['teardown']) {
+          res += 1
+        }
+      }
+      return res
+    },
+    handleHooks(hooks) {
+      this.hooks = hooks
+
+      if (!this.run) {
+        if (this.id === '') {
+          this.addAPI()
+        } else {
+          this.updateAPI()
+        }
+      } else {
+        this.runAPI()
+        this.run = false
+      }
+    },
+    handleSaveAs() {
+      this.save = !this.save
+      this.id = ''
+    },
+    validateData() {
+      if (this.url === '') {
+        this.$notify.error({
+          title: 'url错误',
+          message: '接口请求地址不能为空',
+          duration: 1500
+        })
+        return false
+      }
+
+      if (this.name === '') {
+        this.$notify.error({
+          title: 'name错误',
+          message: '接口名称不能为空',
+          duration: 1500
+        })
+        return false
+      }
+      return true
+    },
+    updateAPI() {
+      if (this.validateData()) {
+        this.$api.updateAPI(this.id, {
+          header: this.header,
+          request: this.request,
+          extract: this.extract,
+          validate: this.validate,
+          variables: this.variables,
+          hooks: this.hooks,
+          url: this.url,
+          method: this.method,
+          name: this.name,
+          times: this.times
+        }).then(resp => {
+          if (resp.success) {
+            this.$emit('addSuccess')
+          } else {
+            this.$message.error({
+              message: resp.msg,
+              duration: this.$store.state.duration
+            })
+          }
+        })
+      }
     },
 
-    watch: {
-        response: function () {
-            this.name = this.response.body.name;
-            this.method = this.response.body.method;
-            this.url = this.response.body.url;
-            this.times = this.response.body.times;
-            this.id = this.response.id;
-            this.creator = this.response.creator;
-        }
+    runAPI() {
+      if (this.validateData()) {
+        this.loading = true
+        this.$api.runSingleAPI({
+          header: this.header,
+          request: this.request,
+          extract: this.extract,
+          validate: this.validate,
+          variables: this.variables,
+          hooks: this.hooks,
+          url: this.url,
+          method: this.method,
+          name: this.name,
+          times: this.times,
+          project: this.project,
+          config: this.config.name,
+          host: this.host
+        }).then(resp => {
+          this.summary = resp
+          this.dialogTableVisible = true
+          this.loading = false
+        }).catch(resp => {
+          this.loading = false
+        })
+      }
     },
-    data() {
-        return {
-            isSuperuser: this.$store.state.is_superuser,
-            userName: this.$store.state.user,
-            loading: false,
-            times: 1,
-            name: '',
-            url: '',
-            id: '',
-            creator: '',
-            header: [],
-            request: [],
-            extract: [],
-            validate: [],
-            variables: [],
-            hooks: [],
-            method: 'GET',
-            dialogTableVisible: false,
-            save: false,
-            run: false,
-            summary: {},
-            activeTag: 'second',
-            httpOptions: [{
-                label: 'GET',
-            }, {
-                label: 'POST',
-            }, {
-                label: 'PUT',
-            }, {
-                label: 'DELETE',
-            }, {
-                label: 'HEAD',
-            }, {
-                label: 'OPTIONS',
-            }, {
-                label: 'PATCH',
-            }],
-        }
-    },
-    name: "ApiBody"
+
+    addAPI() {
+      if (this.validateData()) {
+        this.$api.addAPI({
+          header: this.header,
+          request: this.request,
+          extract: this.extract,
+          validate: this.validate,
+          variables: this.variables,
+          hooks: this.hooks,
+          url: this.url,
+          method: this.method,
+          name: this.name,
+          times: this.times,
+          // 另存为时，使用response的值
+          nodeId: this.response.relation || this.nodeId,
+          project: this.response.project || this.project
+        }).then(resp => {
+          if (resp.success) {
+            this.$emit('addSuccess')
+          } else {
+            this.$message.error({
+              message: resp.msg,
+              duration: this.$store.state.duration
+            })
+          }
+        })
+      }
+    }
+  },
+
+  watch: {
+    response: function() {
+      this.name = this.response.body.name
+      this.method = this.response.body.method
+      this.url = this.response.body.url
+      this.times = this.response.body.times
+      this.id = this.response.id
+      this.creator = this.response.creator
+    }
+  },
+  data() {
+    return {
+      isSuperuser: this.$store.state.is_superuser,
+      userName: this.$store.state.user,
+      loading: false,
+      times: 1,
+      name: '',
+      url: '',
+      id: '',
+      creator: '',
+      header: [],
+      request: [],
+      extract: [],
+      validate: [],
+      variables: [],
+      hooks: [],
+      method: 'GET',
+      dialogTableVisible: false,
+      save: false,
+      run: false,
+      summary: {},
+      activeTag: 'second',
+      httpOptions: [{
+        label: 'GET'
+      }, {
+        label: 'POST'
+      }, {
+        label: 'PUT'
+      }, {
+        label: 'DELETE'
+      }, {
+        label: 'HEAD'
+      }, {
+        label: 'OPTIONS'
+      }, {
+        label: 'PATCH'
+      }]
+    }
+  },
+  name: 'ApiBody'
 }
 </script>
 
@@ -441,6 +437,5 @@ export default {
     margin-top: 15px;
     border: 1px solid #ddd;
 }
-
 
 </style>

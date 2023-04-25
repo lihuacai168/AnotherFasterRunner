@@ -131,279 +131,278 @@
 <script>
 
 export default {
-    name: "ProjectDetail",
-    data() {
-        return {
+  name: 'ProjectDetail',
+  data() {
+    return {
 
-            visitInfo: {},
-            projectInfo: {},
-            apiPieOptions: {
-                plotOptions: {
-                    pie: {
-                        donut: {
-                            size: '50%',
-                            labels: {
-                                show: true,
-                                total: {
-                                    show: true,
-                                    showAlways: true,
-                                    label: 'Total',
-                                }
-                            },
-                        }
-                    }
-                },
+      visitInfo: {},
+      projectInfo: {},
+      apiPieOptions: {
+        plotOptions: {
+          pie: {
+            donut: {
+              size: '50%',
+              labels: {
                 show: true,
-                chart: {
-                    id: "apiPie",
-                    type: "donut",
-                },
-                // 饼图右上角的分类，会被接口返回值的覆盖
-                labels: ['手动创建的API', '从YAPI导入API',]
+                total: {
+                  show: true,
+                  showAlways: true,
+                  label: 'Total'
+                }
+              }
+            }
+          }
+        },
+        show: true,
+        chart: {
+          id: 'apiPie',
+          type: 'donut'
+        },
+        // 饼图右上角的分类，会被接口返回值的覆盖
+        labels: ['手动创建的API', '从YAPI导入API']
+      },
+      apiCoverRateSeries: [],
+      coreCaseCoverRateSeries: [],
+      apiCoverRateOptions: {
+        chart: {
+          height: 20,
+          type: 'radialBar'
+        },
+        plotOptions: {
+          radialBar: {
+            hollow: {
+              margin: 15,
+              size: '50%'
             },
-            apiCoverRateSeries: [],
-            coreCaseCoverRateSeries: [],
-            apiCoverRateOptions: {
-                chart: {
-                    height: 20,
-                    type: "radialBar"
-                },
-                plotOptions: {
-                    radialBar: {
-                        hollow: {
-                            margin: 15,
-                            size: "50%"
-                        },
-                        dataLabels: {
-                            showOn: "always",
-                            name: {
-                                offsetY: 0,
-                                show: true,
-                                color: "#888",
-                                fontSize: "13px"
-                            },
-                            value: {
-                                color: "#111",
-                                fontSize: "16px",
-                                show: true
-                            }
-                        }
-                    }
-                },
-                stroke: {
-                    lineCap: "round",
-                },
-                labels: ["接口覆盖率"]
-            },
-            coreCaseCoverRateOptions: {
-                chart: {
-                    height: 20,
-                    type: "radialBar"
-                },
-                plotOptions: {
-                    radialBar: {
-                        hollow: {
-                            margin: 15,
-                            size: "50%"
-                        },
-                        dataLabels: {
-                            showOn: "always",
-                            name: {
-                                offsetY: 0,
-                                show: true,
-                                color: "#888",
-                                fontSize: "13px"
-                            },
-                            value: {
-                                color: "#111",
-                                fontSize: "16px",
-                                show: true
-                            }
-                        }
-                    }
-                },
-                stroke: {
-                    lineCap: "round",
-                },
-                labels: ["核心用例覆盖率"]
-            },
-            casePieOptions: {
-                plotOptions: {
-                    pie: {
-                        donut: {
-                            size: '50%',
-                            labels: {
-                                show: true,
-                                total: {
-                                    show: true,
-                                    showAlways: true,
-                                    label: 'Total',
-                                }
-                            },
-                        }
-                    }
-                },
+            dataLabels: {
+              showOn: 'always',
+              name: {
+                offsetY: 0,
                 show: true,
-                chart: {
-                    id: "casePie",
-                    type: "donut",
-                },
-                // 饼图右上角的分类，会被接口返回值的覆盖
-                labels: ['冒烟用例', '集成用例', '监控脚本', '核心用例']
+                color: '#888',
+                fontSize: '13px'
+              },
+              value: {
+                color: '#111',
+                fontSize: '16px',
+                show: true
+              }
+            }
+          }
+        },
+        stroke: {
+          lineCap: 'round'
+        },
+        labels: ['接口覆盖率']
+      },
+      coreCaseCoverRateOptions: {
+        chart: {
+          height: 20,
+          type: 'radialBar'
+        },
+        plotOptions: {
+          radialBar: {
+            hollow: {
+              margin: 15,
+              size: '50%'
             },
-            reportPieOptions: {
-                plotOptions: {
-                    pie: {
-                        donut: {
-                            size: '50%',
-                            labels: {
-                                show: true,
-                                total: {
-                                    show: true,
-                                    showAlways: true,
-                                    label: 'Total',
-                                }
-                            },
-                        }
-                    }
-                },
+            dataLabels: {
+              showOn: 'always',
+              name: {
+                offsetY: 0,
                 show: true,
-                chart: {
-                    type: "donut",
-                },
-                // 饼图右上角的分类，会被接口返回值的覆盖
-                labels: ['调试', '异步', '定时', '部署',]
-            },
-            apiPieSeries: [],
-            casePieSeries: [],
-            reportPieSeries: [],
-            visitChartOptions: {
-                chart: {
-                    id: 'vuechart-example',
-                },
-                xaxis: {
-                    categories: []
+                color: '#888',
+                fontSize: '13px'
+              },
+              value: {
+                color: '#111',
+                fontSize: '16px',
+                show: true
+              }
+            }
+          }
+        },
+        stroke: {
+          lineCap: 'round'
+        },
+        labels: ['核心用例覆盖率']
+      },
+      casePieOptions: {
+        plotOptions: {
+          pie: {
+            donut: {
+              size: '50%',
+              labels: {
+                show: true,
+                total: {
+                  show: true,
+                  showAlways: true,
+                  label: 'Total'
                 }
-            },
-            apiAreaOptions: {
-                chart: {
-                    foreColor: "#aaa",
-                    id: 'apiArea',
-                },
-                xaxis: {
-                    categories: []
+              }
+            }
+          }
+        },
+        show: true,
+        chart: {
+          id: 'casePie',
+          type: 'donut'
+        },
+        // 饼图右上角的分类，会被接口返回值的覆盖
+        labels: ['冒烟用例', '集成用例', '监控脚本', '核心用例']
+      },
+      reportPieOptions: {
+        plotOptions: {
+          pie: {
+            donut: {
+              size: '50%',
+              labels: {
+                show: true,
+                total: {
+                  show: true,
+                  showAlways: true,
+                  label: 'Total'
                 }
-            },
-            caseAreaOptions: {
-                chart: {
-                    id: 'caseArea',
-                },
-                xaxis: {
-                    categories: []
-                }
-            },
-            reportAreaOptions: {
-                chart: {
-                    id: 'reportArea',
-                },
-                xaxis: {
-                    categories: []
-                }
-            },
-            visitSeries: [{
-                name: '访问量',
-                data: []
-            }],
-            apiAreaSeries: [{
-                name: 'API创建数量',
-                data: []
-            }],
-            caseAreaSeries: [{
-                name: 'Case创建数量',
-                data: []
-            }],
-            reportAreaSeries: [{
-                name: 'Report创建数量',
-                data: []
-            }],
+              }
+            }
+          }
+        },
+        show: true,
+        chart: {
+          type: 'donut'
+        },
+        // 饼图右上角的分类，会被接口返回值的覆盖
+        labels: ['调试', '异步', '定时', '部署']
+      },
+      apiPieSeries: [],
+      casePieSeries: [],
+      reportPieSeries: [],
+      visitChartOptions: {
+        chart: {
+          id: 'vuechart-example'
+        },
+        xaxis: {
+          categories: []
         }
-    },
-    methods: {
-        getVisitData() {
-            const project = this.$route.params.id;
-            this.$api.getVisit({
-                params: {
-                    project: project
-                }
-            }).then(res => {
-                this.visitChartOptions = {...this.visitChartOptions, ...{xaxis: {categories: res.recent7days}}}
-            })
+      },
+      apiAreaOptions: {
+        chart: {
+          foreColor: '#aaa',
+          id: 'apiArea'
         },
-        success(resp) {
-            this.$notify({
-                message: resp["msg"],
-                type: 'success',
-                duration: this.$store.state.duration
-            });
-        },
-        failure(resp) {
-            this.$notify.error({
-                message: resp.msg,
-                duration: this.$store.state.duration
-            });
-        },
-
-        handleArea() {
-            const res = this.projectInfo.daily_create_count
-            const apiDays = res.api.days
-            const caseDays = res.case.days
-            const reportDays = res.report.days
-            const apiCount = res.api.count
-            const caseCount = res.case.count
-            const reportCount = res.report.count
-            this.apiAreaOptions = {...this.apiAreaOptions, ...{xaxis: {categories: apiDays}}}
-            this.caseAreaOptions = {...this.caseAreaOptions, ...{xaxis: {categories: caseDays}}}
-            this.reportAreaOptions = {...this.reportAreaOptions, ...{xaxis: {categories: reportDays}}}
-            this.apiAreaSeries[0].data = apiCount
-            this.caseAreaSeries[0].data = caseCount
-            this.reportAreaSeries[0].data = reportCount
-
-            this.apiCoverRateSeries.push(this.projectInfo.api_cover_rate)
-            this.coreCaseCoverRateSeries.push(this.projectInfo.core_case_cover_rate)
-        },
-        handlePie() {
-            const pi = this.projectInfo
-            this.apiPieSeries = pi.api_count_by_create_type.count
-            this.apiPieOptions = {...this.apiPieOptions, ...{labels: pi.api_count_by_create_type.type}}
-
-            this.casePieSeries = pi.case_count_by_tag.count
-            this.casePieOptions = {...this.casePieOptions, ...{labels: pi.case_count_by_tag.tag}}
-
-            this.reportPieSeries = pi.report_count_by_type.count
-            this.reportPieOptions = {...this.reportPieOptions, ...{labels: pi.report_count_by_type.type}}
-        },
-        getProjectDetail() {
-            const pk = this.$route.params.id;
-            this.$api.getProjectDetail(pk).then(res => {
-                this.projectInfo = res
-                this.handleArea()
-                this.handlePie()
-            })
+        xaxis: {
+          categories: []
         }
-    },
-    mounted() {
-        this.getVisitData()
-        this.getProjectDetail();
-    },
-
-    beforeMount() {
+      },
+      caseAreaOptions: {
+        chart: {
+          id: 'caseArea'
+        },
+        xaxis: {
+          categories: []
+        }
+      },
+      reportAreaOptions: {
+        chart: {
+          id: 'reportArea'
+        },
+        xaxis: {
+          categories: []
+        }
+      },
+      visitSeries: [{
+        name: '访问量',
+        data: []
+      }],
+      apiAreaSeries: [{
+        name: 'API创建数量',
+        data: []
+      }],
+      caseAreaSeries: [{
+        name: 'Case创建数量',
+        data: []
+      }],
+      reportAreaSeries: [{
+        name: 'Report创建数量',
+        data: []
+      }]
     }
+  },
+  methods: {
+    getVisitData() {
+      const project = this.$route.params.id
+      this.$api.getVisit({
+        params: {
+          project: project
+        }
+      }).then(res => {
+        this.visitChartOptions = {...this.visitChartOptions, ...{xaxis: {categories: res.recent7days}}}
+      })
+    },
+    success(resp) {
+      this.$notify({
+        message: resp['msg'],
+        type: 'success',
+        duration: this.$store.state.duration
+      })
+    },
+    failure(resp) {
+      this.$notify.error({
+        message: resp.msg,
+        duration: this.$store.state.duration
+      })
+    },
+
+    handleArea() {
+      const res = this.projectInfo.daily_create_count
+      const apiDays = res.api.days
+      const caseDays = res.case.days
+      const reportDays = res.report.days
+      const apiCount = res.api.count
+      const caseCount = res.case.count
+      const reportCount = res.report.count
+      this.apiAreaOptions = {...this.apiAreaOptions, ...{xaxis: {categories: apiDays}}}
+      this.caseAreaOptions = {...this.caseAreaOptions, ...{xaxis: {categories: caseDays}}}
+      this.reportAreaOptions = {...this.reportAreaOptions, ...{xaxis: {categories: reportDays}}}
+      this.apiAreaSeries[0].data = apiCount
+      this.caseAreaSeries[0].data = caseCount
+      this.reportAreaSeries[0].data = reportCount
+
+      this.apiCoverRateSeries.push(this.projectInfo.api_cover_rate)
+      this.coreCaseCoverRateSeries.push(this.projectInfo.core_case_cover_rate)
+    },
+    handlePie() {
+      const pi = this.projectInfo
+      this.apiPieSeries = pi.api_count_by_create_type.count
+      this.apiPieOptions = {...this.apiPieOptions, ...{labels: pi.api_count_by_create_type.type}}
+
+      this.casePieSeries = pi.case_count_by_tag.count
+      this.casePieOptions = {...this.casePieOptions, ...{labels: pi.case_count_by_tag.tag}}
+
+      this.reportPieSeries = pi.report_count_by_type.count
+      this.reportPieOptions = {...this.reportPieOptions, ...{labels: pi.report_count_by_type.type}}
+    },
+    getProjectDetail() {
+      const pk = this.$route.params.id
+      this.$api.getProjectDetail(pk).then(res => {
+        this.projectInfo = res
+        this.handleArea()
+        this.handlePie()
+      })
+    }
+  },
+  mounted() {
+    this.getVisitData()
+    this.getProjectDetail()
+  },
+
+  beforeMount() {
+  }
 
 }
 </script>
 
 <style scoped>
-
 
 .desc-p {
     padding-top: 10px;

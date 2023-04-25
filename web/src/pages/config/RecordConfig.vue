@@ -78,91 +78,90 @@ import ConfigBody from './components/ConfigBody'
 import ConfigList from './components/ConfigList'
 
 export default {
-    components: {
-        ConfigBody,
-        ConfigList
-    },
+  components: {
+    ConfigBody,
+    ConfigList
+  },
 
-    computed: {
-        initResponse: {
-            get() {
-                return this.addConfigActivate;
+  computed: {
+    initResponse: {
+      get() {
+        return this.addConfigActivate
+      },
+      set(value) {
+        this.addConfigActivate = value
+        this.respConfig = {
+          id: '',
+          body: {
+            name: '',
+            base_url: '',
+            header: [{
+              key: '',
+              value: '',
+              desc: ''
+            }],
+            request: {
+              data: [{
+                key: '',
+                value: '',
+                desc: '',
+                type: 1
+              }],
+              params: [{
+                key: '',
+                value: '',
+                desc: '',
+                type: 1
+              }],
+              json_data: ''
             },
-            set(value) {
-                this.addConfigActivate = value;
-                this.respConfig = {
-                    id: '',
-                    body: {
-                        name: '',
-                        base_url: '',
-                        header: [{
-                            key: "",
-                            value: "",
-                            desc: ""
-                        }],
-                        request: {
-                            data: [{
-                                key: "",
-                                value: "",
-                                desc: "",
-                                type: 1
-                            }],
-                            params: [{
-                                key: "",
-                                value: "",
-                                desc: "",
-                                type: 1
-                            }],
-                            json_data: ''
-                        },
-                        variables: [{
-                            key: "",
-                            value: "",
-                            desc: "",
-                            type: 1
-                        }],
-                        hooks: [{
-                            setup: "",
-                            teardown: ""
-                        }],
-                        parameters: [{
-                            key: "",
-                            value: "",
-                            desc: "",
-                        }],
+            variables: [{
+              key: '',
+              value: '',
+              desc: '',
+              type: 1
+            }],
+            hooks: [{
+              setup: '',
+              teardown: ''
+            }],
+            parameters: [{
+              key: '',
+              value: '',
+              desc: ''
+            }]
 
-                    }
-                };
-            }
-        },
-    },
-    data() {
-        return {
-            back: false,
-            del: false,
-            addConfigActivate: false,
-            respConfig: ''
+          }
         }
-    },
-    methods: {
-        handleAddSuccess() {
-            this.back = !this.back;
-            this.addConfigActivate = false;
-        },
-
-        handleRespConfig(row) {
-            this.respConfig = row;
-            this.addConfigActivate = true;
-        }
-    },
-    name: "RecordConfig",
-    mounted() {
-
+      }
     }
+  },
+  data() {
+    return {
+      back: false,
+      del: false,
+      addConfigActivate: false,
+      respConfig: ''
+    }
+  },
+  methods: {
+    handleAddSuccess() {
+      this.back = !this.back
+      this.addConfigActivate = false
+    },
+
+    handleRespConfig(row) {
+      this.respConfig = row
+      this.addConfigActivate = true
+    }
+  },
+  name: 'RecordConfig',
+  mounted() {
+
+  }
 }
 </script>
 
 <style>
-
 
 </style>

@@ -54,7 +54,7 @@
                             v-show="tasksData.count !== 0 "
                             background
                             @current-change="handleCurrentChange"
-                            :current-page.sync="currentPage"
+                            v-model:current-page="currentPage"
                             layout="total, prev, pager, next, jumper"
                             :total="tasksData.count"
                         >
@@ -79,7 +79,7 @@
                             label="任务ID"
                             width="80"
                         >
-                            <template slot-scope="scope">
+                            <template v-slot="scope">
                                 <div>{{ scope.row.id }}</div>
                             </template>
                         </el-table-column>
@@ -88,17 +88,16 @@
                             label="任务名称"
                             width="240"
                         >
-                            <template slot-scope="scope">
+                            <template v-slot="scope">
                                 <div>{{ scope.row.name }}</div>
                             </template>
                         </el-table-column>
-
 
                         <el-table-column
                             width="120"
                             label="时间配置"
                         >
-                            <template slot-scope="scope">
+                            <template v-slot="scope">
                                 <div>{{ scope.row.kwargs.crontab }}</div>
                             </template>
                         </el-table-column>
@@ -107,7 +106,7 @@
                             width="170"
                             label="下次执行时间"
                         >
-                            <template slot-scope="scope">
+                            <template v-slot="scope">
                                 <div>
                                     {{
                                         scope.row.kwargs.next_execute_time ? scope.row.kwargs.next_execute_time : '' | timestampToTime
@@ -120,7 +119,7 @@
                             width="70"
                             label="CI项目"
                         >
-                            <template slot-scope="scope">
+                            <template v-slot="scope">
                                 <div>
                                     {{
                                         scope.row.kwargs.ci_project_ids
@@ -133,7 +132,7 @@
                             width="70"
                             label="CI环境"
                         >
-                            <template slot-scope="scope">
+                            <template v-slot="scope">
                                 <div>
                                     {{
                                         scope.row.kwargs.ci_env === '请选择' ? "" : scope.row.kwargs.ci_env
@@ -147,7 +146,7 @@
                             label="运行配置"
                         >
 
-                            <template slot-scope="scope">
+                            <template v-slot="scope">
                                 <div>
                                     {{
                                         scope.row.kwargs.config === '请选择' ? "用例配置" : scope.row.kwargs.config
@@ -160,7 +159,7 @@
                             width="100"
                             label="通知策略"
                         >
-                            <template slot-scope="scope">
+                            <template v-slot="scope">
                                 <div>{{ scope.row.kwargs.strategy }}</div>
 
                             </template>
@@ -169,18 +168,17 @@
                             width="70"
                             label="已运行"
                         >
-                            <template slot-scope="scope">
+                            <template v-slot="scope">
                                 <div>{{ scope.row.total_run_count }} 次</div>
 
                             </template>
                         </el-table-column>
 
-
                         <el-table-column
                             width="80"
                             label="状态"
                         >
-                            <template slot-scope="scope">
+                            <template v-slot="scope">
                                 <el-switch
                                     v-model="scope.row.enabled"
                                     active-color="#13ce66"
@@ -209,7 +207,7 @@
                             width="80"
                             label="更新人"
                         >
-                            <template slot-scope="scope">
+                            <template v-slot="scope">
                                 <div>{{ scope.row.kwargs.updater }}</div>
                             </template>
                         </el-table-column>
@@ -217,7 +215,7 @@
                             width="80"
                             label="创建人"
                         >
-                            <template slot-scope="scope">
+                            <template v-slot="scope">
                                 <div>{{ scope.row.kwargs.creator }}</div>
                             </template>
                         </el-table-column>
@@ -225,7 +223,7 @@
                         <el-table-column
                             width="200"
                         >
-                            <template slot-scope="scope">
+                            <template v-slot="scope">
                                 <el-row v-show="currentRow === scope.row">
                                     <el-button
                                         type="info"
@@ -284,243 +282,242 @@
 import AddTasks from './AddTasks'
 
 export default {
-    components: {
-        AddTasks
+  components: {
+    AddTasks
+  },
+  data() {
+    return {
+      addTasks: false,
+      currentPage: 1,
+      currentRow: '',
+      tasksData: {
+        count: 0,
+        results: []
+      },
+      ruleForm: {
+        switch: true,
+        crontab: '',
+        ci_project_ids: '',
+        strategy: '始终发送',
+        receiver: '',
+        mail_cc: '',
+        name: '',
+        sensitive_keys: '',
+        self_error: '',
+        fail_count: 1,
+        webhook: '',
+        config: '请选择',
+        ci_env: '请选择',
+        is_parallel: false
+      },
+      users: [],
+      selectUser: '',
+      searchTaskName: '',
+      configOptions: [],
+      CIEnvOptions: ['请选择', 'dev', 'qa', 'qa1', 'uat', 'prod']
+    }
+  },
+  methods: {
+    handleAddTask() {
+      this.addTasks = true
+      this.scheduleId = ''
+      this.ruleForm = {
+        switch: true,
+        crontab: '',
+        strategy: '始终发送',
+        receiver: '',
+        mail_cc: '',
+        name: '',
+        sensitive_keys: '',
+        self_error: '',
+        fail_count: 1,
+        webhook: '',
+        ci_project_ids: '',
+        config: '请选择',
+        ci_env: '请选择',
+        is_parallel: false
+      }
+      this.args = []
+      this.initConfig()
     },
-    data() {
-        return {
-            addTasks: false,
-            currentPage: 1,
-            currentRow: '',
-            tasksData: {
-                count: 0,
-                results: []
-            },
-            ruleForm: {
-                switch: true,
-                crontab: '',
-                ci_project_ids: '',
-                strategy: '始终发送',
-                receiver: '',
-                mail_cc: '',
-                name: '',
-                sensitive_keys: '',
-                self_error: '',
-                fail_count: 1,
-                webhook: '',
-                config: '请选择',
-                ci_env: '请选择',
-                is_parallel: false,
-            },
-            users: [],
-            selectUser: '',
-            searchTaskName: '',
-            configOptions: [],
-            CIEnvOptions: ['请选择', 'dev', 'qa', 'qa1', 'uat', 'prod'],
+    delTasks(id) {
+      this.$confirm('此操作将永久删除该定时任务，是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.$api.deleteTasks(id).then(resp => {
+          if (resp.success) {
+            this.getTaskList()
+          }
+        })
+      })
+    },
+    runTask(id) {
+      this.$api.runTask(id).then(resp => {
+        if (resp.success) {
+          this.$message.info({
+            title: '提示',
+            message: resp.msg,
+            duration: 2000,
+            center: true
+          })
+        } else {
+          this.$message.error({
+            message: resp.msg,
+            duration: 2000,
+            center: true
+          })
         }
+      })
     },
-    methods: {
-        handleAddTask() {
-            this.addTasks = true;
-            this.scheduleId = '';
-            this.ruleForm = {
-                switch: true,
-                crontab: '',
-                strategy: '始终发送',
-                receiver: '',
-                mail_cc: '',
-                name: '',
-                sensitive_keys: '',
-                self_error: '',
-                fail_count: 1,
-                webhook: '',
-                ci_project_ids: '',
-                config: "请选择",
-                ci_env: "请选择",
-                is_parallel: false,
-            };
-            this.args = [];
-            this.initConfig()
-        },
-        delTasks(id) {
-            this.$confirm('此操作将永久删除该定时任务，是否继续?', '提示', {
-                confirmButtonText: '确定',
-                cancelButtonText: '取消',
-                type: 'warning',
-            }).then(() => {
-                this.$api.deleteTasks(id).then(resp => {
-                    if (resp.success) {
-                        this.getTaskList();
-                    }
-                })
-            })
-        },
-        runTask(id) {
-            this.$api.runTask(id).then(resp => {
-                if (resp.success) {
-                    this.$message.info({
-                        title: '提示',
-                        message: resp.msg,
-                        duration: 2000,
-                        center: true
-                    })
-                } else {
-                    this.$message.error({
-                        message: resp.msg,
-                        duration: 2000,
-                        center: true
-                    })
-                }
-            })
-        },
-        handleCurrentChange(val) {
-            this.$api.getTaskPaginationBypage({
-                params: {
-                    page: this.currentPage,
-                    creator: this.selectUser,
-                    project: this.$route.params.id
-                }
-            }).then(resp => {
-                this.tasksData = resp;
-            })
-        },
-        handleSwitchChange(id, val) {
-            this.$api.patchTask(id, {'switch': val}).then(resp => {
-                if (resp.success) {
-                    this.$notify.success('更新定时任务成功');
-                } else {
-                    this.$notify.success('更新定时任务失败');
-                }
-                this.getTaskList()
-            })
-        },
-        handleEditSchedule(id, index_data) {
-            // debugger;
-            // 激活addTasks组件
-            this.addTasks = true;
-            this.scheduleId = id;
-            this.ruleForm["crontab"] = index_data.kwargs.crontab;
-            this.ruleForm["strategy"] = index_data.kwargs.strategy;
-            this.ruleForm["receiver"] = index_data.kwargs.receiver;
-            this.ruleForm["mail_cc"] = index_data.kwargs.mail_cc;
-            this.ruleForm["fail_count"] = index_data.kwargs.fail_count;
-            this.ruleForm["self_error"] = index_data.kwargs.self_error;
-            this.ruleForm["sensitive_keys"] = index_data.kwargs.sensitive_keys;
-            this.ruleForm["webhook"] = index_data.kwargs.webhook;
-            this.ruleForm["ci_project_ids"] = index_data.kwargs.ci_project_ids;
-            this.ruleForm["name"] = index_data.name;
-            this.ruleForm["switch"] = index_data.enabled;
-            this.ruleForm["updater"] = this.$store.state.user;
-            this.ruleForm["creator"] = index_data.kwargs.creator;
-            this.args = index_data.args;
-            this.ruleForm["config"] = index_data.kwargs.config
-            this.ruleForm["ci_env"] = index_data.kwargs.ci_env
-            this.ruleForm["is_parallel"] = index_data.kwargs.is_parallel
-            this.initConfig()
-        },
-        /*
+    handleCurrentChange(val) {
+      this.$api.getTaskPaginationBypage({
+        params: {
+          page: this.currentPage,
+          creator: this.selectUser,
+          project: this.$route.params.id
+        }
+      }).then(resp => {
+        this.tasksData = resp
+      })
+    },
+    handleSwitchChange(id, val) {
+      this.$api.patchTask(id, {'switch': val}).then(resp => {
+        if (resp.success) {
+          this.$notify.success('更新定时任务成功')
+        } else {
+          this.$notify.success('更新定时任务失败')
+        }
+        this.getTaskList()
+      })
+    },
+    handleEditSchedule(id, index_data) {
+      // debugger;
+      // 激活addTasks组件
+      this.addTasks = true
+      this.scheduleId = id
+      this.ruleForm['crontab'] = index_data.kwargs.crontab
+      this.ruleForm['strategy'] = index_data.kwargs.strategy
+      this.ruleForm['receiver'] = index_data.kwargs.receiver
+      this.ruleForm['mail_cc'] = index_data.kwargs.mail_cc
+      this.ruleForm['fail_count'] = index_data.kwargs.fail_count
+      this.ruleForm['self_error'] = index_data.kwargs.self_error
+      this.ruleForm['sensitive_keys'] = index_data.kwargs.sensitive_keys
+      this.ruleForm['webhook'] = index_data.kwargs.webhook
+      this.ruleForm['ci_project_ids'] = index_data.kwargs.ci_project_ids
+      this.ruleForm['name'] = index_data.name
+      this.ruleForm['switch'] = index_data.enabled
+      this.ruleForm['updater'] = this.$store.state.user
+      this.ruleForm['creator'] = index_data.kwargs.creator
+      this.args = index_data.args
+      this.ruleForm['config'] = index_data.kwargs.config
+      this.ruleForm['ci_env'] = index_data.kwargs.ci_env
+      this.ruleForm['is_parallel'] = index_data.kwargs.is_parallel
+      this.initConfig()
+    },
+    /*
         复制定时任务
          */
-        handleCopyTask(id, name) {
-            this.$prompt('请输入任务名称', '提示', {
-                confirmButtonText: '确定',
-                inputPattern: /^[\s\S]*.*[^\s][\s\S]*$/,
-                inputErrorMessage: '任务名称不能为空',
-                inputValue: name
-            }).then(({value}) => {
-                this.$api.copyTask(id, {
-                    'name': value
-                }).then(resp => {
-                    if (resp.success) {
-                        this.getTaskList();
-                    } else {
-                        this.$message.error(resp.msg);
-                    }
-                })
-            })
-        },
-        // changeStatus(value) {
-        //     this.getTaskList();
-        //     this.addTasks = value;
-        // },
-        changeStatus(value) {
-            this.getTaskList();
-            this.addTasks = value;
-            this.args = [];
-            this.ruleForm = {
-                switch: true,
-                crontab: '',
-                strategy: '始终发送',
-                receiver: '',
-                mail_cc: '',
-                name: '',
-                self_error: '',
-                fail_count: '',
-                sensitive_keys: '',
-                webhook: '',
-                ci_project_ids: '',
-                config: '请选择',
-                ci_env: '请选择',
-                is_parallel: false,
-            }
-        },
-        getTaskList() {
-            this.$api.taskList({
-                params: {
-                    project: this.$route.params.id,
-                    creator: this.selectUser,
-                    task_name: this.searchTaskName
-                }
-            }).then(resp => {
-                this.tasksData = resp
-            })
-        },
-        cellMouseEnter(row) {
-            this.currentRow = row;
-        },
-
-        cellMouseLeave(row) {
-            this.currentRow = '';
-        },
-        getUserList() {
-            this.$api.getUserList().then(resp => {
-                    for (let i = 0; i < resp.length; i++) {
-                        this.users.push({"label": resp[i].username, "value": resp[i].username})
-                    }
-                    this.users.unshift({"label": "所有人", "value": ""})
-                }
-            )
-        },
-        resetSearch() {
-            this.searchTaskName = ""
-            this.selectUser = ""
-        },
-
-        initConfig() {
-            this.$api.getAllConfig(this.$route.params.id).then(resp => {
-                this.configOptions = resp;
-                this.configOptions.unshift({name: '请选择'})
-            });
-        },
-    },
-    name: "Tasks",
-    watch: {
-        selectUser() {
+    handleCopyTask(id, name) {
+      this.$prompt('请输入任务名称', '提示', {
+        confirmButtonText: '确定',
+        inputPattern: /^[\s\S]*.*[^\s][\s\S]*$/,
+        inputErrorMessage: '任务名称不能为空',
+        inputValue: name
+      }).then(({value}) => {
+        this.$api.copyTask(id, {
+          'name': value
+        }).then(resp => {
+          if (resp.success) {
             this.getTaskList()
-        },
-        searchTaskName() {
-            this.getTaskList()
-        },
+          } else {
+            this.$message.error(resp.msg)
+          }
+        })
+      })
     },
-    mounted() {
-        // this.initConfig()
-        this.getUserList()
-        this.getTaskList();
+    // changeStatus(value) {
+    //     this.getTaskList();
+    //     this.addTasks = value;
+    // },
+    changeStatus(value) {
+      this.getTaskList()
+      this.addTasks = value
+      this.args = []
+      this.ruleForm = {
+        switch: true,
+        crontab: '',
+        strategy: '始终发送',
+        receiver: '',
+        mail_cc: '',
+        name: '',
+        self_error: '',
+        fail_count: '',
+        sensitive_keys: '',
+        webhook: '',
+        ci_project_ids: '',
+        config: '请选择',
+        ci_env: '请选择',
+        is_parallel: false
+      }
+    },
+    getTaskList() {
+      this.$api.taskList({
+        params: {
+          project: this.$route.params.id,
+          creator: this.selectUser,
+          task_name: this.searchTaskName
+        }
+      }).then(resp => {
+        this.tasksData = resp
+      })
+    },
+    cellMouseEnter(row) {
+      this.currentRow = row
+    },
+
+    cellMouseLeave(row) {
+      this.currentRow = ''
+    },
+    getUserList() {
+      this.$api.getUserList().then(resp => {
+        for (let i = 0; i < resp.length; i++) {
+          this.users.push({'label': resp[i].username, 'value': resp[i].username})
+        }
+        this.users.unshift({'label': '所有人', 'value': ''})
+      }
+      )
+    },
+    resetSearch() {
+      this.searchTaskName = ''
+      this.selectUser = ''
+    },
+
+    initConfig() {
+      this.$api.getAllConfig(this.$route.params.id).then(resp => {
+        this.configOptions = resp
+        this.configOptions.unshift({name: '请选择'})
+      })
     }
+  },
+  name: 'Tasks',
+  watch: {
+    selectUser() {
+      this.getTaskList()
+    },
+    searchTaskName() {
+      this.getTaskList()
+    }
+  },
+  mounted() {
+    // this.initConfig()
+    this.getUserList()
+    this.getTaskList()
+  }
 }
 </script>
 
 <style>
-
 
 </style>

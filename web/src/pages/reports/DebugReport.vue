@@ -10,49 +10,49 @@
             :cell-style="{textAlign:'center'}"
         >
             <el-table-column label="测试时间" width="160">
-                <template slot-scope="scope">
+                <template v-slot="scope">
                     <span>{{ scope.row.time.start_at|timestampToTime }}</span>
                 </template>
             </el-table-column>
 
             <el-table-column label="持续时间" width="100">
-                <template slot-scope="scope">
+                <template v-slot="scope">
                     <span v-text="scope.row.time.duration.toFixed(3)+' 秒'"></span>
                 </template>
             </el-table-column>
 
             <el-table-column label="Total" width="100">
-                <template slot-scope="scope">
+                <template v-slot="scope">
                     <el-tag>{{ scope.row.stat.testsRun }}</el-tag>
                 </template>
             </el-table-column>
 
             <el-table-column label="Success" width="100">
-                <template slot-scope="scope">
+                <template v-slot="scope">
                     <el-tag type="success">{{ scope.row.stat.successes }}</el-tag>
                 </template>
             </el-table-column>
 
             <el-table-column label="Failed" width="100">
-                <template slot-scope="scope">
+                <template v-slot="scope">
                     <el-tag type="danger">{{ scope.row.stat.failures }}</el-tag>
                 </template>
             </el-table-column>
 
             <el-table-column label="Error" width="100">
-                <template slot-scope="scope">
+                <template v-slot="scope">
                     <el-tag type="warning">{{ scope.row.stat.errors }}</el-tag>
                 </template>
             </el-table-column>
 
             <el-table-column label="Skipped" width="100">
-                <template slot-scope="scope">
+                <template v-slot="scope">
                     <el-tag type="info">{{ scope.row.stat.skipped }}</el-tag>
                 </template>
             </el-table-column>
 
             <el-table-column label="Platform">
-                <template slot-scope="scope">
+                <template v-slot="scope">
                     <el-popover trigger="hover" placement="top">
                         <p>HttpRunner: {{ scope.row.platform.httprunner_version }}</p>
                         <p>Python: {{ scope.row.platform.python_version }}</p>
@@ -85,7 +85,7 @@
                 :cell-style="{textAlign:'center'}"
             >
                 <el-table-column type="expand">
-                    <template slot-scope="props">
+                    <template v-slot="props">
                         <el-tabs @tab-click="handleClick">
                             <el-tab-pane label="Request">
                                 <pre class="code-block" v-html="handleRequest(props.row.meta_data.request)"></pre>
@@ -153,19 +153,19 @@
                 </el-table-column>
 
                 <el-table-column label="名 称">
-                    <template slot-scope="scope">
+                    <template v-slot="scope">
                         <span>{{ scope.row.name }}</span>
                     </template>
                 </el-table-column>
 
                 <el-table-column label="请求地址">
-                    <template slot-scope="scope">
+                    <template v-slot="scope">
                         <span>{{ scope.row.meta_data.request.url }}</span>
                     </template>
                 </el-table-column>
 
                 <el-table-column label="请求方法" width="100px">
-                    <template slot-scope="scope">
+                    <template v-slot="scope">
             <span
                 :class="scope.row.meta_data.request.method"
             >{{ scope.row.meta_data.request.method }}</span>
@@ -173,20 +173,20 @@
                 </el-table-column>
 
                 <el-table-column label="响应时间 (ms)" width="130px">
-                    <template slot-scope="scope">
+                    <template v-slot="scope">
                         <span>{{ scope.row.meta_data.response.elapsed_ms }}</span>
                     </template>
                 </el-table-column>
 
                 <el-table-column label="测试结果" width="100px">
-                    <template slot-scope="scope">
+                    <template v-slot="scope">
                         <div :class="scope.row.status">{{ scope.row.status }}</div>
                     </template>
                 </el-table-column>
 
                 <el-table-column label="Convert" width="200px">
 
-                    <template slot-scope="scope">
+                    <template v-slot="scope">
 <!--                        <el-popover placement="right-start" width="400" trigger="hover">-->
 <!--                            <pre class="code-block">{{ scope.row.meta_data.boomer }}</pre>-->
 <!--                            <el-button slot="reference" round type="text"-->
@@ -211,170 +211,169 @@
 <script>
 
 export default {
-    name: "DebugReport",
-    props: {
-        summary: {
-            require: true,
+  name: 'DebugReport',
+  props: {
+    summary: {
+      require: true
+    }
+  },
+  data() {
+    const self = this
+    return {
+      jsonPathOrValue: '',
+      expandedRows: [],
+      options: {
+        onModeChange(newMode, oldMode) {
+          if (newMode === 'view') {
+            self.$refs.jsonEditor[0].editor.expandAll()
+          }
         },
+        onEvent: function(node, event) {
+          if (event.type === 'click') {
+            const value = node.value
+            // 当前点击的位置有value，复制value
+            if (value) {
+              self.jsonPathOrValue = value
+              self.copyData('复制json value成功')
+            } else {
+              // 当前点击的位置是key，复制key的jsonpath
+              const arr = node.path
+              arr.unshift('content')
+              self.jsonPathOrValue = arr.join('.')
+              self.copyData('复制jsonpath成功')
+            }
+          }
+        },
+        mode: 'view',
+        modes: ['view', 'code'] // allowed modes
+      }
+    }
+  },
+  computed: {
+    height() {
+      return (window.screen.height - 464).toString() + 'px'
+    }
+  },
+  methods: {
+    checkValueFormatter(row, column) {
+      return this.valueFormatter(row.check_value)
     },
-    data() {
-        let self = this
-        return {
-            jsonPathOrValue: "",
-            expandedRows: [],
-            options: {
-                onModeChange(newMode, oldMode) {
-                    if (newMode === 'view') {
-                        self.$refs.jsonEditor[0].editor.expandAll()
-                    }
-                },
-                onEvent: function (node, event) {
-                    if (event.type === 'click') {
-                        let value = node.value
-                        // 当前点击的位置有value，复制value
-                        if (value) {
-                            self.jsonPathOrValue = value
-                            self.copyData('复制json value成功')
-                        } else {
-                            // 当前点击的位置是key，复制key的jsonpath
-                            let arr = node.path
-                            arr.unshift("content")
-                            self.jsonPathOrValue = arr.join(".")
-                            self.copyData('复制jsonpath成功')
-                        }
-                    }
-                },
-                mode: 'view',
-                modes: ['view', 'code'], // allowed modes
-            },
+    expectValueFormatter(row, column) {
+      return this.valueFormatter(row.expect)
+    },
+    descValueFormatter(row, column) {
+      return this.valueFormatter(row.desc)
+    },
+    valueFormatter(value) {
+      let parsedValue = ''
+      switch (typeof value) {
+        case 'object':
+          parsedValue = JSON.stringify(value)
+          break
+        case 'boolean':
+          if (value === true) {
+            parsedValue = 'True'
+          } else {
+            parsedValue = 'False'
+          }
+          break
+        default:
+          parsedValue = value
+      }
+      return parsedValue
+    },
+    expandChange(row, expandedRow) {
+      this.expandedRows = expandedRow.length
+    },
+    tableRowClassName({row, rowIndex}) {
+      row.row_index = rowIndex
+    },
+    handleClick(tab, event) {
+      // TODO 修复产生2个editor
+      if (tab.label === 'Content') {
+        for (let i = 0; i < this.expandedRows; i++) {
+          debugger
+          console.log(i)
+          this.$refs.jsonEditor[i * 2].editor.expandAll()
         }
+      }
     },
-    computed: {
-        height() {
-            return (window.screen.height - 464).toString() + "px"
-        }
+    copyDataText(text, title) {
+      this.$copyText(text).then(e => {
+        this.$notify.success({
+          title: 'copy ' + title,
+          message: text,
+          duration: 2000
+        })
+      }, function(e) {
+        this.$notify.error({
+          title: '复制' + title + '失败',
+          message: e,
+          duration: 2000
+        })
+      })
     },
-    methods: {
-        checkValueFormatter(row, column) {
-            return this.valueFormatter(row.check_value)
-        },
-        expectValueFormatter(row, column) {
-            return this.valueFormatter(row.expect)
-        },
-        descValueFormatter(row, column) {
-            return this.valueFormatter(row.desc)
-        },
-        valueFormatter(value) {
-            let parsedValue = ""
-            switch (typeof value) {
-                case "object":
-                    parsedValue = JSON.stringify(value)
-                    break
-                case "boolean":
-                    if (value === true) {
-                        parsedValue = "True"
-                    } else {
-                        parsedValue = "False"
-                    }
-                    break
-                default:
-                    parsedValue = value
-            }
-            return parsedValue
-        },
-        expandChange(row, expandedRow) {
-            this.expandedRows = expandedRow.length
-        },
-        tableRowClassName({row, rowIndex}) {
-            row.row_index = rowIndex
-        },
-        handleClick(tab, event) {
-            // TODO 修复产生2个editor
-            if (tab.label === "Content") {
-                for (let i = 0; i < this.expandedRows; i++) {
-                    debugger
-                    console.log(i)
-                    this.$refs.jsonEditor[i * 2].editor.expandAll()
-                }
-            }
-        },
-        copyDataText(text, title) {
-            this.$copyText(text).then(e => {
-                this.$notify.success({
-                    title: 'copy ' + title,
-                    message: text,
-                    duration: 2000
-                });
-            }, function (e) {
-                this.$notify.error({
-                    title: '复制' + title + '失败',
-                    message: e,
-                    duration: 2000
-                });
-            })
-        },
-        copyData(title) {
-            this.$copyText(this.jsonPathOrValue).then(e => {
-                this.$notify.success({
-                    title: title,
-                    message: this.jsonPathOrValue,
-                    duration: 2000
-                });
-            }, function (e) {
-                this.$notify.error({
-                    title: '复制提取路径错误',
-                    message: e,
-                    duration: 2000
-                });
-            })
-        },
-
-
-        onError() {
-            console.log('error')
-        },
-        handleRequest(request) {
-            const keys = ["start_timestamp"];
-
-            keys.forEach(function (item) {
-                delete request[item];
-            });
-            try {
-                request["body"] = JSON.parse(request["body"]);
-            } catch (e) {
-            }
-
-            return request;
-        },
-
-        handleContent(content) {
-            try {
-                content = JSON.parse(content);
-            } catch (e) {
-            }
-            return content;
-        },
-
-        handleResponse(response) {
-            const keys = [
-                "response_time_ms",
-                "encoding",
-                "ok",
-                "reason",
-                "url",
-                "text",
-                "json",
-                "content_size",
-                "content_type",
-            ];
-
-            keys.forEach(function (item) {
-                delete response[item];
-            });
-            return response;
-        },
+    copyData(title) {
+      this.$copyText(this.jsonPathOrValue).then(e => {
+        this.$notify.success({
+          title: title,
+          message: this.jsonPathOrValue,
+          duration: 2000
+        })
+      }, function(e) {
+        this.$notify.error({
+          title: '复制提取路径错误',
+          message: e,
+          duration: 2000
+        })
+      })
     },
-};
+
+    onError() {
+      console.log('error')
+    },
+    handleRequest(request) {
+      const keys = ['start_timestamp']
+
+      keys.forEach(function(item) {
+        delete request[item]
+      })
+      try {
+        request['body'] = JSON.parse(request['body'])
+      } catch (e) {
+      }
+
+      return request
+    },
+
+    handleContent(content) {
+      try {
+        content = JSON.parse(content)
+      } catch (e) {
+      }
+      return content
+    },
+
+    handleResponse(response) {
+      const keys = [
+        'response_time_ms',
+        'encoding',
+        'ok',
+        'reason',
+        'url',
+        'text',
+        'json',
+        'content_size',
+        'content_type'
+      ]
+
+      keys.forEach(function(item) {
+        delete response[item]
+      })
+      return response
+    }
+  }
+}
 </script>
 
 <style scoped>

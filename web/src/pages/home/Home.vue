@@ -15,7 +15,6 @@
         </el-container>
     </el-container>
 
-
 </template>
 
 <script>
@@ -23,11 +22,11 @@ import HomeHeader from './components/Header'
 import HomeSide from './components/Side'
 
 export default {
-    name: "Home",
-    components: {
-        HomeHeader,
-        HomeSide
-    }
+  name: 'Home',
+  components: {
+    HomeHeader,
+    HomeSide
+  }
 
 }
 </script>

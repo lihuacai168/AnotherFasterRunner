@@ -21,7 +21,7 @@
                         @click="delSelectionVariables"
                     ></el-button>
 
-                    <el-dialog title="添加变量" :visible.sync="dialogVisible" width="30%" align="center">
+                    <el-dialog title="添加变量" v-model:visible="dialogVisible" width="30%" align="center">
                         <el-form
                             :model="variablesForm"
                             :rules="rules"
@@ -48,7 +48,7 @@
             </span>
                     </el-dialog>
 
-                    <el-dialog title="编辑变量" :visible.sync="editdialogVisible" width="30%" align="center">
+                    <el-dialog title="编辑变量" v-model:visible="editdialogVisible" width="30%" align="center">
                         <el-form
                             :model="editVariablesForm"
                             :rules="rules"
@@ -99,7 +99,7 @@
                                 v-show="variablesData.count !== 0 "
                                 background
                                 @current-change="handleCurrentChange"
-                                :current-page.sync="currentPage"
+                                v-model:current-page="currentPage"
                                 layout="total, prev, pager, next, jumper"
                                 :total="variablesData.count"
                             ></el-pagination>
@@ -124,31 +124,31 @@
                             <el-table-column type="selection" width="55"></el-table-column>
 
                             <el-table-column label="变量名">
-                                <template slot-scope="scope">
+                                <template v-slot="scope">
                                     <div>{{ scope.row.key }}</div>
                                 </template>
                             </el-table-column>
 
                             <el-table-column label="变量值">
-                                <template slot-scope="scope">
+                                <template v-slot="scope">
                                     <div>{{ scope.row.value }}</div>
                                 </template>
                             </el-table-column>
 
                             <el-table-column label="变量描述">
-                                <template slot-scope="scope">
+                                <template v-slot="scope">
                                     <div>{{ scope.row.description }}</div>
                                 </template>
                             </el-table-column>
 
                             <el-table-column label="更新时间">
-                                <template slot-scope="scope">
+                                <template v-slot="scope">
                                     <div>{{ scope.row.update_time|datetimeFormat }}</div>
                                 </template>
                             </el-table-column>
 
                             <el-table-column>
-                                <template slot-scope="scope">
+                                <template v-slot="scope">
                                     <el-row v-show="currentRow === scope.row">
                                         <el-button
                                             type="info"
@@ -190,228 +190,228 @@
 
 <script>
 export default {
-    name: "GlobalEnv",
-    data() {
-        return {
-            search: "",
-            selectVariables: [],
-            currentRow: "",
-            currentPage: 1,
-            variablesData: {
-                count: 0,
-                results: [],
-            },
-            editdialogVisible: false,
-            dialogVisible: false,
-            variablesForm: {
-                key: "",
-                value: "",
-                project: this.$route.params.id,
-            },
+  name: 'GlobalEnv',
+  data() {
+    return {
+      search: '',
+      selectVariables: [],
+      currentRow: '',
+      currentPage: 1,
+      variablesData: {
+        count: 0,
+        results: []
+      },
+      editdialogVisible: false,
+      dialogVisible: false,
+      variablesForm: {
+        key: '',
+        value: '',
+        project: this.$route.params.id
+      },
 
-            editVariablesForm: {
-                key: "",
-                value: "",
-                id: "",
-                description: "",
-            },
+      editVariablesForm: {
+        key: '',
+        value: '',
+        id: '',
+        description: ''
+      },
 
-            rules: {
-                key: [
-                    {required: true, message: "请输入变量名", trigger: "blur"},
-                    {min: 1, max: 100, message: "最多不超过100个字符", trigger: "blur"},
-                ],
-                value: [
-                    {required: true, message: "请输入变量值", trigger: "blur"},
-                    {
-                        min: 1,
-                        max: 1024,
-                        message: "最多不超过1024个字符",
-                        trigger: "blur",
-                    },
-                ],
-                description: [
-                    {required: false, message: "请输入变量描述", trigger: "blur"},
-                    {min: 0, max: 100, message: "最多不超过100个字符", trigger: "blur"},
-                ],
-            },
-        };
+      rules: {
+        key: [
+          {required: true, message: '请输入变量名', trigger: 'blur'},
+          {min: 1, max: 100, message: '最多不超过100个字符', trigger: 'blur'}
+        ],
+        value: [
+          {required: true, message: '请输入变量值', trigger: 'blur'},
+          {
+            min: 1,
+            max: 1024,
+            message: '最多不超过1024个字符',
+            trigger: 'blur'
+          }
+        ],
+        description: [
+          {required: false, message: '请输入变量描述', trigger: 'blur'},
+          {min: 0, max: 100, message: '最多不超过100个字符', trigger: 'blur'}
+        ]
+      }
+    }
+  },
+  mounted() {
+    this.getVariablesList()
+  },
+
+  watch: {
+    search() {
+      this.getVariablesList()
+    }
+  },
+
+  methods: {
+    cellMouseEnter(row) {
+      this.currentRow = row
     },
-    mounted() {
-        this.getVariablesList();
+
+    cellMouseLeave(row) {
+      this.currentRow = ''
     },
 
-    watch: {
-        search() {
+    handleEditVariables(row) {
+      this.editVariablesForm = {
+        key: row.key,
+        value: row.value,
+        id: row.id,
+        description: row.description
+      }
+
+      this.editdialogVisible = true
+    },
+
+    handleCopyVariables(row) {
+      this.dialogVisible = true
+      this.variablesForm.key = row.key
+      this.variablesForm.value = row.value
+      this.variablesForm.description = row.description
+    },
+
+    handleDelVariables(index) {
+      this.$confirm('此操作将永久删除该全局变量，是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.$api.deleteVariables(index).then((resp) => {
+          if (resp.success) {
             this.getVariablesList()
-        }
+          } else {
+            this.$message.error(resp.msg)
+          }
+        })
+      })
+    },
+    handleSelectionChange(val) {
+      this.selectVariables = val
     },
 
-    methods: {
-        cellMouseEnter(row) {
-            this.currentRow = row;
-        },
+    handleCurrentChange(val) {
+      this.$api
+        .getVariablesPaginationBypage({
+          params: {
+            page: this.currentPage,
+            project: this.variablesForm.project,
+            search: this.search
+          }
+        })
+        .then((resp) => {
+          this.variablesData = resp
+        })
+    },
+    delSelectionVariables() {
+      if (this.selectVariables.length !== 0) {
+        this.$confirm('此操作将永久删除勾选的全局变量，是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          this.$api
+            .delAllVariabels({data: this.selectVariables})
+            .then((resp) => {
+              this.getVariablesList()
+            })
+        })
+      } else {
+        this.$notify.warning({
+          title: '提示',
+          message: '请至少勾选一个全局变量',
+          duration: this.$store.state.duration
+        })
+      }
+    },
 
-        cellMouseLeave(row) {
-            this.currentRow = "";
-        },
-
-        handleEditVariables(row) {
-            this.editVariablesForm = {
-                key: row.key,
-                value: row.value,
-                id: row.id,
-                description: row.description,
-            };
-
-            this.editdialogVisible = true;
-        },
-
-        handleCopyVariables(row) {
-            this.dialogVisible = true;
-            this.variablesForm.key = row.key;
-            this.variablesForm.value = row.value;
-            this.variablesForm.description = row.description;
-        },
-
-        handleDelVariables(index) {
-            this.$confirm("此操作将永久删除该全局变量，是否继续?", "提示", {
-                confirmButtonText: "确定",
-                cancelButtonText: "取消",
-                type: "warning",
-            }).then(() => {
-                this.$api.deleteVariables(index).then((resp) => {
-                    if (resp.success) {
-                        this.getVariablesList();
-                    } else {
-                        this.$message.error(resp.msg);
-                    }
-                });
-            });
-        },
-        handleSelectionChange(val) {
-            this.selectVariables = val;
-        },
-
-        handleCurrentChange(val) {
-            this.$api
-                .getVariablesPaginationBypage({
-                    params: {
-                        page: this.currentPage,
-                        project: this.variablesForm.project,
-                        search: this.search,
-                    },
-                })
-                .then((resp) => {
-                    this.variablesData = resp;
-                });
-        },
-        delSelectionVariables() {
-            if (this.selectVariables.length !== 0) {
-                this.$confirm("此操作将永久删除勾选的全局变量，是否继续?", "提示", {
-                    confirmButtonText: "确定",
-                    cancelButtonText: "取消",
-                    type: "warning",
-                }).then(() => {
-                    this.$api
-                        .delAllVariabels({data: this.selectVariables})
-                        .then((resp) => {
-                            this.getVariablesList();
-                        });
-                });
+    handleConfirm(formName) {
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          this.dialogVisible = false
+          this.$api.addVariables(this.variablesForm).then((resp) => {
+            if (!resp.success) {
+              this.$message.info({
+                message: resp.msg,
+                duration: this.$store.state.duration
+              })
             } else {
-                this.$notify.warning({
-                    title: "提示",
-                    message: "请至少勾选一个全局变量",
-                    duration: this.$store.state.duration,
-                });
+              this.variablesForm.key = ''
+              this.variablesForm.value = ''
+              this.getVariablesList()
             }
-        },
+          })
+        }
+      })
+    },
 
-        handleConfirm(formName) {
-            this.$refs[formName].validate((valid) => {
-                if (valid) {
-                    this.dialogVisible = false;
-                    this.$api.addVariables(this.variablesForm).then((resp) => {
-                        if (!resp.success) {
-                            this.$message.info({
-                                message: resp.msg,
-                                duration: this.$store.state.duration,
-                            });
-                        } else {
-                            this.variablesForm.key = "";
-                            this.variablesForm.value = "";
-                            this.getVariablesList();
-                        }
-                    });
-                }
-            });
-        },
-
-        /**
+    /**
          * 表单重置
          */
-        resetForm(formName, showFlag) {
-            this[showFlag] = false;
+    resetForm(formName, showFlag) {
+      this[showFlag] = false
 
-            this.$refs[formName].resetFields();
-            Object.keys(this[formName]).forEach(key => {
-                if (key !== "project") {
-                    this[formName][key] = "";
-                }
-            });
-        },
+      this.$refs[formName].resetFields()
+      Object.keys(this[formName]).forEach(key => {
+        if (key !== 'project') {
+          this[formName][key] = ''
+        }
+      })
+    },
 
-        /**
+    /**
          * 唤起表单弹窗
          */
-        openFormModal(formName, showFlag) {
-            Object.keys(this[formName]).forEach(key => {
-                if (key !== "project") {
-                    this[formName][key] = "";
-                }
-            });
+    openFormModal(formName, showFlag) {
+      Object.keys(this[formName]).forEach(key => {
+        if (key !== 'project') {
+          this[formName][key] = ''
+        }
+      })
 
-            this[showFlag] = true;
-        },
-
-        handleEditConfirm(formName) {
-            this.$refs[formName].validate((valid) => {
-                if (valid) {
-                    this.editdialogVisible = false;
-                    this.$api
-                        .updateVariables(this.$route.params.id, this.editVariablesForm)
-                        .then((resp) => {
-                            if (!resp.success) {
-                                this.$message.info({
-                                    message: resp.msg,
-                                    duration: this.$store.state.duration,
-                                });
-                            } else {
-                                this.getVariablesList();
-                            }
-                        });
-                }
-            });
-        },
-
-        getVariablesList() {
-            this.$api
-                .variablesList({
-                    params: {
-                        project: this.variablesForm.project,
-                        search: this.search,
-                    },
-                })
-                .then((resp) => {
-                    this.variablesData = resp;
-                });
-        },
-        resetSearch() {
-            (this.search = ""), this.getVariablesList();
-        },
+      this[showFlag] = true
     },
-};
+
+    handleEditConfirm(formName) {
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          this.editdialogVisible = false
+          this.$api
+            .updateVariables(this.$route.params.id, this.editVariablesForm)
+            .then((resp) => {
+              if (!resp.success) {
+                this.$message.info({
+                  message: resp.msg,
+                  duration: this.$store.state.duration
+                })
+              } else {
+                this.getVariablesList()
+              }
+            })
+        }
+      })
+    },
+
+    getVariablesList() {
+      this.$api
+        .variablesList({
+          params: {
+            project: this.variablesForm.project,
+            search: this.search
+          }
+        })
+        .then((resp) => {
+          this.variablesData = resp
+        })
+    },
+    resetSearch() {
+      (this.search = ''), this.getVariablesList()
+    }
+  }
+}
 </script>
 
 <style>
