@@ -16,7 +16,7 @@
             <el-row>
                 <el-col :span="7">
                     <div class="bottom-left">
-                        <img src="~@/assets/images/bottom-left.png">
+                        <img src="~@/assets/images/bottom-left.webp">
                     </div>
 
                 </el-col>
@@ -76,7 +76,7 @@
                 </el-col>
                 <el-col :span="7">
                     <div class="bottom-right">
-                        <img src="~@/assets/images/bottom-right.png">
+                        <img src="~@/assets/images/bottom-right.webp">
                     </div>
                 </el-col>
             </el-row>
