@@ -64,7 +64,7 @@
     "vue-template-compiler": "^2.5.2",
     "vue2-ace-editor": "0.0.15",
     "webpack": "^3.6.0",
-    "webpack-bundle-analyzer": "^2.9.0",
+    "webpack-bundle-analyzer": "^4.8.0",
     "webpack-dev-server": "^2.9.1",
     "webpack-merge": "^4.1.0",
     "zip-webpack-plugin": "^2.0.0"
