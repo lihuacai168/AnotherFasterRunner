@@ -1,4 +1,7 @@
 name: Build Backend and Push Docker Image
+
+runs-on: self-hosted
+
 on:
   workflow_dispatch:
   release:
