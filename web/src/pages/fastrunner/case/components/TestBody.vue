@@ -8,7 +8,7 @@
                     v-model="name"
                     clearable
                 >
-                    <template slot="prepend">接口信息录入</template>
+                    <template v-slot:prepend>接口信息录入</template>
                 </el-input>
                 <el-button
                     slot="append"
@@ -74,7 +74,7 @@
             </div>
             <el-dialog
                 v-if="dialogTableVisible"
-                :visible.sync="dialogTableVisible"
+                v-model:visible="dialogTableVisible"
                 width="70%"
             >
                 <report :summary="summary"></report>
@@ -177,179 +177,178 @@ import Hooks from '../../../httprunner/components/Hooks'
 import Report from '../../../reports/DebugReport'
 
 export default {
-    components: {
-        Headers,
-        Request,
-        Extract,
-        Validate,
-        Variables,
-        Hooks,
-        Report
+  components: {
+    Headers,
+    Request,
+    Extract,
+    Validate,
+    Variables,
+    Hooks,
+    Report
 
-    },
+  },
 
-    props: {
-        response: {
-            require: true
-        },
-        host: {
-            require: true
-        },
-        disabledSave: {
-            type: Boolean,
-            require: true
-        }
+  props: {
+    response: {
+      require: true
     },
-    methods: {
-        /*  handleRun() {
+    host: {
+      require: true
+    },
+    disabledSave: {
+      type: Boolean,
+      require: true
+    }
+  },
+  methods: {
+    /*  handleRun() {
               this.run = true;
               this.save = !this.save;
           },
 */
-        handleHeader(header, value) {
-            this.header = value;
-            this.tempBody.header = header;
-        },
-        handleRequest(request, value) {
-            this.request = value;
-            this.tempBody.request = request;
-        },
-        handleValidate(validate, value) {
-            this.validate = value;
-            this.tempBody.validate = validate;
-        },
-        handleExtract(extract, value) {
-            this.extract = value;
-            this.tempBody.extract = extract;
-        },
-        handleVariables(variables, value) {
-            this.variables = value;
-            this.tempBody.variables = variables;
-        },
-        // 计算标记的数值
-        handleBadgeValue(arr, countKey) {
-            let res = 0
-            for(const v of arr){
-                if(v[countKey]){
-                    res += 1
-                }
-            }
-            return res
-        },
-        // 计算hook数值
-        handleHooksBadge(hook){
-            let res = 0
-            for (const hookElement of hook) {
-                if(hookElement["setup"]){
-                    res +=1
-                }
-                if(hookElement["teardown"]){
-                    res += 1
-                }
-            }
-            return res
-        },
-        handleHooks(hooks, value) {
-            this.hooks = value;
-
-            this.tempBody.hooks = hooks;
-            this.tempBody.url = this.url;
-            this.tempBody.method = this.method;
-            this.tempBody.name = this.name;
-            this.tempBody.times = this.times;
-
-            if (this.validateData()) {
-                const body = {
-                    header: this.header,
-                    request: this.request,
-                    extract: this.extract,
-                    validate: this.validate,
-                    variables: this.variables,
-                    hooks: this.hooks,
-                    url: this.url,
-                    method: this.method,
-                    name: this.name,
-                    times: this.times
-                };
-                this.$emit('getNewBody', body, this.tempBody);
-                this.run = false;
-            }
-
-        },
-
-        validateData() {
-            if (this.url === '') {
-                this.$notify.error({
-                    title: 'url错误',
-                    message: '接口请求地址不能为空',
-                    duration: 1500
-                });
-                return false;
-            }
-
-            if (this.name === '') {
-                this.$notify.error({
-                    title: 'name错误',
-                    message: '接口名称不能为空',
-                    duration: 1500
-                });
-                return false;
-            }
-            return true
+    handleHeader(header, value) {
+      this.header = value
+      this.tempBody.header = header
+    },
+    handleRequest(request, value) {
+      this.request = value
+      this.tempBody.request = request
+    },
+    handleValidate(validate, value) {
+      this.validate = value
+      this.tempBody.validate = validate
+    },
+    handleExtract(extract, value) {
+      this.extract = value
+      this.tempBody.extract = extract
+    },
+    handleVariables(variables, value) {
+      this.variables = value
+      this.tempBody.variables = variables
+    },
+    // 计算标记的数值
+    handleBadgeValue(arr, countKey) {
+      let res = 0
+      for (const v of arr) {
+        if (v[countKey]) {
+          res += 1
         }
+      }
+      return res
+    },
+    // 计算hook数值
+    handleHooksBadge(hook) {
+      let res = 0
+      for (const hookElement of hook) {
+        if (hookElement['setup']) {
+          res += 1
+        }
+        if (hookElement['teardown']) {
+          res += 1
+        }
+      }
+      return res
+    },
+    handleHooks(hooks, value) {
+      this.hooks = value
+
+      this.tempBody.hooks = hooks
+      this.tempBody.url = this.url
+      this.tempBody.method = this.method
+      this.tempBody.name = this.name
+      this.tempBody.times = this.times
+
+      if (this.validateData()) {
+        const body = {
+          header: this.header,
+          request: this.request,
+          extract: this.extract,
+          validate: this.validate,
+          variables: this.variables,
+          hooks: this.hooks,
+          url: this.url,
+          method: this.method,
+          name: this.name,
+          times: this.times
+        }
+        this.$emit('getNewBody', body, this.tempBody)
+        this.run = false
+      }
     },
 
-    watch: {
-        esc() {
-            this.$emit('escEdit');
-        }
-    },
-    data() {
-        return {
-            loading: false,
-            run: false,
-            esc: false,
-            times: this.response.body.times,
-            name: this.response.body.name,
-            url: this.response.body.url,
-            header: [],
-            request: [],
-            extract: [],
-            validate: [],
-            variables: [],
-            hooks: [],
-            tempBody: {},
-            method: this.response.body.method,
-            save: false,
-            summary: {},
-            dialogTableVisible: false,
-            activeTag: 'second',
-            httpOptions: [{
-                label: 'GET',
-            }, {
-                label: 'POST',
-            }, {
-                label: 'PUT',
-            }, {
-                label: 'DELETE',
-            }, {
-                label: 'HEAD',
-            }, {
-                label: 'OPTIONS',
-            }, {
-                label: 'PATCH',
-            }],
-        }
-    },
-    name: "TestBody",
-    mounted() {
-        this.header = this.response.body.header;
-        this.request = this.response.body.request;
-        this.extract = this.response.body.extract;
-        this.validate = this.response.body.validate;
-        this.variables = this.response.body.variables;
-        this.hooks = this.response.body.hooks;
+    validateData() {
+      if (this.url === '') {
+        this.$notify.error({
+          title: 'url错误',
+          message: '接口请求地址不能为空',
+          duration: 1500
+        })
+        return false
+      }
+
+      if (this.name === '') {
+        this.$notify.error({
+          title: 'name错误',
+          message: '接口名称不能为空',
+          duration: 1500
+        })
+        return false
+      }
+      return true
     }
+  },
+
+  watch: {
+    esc() {
+      this.$emit('escEdit')
+    }
+  },
+  data() {
+    return {
+      loading: false,
+      run: false,
+      esc: false,
+      times: this.response.body.times,
+      name: this.response.body.name,
+      url: this.response.body.url,
+      header: [],
+      request: [],
+      extract: [],
+      validate: [],
+      variables: [],
+      hooks: [],
+      tempBody: {},
+      method: this.response.body.method,
+      save: false,
+      summary: {},
+      dialogTableVisible: false,
+      activeTag: 'second',
+      httpOptions: [{
+        label: 'GET'
+      }, {
+        label: 'POST'
+      }, {
+        label: 'PUT'
+      }, {
+        label: 'DELETE'
+      }, {
+        label: 'HEAD'
+      }, {
+        label: 'OPTIONS'
+      }, {
+        label: 'PATCH'
+      }]
+    }
+  },
+  name: 'TestBody',
+  mounted() {
+    this.header = this.response.body.header
+    this.request = this.response.body.request
+    this.extract = this.response.body.extract
+    this.validate = this.response.body.validate
+    this.variables = this.response.body.variables
+    this.hooks = this.response.body.hooks
+  }
 }
 </script>
 

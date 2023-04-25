@@ -61,7 +61,7 @@
                         v-show="apiData.count !== 0 "
                         background
                         @current-change="handleCurrentChange"
-                        :current-page.sync="currentPage"
+                        v-model:current-page="currentPage"
                         layout="total, prev, pager, next, jumper"
                         :total="apiData.count"
                     >
@@ -74,7 +74,7 @@
             <el-main style="padding: 0; margin-left: 10px;">
                 <el-dialog
                     v-if="dialogTableVisible"
-                    :visible.sync="dialogTableVisible"
+                    v-model:visible="dialogTableVisible"
                     width="70%"
                 >
                     <report :summary="summary"></report>
@@ -82,7 +82,7 @@
 
                 <el-dialog
                     title="Run API"
-                    :visible.sync="dialogTreeVisible"
+                    v-model:visible="dialogTreeVisible"
                     width="45%"
                 >
                     <div>
@@ -148,7 +148,7 @@
 
                 <el-dialog
                     title="Move API"
-                    :visible.sync="dialogTreeMoveAPIVisible"
+                    v-model:visible="dialogTreeMoveAPIVisible"
                     width="45%"
                 >
                     <div>
@@ -188,7 +188,6 @@
                   </span>
                 </el-dialog>
 
-
                 <div style="position: fixed; bottom: 0; right:0; left: 460px; top: 160px">
                     <el-table
                         highlight-current-row
@@ -211,7 +210,7 @@
                         <el-table-column
                             width="25"
                         >
-                            <template slot-scope="scope">
+                            <template v-slot="scope">
                                 <el-dropdown @command="dropdownMenuChangeHandle">
                                     <span><i class="el-icon-more"></i></span>
                                     <el-dropdown-menu slot="dropdown">
@@ -230,7 +229,7 @@
                             min-width="325"
                             align="center"
                         >
-                            <template slot-scope="scope">
+                            <template v-slot="scope">
                                 <div class="block" :class="`block_${scope.row.method.toLowerCase()}`">
                                     <span class="block-method block_method_color"
                                           :title="'API分组：' +scope.row.relation_name"
@@ -261,7 +260,7 @@
                             label="标签"
                             width="90"
                             filter-placement="bottom-end">
-                            <template slot-scope="scope">
+                            <template v-slot="scope">
                                 <el-tag
                                     :type="scope.row.tag === 0 ? 'info' : scope.row.tag === 2 ? 'danger' : 'success' "
                                     effect="light"
@@ -271,7 +270,7 @@
                             </template>
                         </el-table-column>
                         <el-table-column>
-                            <template slot-scope="scope">
+                            <template v-slot="scope">
                                 <el-row v-show="currentRow === scope.row">
                                     <el-button
                                         type="info"
@@ -340,448 +339,444 @@
 import Report from '../../../reports/DebugReport'
 
 export default {
-    components: {
-        Report
+  components: {
+    Report
+  },
+  name: 'ApiList',
+  props: {
+    host: {
+      require: true
     },
-    name: "ApiList",
-    props: {
-        host: {
-            require: true
-        },
-        config: {
-            require: true
-        },
-        run: Boolean,
-        move: Boolean,
-        back: Boolean,
-        pNode: {
-            require: true
-        },
-        project: {
-            require: true
-        },
-        del: Boolean,
-        listCurrentPage: Number,
-        visibleTag: [Number, String],
-        rigEnv: [Number, String],
-        onlyMe: Boolean,
-        showYAPI: Boolean,
-        isSelectAPI: Boolean
+    config: {
+      require: true
     },
-    data() {
-        return {
-            isSuperuser: this.$store.state.is_superuser,
-            userName: this.$store.state.user,
-            checked: false,
-            search: '',
-            reportName: '',
-            asyncs: false,
-            filterText: '',
-            loading: false,
-            expand: '&#xe65f;',
-            dataTree: {},
-            dialogTreeVisible: false,
-            dialogTreeMoveAPIVisible: false,
-            dialogTableVisible: false,
-            summary: {},
-            selectAPI: [],
-            currentRow: '',
-            currentPage: this.listCurrentPage,
-            node: '',
-            apiData: {
-                count: 0,
-                results: []
-            },
-            // tag: this.visibleTag,
-            // rigEnv: this.rigEnv,
-        }
+    run: Boolean,
+    move: Boolean,
+    back: Boolean,
+    pNode: {
+      require: true
     },
-    watch: {
-        filterText(val) {
-            this.$refs.tree.filter(val);
-        },
-
-        run() {
-            this.asyncs = false;
-            this.reportName = "";
-            this.getTree('run');
-        },
-
-        move() {
-            this.asyncs = false;
-            this.reportName = "";
-            this.getTree('move');
-        },
-
-        back() {
-            this.getAPIList();
-        },
-        pNode() {
-            this.node = this.pNode
-            this.search = '';
-            this.getAPIList();
-        },
-        checked() {
-            if (this.checked) {
-                this.toggleAll();
-            } else {
-                this.toggleClear();
-            }
-        },
-
-        del() {
-            if (this.selectAPI.length !== 0) {
-                this.$confirm('此操作将永久删除API，是否继续?', '提示', {
-                    confirmButtonText: '确定',
-                    cancelButtonText: '取消',
-                    type: 'warning',
-                }).then(() => {
-                    this.$api.delAllAPI({data: this.selectAPI}).then(resp => {
-                        this.getAPIList();
-                    })
-                }).catch(e => e)
-            } else {
-                this.$notify.warning({
-                    title: '提示',
-                    message: '请至少选择一个接口',
-                    duration: this.$store.state.duration
-                })
-            }
-        },
-        // 监听listCurrentPage的变化,修改原本currentPage的值
-        // 因为原本有些函数用到的值是currentPage,所以不能直接修改currentPage的值.
-        listCurrentPage(newValue) {
-            this.currentPage = newValue
-        },
-
-        // 监听只看自己按钮的状态
-        onlyMe() {
-            this.getAPIList()
-        },
-        showYAPI() {
-            this.getAPIList()
-        },
-        search() {
-            this.getAPIList()
-        }
+    project: {
+      require: true
     },
-
-    methods: {
-        tagChangeHandle(command) {
-            // this.tag = command;
-            this.$emit('update:visibleTag', command);
-            this.getAPIList();
-        },
-        dropdownMenuChangeHandle(command) {
-            let tag = -1
-            switch (command) {
-                case 'success':
-                    tag = 1
-                    break;
-                case 'fail':
-                    tag = 2
-                    break;
-                case 'deprecated':
-                    tag = 4
-                    break;
-                case 'move':
-                    this.$emit("update:move", !this.move)
-                    break;
-            }
-            if (command !== 'move') {
-                console.log("!=move...")
-                let api_ids = []
-                for (let selectAPIElement of this.selectAPI) {
-                    api_ids.push(selectAPIElement.id)
-                }
-                this.$api.tagAPI({
-                    tag: tag,
-                    api_ids: api_ids,
-                }).then(resp => {
-                    this.selectAPI = []
-                    this.checked = false
-                    if (resp.success) {
-                        this.getAPIList();
-                    } else {
-                        this.$message.error(resp.msg);
-                    }
-                })
-            }
-        },
-        rigEnvChangeHandle(command) {
-            // this.rigEnv = command;
-            this.$emit('update:rigEnv', command);
-            this.getAPIList();
-        },
-        resetSearch() {
-            this.search = "";
-            this.node = "";
-            this.$emit('update:listCurrentPage', 1)
-            // this.tag = "";
-            // this.$emit('update:tag', '');
-            this.$emit('update:visibleTag', '');
-            this.$emit('update:rigEnv', '');
-            this.$emit('update:onlyMe', true);
-            this.$emit('update:showYAPI', true);
-            this.getAPIList();
-        },
-        handleOnlyMeChange() {
-            this.$emit('update:onlyMe', this.onlyMe);
-            this.getAPIList()
-        },
-        handleCopyAPI(id, name) {
-            this.$prompt('请输入接口名称', '提示', {
-                confirmButtonText: '确定',
-                inputPattern: /^[\s\S]*.*[^\s][\s\S]*$/,
-                inputErrorMessage: '接口名称不能为空',
-                inputValue: name,
-            }).then(({value}) => {
-                this.$api.copyAPI(id, {
-                    'name': value
-                }).then(resp => {
-                    if (resp.success) {
-                        this.getAPIList();
-                    } else {
-                        this.$message.error(resp.msg);
-                    }
-                })
-            })
-        },
-        filterNode(value, data) {
-            if (!value) return true;
-            return data.label.indexOf(value) !== -1;
-        },
-
-        runTree() {
-            this.dialogTreeVisible = false;
-            const relation = this.$refs.tree.getCheckedKeys();
-            if (relation.length === 0) {
-                this.$notify.error({
-                    title: '提示',
-                    message: '请至少选择一个节点',
-                    duration: 1500
-                });
-            } else {
-                this.$api.runAPITree({
-                    "host": this.host,
-                    "project": this.project,
-                    "relation": relation,
-                    "async": this.asyncs,
-                    "name": this.reportName,
-                    "config": this.config
-                }).then(resp => {
-                    if (resp.hasOwnProperty("status")) {
-                        this.$message.info({
-                            message: resp.msg,
-                            duration: 1500
-                        });
-                    } else {
-                        this.summary = resp;
-                        this.dialogTableVisible = true;
-                    }
-
-                })
-            }
-        },
-        moveAPI() {
-            this.dialogTreeVisible = false;
-            const relation = this.$refs.tree.getCheckedKeys();
-            let length = relation.length;
-            if (length === 0) {
-                this.$notify.error({
-                    title: '提示',
-                    message: '请至少选择一个节点',
-                    duration: 1500
-                });
-            } else if (length !== 1) {
-                this.$notify.error({
-                    title: '提示',
-                    message: 'API只能移动到一个节点, 现在选了' + length + '个节点',
-                    duration: 1500
-                });
-            } else {
-                this.$api.moveAPI({
-                    "project": this.project,
-                    "relation": relation[0],
-                    "api": this.selectAPI
-                }).then(resp => {
-                    this.selectAPI = []
-                    this.checked = false
-                    if (resp.success) {
-                        this.$message.success({
-                            message: '移动API成功',
-                            duration: 1500
-                        });
-                        this.dialogTreeMoveAPIVisible = false
-                        this.resetSearch()
-                    } else {
-                        this.$message.error({
-                            message: resp.msg,
-                            duration: 1500
-                        })
-                    }
-                })
-            }
-        },
-        getTree(showType) {
-            this.$api.getTree(this.$route.params.id, {params: {type: 1}}).then(resp => {
-                this.dataTree = resp.tree;
-                // run是批量运行api弹窗，其他是批量更新api relation弹窗
-                if (showType === 'run') {
-                    this.dialogTreeVisible = true;
-                } else {
-                    this.dialogTreeMoveAPIVisible = this;
-                }
-            })
-        },
-
-        handleSelectionChange(val) {
-            this.selectAPI = val;
-            // 更新是否已经选择API, 父组件依赖这个属性来判断是否显示Move API按钮
-            if (this.selectAPI.length > 0) {
-                this.$emit('update:isSelectAPI', true);
-            } else {
-                this.$emit('update:isSelectAPI', false);
-            }
-
-        },
-
-        toggleAll() {
-            this.$refs.multipleTable.toggleAllSelection();
-        },
-
-        toggleClear() {
-            this.$refs.multipleTable.clearSelection();
-        },
-        // 查询api列表
-        getAPIList() {
-            // debugger
-            this.$nextTick(() => {
-                this.$api.apiList({
-                    params: {
-                        page: this.listCurrentPage,
-                        node: this.node,
-                        project: this.project,
-                        search: this.search,
-                        tag: this.visibleTag,
-                        rigEnv: this.rigEnv,
-                        onlyMe: this.onlyMe,
-                        showYAPI: this.showYAPI
-                    }
-                }).then(res => {
-                    this.apiData = res;
-                })
-            })
-        },
-
-
-        handleCurrentChange(val) {
-            this.$api.getPaginationBypage({
-                params: {
-                    page: this.currentPage,
-                    node: this.node,
-                    project: this.project,
-                    search: this.search,
-                    tag: this.visibleTag,
-                    rigEnv: this.rigEnv,
-                    onlyMe: this.onlyMe,
-                    showYAPI: this.showYAPI
-                }
-            }).then(res => {
-                this.apiData = res;
-                this.$emit("click-pager", val)
-            })
-        },
-
-        //删除api
-        handleDelApi(index) {
-            this.$confirm('此操作将永久删除该API，是否继续???', '提示', {
-                confirmButtonText: '确定',
-                cancelButtonText: '取消',
-                type: 'warning',
-            }).then(() => {
-                this.$api.delAPI(index).then(resp => {
-                    if (resp.success) {
-                        this.getAPIList();
-                    } else {
-                        this.$message.error(resp.msg);
-                    }
-                })
-            })
-        },
-        handleTagApi(index, tag) {
-            if (tag == "success" || tag == "bug") {
-                this.$api.tagAPI(index, {
-                    tag: tag === "success" ? 1 : 2
-                }).then(resp => {
-                    if (resp.success) {
-                        this.getAPIList();
-                    } else {
-                        this.$message.error(resp.msg);
-                    }
-                })
-            }
-        },
-        // api同步用例步骤
-        handleSyncCaseStep(id) {
-            this.$confirm('是否确定把当前api同步到用例步骤', '提示', {
-                confirmButtonText: '确定',
-                cancelButtonText: '取消',
-                type: 'warning',
-            }).then(() => {
-                this.$api.syncCaseStep(id).then(resp => {
-                    if (resp.success) {
-                        this.getAPIList();
-                        this.$notify.success({
-                            title: '提示',
-                            message: '用例步骤同步成功',
-                            duration: 1500
-                        })
-                    } else {
-                        this.$message.error(resp.msg);
-                    }
-                })
-            }).catch(e => e)
-        },
-        // 编辑API
-        handleRowClick(row) {
-            this.$api.getAPISingle(row.id).then(resp => {
-                if (resp.success) {
-                    this.$emit('api', resp);
-                } else {
-                    this.$message.error(resp.msg)
-                }
-            })
-        },
-        // 运行API
-        handleRunAPI(id) {
-            this.loading = true;
-            this.$api.runAPIByPk(id, {
-                params: {
-                    host: this.host,
-                    config: this.config
-                }
-            }).then(resp => {
-                this.summary = resp;
-                this.dialogTableVisible = true;
-                this.loading = false;
-            }).catch(resp => {
-                this.loading = false;
-            })
-        },
-
-        cellMouseEnter(row) {
-            this.currentRow = row;
-        },
-
-        cellMouseLeave(row) {
-            this.currentRow = '';
-        }
+    del: Boolean,
+    listCurrentPage: Number,
+    visibleTag: [Number, String],
+    rigEnv: [Number, String],
+    onlyMe: Boolean,
+    showYAPI: Boolean,
+    isSelectAPI: Boolean
+  },
+  data() {
+    return {
+      isSuperuser: this.$store.state.is_superuser,
+      userName: this.$store.state.user,
+      checked: false,
+      search: '',
+      reportName: '',
+      asyncs: false,
+      filterText: '',
+      loading: false,
+      expand: '&#xe65f;',
+      dataTree: {},
+      dialogTreeVisible: false,
+      dialogTreeMoveAPIVisible: false,
+      dialogTableVisible: false,
+      summary: {},
+      selectAPI: [],
+      currentRow: '',
+      currentPage: this.listCurrentPage,
+      node: '',
+      apiData: {
+        count: 0,
+        results: []
+      }
+      // tag: this.visibleTag,
+      // rigEnv: this.rigEnv,
     }
-    ,
-    mounted() {
-        this.getAPIList();
+  },
+  watch: {
+    filterText(val) {
+      this.$refs.tree.filter(val)
+    },
+
+    run() {
+      this.asyncs = false
+      this.reportName = ''
+      this.getTree('run')
+    },
+
+    move() {
+      this.asyncs = false
+      this.reportName = ''
+      this.getTree('move')
+    },
+
+    back() {
+      this.getAPIList()
+    },
+    pNode() {
+      this.node = this.pNode
+      this.search = ''
+      this.getAPIList()
+    },
+    checked() {
+      if (this.checked) {
+        this.toggleAll()
+      } else {
+        this.toggleClear()
+      }
+    },
+
+    del() {
+      if (this.selectAPI.length !== 0) {
+        this.$confirm('此操作将永久删除API，是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          this.$api.delAllAPI({data: this.selectAPI}).then(resp => {
+            this.getAPIList()
+          })
+        }).catch(e => e)
+      } else {
+        this.$notify.warning({
+          title: '提示',
+          message: '请至少选择一个接口',
+          duration: this.$store.state.duration
+        })
+      }
+    },
+    // 监听listCurrentPage的变化,修改原本currentPage的值
+    // 因为原本有些函数用到的值是currentPage,所以不能直接修改currentPage的值.
+    listCurrentPage(newValue) {
+      this.currentPage = newValue
+    },
+
+    // 监听只看自己按钮的状态
+    onlyMe() {
+      this.getAPIList()
+    },
+    showYAPI() {
+      this.getAPIList()
+    },
+    search() {
+      this.getAPIList()
     }
+  },
+
+  methods: {
+    tagChangeHandle(command) {
+      // this.tag = command;
+      this.$emit('update:visibleTag', command)
+      this.getAPIList()
+    },
+    dropdownMenuChangeHandle(command) {
+      let tag = -1
+      switch (command) {
+        case 'success':
+          tag = 1
+          break
+        case 'fail':
+          tag = 2
+          break
+        case 'deprecated':
+          tag = 4
+          break
+        case 'move':
+          this.$emit('update:move', !this.move)
+          break
+      }
+      if (command !== 'move') {
+        console.log('!=move...')
+        const api_ids = []
+        for (const selectAPIElement of this.selectAPI) {
+          api_ids.push(selectAPIElement.id)
+        }
+        this.$api.tagAPI({
+          tag: tag,
+          api_ids: api_ids
+        }).then(resp => {
+          this.selectAPI = []
+          this.checked = false
+          if (resp.success) {
+            this.getAPIList()
+          } else {
+            this.$message.error(resp.msg)
+          }
+        })
+      }
+    },
+    rigEnvChangeHandle(command) {
+      // this.rigEnv = command;
+      this.$emit('update:rigEnv', command)
+      this.getAPIList()
+    },
+    resetSearch() {
+      this.search = ''
+      this.node = ''
+      this.$emit('update:listCurrentPage', 1)
+      // this.tag = "";
+      // this.$emit('update:tag', '');
+      this.$emit('update:visibleTag', '')
+      this.$emit('update:rigEnv', '')
+      this.$emit('update:onlyMe', true)
+      this.$emit('update:showYAPI', true)
+      this.getAPIList()
+    },
+    handleOnlyMeChange() {
+      this.$emit('update:onlyMe', this.onlyMe)
+      this.getAPIList()
+    },
+    handleCopyAPI(id, name) {
+      this.$prompt('请输入接口名称', '提示', {
+        confirmButtonText: '确定',
+        inputPattern: /^[\s\S]*.*[^\s][\s\S]*$/,
+        inputErrorMessage: '接口名称不能为空',
+        inputValue: name
+      }).then(({value}) => {
+        this.$api.copyAPI(id, {
+          'name': value
+        }).then(resp => {
+          if (resp.success) {
+            this.getAPIList()
+          } else {
+            this.$message.error(resp.msg)
+          }
+        })
+      })
+    },
+    filterNode(value, data) {
+      if (!value) return true
+      return data.label.indexOf(value) !== -1
+    },
+
+    runTree() {
+      this.dialogTreeVisible = false
+      const relation = this.$refs.tree.getCheckedKeys()
+      if (relation.length === 0) {
+        this.$notify.error({
+          title: '提示',
+          message: '请至少选择一个节点',
+          duration: 1500
+        })
+      } else {
+        this.$api.runAPITree({
+          'host': this.host,
+          'project': this.project,
+          'relation': relation,
+          'async': this.asyncs,
+          'name': this.reportName,
+          'config': this.config
+        }).then(resp => {
+          if (resp.hasOwnProperty('status')) {
+            this.$message.info({
+              message: resp.msg,
+              duration: 1500
+            })
+          } else {
+            this.summary = resp
+            this.dialogTableVisible = true
+          }
+        })
+      }
+    },
+    moveAPI() {
+      this.dialogTreeVisible = false
+      const relation = this.$refs.tree.getCheckedKeys()
+      const length = relation.length
+      if (length === 0) {
+        this.$notify.error({
+          title: '提示',
+          message: '请至少选择一个节点',
+          duration: 1500
+        })
+      } else if (length !== 1) {
+        this.$notify.error({
+          title: '提示',
+          message: 'API只能移动到一个节点, 现在选了' + length + '个节点',
+          duration: 1500
+        })
+      } else {
+        this.$api.moveAPI({
+          'project': this.project,
+          'relation': relation[0],
+          'api': this.selectAPI
+        }).then(resp => {
+          this.selectAPI = []
+          this.checked = false
+          if (resp.success) {
+            this.$message.success({
+              message: '移动API成功',
+              duration: 1500
+            })
+            this.dialogTreeMoveAPIVisible = false
+            this.resetSearch()
+          } else {
+            this.$message.error({
+              message: resp.msg,
+              duration: 1500
+            })
+          }
+        })
+      }
+    },
+    getTree(showType) {
+      this.$api.getTree(this.$route.params.id, {params: {type: 1}}).then(resp => {
+        this.dataTree = resp.tree
+        // run是批量运行api弹窗，其他是批量更新api relation弹窗
+        if (showType === 'run') {
+          this.dialogTreeVisible = true
+        } else {
+          this.dialogTreeMoveAPIVisible = this
+        }
+      })
+    },
+
+    handleSelectionChange(val) {
+      this.selectAPI = val
+      // 更新是否已经选择API, 父组件依赖这个属性来判断是否显示Move API按钮
+      if (this.selectAPI.length > 0) {
+        this.$emit('update:isSelectAPI', true)
+      } else {
+        this.$emit('update:isSelectAPI', false)
+      }
+    },
+
+    toggleAll() {
+      this.$refs.multipleTable.toggleAllSelection()
+    },
+
+    toggleClear() {
+      this.$refs.multipleTable.clearSelection()
+    },
+    // 查询api列表
+    getAPIList() {
+      // debugger
+      this.$nextTick(() => {
+        this.$api.apiList({
+          params: {
+            page: this.listCurrentPage,
+            node: this.node,
+            project: this.project,
+            search: this.search,
+            tag: this.visibleTag,
+            rigEnv: this.rigEnv,
+            onlyMe: this.onlyMe,
+            showYAPI: this.showYAPI
+          }
+        }).then(res => {
+          this.apiData = res
+        })
+      })
+    },
+
+    handleCurrentChange(val) {
+      this.$api.getPaginationBypage({
+        params: {
+          page: this.currentPage,
+          node: this.node,
+          project: this.project,
+          search: this.search,
+          tag: this.visibleTag,
+          rigEnv: this.rigEnv,
+          onlyMe: this.onlyMe,
+          showYAPI: this.showYAPI
+        }
+      }).then(res => {
+        this.apiData = res
+        this.$emit('click-pager', val)
+      })
+    },
+
+    // 删除api
+    handleDelApi(index) {
+      this.$confirm('此操作将永久删除该API，是否继续???', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.$api.delAPI(index).then(resp => {
+          if (resp.success) {
+            this.getAPIList()
+          } else {
+            this.$message.error(resp.msg)
+          }
+        })
+      })
+    },
+    handleTagApi(index, tag) {
+      if (tag == 'success' || tag == 'bug') {
+        this.$api.tagAPI(index, {
+          tag: tag === 'success' ? 1 : 2
+        }).then(resp => {
+          if (resp.success) {
+            this.getAPIList()
+          } else {
+            this.$message.error(resp.msg)
+          }
+        })
+      }
+    },
+    // api同步用例步骤
+    handleSyncCaseStep(id) {
+      this.$confirm('是否确定把当前api同步到用例步骤', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.$api.syncCaseStep(id).then(resp => {
+          if (resp.success) {
+            this.getAPIList()
+            this.$notify.success({
+              title: '提示',
+              message: '用例步骤同步成功',
+              duration: 1500
+            })
+          } else {
+            this.$message.error(resp.msg)
+          }
+        })
+      }).catch(e => e)
+    },
+    // 编辑API
+    handleRowClick(row) {
+      this.$api.getAPISingle(row.id).then(resp => {
+        if (resp.success) {
+          this.$emit('api', resp)
+        } else {
+          this.$message.error(resp.msg)
+        }
+      })
+    },
+    // 运行API
+    handleRunAPI(id) {
+      this.loading = true
+      this.$api.runAPIByPk(id, {
+        params: {
+          host: this.host,
+          config: this.config
+        }
+      }).then(resp => {
+        this.summary = resp
+        this.dialogTableVisible = true
+        this.loading = false
+      }).catch(resp => {
+        this.loading = false
+      })
+    },
+
+    cellMouseEnter(row) {
+      this.currentRow = row
+    },
+
+    cellMouseLeave(row) {
+      this.currentRow = ''
+    }
+  },
+  mounted() {
+    this.getAPIList()
+  }
 }
 </script>
 

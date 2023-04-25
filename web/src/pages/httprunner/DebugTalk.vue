@@ -54,13 +54,12 @@
                             :destroy-on-close="true"
                             :with-header="false"
                             :modal="false"
-                            :visible.sync="isShowDebug"
+                            v-model:visible="isShowDebug"
                         >
                             <RunCodeResult :msg="resp.msg"></RunCodeResult>
                         </el-drawer>
 
                     </el-col>
-
 
                 </el-row>
 
@@ -72,77 +71,77 @@
 
 <script>
 import MonacoEditor from 'vue-monaco-editor'
-import RunCodeResult from "./components/RunCodeResult";
-import BaseMonacoEditor from "../monaco-editor/BaseMonacoEditor";
+import RunCodeResult from './components/RunCodeResult'
+import BaseMonacoEditor from '../monaco-editor/BaseMonacoEditor'
 
 export default {
-    components: {
-        MonacoEditor,
-        RunCodeResult,
-        BaseMonacoEditor,
-    },
-    data() {
-        return {
-            timeStamp: "",
-            isShowDebug: false,
-            options: {
-                selectOnLineNumbers: false,
-            },
-            code: {
-                code: '',
-                id: ''
-            },
-            resp: {
-                msg: ''
-            }
-        }
-    },
-    name: "DebugTalk",
-    methods: {
-        onMounted(editor) {
-            this.editor = editor;
-        },
-        onCodeChange(editor) {
-            this.code.code = editor.getValue()
-            // editor.trigger('随便写点儿啥', 'editor.action.triggerSuggest', {});
-        },
-        handleRunCode() {
-            this.resp.msg = '';
-            this.$api.runDebugtalk(this.code).then(resp => {
-                this.resp = resp;
-            })
-        },
-        handleConfirm() {
-            this.$api.updateDebugtalk(this.code).then(resp => {
-                this.getDebugTalk();
-                this.$message.success("代码保存成功");
-            })
-        },
-        getDebugTalk() {
-            this.$api.getDebugtalk(this.$route.params.id).then(res => {
-                this.code = res;
-            })
-        }
-    },
-    watch: {
-        code() {
-            this.timeStamp = (new Date()).getTime()
-        },
-        resp() {
-            this.isShowDebug = true
-        }
-    },
-
-    computed: {
-
-        codeHeight() {
-            return window.screen.height - 248
-        }
-    },
-
-    mounted() {
-        this.getDebugTalk();
+  components: {
+    MonacoEditor,
+    RunCodeResult,
+    BaseMonacoEditor
+  },
+  data() {
+    return {
+      timeStamp: '',
+      isShowDebug: false,
+      options: {
+        selectOnLineNumbers: false
+      },
+      code: {
+        code: '',
+        id: ''
+      },
+      resp: {
+        msg: ''
+      }
     }
+  },
+  name: 'DebugTalk',
+  methods: {
+    onMounted(editor) {
+      this.editor = editor
+    },
+    onCodeChange(editor) {
+      this.code.code = editor.getValue()
+      // editor.trigger('随便写点儿啥', 'editor.action.triggerSuggest', {});
+    },
+    handleRunCode() {
+      this.resp.msg = ''
+      this.$api.runDebugtalk(this.code).then(resp => {
+        this.resp = resp
+      })
+    },
+    handleConfirm() {
+      this.$api.updateDebugtalk(this.code).then(resp => {
+        this.getDebugTalk()
+        this.$message.success('代码保存成功')
+      })
+    },
+    getDebugTalk() {
+      this.$api.getDebugtalk(this.$route.params.id).then(res => {
+        this.code = res
+      })
+    }
+  },
+  watch: {
+    code() {
+      this.timeStamp = (new Date()).getTime()
+    },
+    resp() {
+      this.isShowDebug = true
+    }
+  },
+
+  computed: {
+
+    codeHeight() {
+      return window.screen.height - 248
+    }
+  },
+
+  mounted() {
+    this.getDebugTalk()
+  }
 }
 </script>
 

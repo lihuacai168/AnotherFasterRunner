@@ -13,7 +13,7 @@
             fixed
             label="实际返回值"
             width="300">
-            <template slot-scope="scope">
+            <template v-slot="scope">
                 <el-input clearable v-model.trim="scope.row.actual" placeholder="实际返回值"></el-input>
             </template>
         </el-table-column>
@@ -21,7 +21,7 @@
         <el-table-column
             label="断言类型"
             width="100">
-            <template slot-scope="scope">
+            <template v-slot="scope">
                 <el-tooltip
                     style="width: 200px"
                     effect="dark"
@@ -37,15 +37,13 @@
                     </el-autocomplete>
                 </el-tooltip>
 
-
             </template>
         </el-table-column>
-
 
         <el-table-column
             label="期望类型"
             width="110">
-            <template slot-scope="scope">
+            <template v-slot="scope">
 
                 <el-select v-model="scope.row.type">
                     <el-option
@@ -59,11 +57,10 @@
             </template>
         </el-table-column>
 
-
         <el-table-column
             label="期望返回值"
             width="300">
-            <template slot-scope="scope">
+            <template v-slot="scope">
                 <el-input clearable v-model.trim="scope.row.expect === null ? 'None' : scope.row.expect" placeholder="期望返回值"></el-input>
             </template>
         </el-table-column>
@@ -71,13 +68,13 @@
         <el-table-column
             label="断言描述"
             width="300">
-            <template slot-scope="scope">
+            <template v-slot="scope">
                 <el-input clearable v-model.trim="scope.row.desc === null ? 'None' : scope.row.desc" placeholder="断言描述"></el-input>
             </template>
         </el-table-column>
 
         <el-table-column>
-            <template slot-scope="scope">
+            <template v-slot="scope">
                 <el-row v-show="scope.row === currentRow">
                     <el-button
                         icon="el-icon-circle-plus-outline"
@@ -109,247 +106,246 @@
 
 <script>
 export default {
-    props: {
-        save: Boolean,
-        validate: {
-            require: false
-        }
-    },
-    computed: {
-        height() {
-            return window.screen.height - 440
-        }
-    },
+  props: {
+    save: Boolean,
+    validate: {
+      require: false
+    }
+  },
+  computed: {
+    height() {
+      return window.screen.height - 440
+    }
+  },
 
-    watch: {
-        save: function () {
-            this.$emit('validate', this.parseValidate(), this.tableData);
-
-        },
-
-        validate: function () {
-            if (this.validate.length !== 0) {
-                this.tableData = this.validate;
-            }
-        }
+  watch: {
+    save: function() {
+      this.$emit('validate', this.parseValidate(), this.tableData)
     },
 
-    methods: {
-        querySearch(queryString, cb) {
-            let validateOptions = this.validateOptions;
-            let results = queryString ? validateOptions.filter(this.createFilter(queryString)) : validateOptions;
-            cb(results);
-        },
+    validate: function() {
+      if (this.validate.length !== 0) {
+        this.tableData = this.validate
+      }
+    }
+  },
 
-        createFilter(queryString) {
-            return (validateOptions) => {
-                return (validateOptions.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0);
-            };
-        },
-
-        cellMouseEnter(row) {
-            this.currentRow = row;
-        },
-
-        cellMouseLeave(row) {
-            this.currentRow = '';
-        },
-
-        handleEdit(index, row) {
-            this.tableData.push({
-                expect: '',
-                actual: '',
-                comparator: 'equals',
-                type: 1
-            });
-        },
-        handleCopy(index, row) {
-            this.tableData.splice(index + 1, 0, {
-                expect: row.expect,
-                actual: row.actual,
-                comparator: row.comparator,
-                type: row.type,
-                desc: row.desc,
-            });
-        },
-        handleDelete(index, row) {
-            this.tableData.splice(index, 1);
-        },
-
-        // 类型转换
-        parseType(type, value) {
-            let tempValue;
-            const msg = value + ' => ' + this.dataTypeOptions[type - 1].label + ' 转换异常, 该数据自动剔除';
-            switch (type) {
-                case 1:
-                    tempValue = value;
-                    break;
-                case 2:
-                    // 包含$是引用类型,可以任意类型
-                    if (value.indexOf("$") != -1) {
-                        tempValue = value
-                    } else {
-                        tempValue = parseInt(value);
-                    }
-                    break;
-                case 3:
-                    tempValue = parseFloat(value);
-                    break;
-                case 4:
-                    if (value === 'False' || value === 'True') {
-                        let bool = {
-                            'True': true,
-                            'False': false
-                        };
-                        tempValue = bool[value];
-                    } else {
-                        this.$notify.error({
-                            title: '类型转换错误',
-                            message: msg,
-                            duration: 2000
-                        });
-                        return 'exception'
-                    }
-                    break;
-                case 5:
-                case 6:
-                    try {
-                        tempValue = JSON.parse(value);
-                    } catch (err) {
-                        // 包含$是引用类型,可以任意类型
-                        if (value.indexOf("$") != -1) {
-                            tempValue = value
-                        } else {
-                            tempValue = false
-                        }
-                    }
-                    break;
-                case 7:
-                    // None 转 null
-                    if (value === 'None') {
-                        tempValue = null
-                    } else if (value.indexOf("$") != -1) {
-                        tempValue = value
-                    } else {
-                        this.$notify.error({
-                            title: '类型转换错误',
-                            message: msg,
-                            duration: 2000
-                        });
-                        return 'exception'
-                    }
-                    break
-            }
-            if (tempValue !== 0 && !tempValue && type !== 4 && type !== 1 && type !== 7) {
-                this.$notify.error({
-                    title: '类型转换错误',
-                    message: msg,
-                    duration: 2000
-                });
-                return 'exception'
-            }
-            return tempValue;
-        },
-
-        parseValidate() {
-            let validate = {
-                validate: []
-            };
-            for (let content of this.tableData) {
-                if (content['actual'] !== '') {
-                    let obj = {};
-                    const expect = this.parseType(content['type'], content['expect']);
-                    if (expect === 'exception') {
-                        continue;
-                    }
-                    obj[content['comparator']] = [content['actual'], expect, content['desc']];
-                    validate.validate.push(obj);
-                }
-            }
-            return validate;
-        }
+  methods: {
+    querySearch(queryString, cb) {
+      const validateOptions = this.validateOptions
+      const results = queryString ? validateOptions.filter(this.createFilter(queryString)) : validateOptions
+      cb(results)
     },
-    data() {
-        return {
-            currentValidate: '',
-            currentRow: '',
-            tableData: [{
-                expect: '',
-                actual: '',
-                comparator: 'equals',
-                type: 1
-            }],
 
-            dataTypeOptions: [{
-                label: 'String',
-                value: 1
-            }, {
-                label: 'Integer',
-                value: 2
-            }, {
-                label: 'Float',
-                value: 3
-            }, {
-                label: 'Boolean',
-                value: 4
-            }, {
-                label: 'List',
-                value: 5
-            }, {
-                label: 'Dict',
-                value: 6
-            }, {
-                label: 'None',
-                value: 7
-            }
-            ],
-
-            validateOptions: [{
-                value: 'equals'
-            }, {
-                value: 'less_than'
-            }, {
-                value: 'less_than_or_equals'
-            }, {
-                value: 'greater_than'
-            }, {
-                value: 'greater_than_or_equals'
-            }, {
-                value: 'not_equals'
-            }, {
-                value: 'string_equals'
-            }, {
-                value: 'length_equals'
-            }, {
-                value: 'length_greater_than'
-            }, {
-                value: 'length_greater_than_or_equals'
-            }, {
-                value: 'length_less_than'
-            }, {
-                value: 'length_less_than_or_equals'
-            }, {
-                value: 'contains'
-            }, {
-                value: 'not_contains'
-            }, {
-                value: 'contained_by'
-            }, {
-                value: 'list_any_item_contains'
-            }, {
-                value: 'list_all_item_contains'
-            }, {
-                value: 'type_match'
-            }, {
-                value: 'regex_match'
-            }, {
-                value: 'startswith'
-            }, {
-                value: 'endswith'
-            }]
-        }
+    createFilter(queryString) {
+      return (validateOptions) => {
+        return (validateOptions.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0)
+      }
     },
-    name: "Validate"
+
+    cellMouseEnter(row) {
+      this.currentRow = row
+    },
+
+    cellMouseLeave(row) {
+      this.currentRow = ''
+    },
+
+    handleEdit(index, row) {
+      this.tableData.push({
+        expect: '',
+        actual: '',
+        comparator: 'equals',
+        type: 1
+      })
+    },
+    handleCopy(index, row) {
+      this.tableData.splice(index + 1, 0, {
+        expect: row.expect,
+        actual: row.actual,
+        comparator: row.comparator,
+        type: row.type,
+        desc: row.desc
+      })
+    },
+    handleDelete(index, row) {
+      this.tableData.splice(index, 1)
+    },
+
+    // 类型转换
+    parseType(type, value) {
+      let tempValue
+      const msg = value + ' => ' + this.dataTypeOptions[type - 1].label + ' 转换异常, 该数据自动剔除'
+      switch (type) {
+        case 1:
+          tempValue = value
+          break
+        case 2:
+          // 包含$是引用类型,可以任意类型
+          if (value.indexOf('$') != -1) {
+            tempValue = value
+          } else {
+            tempValue = parseInt(value)
+          }
+          break
+        case 3:
+          tempValue = parseFloat(value)
+          break
+        case 4:
+          if (value === 'False' || value === 'True') {
+            const bool = {
+              'True': true,
+              'False': false
+            }
+            tempValue = bool[value]
+          } else {
+            this.$notify.error({
+              title: '类型转换错误',
+              message: msg,
+              duration: 2000
+            })
+            return 'exception'
+          }
+          break
+        case 5:
+        case 6:
+          try {
+            tempValue = JSON.parse(value)
+          } catch (err) {
+            // 包含$是引用类型,可以任意类型
+            if (value.indexOf('$') != -1) {
+              tempValue = value
+            } else {
+              tempValue = false
+            }
+          }
+          break
+        case 7:
+          // None 转 null
+          if (value === 'None') {
+            tempValue = null
+          } else if (value.indexOf('$') != -1) {
+            tempValue = value
+          } else {
+            this.$notify.error({
+              title: '类型转换错误',
+              message: msg,
+              duration: 2000
+            })
+            return 'exception'
+          }
+          break
+      }
+      if (tempValue !== 0 && !tempValue && type !== 4 && type !== 1 && type !== 7) {
+        this.$notify.error({
+          title: '类型转换错误',
+          message: msg,
+          duration: 2000
+        })
+        return 'exception'
+      }
+      return tempValue
+    },
+
+    parseValidate() {
+      const validate = {
+        validate: []
+      }
+      for (const content of this.tableData) {
+        if (content['actual'] !== '') {
+          const obj = {}
+          const expect = this.parseType(content['type'], content['expect'])
+          if (expect === 'exception') {
+            continue
+          }
+          obj[content['comparator']] = [content['actual'], expect, content['desc']]
+          validate.validate.push(obj)
+        }
+      }
+      return validate
+    }
+  },
+  data() {
+    return {
+      currentValidate: '',
+      currentRow: '',
+      tableData: [{
+        expect: '',
+        actual: '',
+        comparator: 'equals',
+        type: 1
+      }],
+
+      dataTypeOptions: [{
+        label: 'String',
+        value: 1
+      }, {
+        label: 'Integer',
+        value: 2
+      }, {
+        label: 'Float',
+        value: 3
+      }, {
+        label: 'Boolean',
+        value: 4
+      }, {
+        label: 'List',
+        value: 5
+      }, {
+        label: 'Dict',
+        value: 6
+      }, {
+        label: 'None',
+        value: 7
+      }
+      ],
+
+      validateOptions: [{
+        value: 'equals'
+      }, {
+        value: 'less_than'
+      }, {
+        value: 'less_than_or_equals'
+      }, {
+        value: 'greater_than'
+      }, {
+        value: 'greater_than_or_equals'
+      }, {
+        value: 'not_equals'
+      }, {
+        value: 'string_equals'
+      }, {
+        value: 'length_equals'
+      }, {
+        value: 'length_greater_than'
+      }, {
+        value: 'length_greater_than_or_equals'
+      }, {
+        value: 'length_less_than'
+      }, {
+        value: 'length_less_than_or_equals'
+      }, {
+        value: 'contains'
+      }, {
+        value: 'not_contains'
+      }, {
+        value: 'contained_by'
+      }, {
+        value: 'list_any_item_contains'
+      }, {
+        value: 'list_all_item_contains'
+      }, {
+        value: 'type_match'
+      }, {
+        value: 'regex_match'
+      }, {
+        value: 'startswith'
+      }, {
+        value: 'endswith'
+      }]
+    }
+  },
+  name: 'Validate'
 }
 </script>
 

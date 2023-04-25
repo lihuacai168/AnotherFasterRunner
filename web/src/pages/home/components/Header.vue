@@ -23,29 +23,29 @@
 
 <script>
 export default {
-    data() {
-        return {
-            platformTitle: this.$store.state.FasterRunner + '自动化测试平台'
-        }
+  data() {
+    return {
+      platformTitle: this.$store.state.FasterRunner + '自动化测试平台'
+    }
+  },
+  computed: {
+    githubURL() {
+      return 'https://github.com/lihuacai168/AnotherFasterRunner'
     },
-    computed: {
-        githubURL() {
-            return 'https://github.com/lihuacai168/AnotherFasterRunner'
-        },
-        docURL() {
-            return 'https://www.yuque.com/lihuacai/fasterunner/cn5ncg'
-        }
-    },
-    methods: {
-        handleLogOut() {
-            this.$store.commit('isLogin', null)
-            this.setLocalValue('token', null)
-            this.setLocalValue('is_superuser', false)
-            this.setLocalValue('show_hosts', false)
-            this.$router.push({name: 'Login'})
-        }
-    },
-    name: 'Header'
+    docURL() {
+      return 'https://www.yuque.com/lihuacai/fasterunner/cn5ncg'
+    }
+  },
+  methods: {
+    handleLogOut() {
+      this.$store.commit('isLogin', null)
+      this.setLocalValue('token', null)
+      this.setLocalValue('is_superuser', false)
+      this.setLocalValue('show_hosts', false)
+      this.$router.push({name: 'Login'})
+    }
+  },
+  name: 'Header'
 }
 </script>
 

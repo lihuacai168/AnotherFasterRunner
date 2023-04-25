@@ -14,7 +14,7 @@
                             v-show="configData.count !== 0 "
                             background
                             @current-change="handleCurrentChange"
-                            :current-page.sync="currentPage"
+                            v-model:current-page="currentPage"
                             layout="total, prev, pager, next, jumper"
                             :total="configData.count"
                         >
@@ -47,7 +47,7 @@
                             label="配置名称"
 
                         >
-                            <template slot-scope="scope">
+                            <template v-slot="scope">
                                 <div>{{ scope.row.name }}</div>
                             </template>
                         </el-table-column>
@@ -56,7 +56,7 @@
 
                             label="基本请求地址"
                         >
-                            <template slot-scope="scope">
+                            <template v-slot="scope">
                                 <div v-text="scope.row.base_url === '' ? '无' : scope.row.base_url"></div>
 
                             </template>
@@ -66,7 +66,7 @@
                             width="90"
                             label="是否为默认"
                         >
-                            <template slot-scope="scope">
+                            <template v-slot="scope">
                                 <el-switch
                                     disabled
                                     v-model="scope.row.is_default"
@@ -80,7 +80,7 @@
 
                             label="更新时间"
                         >
-                            <template slot-scope="scope">
+                            <template v-slot="scope">
                                 <div>{{ scope.row.update_time|datetimeFormat }}</div>
 
                             </template>
@@ -89,7 +89,7 @@
                         <el-table-column
 
                         >
-                            <template slot-scope="scope">
+                            <template v-slot="scope">
                                 <el-row v-show="currentRow === scope.row">
                                     <el-button
                                         type="info"
@@ -129,139 +129,138 @@
 
 <script>
 export default {
-    name: "ConfigList",
-    props: {
-        back: Boolean,
-        project: {
-            require: true
-        },
-        del: Boolean
+  name: 'ConfigList',
+  props: {
+    back: Boolean,
+    project: {
+      require: true
     },
-    data() {
-        return {
-            search: '',
-            selectConfig: [],
-            currentRow: '',
-            currentPage: 1,
-            configData: {
-                count: 0,
-                results: []
-            }
-        }
-    },
-    watch: {
-        back() {
-            this.getConfigList();
-        },
-
-        del() {
-            if (this.selectConfig.length !== 0) {
-                this.$confirm('此操作将永久删除配置，是否继续?', '提示', {
-                    confirmButtonText: '确定',
-                    cancelButtonText: '取消',
-                    type: 'warning',
-                }).then(() => {
-                    this.$api.delAllConfig({data: this.selectConfig}).then(resp => {
-                        if (resp.success) {
-                            this.getConfigList();
-                        } else {
-                            this.$message.error(resp.msg);
-                        }
-                    })
-                })
-            } else {
-                this.$notify.warning({
-                    title: '提示',
-                    message: '请至少勾选一个配置',
-                    duration: this.$store.state.duration
-                })
-            }
-        }
-    },
-
-    methods: {
-        handleSelectionChange(val) {
-            this.selectConfig = val;
-        },
-
-        handleCurrentChange(val) {
-            this.$api.getConfigPaginationBypage({
-                params: {
-                    page: this.currentPage,
-                    project: this.project,
-                    search: this.search
-                }
-            }).then(resp => {
-                this.configData = resp;
-            })
-        },
-
-        //删除api
-        handleDelConfig(index) {
-            this.$confirm('此操作将永久删除该配置，是否继续?', '提示', {
-                confirmButtonText: '确定',
-                cancelButtonText: '取消',
-                type: 'warning',
-            }).then(() => {
-                this.$api.deleteConfig(index).then(resp => {
-                    if (resp.success) {
-                        this.getConfigList();
-                    } else {
-                        this.$message.error(resp.msg);
-                    }
-                })
-            })
-        },
-
-        handleEditConfig(row) {
-            this.$emit('respConfig', row);
-        },
-
-        handleCopyConfig(id, name) {
-            this.$prompt('请输入配置名称', '提示', {
-                confirmButtonText: '确定',
-                inputPattern: /^[\s\S]*.*[^\s][\s\S]*$/,
-                inputErrorMessage: '配置名称不能为空',
-                inputValue: name
-            }).then(({value}) => {
-                this.$api.copyConfig(id, {
-                    'name': value
-                }).then(resp => {
-                    if (resp.success) {
-                        this.getConfigList();
-                    } else {
-                        this.$message.error(resp.msg);
-                    }
-                })
-            })
-        },
-
-        cellMouseEnter(row) {
-            this.currentRow = row;
-        },
-
-        cellMouseLeave(row) {
-            this.currentRow = '';
-        },
-
-        getConfigList() {
-            this.$api.configList({
-                params: {
-                    project: this.project,
-                    search: this.search
-                }
-            }).then(resp => {
-                this.configData = resp;
-            })
-        },
-    },
-    mounted() {
-        this.getConfigList();
+    del: Boolean
+  },
+  data() {
+    return {
+      search: '',
+      selectConfig: [],
+      currentRow: '',
+      currentPage: 1,
+      configData: {
+        count: 0,
+        results: []
+      }
     }
+  },
+  watch: {
+    back() {
+      this.getConfigList()
+    },
+
+    del() {
+      if (this.selectConfig.length !== 0) {
+        this.$confirm('此操作将永久删除配置，是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          this.$api.delAllConfig({data: this.selectConfig}).then(resp => {
+            if (resp.success) {
+              this.getConfigList()
+            } else {
+              this.$message.error(resp.msg)
+            }
+          })
+        })
+      } else {
+        this.$notify.warning({
+          title: '提示',
+          message: '请至少勾选一个配置',
+          duration: this.$store.state.duration
+        })
+      }
+    }
+  },
+
+  methods: {
+    handleSelectionChange(val) {
+      this.selectConfig = val
+    },
+
+    handleCurrentChange(val) {
+      this.$api.getConfigPaginationBypage({
+        params: {
+          page: this.currentPage,
+          project: this.project,
+          search: this.search
+        }
+      }).then(resp => {
+        this.configData = resp
+      })
+    },
+
+    // 删除api
+    handleDelConfig(index) {
+      this.$confirm('此操作将永久删除该配置，是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.$api.deleteConfig(index).then(resp => {
+          if (resp.success) {
+            this.getConfigList()
+          } else {
+            this.$message.error(resp.msg)
+          }
+        })
+      })
+    },
+
+    handleEditConfig(row) {
+      this.$emit('respConfig', row)
+    },
+
+    handleCopyConfig(id, name) {
+      this.$prompt('请输入配置名称', '提示', {
+        confirmButtonText: '确定',
+        inputPattern: /^[\s\S]*.*[^\s][\s\S]*$/,
+        inputErrorMessage: '配置名称不能为空',
+        inputValue: name
+      }).then(({value}) => {
+        this.$api.copyConfig(id, {
+          'name': value
+        }).then(resp => {
+          if (resp.success) {
+            this.getConfigList()
+          } else {
+            this.$message.error(resp.msg)
+          }
+        })
+      })
+    },
+
+    cellMouseEnter(row) {
+      this.currentRow = row
+    },
+
+    cellMouseLeave(row) {
+      this.currentRow = ''
+    },
+
+    getConfigList() {
+      this.$api.configList({
+        params: {
+          project: this.project,
+          search: this.search
+        }
+      }).then(resp => {
+        this.configData = resp
+      })
+    }
+  },
+  mounted() {
+    this.getConfigList()
+  }
 }
 </script>
 
 <style scoped>
-
 
 </style>
