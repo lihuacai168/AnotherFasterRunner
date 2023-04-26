@@ -73,64 +73,63 @@
 <script>
 
 export default {
-  // eslint-disable-next-line vue/multi-word-component-names
-  name: 'Login',
+    name: "Login",
 
-  data() {
-    return {
-      loginForm: {
-        username: '',
-        password: ''
-      },
-      usernameInvalid: '',
-      passwordInvalid: ''
-    }
-  },
+    data() {
+        return {
+            loginForm: {
+                username: '',
+                password: '',
+            },
+            usernameInvalid: '',
+            passwordInvalid: ''
+        };
+    },
 
-  methods: {
-    validateUserName() {
-      if (this.loginForm.username.replace(/(^\s*)/g, '') === '') {
-        this.usernameInvalid = '用户名不能为空'
-        return false
-      }
-      return true
-    },
-    validatePassword() {
-      if (this.loginForm.password.replace(/(^\s*)/g, '') === '') {
-        this.passwordInvalid = '密码不能为空'
-        return false
-      }
-      return true
-    },
-    handleLoginSuccess(resp) {
-      if (resp.success) {
-        this.$router.push({name: 'ProjectList'})
-        this.$store.commit('isLogin', resp.token)
-        this.$store.commit('setUser', resp.user)
-        this.$store.commit('setIsSuperuser', resp.is_superuser)
-        this.$store.commit('setRouterName', 'ProjectList')
-        this.$store.commit('setShowHots', resp.show_hosts)
-        this.setLocalValue('token', resp.token)
-        this.setLocalValue('user', resp.user)
-        this.setLocalValue('routerName', 'ProjectList')
-        this.setLocalValue('is_superuser', resp.is_superuser)
-        this.setLocalValue('show_hosts', resp.show_hosts)
-      } else {
-        this.$message.error({
-          message: resp.msg,
-          duration: 2000,
-          center: true
-        })
-      }
-    },
-    submitForm() {
-      if (this.validateUserName() && this.validatePassword()) {
-        this.$api.login(this.loginForm).then(resp => {
-          this.handleLoginSuccess(resp)
-        })
-      }
+    methods: {
+        validateUserName() {
+            if (this.loginForm.username.replace(/(^\s*)/g, "") === '') {
+                this.usernameInvalid = "用户名不能为空";
+                return false;
+            }
+            return true
+        },
+        validatePassword() {
+            if (this.loginForm.password.replace(/(^\s*)/g, "") === '') {
+                this.passwordInvalid = "密码不能为空";
+                return false;
+            }
+            return true;
+        },
+        handleLoginSuccess(resp) {
+            if (resp.success) {
+                this.$router.push({name: 'ProjectList'});
+                this.$store.commit("isLogin", resp.token);
+                this.$store.commit("setUser", resp.user);
+                this.$store.commit("setIsSuperuser", resp.is_superuser);
+                this.$store.commit("setRouterName", 'ProjectList');
+                this.$store.commit("setShowHots", resp.show_hosts);
+                this.setLocalValue("token", resp.token);
+                this.setLocalValue("user", resp.user);
+                this.setLocalValue("routerName", 'ProjectList');
+                this.setLocalValue("is_superuser", resp.is_superuser);
+                this.setLocalValue("show_hosts", resp.show_hosts);
+            } else {
+                this.$message.error({
+                    message: resp.msg,
+                    duration: 2000,
+                    center: true
+                })
+            }
+        },
+        submitForm() {
+            if (this.validateUserName() && this.validatePassword()) {
+                this.$api.login(this.loginForm).then(resp => {
+                    this.handleLoginSuccess(resp)
+                })
+            }
+        }
     }
-  }
 }
 </script>
 

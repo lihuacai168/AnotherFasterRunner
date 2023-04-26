@@ -16,7 +16,7 @@
 
                     <el-dialog
                         title="新建节点"
-                        v-model:visible="dialogVisible"
+                        :visible.sync="dialogVisible"
                         width="30%"
                         align="center"
                     >
@@ -42,6 +42,7 @@
                       </span>
                     </el-dialog>
 
+
                     <el-button
                         v-show="false"
                         :disabled="currentNode === '' || !isSuperuser"
@@ -53,6 +54,7 @@
                     >删除节点
                     </el-button>
 
+
                     <el-button
                         v-show="false"
                         :disabled="currentNode === '' "
@@ -62,6 +64,7 @@
                         @click="renameNode(currentNode)"
                     >重命名
                     </el-button>
+
 
                     <el-button
                         :disabled="currentNode === '' "
@@ -82,7 +85,7 @@
                     </el-button>
 
                     <el-dialog width="30%" title="导入YAPI接口" align="center"
-                               v-model:visible="importYAPIdialogVisible">
+                               :visible.sync="importYAPIdialogVisible">
                         <el-form ref="elForm" :model="YAPIformData" :rules="rules" size="medium" label-width="100px">
                             <el-form-item label="YAPI的地址" prop="yapi_base_url">
                                 <el-input v-model="YAPIformData.yapi_base_url" readonly
@@ -137,6 +140,7 @@
                         </el-option>
                     </el-select>
 
+
                     <el-button
                         v-if="!addAPIFlag"
                         style="margin-left: 20px"
@@ -157,6 +161,7 @@
                     >移动API
                     </el-button>
 
+
                     <el-button
                         v-if="isSuperuser"
                         type="danger"
@@ -167,6 +172,7 @@
                         :disabled="!isSuperuser"
                         @click="del = !del"
                     ></el-button>
+
 
                     <el-switch
                         style="margin-left: 10px"
@@ -266,13 +272,13 @@
                     :del="del"
                     :back="back"
                     :run="run"
-                    v-model:move="move"
-                    v-model:listCurrentPage="listCurrentPage"
-                    v-model:visibleTag="visibleTag"
-                    v-model:rigEnv="rigEnv"
-                    v-model:only-me="onlyMe"
-                    v-model:showYAPI="showYAPI"
-                    v-model:isSelectAPI="isSelectAPI"
+                    :move.sync="move"
+                    :listCurrentPage.sync="listCurrentPage"
+                    :visibleTag.sync="visibleTag"
+                    :rigEnv.sync="rigEnv"
+                    :only-me.sync="onlyMe"
+                    :showYAPI.sync="showYAPI"
+                    :isSelectAPI.sync="isSelectAPI"
                     @click-pager="handleChangePage"
                 >
                 </api-list>
@@ -288,369 +294,372 @@ import ApiBody from './components/ApiBody'
 import ApiList from './components/ApiList'
 
 export default {
-  watch: {
-    filterText(val) {
-      this.$refs.tree2.filter(val)
-    }
-  },
-  components: {
-    // 子组件
-    ApiBody,
-    ApiList
-  },
+    watch: {
+        filterText(val) {
+            this.$refs.tree2.filter(val);
+        }
+    },
+    components: {
+        // 子组件
+        ApiBody,
+        ApiList
+    },
 
-  computed: {
-    initResponse: {
-      get() {
-        return this.addAPIFlag
-      },
-      set(value) {
-        this.addAPIFlag = value
-        this.response = {
-          id: '',
-          body: {
-            name: '',
-            times: 1,
-            url: '',
-            method: 'POST',
-            header: [{
-              key: '',
-              value: '',
-              desc: ''
-            }],
-            request: {
-              data: [{
-                key: '',
-                value: '',
-                desc: '',
-                type: 1
-              }],
-              params: [{
-                key: '',
-                value: '',
-                desc: '',
-                type: 1
-              }],
-              json_data: ''
+    computed: {
+        initResponse: {
+            get() {
+                return this.addAPIFlag;
             },
-            validate: [{
-              expect: '',
-              actual: '',
-              comparator: 'equals',
-              type: 1
-            }],
-            variables: [{
-              key: '',
-              value: '',
-              desc: '',
-              type: 1
-            }],
-            extract: [{
-              key: '',
-              value: '',
-              desc: ''
-            }],
-            hooks: [{
-              setup: '',
-              teardown: ''
-            }]
-          }
-        }
-      }
-    }
-  },
-  data() {
-    const YAPIformDataDefaultValue = '请到项目详情编辑'
-    return {
-      mouseNodeId: -1,
-      isSuperuser: this.$store.state.is_superuser,
-      userName: this.$store.state.user,
-      projectInfo: {},
-      configOptions: [],
-      hostOptions: [],
-      // currentConfig: '请选择',
-      currentConfig: '',
-      currentHost: '请选择',
-      back: false,
-      del: false,
-      run: false,
-      move: false,
-      response: '',
-      nodeForm: {
-        name: ''
-      },
-      rules: {
-        yapi_base_url: [{
-          required: true,
-          message: 'yapi的openapi url',
-          trigger: 'blur'
-        }],
-        yapi_openapi_token: [{
-          required: true,
-          message: 'yapi的openapi token',
-          trigger: 'blur'
-        }],
-        name: [
-          {required: true, message: '请输入节点名称', trigger: 'blur'},
-          {min: 1, max: 50, message: '最多不超过50个字符', trigger: 'blur'}
-        ]
-
-      },
-      radio: '根节点',
-      addAPIFlag: false,
-      treeId: '',
-      maxId: '',
-      dialogVisible: false,
-      importYAPIdialogVisible: false,
-      currentNode: '',
-      data: '',
-      filterText: '',
-      expand: '&#xe65f;',
-      dataTree: [],
-      listCurrentPage: 1,
-      visibleTag: '',
-      rigEnv: '',
-      onlyMe: true,
-      showYAPI: true,
-      isSelectAPI: false,
-      isSaveAs: false,
-      YAPIformDataDefaultValue: YAPIformDataDefaultValue,
-      YAPIformData: {
-        yapi_base_url: YAPIformDataDefaultValue,
-        yapi_openapi_token: YAPIformDataDefaultValue
-      }
-    }
-  },
-  methods: {
-    handleDragEnd() {
-      this.updateTree(false)
-    },
-    handleAddSuccess() {
-      this.rigEnv = ''
-      this.visibleTag = ''
-      this.back = !this.back
-      this.addAPIFlag = false
-      this.isSaveAs = false
-    },
-
-    handleAPI(response) {
-      this.addAPIFlag = true
-      this.response = response
-      this.isSaveAs = true
-    },
-
-    handleChangePage(val) {
-      this.listCurrentPage = val
-    },
-
-    getTree() {
-      this.$api.getTree(this.$route.params.id, {params: {type: 1}}).then(resp => {
-        this.dataTree = resp['tree']
-        this.treeId = resp['id']
-        this.maxId = resp['max']
-      })
-    },
-    getConfig() {
-      this.$api.getAllConfig(this.$route.params.id).then(resp => {
-        this.configOptions = resp
-        this.configOptions.unshift({
-          name: '请选择'
-        })
-        const _config = this.configOptions.filter(item => item.is_default === true)
-        if (_config.length) {
-          this.currentConfig = _config[0]
-        } else {
-          this.currentConfig = '请选择'
-        }
-      })
-    },
-
-    getHost() {
-      this.$api.getAllHost(this.$route.params.id).then(resp => {
-        this.hostOptions = resp
-        this.hostOptions.push({
-          name: '请选择'
-        })
-      })
-    },
-
-    updateTree(mode) {
-      this.$api.updateTree(this.treeId, {
-        body: this.dataTree,
-        node: this.currentNode.id,
-        mode: mode,
-        type: 1
-      }).then(resp => {
-        if (resp['success']) {
-          this.dataTree = resp['data']['tree']
-          this.maxId = resp['data']['max']
-        } else {
-          this.$message.error(resp['msg'])
-        }
-      })
-    },
-
-    deleteNode(node) {
-      this.$confirm(`删除 ${node.label} 节点下所有接口, 是否继续?`, '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
-        if (this.currentNode === '') {
-          this.$message.info('请选择一个节点')
-        } else {
-          if (this.currentNode.children.length !== 0) {
-            this.$message.warning('此节点有子节点，不可删除！')
-          } else {
-            this.remove(this.currentNode, this.data)
-            this.updateTree(true)
-          }
-        }
-      })
-    },
-
-    renameNode(nodeObj) {
-      this.$prompt('请输入节点名', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        inputPattern: /\S/,
-        inputErrorMessage: '节点名称不能为空',
-        inputValue: nodeObj.label
-      }).then(({value}) => {
-        const parent = this.data.parent
-        const children = parent.data.children || parent.data
-        const index = children.findIndex(d => d.id === this.currentNode.id)
-        children[index]['label'] = value
-        this.updateTree(false)
-      })
-    },
-
-    handleConfirm(formName) {
-      console.log(formName)
-      this.$refs[formName].validate((valid) => {
-        if (valid) {
-          this.append(this.currentNode)
-          this.updateTree(false)
-          this.dialogVisible = false
-          this.nodeForm.name = ''
-        }
-      })
-    },
-
-    handleNodeClick(node, data) {
-      // 点击分节点之前,先把页码设置为1.2019年7月2日,并且传给子组件.
-      this.listCurrentPage = 1
-      this.visibleTag = ''
-      this.addAPIFlag = false
-      this.isSaveAs = false
-      this.currentNode = node
-      this.data = data
-      this.rigEnv = ''
-    },
-
-    filterNode(value, data) {
-      if (!value) return true
-      return data.label.indexOf(value) !== -1
-    },
-
-    remove(data, node) {
-      const parent = node.parent
-      const children = parent.data.children || parent.data
-      const index = children.findIndex(d => d.id === data.id)
-      children.splice(index, 1)
-    },
-
-    append(data) {
-      const newChild = {id: ++this.maxId, label: this.nodeForm.name, children: []}
-      if (data === '' || this.dataTree.length === 0 || this.radio === '根节点') {
-        this.dataTree.push(newChild)
-        return
-      }
-      if (!data.children) {
-        this.$set(data, 'children', [])
-      }
-      data.children.push(newChild)
-    },
-
-    handleBackList() {
-      this.addAPIFlag = false
-      this.isSaveAs = false
-    },
-
-    getYapiInfo() {
-      const pk = this.$route.params.id
-      this.$api.getProjectYapiInfo(pk).then(res => {
-        this.projectInfo = res
-        if (res.yapi_base_url !== '') {
-          this.YAPIformData.yapi_base_url = res.yapi_base_url
-        }
-        if (res.yapi_openapi_token !== '') {
-          this.YAPIformData.yapi_openapi_token = res.yapi_openapi_token
-        }
-      })
-    },
-    mouseenter(node) {
-      this.mouseNodeId = node.id
-    },
-    mouseleave() {
-      this.mouseNodeId = -1
-    },
-    handleConfirmYAPI() {
-      this.$refs['elForm'].validate(valid => {
-        if (!valid) return
-        const project_id = this.$route.params.id
-        this.$message.info({
-          title: '提示',
-          message: '如果是首次导入，可能时间稍长，请耐心等待~',
-          duration: this.$store.state.duration
-        })
-        this.importYAPIdialogVisible = false
-        this.$api.addYAPI(project_id).then(resp => {
-          if (resp.success) {
-            const created = '新增：' + resp.createdCount + ' 条API'
-            const updated = '更新：' + resp.updatedCount + ' 条API'
-            if (resp.createdCount > 0 || resp.updatedCount > 0) {
-              this.$notify.success({
-                title: '导入API提示',
-                message: created + ' ；' + updated,
-                duration: this.$store.state.duration
-              })
+            set(value) {
+                this.addAPIFlag = value;
+                this.response = {
+                    id: '',
+                    body: {
+                        name: '',
+                        times: 1,
+                        url: '',
+                        method: 'POST',
+                        header: [{
+                            key: "",
+                            value: "",
+                            desc: ""
+                        }],
+                        request: {
+                            data: [{
+                                key: "",
+                                value: "",
+                                desc: "",
+                                type: 1
+                            }],
+                            params: [{
+                                key: "",
+                                value: "",
+                                desc: "",
+                                type: 1
+                            }],
+                            json_data: ''
+                        },
+                        validate: [{
+                            expect: "",
+                            actual: "",
+                            comparator: "equals",
+                            type: 1
+                        }],
+                        variables: [{
+                            key: "",
+                            value: "",
+                            desc: "",
+                            type: 1
+                        }],
+                        extract: [{
+                            key: "",
+                            value: "",
+                            desc: ""
+                        }],
+                        hooks: [{
+                            setup: "",
+                            teardown: ""
+                        }]
+                    }
+                };
             }
-            const NOT_CREATED_AND_UPDATED_CODE = '0002'
-            if (resp.code === NOT_CREATED_AND_UPDATED_CODE) {
-              this.$notify.success({
-                title: '导入API提示',
-                message: resp.msg,
-                duration: this.$store.state.duration
-              })
-            }
-            const CREATED_OR_UPDATED_CODE = '0001'
-            if (resp.code === CREATED_OR_UPDATED_CODE) {
-              this.getTree()
-              // 重置tree节点，触发子组件更新apiList
-              // TODO 改成直接调用子组件的getAPIList方法
-              this.currentNode = ''
-              this.onlyMe = false
-              this.showYAPI = true
-            }
-          } else {
-            this.$message.error({
-              message: resp.msg,
-              duration: this.$store.state.duration
+        },
+    },
+    data() {
+        const YAPIformDataDefaultValue = '请到项目详情编辑'
+        return {
+            mouseNodeId: -1,
+            isSuperuser: this.$store.state.is_superuser,
+            userName: this.$store.state.user,
+            projectInfo: {},
+            configOptions: [],
+            hostOptions: [],
+            // currentConfig: '请选择',
+            currentConfig: '',
+            currentHost: '请选择',
+            back: false,
+            del: false,
+            run: false,
+            move: false,
+            response: '',
+            nodeForm: {
+                name: '',
+            },
+            rules: {
+                yapi_base_url: [{
+                    required: true,
+                    message: 'yapi的openapi url',
+                    trigger: 'blur'
+                }],
+                yapi_openapi_token: [{
+                    required: true,
+                    message: 'yapi的openapi token',
+                    trigger: 'blur'
+                }],
+                name: [
+                    {required: true, message: '请输入节点名称', trigger: 'blur'},
+                    {min: 1, max: 50, message: '最多不超过50个字符', trigger: 'blur'}
+                ],
+
+            },
+            radio: '根节点',
+            addAPIFlag: false,
+            treeId: '',
+            maxId: '',
+            dialogVisible: false,
+            importYAPIdialogVisible: false,
+            currentNode: '',
+            data: '',
+            filterText: '',
+            expand: '&#xe65f;',
+            dataTree: [],
+            listCurrentPage: 1,
+            visibleTag: '',
+            rigEnv: '',
+            onlyMe: true,
+            showYAPI: true,
+            isSelectAPI: false,
+            isSaveAs: false,
+            YAPIformDataDefaultValue: YAPIformDataDefaultValue,
+            YAPIformData: {
+                yapi_base_url: YAPIformDataDefaultValue,
+                yapi_openapi_token: YAPIformDataDefaultValue,
+            },
+        }
+    },
+    methods: {
+        handleDragEnd() {
+            this.updateTree(false);
+        },
+        handleAddSuccess() {
+            this.rigEnv = '';
+            this.visibleTag = '';
+            this.back = !this.back;
+            this.addAPIFlag = false;
+            this.isSaveAs = false;
+        },
+
+        handleAPI(response) {
+            this.addAPIFlag = true;
+            this.response = response;
+            this.isSaveAs = true;
+        },
+
+        handleChangePage(val) {
+            this.listCurrentPage = val;
+        },
+
+        getTree() {
+            this.$api.getTree(this.$route.params.id, {params: {type: 1}}).then(resp => {
+                this.dataTree = resp['tree'];
+                this.treeId = resp['id'];
+                this.maxId = resp['max'];
             })
-          }
-        })
-      })
-    }
+        },
+        getConfig() {
+            this.$api.getAllConfig(this.$route.params.id).then(resp => {
+                this.configOptions = resp;
+                this.configOptions.unshift({
+                    name: '请选择'
+                });
+                const _config = this.configOptions.filter(item => item.is_default === true);
+                if (_config.length) {
+                    this.currentConfig = _config[0]
+                } else {
+                    this.currentConfig = '请选择'
+                }
+            });
 
-  },
-  name: 'RecordApi',
-  mounted() {
-    this.getTree()
-    this.getConfig()
-    this.getHost()
-    this.getYapiInfo()
-  }
+        },
+
+        getHost() {
+            this.$api.getAllHost(this.$route.params.id).then(resp => {
+                this.hostOptions = resp;
+                this.hostOptions.push({
+                    name: '请选择'
+                })
+            })
+        },
+
+        updateTree(mode) {
+            this.$api.updateTree(this.treeId, {
+                body: this.dataTree,
+                node: this.currentNode.id,
+                mode: mode,
+                type: 1
+            }).then(resp => {
+                if (resp['success']) {
+                    this.dataTree = resp['data']['tree'];
+                    this.maxId = resp['data']['max'];
+                } else {
+                    this.$message.error(resp['msg']);
+                }
+            })
+        },
+
+        deleteNode(node) {
+            this.$confirm(`删除 ${node.label} 节点下所有接口, 是否继续?`, '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+            }).then(() => {
+                if (this.currentNode === '') {
+                    this.$message.info('请选择一个节点');
+                } else {
+                    if (this.currentNode.children.length !== 0) {
+                        this.$message.warning('此节点有子节点，不可删除！');
+                    } else {
+                        this.remove(this.currentNode, this.data);
+                        this.updateTree(true);
+                    }
+                }
+
+            })
+        },
+
+        renameNode(nodeObj) {
+            this.$prompt('请输入节点名', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                inputPattern: /\S/,
+                inputErrorMessage: '节点名称不能为空',
+                inputValue: nodeObj.label
+            }).then(({value}) => {
+                const parent = this.data.parent;
+                const children = parent.data.children || parent.data;
+                const index = children.findIndex(d => d.id === this.currentNode.id);
+                children[index]["label"] = value
+                this.updateTree(false);
+            });
+        },
+
+
+        handleConfirm(formName) {
+            console.log(formName);
+            this.$refs[formName].validate((valid) => {
+                if (valid) {
+                    this.append(this.currentNode);
+                    this.updateTree(false);
+                    this.dialogVisible = false;
+                    this.nodeForm.name = ''
+                }
+            });
+        },
+
+        handleNodeClick(node, data) {
+            // 点击分节点之前,先把页码设置为1.2019年7月2日,并且传给子组件.
+            this.listCurrentPage = 1;
+            this.visibleTag = '';
+            this.addAPIFlag = false;
+            this.isSaveAs = false;
+            this.currentNode = node;
+            this.data = data;
+            this.rigEnv = '';
+        },
+
+        filterNode(value, data) {
+            if (!value) return true;
+            return data.label.indexOf(value) !== -1;
+        },
+
+        remove(data, node) {
+            const parent = node.parent;
+            const children = parent.data.children || parent.data;
+            const index = children.findIndex(d => d.id === data.id);
+            children.splice(index, 1);
+        },
+
+        append(data) {
+            const newChild = {id: ++this.maxId, label: this.nodeForm.name, children: []};
+            if (data === '' || this.dataTree.length === 0 || this.radio === '根节点') {
+                this.dataTree.push(newChild);
+                return
+            }
+            if (!data.children) {
+                this.$set(data, 'children', []);
+            }
+            data.children.push(newChild);
+        },
+
+        handleBackList() {
+            this.addAPIFlag = false
+            this.isSaveAs = false
+        },
+
+        getYapiInfo() {
+            const pk = this.$route.params.id;
+            this.$api.getProjectYapiInfo(pk).then(res => {
+                this.projectInfo = res
+                if (res.yapi_base_url !== '') {
+                    this.YAPIformData.yapi_base_url = res.yapi_base_url
+                }
+                if (res.yapi_openapi_token !== '') {
+                    this.YAPIformData.yapi_openapi_token = res.yapi_openapi_token
+                }
+            })
+        },
+        mouseenter(node) {
+            this.mouseNodeId = node.id;
+        },
+        mouseleave(){
+            this.mouseNodeId = -1;
+        },
+        handleConfirmYAPI() {
+            this.$refs['elForm'].validate(valid => {
+                if (!valid) return
+                const project_id = this.$route.params.id;
+                this.$message.info({
+                    title: '提示',
+                    message: '如果是首次导入，可能时间稍长，请耐心等待~',
+                    duration: this.$store.state.duration
+                })
+                this.importYAPIdialogVisible = false
+                this.$api.addYAPI(project_id).then(resp => {
+                    if (resp.success) {
+                        let created =  "新增：" + resp.createdCount + " 条API"
+                        let updated = "更新：" + resp.updatedCount  + " 条API"
+                        if (resp.createdCount > 0 || resp.updatedCount > 0){
+                            this.$notify.success({
+                            title: '导入API提示',
+                            message: created + " ；" + updated,
+                            duration: this.$store.state.duration
+                            })
+                        }
+                        const NOT_CREATED_AND_UPDATED_CODE = '0002'
+                        if (resp.code === NOT_CREATED_AND_UPDATED_CODE){
+                            this.$notify.success({
+                            title: '导入API提示',
+                            message: resp.msg,
+                            duration: this.$store.state.duration
+                            })
+                        }
+                        const CREATED_OR_UPDATED_CODE = '0001'
+                        if (resp.code === CREATED_OR_UPDATED_CODE){
+                            this.getTree()
+                            // 重置tree节点，触发子组件更新apiList
+                            // TODO 改成直接调用子组件的getAPIList方法
+                            this.currentNode = ''
+                            this.onlyMe = false
+                            this.showYAPI = true
+                        }
+                    } else {
+                        this.$message.error({
+                            message: resp.msg,
+                            duration: this.$store.state.duration
+                        })
+                    }
+                })
+            })
+        },
+
+    },
+    name: "RecordApi",
+    mounted() {
+        this.getTree();
+        this.getConfig();
+        this.getHost();
+        this.getYapiInfo();
+    }
 }
 </script>
 

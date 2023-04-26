@@ -79,96 +79,97 @@ import ConfigBody from './components/ConfigBody'
 import ConfigList from './components/ConfigList'
 
 export default {
-  components: {
-    ConfigBody,
-    ConfigList
-  },
+    components: {
+        ConfigBody,
+        ConfigList
+    },
 
-  computed: {
-    initResponse: {
-      get() {
-        return this.addConfigActivate
-      },
-      set(value) {
-        this.addConfigActivate = value
-        this.respConfig = {
-          is_default: false,
-          id: '',
-          body: {
-            name: '',
-            base_url: '',
-            header: [{
-              key: '',
-              value: '',
-              desc: ''
-            }],
-            request: {
-              data: [{
-                key: '',
-                value: '',
-                desc: '',
-                type: 1
-              }],
-              params: [{
-                key: '',
-                value: '',
-                desc: '',
-                type: 1
-              }],
-              json_data: ''
+    computed: {
+        initResponse: {
+            get() {
+                return this.addConfigActivate;
             },
-            variables: [{
-              key: '',
-              value: '',
-              desc: '',
-              type: 1
-            }],
-            hooks: [{
-              setup: '',
-              teardown: ''
-            }],
-            parameters: [{
-              key: '',
-              value: '',
-              desc: ''
-            }]
+            set(value) {
+                this.addConfigActivate = value;
+                this.respConfig = {
+                    is_default: false,
+                    id: '',
+                    body: {
+                        name: '',
+                        base_url: '',
+                        header: [{
+                            key: "",
+                            value: "",
+                            desc: ""
+                        }],
+                        request: {
+                            data: [{
+                                key: "",
+                                value: "",
+                                desc: "",
+                                type: 1
+                            }],
+                            params: [{
+                                key: "",
+                                value: "",
+                                desc: "",
+                                type: 1
+                            }],
+                            json_data: ''
+                        },
+                        variables: [{
+                            key: "",
+                            value: "",
+                            desc: "",
+                            type: 1
+                        }],
+                        hooks: [{
+                            setup: "",
+                            teardown: ""
+                        }],
+                        parameters: [{
+                            key: "",
+                            value: "",
+                            desc: "",
+                        }],
 
-          }
+                    }
+                };
+            }
+        },
+    },
+    data() {
+        return {
+            back: false,
+            del: false,
+            addConfigActivate: false,
+            respConfig: '',
+            type: ''
         }
-      }
-    }
-  },
-  data() {
-    return {
-      back: false,
-      del: false,
-      addConfigActivate: false,
-      respConfig: '',
-      type: ''
-    }
-  },
-  methods: {
-    handleAddSuccess() {
-      this.back = !this.back
-      this.addConfigActivate = false
     },
-    addConfig() {
-      this.initResponse = true
-      this.type = 'add'
+    methods: {
+        handleAddSuccess() {
+            this.back = !this.back;
+            this.addConfigActivate = false;
+        },
+        addConfig() {
+            this.initResponse = true;
+            this.type = 'add'
+        },
+        handleRespConfig(row) {
+            this.respConfig = row;
+            this.type = 'edit';
+            this.addConfigActivate = true;
+        }
     },
-    handleRespConfig(row) {
-      this.respConfig = row
-      this.type = 'edit'
-      this.addConfigActivate = true
-    }
-  },
-  name: 'RecordConfig',
-  mounted() {
+    name: "RecordConfig",
+    mounted() {
 
-  }
+    }
 }
 </script>
 
 <style>
+
 
 </style>

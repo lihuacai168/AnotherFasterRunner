@@ -39,9 +39,10 @@
                         <i class="el-icon-d-arrow-right"></i>
                     </el-button>
 
+
                     <el-dialog
                         title="添加项目"
-                        v-model:visible="dialogVisible"
+                        :visible.sync="dialogVisible"
                         width="30%"
                         align="center"
                     >
@@ -94,13 +95,14 @@
             </div>
         </el-header>
 
+
         <el-drawer
             style="margin-top: 10px"
             :destroy-on-close="true"
             :with-header="false"
             :modal="false"
             size="89%"
-            v-model:visible="dashBoardVisible"
+            :visible.sync="dashBoardVisible"
         >
             <ProjectDashBoard></ProjectDashBoard>
         </el-drawer>
@@ -121,7 +123,7 @@
                         width="250"
                         align="center"
                     >
-                        <template v-slot="scope">
+                        <template slot-scope="scope">
                             <span
                                 style="font-size: 18px; font-weight: bold; cursor: pointer;"
                                 @click="handleCellClick(scope.row)"
@@ -134,7 +136,7 @@
                         width="200"
                         align="center"
                     >
-                        <template v-slot="scope">
+                        <template slot-scope="scope">
                             <span>{{ scope.row.responsible }}</span>
                         </template>
                     </el-table-column>
@@ -144,7 +146,7 @@
                         width="300"
                         align="center"
                     >
-                        <template v-slot="scope">
+                        <template slot-scope="scope">
                             <span>{{ scope.row.desc }}</span>
                         </template>
                     </el-table-column>
@@ -154,16 +156,17 @@
                         width="260"
                         align="center"
                     >
-                        <template v-slot="scope">
+                        <template slot-scope="scope">
                             <span>{{ scope.row.update_time | datetimeFormat }}</span>
                         </template>
                     </el-table-column>
+
 
                     <el-table-column
                         label="操作"
                         align="center"
                     >
-                        <template v-slot="scope">
+                        <template slot-scope="scope">
                             <el-button
                                 size="medium"
                                 @click="handleCellClick(scope.row)">详情
@@ -180,7 +183,7 @@
 
                             <el-dialog
                                 title="编辑项目"
-                                v-model:visible="editVisible"
+                                :visible.sync="editVisible"
                                 width="30%"
                             >
                                 <el-form :model="projectForm"
@@ -243,185 +246,187 @@
 </template>
 
 <script>
-import ProjectDashBoard from './ProjectDashBoard'
+import ProjectDashBoard from "./ProjectDashBoard";
+
 
 export default {
-  components: {
-    ProjectDashBoard
-  },
-  data() {
-    return {
-      isSuperuser: this.$store.state.is_superuser,
-      userName: this.$store.state.user,
-      dialogVisible: false,
-      dashBoardVisible: false,
-      editVisible: false,
-      projectData: {
-        results: []
-      },
-      projectForm: {
-        name: '',
-        desc: '',
-        responsible: this.$store.state.user,
-        id: '',
-        yapi_base_url: '',
-        yapi_openapi_token: '',
-        jira_bearer_token: '',
-        jira_project_key: ''
-      },
-      responsibleOptions: [],
-      rules: {
-        name: [
-          {required: true, message: '请输入项目名称', trigger: 'blur'},
-          {min: 1, max: 50, message: '最多不超过50个字符', trigger: 'blur'}
-        ],
-        desc: [
-          {required: true, message: '简要描述下该项目', trigger: 'blur'},
-          {min: 1, max: 100, message: '最多不超过100个字符', trigger: 'blur'}
-        ],
-        responsible: [{
-          required: true,
-          message: '请选择项目负责人',
-          trigger: 'change'
-        }],
-        yapi_base_url: [
-          {required: false, message: 'YAPI openapi的url', trigger: 'blur'}
-        ],
-        yapi_openapi_token: [
-          {required: false, message: 'YAPI openapi的token', trigger: 'blur'}
-        ],
-        jira_bearer_token: [
-          {required: false, message: 'JIRA bearer_token', trigger: 'blur'}
-        ],
-        jira_project_key: [
-          {required: false, message: 'jira_project_key', trigger: 'blur'}
-        ]
-      }
-    }
-  },
-  methods: {
-    handleCellClick(row) {
-      this.$store.commit('setRouterName', 'ProjectDetail')
-      this.$store.commit('setProjectName', row.name)
-      this.setLocalValue('routerName', 'ProjectDetail')
-      // 在vuex严格模式下, commit会经过mutation函数不会报错, set直接修改会报错
-      this.setLocalValue('projectName', row.name)
-      this.$router.push({name: 'ProjectDetail', params: {id: row['id']}})
+    components: {
+        ProjectDashBoard
     },
-    handleEdit(index, row) {
-      this.editVisible = true
-      this.projectForm.name = row['name']
-      this.projectForm.desc = row['desc']
-      this.projectForm.responsible = row['responsible']
-      this.projectForm.id = row['id']
-      this.projectForm.yapi_base_url = row['yapi_base_url']
-      this.projectForm.yapi_openapi_token = row['yapi_openapi_token']
-      this.projectForm.jira_project_key = row['jira_project_key']
-      this.projectForm.jira_bearer_token = row['jira_bearer_token']
-    },
-    handleDelete(index, row) {
-      this.$confirm('此操作将永久删除该项目, 是否继续?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
-        this.$api.deleteProject({data: {'id': row['id']}}).then(resp => {
-          if (resp['success']) {
-            this.success(resp)
-            this.getProjectList()
-          } else {
-            this.failure(resp)
-          }
-        })
-      })
-    },
-    handleConfirm(formName) {
-      this.$refs[formName].validate((valid) => {
-        if (valid) {
-          this.dialogVisible = false
-          this.editVisible = false
-          let obj
-
-          if (this.projectForm.id === '') {
-            obj = this.$api.addProject(this.projectForm)
-          } else {
-            obj = this.$api.updateProject(this.projectForm)
-          }
-
-          obj.then(resp => {
-            if (resp.success) {
-              this.success(resp)
-              this.getProjectList()
-            } else {
-              this.failure(resp)
+    data() {
+        return {
+            isSuperuser: this.$store.state.is_superuser,
+            userName: this.$store.state.user,
+            dialogVisible: false,
+            dashBoardVisible: false,
+            editVisible: false,
+            projectData: {
+                results: []
+            },
+            projectForm: {
+                name: '',
+                desc: '',
+                responsible: this.$store.state.user,
+                id: '',
+                yapi_base_url: '',
+                yapi_openapi_token: '',
+                jira_bearer_token: '',
+                jira_project_key: '',
+            },
+            responsibleOptions: [],
+            rules: {
+                name: [
+                    {required: true, message: '请输入项目名称', trigger: 'blur'},
+                    {min: 1, max: 50, message: '最多不超过50个字符', trigger: 'blur'}
+                ],
+                desc: [
+                    {required: true, message: '简要描述下该项目', trigger: 'blur'},
+                    {min: 1, max: 100, message: '最多不超过100个字符', trigger: 'blur'}
+                ],
+                responsible: [{
+                    required: true,
+                    message: '请选择项目负责人',
+                    trigger: 'change'
+                }],
+                yapi_base_url: [
+                    {required: false, message: 'YAPI openapi的url', trigger: 'blur'},
+                ],
+                yapi_openapi_token: [
+                    {required: false, message: 'YAPI openapi的token', trigger: 'blur'}
+                ],
+                jira_bearer_token: [
+                    {required: false, message: 'JIRA bearer_token', trigger: 'blur'}
+                ],
+                jira_project_key: [
+                    {required: false, message: 'jira_project_key', trigger: 'blur'}
+                ],
             }
+        }
+    },
+    methods: {
+        handleCellClick(row) {
+            this.$store.commit('setRouterName', 'ProjectDetail');
+            this.$store.commit('setProjectName', row.name);
+            this.setLocalValue("routerName", 'ProjectDetail');
+            // 在vuex严格模式下, commit会经过mutation函数不会报错, set直接修改会报错
+            this.setLocalValue('projectName', row.name);
+            this.$router.push({name: 'ProjectDetail', params: {id: row['id']}});
+        },
+        handleEdit(index, row) {
+            this.editVisible = true;
+            this.projectForm.name = row['name'];
+            this.projectForm.desc = row['desc'];
+            this.projectForm.responsible = row['responsible'];
+            this.projectForm.id = row['id'];
+            this.projectForm.yapi_base_url = row['yapi_base_url'];
+            this.projectForm.yapi_openapi_token = row['yapi_openapi_token'];
+            this.projectForm.jira_project_key = row['jira_project_key'];
+            this.projectForm.jira_bearer_token = row['jira_bearer_token'];
+        },
+        handleDelete(index, row) {
+            this.$confirm('此操作将永久删除该项目, 是否继续?', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+            }).then(() => {
+                this.$api.deleteProject({data: {"id": row["id"]}}).then(resp => {
+                    if (resp['success']) {
+                        this.success(resp);
+                        this.getProjectList();
+                    } else {
+                        this.failure(resp);
+                    }
+                })
+            })
+        },
+        handleConfirm(formName) {
+            this.$refs[formName].validate((valid) => {
+                if (valid) {
+                    this.dialogVisible = false;
+                    this.editVisible = false;
+                    let obj;
+
+                    if (this.projectForm.id === '') {
+                        obj = this.$api.addProject(this.projectForm);
+                    } else {
+                        obj = this.$api.updateProject(this.projectForm);
+                    }
+
+                    obj.then(resp => {
+                        if (resp.success) {
+                            this.success(resp);
+                            this.getProjectList();
+                        } else {
+                            this.failure(resp);
+                        }
+                        this.resetProjectForm()
+                    })
+                } else {
+                    if (this.projectForm.id !== '') {
+                        this.editVisible = true;
+                    } else {
+                        this.dialogVisible = true;
+                    }
+                    return false;
+                }
+            });
+
+        },
+        success(resp) {
+            this.$notify({
+                message: resp["msg"],
+                type: 'success',
+                duration: this.$store.state.duration
+            });
+        },
+        failure(resp) {
+            this.$notify.error({
+                message: resp["msg"],
+                duration: this.$store.state.duration
+            });
+        },
+        getProjectList() {
+            this.$api.getProjectList().then(resp => {
+                this.projectData = resp;
+            })
+        },
+        getPagination(url) {
+            this.$api.getPagination(url).then(resp => {
+                this.projectData = resp;
+            })
+        },
+        closeEditDialog() {
+            this.editVisible = false
             this.resetProjectForm()
-          })
-        } else {
-          if (this.projectForm.id !== '') {
-            this.editVisible = true
-          } else {
-            this.dialogVisible = true
-          }
-          return false
-        }
-      })
+        },
+        closeAddDialog() {
+            this.dialogVisible = false
+            this.resetProjectForm()
+        },
+        resetProjectForm() {
+            this.projectForm.name = '';
+            this.projectForm.desc = '';
+            this.projectForm.responsible = '';
+            this.projectForm.id = '';
+            this.projectForm.yapi_openapi_token = '';
+            this.projectForm.yapi_base_url = '';
+            this.projectForm.jira_bearer_token = '';
+            this.projectForm.jira_project_key = '';
+        },
+        getUserList() {
+            this.$api.getUserList().then(resp => {
+                    for (let i = 0; i < resp.length; i++) {
+                        this.responsibleOptions.push({"label": resp[i].username, "value": resp[i].username})
+                    }
+                }
+            )
+        },
     },
-    success(resp) {
-      this.$notify({
-        message: resp['msg'],
-        type: 'success',
-        duration: this.$store.state.duration
-      })
+    created() {
+        this.getProjectList();
+        this.getUserList()
     },
-    failure(resp) {
-      this.$notify.error({
-        message: resp['msg'],
-        duration: this.$store.state.duration
-      })
-    },
-    getProjectList() {
-      this.$api.getProjectList().then(resp => {
-        this.projectData = resp
-      })
-    },
-    getPagination(url) {
-      this.$api.getPagination(url).then(resp => {
-        this.projectData = resp
-      })
-    },
-    closeEditDialog() {
-      this.editVisible = false
-      this.resetProjectForm()
-    },
-    closeAddDialog() {
-      this.dialogVisible = false
-      this.resetProjectForm()
-    },
-    resetProjectForm() {
-      this.projectForm.name = ''
-      this.projectForm.desc = ''
-      this.projectForm.responsible = ''
-      this.projectForm.id = ''
-      this.projectForm.yapi_openapi_token = ''
-      this.projectForm.yapi_base_url = ''
-      this.projectForm.jira_bearer_token = ''
-      this.projectForm.jira_project_key = ''
-    },
-    getUserList() {
-      this.$api.getUserList().then(resp => {
-        for (let i = 0; i < resp.length; i++) {
-          this.responsibleOptions.push({'label': resp[i].username, 'value': resp[i].username})
-        }
-      }
-      )
-    }
-  },
-  created() {
-    this.getProjectList()
-    this.getUserList()
-  },
-  name: 'ProjectList'
+    name: "ProjectList"
 }
 </script>
 
