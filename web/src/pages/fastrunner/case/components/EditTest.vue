@@ -149,13 +149,14 @@
                                 </div>
                             </div>
 
+
                         </div>
 
                     </el-col>
                     <el-col :span="12" class="el-col">
                         <el-dialog
                             v-if="dialogTableVisible"
-                            v-model:visible="dialogTableVisible"
+                            :visible.sync="dialogTableVisible"
                             width="70%"
                         >
                             <report :summary="summary"></report>
@@ -212,6 +213,7 @@
                                                v-model="test.body.name"
                                         />
 
+
                                         <el-button
                                             style="position: absolute; right: 156px; top: 8px"
                                             v-show="currentTest === index"
@@ -244,6 +246,7 @@
                                             @click="handlePartialRun(index)"
                                         >
                                         </el-button>
+
 
                                         <el-button
                                             style="position: absolute; right: 120px; top: 8px"
@@ -279,7 +282,7 @@
                         v-show="apiData.count !== 0"
                         background
                         @current-change="handlePageChange"
-                        v-model:current-page="currentPage"
+                        :current-page.sync="currentPage"
                         layout="total, prev, pager, next, jumper"
                         :total="apiData.count"
                         style="margin-top: 5px"
@@ -302,6 +305,7 @@
 
     </el-container>
 
+
 </template>
 
 <script>
@@ -310,474 +314,479 @@ import HttpRunner from './TestBody'
 import Report from '../../../reports/DebugReport'
 
 export default {
-  components: {
-    draggable,
-    HttpRunner,
-    Report
-  },
-  computed: {
-    isConfigExist: {
-      get() {
-        if (this.testData.length > 0 && this.testData[0].body.method === 'config' && this.testData[0].body.name !== '请选择') {
-          return true
+    components: {
+        draggable,
+        HttpRunner,
+        Report
+    },
+    computed: {
+        isConfigExist: {
+            get() {
+                if (this.testData.length > 0 && this.testData[0].body.method === "config" && this.testData[0].body.name !== '请选择') {
+                    return true;
+                }
+                return false;
+            }
         }
-        return false
-      }
+    },
+    props: {
+        host: {
+            require: true
+        },
+        config: {
+            require: true
+        },
+        project: {
+            require: true
+        },
+        node: {
+            require: true
+        },
+        testStepResp: {
+            require: false
+        },
+        back: Boolean,
+        rigEnv: [String, Number],
+        tag: [String, Number],
+        search: [String, Number],
+        addTestActivate: {
+            require: true,
+            type: Boolean
+        }
+    },
+
+    name: "EditTest",
+    watch: {
+        config() {
+
+            const temp = {body: {name: this.config, method: 'config'}};
+            if ((this.testData.length === 0 || this.testData[0].body.method !== 'config') && this.config !== '请选择') {
+                this.testData.splice(0, 0, temp)
+            } else {
+                if (this.config !== '请选择') {
+                    this.testData.splice(0, 1, temp)
+                }
+
+            }
+
+        },
+        back() {
+            if (this.back) {
+                this.testId = ""
+                this.testName = ""
+                this.testData = []
+            }
+            this.editTestStepActivate = false;
+        },
+
+        filterText(val) {
+            this.$refs.tree2.filter(val);
+        },
+
+        testStepResp() {
+            this.handleSavePermission()
+            try {
+                this.testName = this.testStepResp.case.name;
+                this.testId = this.testStepResp.case.id;
+                this.testTag = this.testStepResp.case.tag;
+                this.relation = this.testStepResp.case.relation;
+                this.testData = JSON.parse(JSON.stringify(this.testStepResp.step))
+            } catch (e) {
+                this.testName = '';
+                this.testId = '';
+                this.testTag = '集成用例';
+                this.testData = JSON.parse(JSON.stringify(this.testStepResp))
+            }
+        },
+
+        search() {
+            this.getAPIList()
+        },
+        selectUser() {
+            this.getAPIList()
+        },
+    },
+
+    data() {
+        return {
+            tagOptions: {
+                1: '冒烟用例',
+                2: '集成用例',
+                3: '监控脚本',
+                4: '核心用例',
+            },
+            isSuperuser: this.$store.state.is_superuser,
+            userName: this.$store.state.user,
+            disabledSave: true,
+            suite_loading: false,
+            loading: false,
+            dialogTableVisible: false,
+            editTestStepActivate: false,
+            currentPage: 1,
+            length: 0,
+            testId: '',
+            testName: '',
+            relation: '',
+            testTag: '集成用例',
+            currentTest: '',
+            currentNode: '',
+            currentAPI: '',
+            data: '',
+            filterText: '',
+            expand: '&#xe65f;',
+            dataTree: [],
+            summary: {},
+            apiData: {
+                count: 0,
+                results: []
+            },
+
+            testData: [],
+            selectUser: this.$store.state.user,
+            users: [],
+            // rigEnv: ''
+        }
+    },
+    methods: {
+        handleSavePermission() {
+            // 新增用例，所有人都能保存
+            if (this.addTestActivate === false) {
+                this.disabledSave = false
+            }
+            // 用例创建人和超级管理员可以编辑并保存用例
+            // 其他人只能打开用例，无法保存
+            if (this.isSuperuser || this.testStepResp.case.creator === this.userName) {
+                this.disabledSave = false
+            } else {
+                this.disabledSave = true
+            }
+        },
+        inputVal(val) {
+            this.$emit('update:search', val)
+        },
+
+        handleNewBody(body, newBody) {
+            this.editTestStepActivate = false;
+            const step = this.testData[this.currentTest].case;
+            const id = this.testData[this.currentTest].id;
+            this.testData[this.currentTest] = {
+                body: body,
+                newBody: newBody,
+                case: step,
+                id: id
+            };
+            // 编辑用例步骤时，也调用接口保存
+            this.handleClickSave(false)
+        },
+        rigEnvChangeHandle(command) {
+            this.$emit('update:rigEnv', command);
+            this.getAPIList();
+        },
+        validateData() {
+            if (this.testName === '' || this.testName.length > 100) {
+                this.$notify.warning({
+                    title: '提示',
+                    duration: this.$store.state.duration,
+                    message: '用例集名称必填，不能超过100个字符'
+                });
+                return false
+            }
+
+            if (this.testData.length === 0) {
+                this.$notify.warning({
+                    title: '提示',
+                    duration: this.$store.state.duration,
+                    message: '测试用例集至少包含一个接口'
+                });
+                return false
+            }
+
+            if (this.testData[0].body.method === "config" && this.testData.length === 1) {
+                this.$notify.warning({
+                    title: '提示',
+                    duration: this.$store.state.duration,
+                    message: '测试用例集至少包含一个接口'
+                });
+                return false
+            }
+
+            if (this.testData[0].body.name === "请选择" || this.testData[0].body.method !== "config") {
+                this.$notify.warning({
+                    title: '提示',
+                    duration: this.$store.state.duration,
+                    message: '测试用例必须包含配置'
+                });
+                return false
+            }
+
+            return true;
+        },
+
+        addTestSuite(addTestFinish) {
+            var length = this.testData.length;
+
+            if (this.testData[0].body.method === "config") {
+                length -= 1;
+            }
+
+            this.$api.addTestCase({
+                length: length,
+                project: this.project,
+                relation: this.node,
+                name: this.testName,
+                body: this.testData,
+                tag: this.testTag
+            }).then(resp => {
+                if (resp.success) {
+                    this.testId = resp.test_id
+                    if (addTestFinish) {
+                        this.$emit("addSuccess");
+                    }
+                    this.$notify({
+                        message: resp.msg,
+                        type: 'success',
+                        duration: this.$store.state.duration
+                    })
+                } else {
+                    this.$notify({
+                        message: resp.msg,
+                        type: 'error',
+                        duration: this.$store.state.duration
+                    });
+                }
+            })
+        },
+
+        updateTestSuite(addTestFinish, refresh=false) {
+            var length = this.testData.length;
+            if (this.testData[0].body.method === "config") {
+                length -= 1;
+            }
+            this.$api.updateTestCase(this.testId, {
+                length: length,
+                name: this.testName,
+                tag: this.testTag,
+                body: this.testData,
+                project: this.project,
+                relation: this.relation
+            }).then(resp => {
+                // 刷新用例步骤
+                // 注意需要等到用例已经更新完成后
+                if(refresh){
+                    this.refreshStep()
+                }
+                if (resp.success) {
+                    if (addTestFinish) {
+                        this.$emit("addSuccess")
+                    }
+                    this.$notify({
+                        message: resp.msg,
+                        type: 'success',
+                        duration: this.$store.state.duration
+                    })
+                } else {
+                    this.$notify({
+                        message: resp.msg,
+                        type: 'error',
+                        duration: this.$store.state.duration
+                    });
+                }
+            })
+        },
+
+        handleClickSave(addTestFinish = true) {
+            if (this.validateData()) {
+                if (this.testId === '') {
+                    this.addTestSuite(addTestFinish);
+                } else {
+                    this.updateTestSuite(addTestFinish);
+                }
+            }
+        },
+        // 全部运行
+        handleClickRun() {
+            if (this.validateData()) {
+                this.suite_loading = true;
+                this.$api.runSingleTestSuite({
+                    host: this.host,
+                    name: this.testName,
+                    body: this.testData,
+                    project: this.project
+                }).then(resp => {
+                    this.suite_loading = false;
+                    this.summary = resp;
+                    this.dialogTableVisible = true;
+                }).catch(resp => {
+                    this.suite_loading = false;
+                })
+            }
+        },
+        handlePartialRun(index) {
+            if (this.validateData()) {
+                this.suite_loading = true;
+                this.$api.runSingleTestSuite({
+                    host: this.host,
+                    name: this.testName,
+                    body: this.testData.slice(0, index + 1),
+                    project: this.project
+                }).then(resp => {
+                    this.suite_loading = false;
+                    this.summary = resp;
+                    this.dialogTableVisible = true;
+                }).catch(resp => {
+                    this.suite_loading = false;
+                })
+            }
+
+        },
+        // 单个运行
+        handleSingleRun() {
+            this.loading = true;
+            var config = null;
+            if (this.testData.length > 0 && this.testData[0].body.method === "config") {
+                config = this.testData[0].body;
+            }
+            this.$api.runSingleTest({
+                host: this.host,
+                config: config,
+                body: this.testData[this.currentTest],
+                project: this.project
+            }).then(resp => {
+                this.loading = false;
+                this.summary = resp;
+                this.dialogTableVisible = true;
+            }).catch(resp => {
+                this.loading = false;
+            })
+        },
+
+        handlePageChange(val) {
+            this.$api.getPaginationBypage({
+                params: {
+                    page: this.currentPage,
+                    node: this.currentNode,
+                    project: this.project,
+                    tag: this.tag,
+                    rigEnv: this.rigEnv,
+                    search: this.search
+                }
+            }).then(res => {
+                this.apiData = res;
+            })
+        },
+
+        //  接口状态搜索
+        tagChangeHandle(command) {
+            // this.tag = command
+            this.$emit('update:tag', command);
+            this.$nextTick(() => {
+                this.$api.apiList({
+                    params: {
+                        node: this.currentNode,
+                        project: this.project,
+                        tag: this.tag,
+                        rigEnv: this.rigEnv,
+                        search: this.search
+                    }
+                }).then(res => {
+                    this.apiData = res;
+                })
+            })
+        },
+        resetSearch() {
+            this.selectUser = this.$store.state.user,
+            this.currentNode = '',
+            this.$emit('update:search', '');
+            this.$emit('update:tag', '');
+            this.$emit('update:rigEnv', '');
+            this.getAPIList();
+        },
+        getAPIList() {
+            this.$nextTick(() => {
+                this.$api.apiList({
+                    params: {
+                        node: this.currentNode,
+                        project: this.project,
+                        search: this.search,
+                        rigEnv: this.rigEnv,
+                        tag: this.tag,
+                        creator: this.selectUser
+                    }
+                }).then(res => {
+                    this.apiData = res;
+                })
+            })
+        },
+
+        getTree() {
+            this.$api.getTree(this.$route.params.id, {
+                params: {
+                    type: 1
+                }
+            }).then(resp => {
+                this.dataTree = resp['tree'];
+            })
+        },
+
+        handleNodeClick(node, data) {
+            this.currentNode = node.id;
+            this.data = data;
+            this.getAPIList();
+
+        },
+
+        filterNode(value, data) {
+            if (!value) return true;
+            return data.label.indexOf(value) !== -1;
+        },
+
+        dragEnd(event) {
+            if (this.testData.length > this.length) {
+                this.testData.splice(this.length, 1)
+            }
+        },
+
+        drop(event) {
+            event.preventDefault();
+            // 创建用例时,默认加上config
+            if (this.testData.length === 0) {
+                this.testData.push({body: {name: this.config, method: 'config'}})
+            }
+            if (this.currentAPI) {
+                this.testData.push(this.currentAPI)
+                this.currentAPI = ''
+            }
+        },
+        allowDrop(event) {
+            event.preventDefault();
+        },
+        getUserList() {
+            this.$api.getUserList().then(resp => {
+                    for (let i = 0; i < resp.length; i++) {
+                        this.users.push({"label": resp[i].username, "value": resp[i].username})
+                    }
+                    this.users.unshift({"label": "所有人", "value": ""})
+                }
+            )
+        },
+
+        refreshStep(){
+            this.$api.editTest(this.testId).then(resp => {
+                this.testData = JSON.parse(JSON.stringify(resp.step))
+            })
+        },
+        handleCopyStep(index) {
+            let copyStepObj = JSON.parse(JSON.stringify(this.testData[index]))
+            copyStepObj.is_copy = true
+            this.testData.splice(index+1,0, copyStepObj)
+            this.updateTestSuite(false, true)
+        }
+    },
+    mounted() {
+        this.getTree();
+        this.getAPIList();
+        this.getUserList()
     }
-  },
-  props: {
-    host: {
-      require: true
-    },
-    config: {
-      require: true
-    },
-    project: {
-      require: true
-    },
-    node: {
-      require: true
-    },
-    testStepResp: {
-      require: false
-    },
-    back: Boolean,
-    rigEnv: [String, Number],
-    tag: [String, Number],
-    search: [String, Number],
-    addTestActivate: {
-      require: true,
-      type: Boolean
-    }
-  },
-
-  name: 'EditTest',
-  watch: {
-    config() {
-      const temp = {body: {name: this.config, method: 'config'}}
-      if ((this.testData.length === 0 || this.testData[0].body.method !== 'config') && this.config !== '请选择') {
-        this.testData.splice(0, 0, temp)
-      } else {
-        if (this.config !== '请选择') {
-          this.testData.splice(0, 1, temp)
-        }
-      }
-    },
-    back() {
-      if (this.back) {
-        this.testId = ''
-        this.testName = ''
-        this.testData = []
-      }
-      this.editTestStepActivate = false
-    },
-
-    filterText(val) {
-      this.$refs.tree2.filter(val)
-    },
-
-    testStepResp() {
-      this.handleSavePermission()
-      try {
-        this.testName = this.testStepResp.case.name
-        this.testId = this.testStepResp.case.id
-        this.testTag = this.testStepResp.case.tag
-        this.relation = this.testStepResp.case.relation
-        this.testData = JSON.parse(JSON.stringify(this.testStepResp.step))
-      } catch (e) {
-        this.testName = ''
-        this.testId = ''
-        this.testTag = '集成用例'
-        this.testData = JSON.parse(JSON.stringify(this.testStepResp))
-      }
-    },
-
-    search() {
-      this.getAPIList()
-    },
-    selectUser() {
-      this.getAPIList()
-    }
-  },
-
-  data() {
-    return {
-      tagOptions: {
-        1: '冒烟用例',
-        2: '集成用例',
-        3: '监控脚本',
-        4: '核心用例'
-      },
-      isSuperuser: this.$store.state.is_superuser,
-      userName: this.$store.state.user,
-      disabledSave: true,
-      suite_loading: false,
-      loading: false,
-      dialogTableVisible: false,
-      editTestStepActivate: false,
-      currentPage: 1,
-      length: 0,
-      testId: '',
-      testName: '',
-      relation: '',
-      testTag: '集成用例',
-      currentTest: '',
-      currentNode: '',
-      currentAPI: '',
-      data: '',
-      filterText: '',
-      expand: '&#xe65f;',
-      dataTree: [],
-      summary: {},
-      apiData: {
-        count: 0,
-        results: []
-      },
-
-      testData: [],
-      selectUser: this.$store.state.user,
-      users: []
-      // rigEnv: ''
-    }
-  },
-  methods: {
-    handleSavePermission() {
-      // 新增用例，所有人都能保存
-      if (this.addTestActivate === false) {
-        this.disabledSave = false
-      }
-      // 用例创建人和超级管理员可以编辑并保存用例
-      // 其他人只能打开用例，无法保存
-      if (this.isSuperuser || this.testStepResp.case.creator === this.userName) {
-        this.disabledSave = false
-      } else {
-        this.disabledSave = true
-      }
-    },
-    inputVal(val) {
-      this.$emit('update:search', val)
-    },
-
-    handleNewBody(body, newBody) {
-      this.editTestStepActivate = false
-      const step = this.testData[this.currentTest].case
-      const id = this.testData[this.currentTest].id
-      this.testData[this.currentTest] = {
-        body: body,
-        newBody: newBody,
-        case: step,
-        id: id
-      }
-      // 编辑用例步骤时，也调用接口保存
-      this.handleClickSave(false)
-    },
-    rigEnvChangeHandle(command) {
-      this.$emit('update:rigEnv', command)
-      this.getAPIList()
-    },
-    validateData() {
-      if (this.testName === '' || this.testName.length > 100) {
-        this.$notify.warning({
-          title: '提示',
-          duration: this.$store.state.duration,
-          message: '用例集名称必填，不能超过100个字符'
-        })
-        return false
-      }
-
-      if (this.testData.length === 0) {
-        this.$notify.warning({
-          title: '提示',
-          duration: this.$store.state.duration,
-          message: '测试用例集至少包含一个接口'
-        })
-        return false
-      }
-
-      if (this.testData[0].body.method === 'config' && this.testData.length === 1) {
-        this.$notify.warning({
-          title: '提示',
-          duration: this.$store.state.duration,
-          message: '测试用例集至少包含一个接口'
-        })
-        return false
-      }
-
-      if (this.testData[0].body.name === '请选择' || this.testData[0].body.method !== 'config') {
-        this.$notify.warning({
-          title: '提示',
-          duration: this.$store.state.duration,
-          message: '测试用例必须包含配置'
-        })
-        return false
-      }
-
-      return true
-    },
-
-    addTestSuite(addTestFinish) {
-      var length = this.testData.length
-
-      if (this.testData[0].body.method === 'config') {
-        length -= 1
-      }
-
-      this.$api.addTestCase({
-        length: length,
-        project: this.project,
-        relation: this.node,
-        name: this.testName,
-        body: this.testData,
-        tag: this.testTag
-      }).then(resp => {
-        if (resp.success) {
-          this.testId = resp.test_id
-          if (addTestFinish) {
-            this.$emit('addSuccess')
-          }
-          this.$notify({
-            message: resp.msg,
-            type: 'success',
-            duration: this.$store.state.duration
-          })
-        } else {
-          this.$notify({
-            message: resp.msg,
-            type: 'error',
-            duration: this.$store.state.duration
-          })
-        }
-      })
-    },
-
-    updateTestSuite(addTestFinish, refresh = false) {
-      var length = this.testData.length
-      if (this.testData[0].body.method === 'config') {
-        length -= 1
-      }
-      this.$api.updateTestCase(this.testId, {
-        length: length,
-        name: this.testName,
-        tag: this.testTag,
-        body: this.testData,
-        project: this.project,
-        relation: this.relation
-      }).then(resp => {
-        // 刷新用例步骤
-        // 注意需要等到用例已经更新完成后
-        if (refresh) {
-          this.refreshStep()
-        }
-        if (resp.success) {
-          if (addTestFinish) {
-            this.$emit('addSuccess')
-          }
-          this.$notify({
-            message: resp.msg,
-            type: 'success',
-            duration: this.$store.state.duration
-          })
-        } else {
-          this.$notify({
-            message: resp.msg,
-            type: 'error',
-            duration: this.$store.state.duration
-          })
-        }
-      })
-    },
-
-    handleClickSave(addTestFinish = true) {
-      if (this.validateData()) {
-        if (this.testId === '') {
-          this.addTestSuite(addTestFinish)
-        } else {
-          this.updateTestSuite(addTestFinish)
-        }
-      }
-    },
-    // 全部运行
-    handleClickRun() {
-      if (this.validateData()) {
-        this.suite_loading = true
-        this.$api.runSingleTestSuite({
-          host: this.host,
-          name: this.testName,
-          body: this.testData,
-          project: this.project
-        }).then(resp => {
-          this.suite_loading = false
-          this.summary = resp
-          this.dialogTableVisible = true
-        }).catch(resp => {
-          this.suite_loading = false
-        })
-      }
-    },
-    handlePartialRun(index) {
-      if (this.validateData()) {
-        this.suite_loading = true
-        this.$api.runSingleTestSuite({
-          host: this.host,
-          name: this.testName,
-          body: this.testData.slice(0, index + 1),
-          project: this.project
-        }).then(resp => {
-          this.suite_loading = false
-          this.summary = resp
-          this.dialogTableVisible = true
-        }).catch(resp => {
-          this.suite_loading = false
-        })
-      }
-    },
-    // 单个运行
-    handleSingleRun() {
-      this.loading = true
-      var config = null
-      if (this.testData.length > 0 && this.testData[0].body.method === 'config') {
-        config = this.testData[0].body
-      }
-      this.$api.runSingleTest({
-        host: this.host,
-        config: config,
-        body: this.testData[this.currentTest],
-        project: this.project
-      }).then(resp => {
-        this.loading = false
-        this.summary = resp
-        this.dialogTableVisible = true
-      }).catch(resp => {
-        this.loading = false
-      })
-    },
-
-    handlePageChange(val) {
-      this.$api.getPaginationBypage({
-        params: {
-          page: this.currentPage,
-          node: this.currentNode,
-          project: this.project,
-          tag: this.tag,
-          rigEnv: this.rigEnv,
-          search: this.search
-        }
-      }).then(res => {
-        this.apiData = res
-      })
-    },
-
-    //  接口状态搜索
-    tagChangeHandle(command) {
-      // this.tag = command
-      this.$emit('update:tag', command)
-      this.$nextTick(() => {
-        this.$api.apiList({
-          params: {
-            node: this.currentNode,
-            project: this.project,
-            tag: this.tag,
-            rigEnv: this.rigEnv,
-            search: this.search
-          }
-        }).then(res => {
-          this.apiData = res
-        })
-      })
-    },
-    resetSearch() {
-      this.selectUser = this.$store.state.user,
-      this.currentNode = '',
-      this.$emit('update:search', '')
-      this.$emit('update:tag', '')
-      this.$emit('update:rigEnv', '')
-      this.getAPIList()
-    },
-    getAPIList() {
-      this.$nextTick(() => {
-        this.$api.apiList({
-          params: {
-            node: this.currentNode,
-            project: this.project,
-            search: this.search,
-            rigEnv: this.rigEnv,
-            tag: this.tag,
-            creator: this.selectUser
-          }
-        }).then(res => {
-          this.apiData = res
-        })
-      })
-    },
-
-    getTree() {
-      this.$api.getTree(this.$route.params.id, {
-        params: {
-          type: 1
-        }
-      }).then(resp => {
-        this.dataTree = resp['tree']
-      })
-    },
-
-    handleNodeClick(node, data) {
-      this.currentNode = node.id
-      this.data = data
-      this.getAPIList()
-    },
-
-    filterNode(value, data) {
-      if (!value) return true
-      return data.label.indexOf(value) !== -1
-    },
-
-    dragEnd(event) {
-      if (this.testData.length > this.length) {
-        this.testData.splice(this.length, 1)
-      }
-    },
-
-    drop(event) {
-      event.preventDefault()
-      // 创建用例时,默认加上config
-      if (this.testData.length === 0) {
-        this.testData.push({body: {name: this.config, method: 'config'}})
-      }
-      if (this.currentAPI) {
-        this.testData.push(this.currentAPI)
-        this.currentAPI = ''
-      }
-    },
-    allowDrop(event) {
-      event.preventDefault()
-    },
-    getUserList() {
-      this.$api.getUserList().then(resp => {
-        for (let i = 0; i < resp.length; i++) {
-          this.users.push({'label': resp[i].username, 'value': resp[i].username})
-        }
-        this.users.unshift({'label': '所有人', 'value': ''})
-      }
-      )
-    },
-
-    refreshStep() {
-      this.$api.editTest(this.testId).then(resp => {
-        this.testData = JSON.parse(JSON.stringify(resp.step))
-      })
-    },
-    handleCopyStep(index) {
-      const copyStepObj = JSON.parse(JSON.stringify(this.testData[index]))
-      copyStepObj.is_copy = true
-      this.testData.splice(index + 1, 0, copyStepObj)
-      this.updateTestSuite(false, true)
-    }
-  },
-  mounted() {
-    this.getTree()
-    this.getAPIList()
-    this.getUserList()
-  }
 }
 </script>
 

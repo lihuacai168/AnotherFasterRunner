@@ -164,7 +164,7 @@
                                 v-show="suiteData.count !== 0"
                                 background
                                 @current-change="handlePageChange"
-                                v-model:current-page="currentPage"
+                                :current-page.sync="currentPage"
                                 layout="total, prev, pager, next, jumper"
                                 :total="suiteData.count"
                                 style="text-align: center"
@@ -175,6 +175,7 @@
                             <el-button type="primary" v-if="testData.length > 0" @click="saveTask">保存</el-button>
                             <el-button v-if="testData.length > 0" @click="next=false">上一步</el-button>
                         </el-col>
+
 
                     </el-row>
                 </div>
@@ -259,6 +260,7 @@
         </template>
     </el-container>
 
+
 </template>
 
 <script>
@@ -267,189 +269,191 @@ import {isNumArray} from '../../validator'
 
 export default {
 
-  name: 'AddTasks',
-  props: {
-    ruleForm: {
-      require: true
-    },
-    args: {
-      require: true
-    },
-    scheduleId: {
-      require: true
-    },
-    configOptions: {
-      require: true,
-      type: Array
-    },
-    CIEnvOptions: {
-      require: true,
-      type: Array
-    }
-  },
-  watch: {
-    filterText(val) {
-      this.$refs.tree2.filter(val)
-    }
-  },
-  components: {
-    draggable
-  },
-
-  data() {
-    return {
-      currentTest: '',
-      length: 0,
-      testData: [],
-      currentSuite: '',
-      search: '',
-      next: false,
-      node: '',
-      currentPage: 1,
-      filterText: '',
-      expand: '&#xe65f;',
-      dataTree: [],
-      suiteData: {
-        count: 0,
-        results: []
-      },
-      rules: {
-        name: [
-          {required: true, message: '请输入任务名称', trigger: 'blur'},
-          {min: 1, max: 50, message: '长度在 1 到 50 个字符', trigger: 'blur'}
-        ],
-        crontab: [
-          {required: true, message: '请输入正确的crontab表达式', trigger: 'blur'}
-        ],
-        ci_project_ids: [
-          {required: false, message: '请输入正确的ci_project_ids', trigger: 'blur'},
-          {validator: isNumArray, trigger: 'blur'}
-        ]
-
-      },
-      editTestCaseActivate: false
-    }
-  },
-  methods: {
-    handleNewTestCase(kwargsForm) {
-      this.editTestCaseActivate = false
-      this.next = true
-      this.testData[this.currentTest]['kwargs'] = kwargsForm
-    },
-
-    saveTask() {
-      var task = []
-      for (const value of this.testData) {
-        task.push(value.id)
-      }
-      var form = this.ruleForm
-      form['data'] = task
-      form['project'] = this.$route.params.id
-      if (this.scheduleId === '') {
-        this.$api.addTask(form).then(resp => {
-          if (resp.success) {
-            this.$notify.success(resp.msg)
-            this.$emit('changeStatus', false)
-          } else {
-            this.$notify.error(resp.msg)
-          }
-        })
-      } else {
-        this.$api.updateTask(this.scheduleId, {project: this.$route.params.id}, form).then(resp => {
-          if (resp.success) {
-            this.$emit('changeStatus', false)
-            this.$notify.success('更新定时任务成功')
-          } else {
-            this.$notify.error(resp.msg)
-          }
-        })
-      }
-    },
-
-    dragEnd(event) {
-      if (this.testData.length > this.length) {
-        this.testData.splice(this.length, 1)
-      }
-    },
-    drop(event) {
-      event.preventDefault()
-      this.testData.push(this.currentSuite)
-    },
-    allowDrop(event) {
-      event.preventDefault()
-    },
-    handlePageChange(val) {
-      this.$api.getTestPaginationBypage({
-        params: {
-          page: this.currentPage,
-          node: this.node,
-          project: this.$route.params.id,
-          search: ''
+    name: "AddTasks",
+    props: {
+        ruleForm: {
+            require: true
+        },
+        args: {
+            require: true
+        },
+        scheduleId: {
+            require: true
+        },
+        configOptions: {
+            require: true,
+            type: Array
+        },
+        CIEnvOptions: {
+            require: true,
+            type: Array
         }
-      }).then(res => {
-        this.suiteData = res
-      })
     },
-    handleCurrentChange(val) {
-      this.$api.getTestPaginationBypage({
-        params: {
-          page: this.currentPage,
-          project: this.$route.params.id,
-          node: this.node,
-          search: this.search
-        }
-      }).then(resp => {
-        this.suiteData = resp
-      })
+    watch: {
+        filterText(val) {
+            this.$refs.tree2.filter(val);
+        },
     },
-    submitForm(formName) {
-      this.$refs[formName].validate((valid) => {
-        if (valid) {
-          this.next = true
-        } else {
-          return false
-        }
-      })
-      this.testData = this.args
-      // 用map遍历args的所有caseId,如果和用例集中的id相等,就返回该用例的全部信息
-      // 用map,filter过滤,case的数据在第二页时,会导致name=undefined
-      // this.testData = this.args.map(caseId=> this.suiteData.results.filter(testCase=> testCase.id === caseId)[0]);
-    },
-    resetForm(formName) {
-      this.$refs[formName].resetFields()
-    },
-    filterNode(value, data) {
-      if (!value) return true
-      return data.label.indexOf(value) !== -1
-    },
-    getTree() {
-      this.$api.getTree(this.$route.params.id, {params: {type: 2}}).then(resp => {
-        this.dataTree = resp.tree
-      })
+    components: {
+        draggable
     },
 
-    handleNodeClick(node) {
-      this.node = node.id
-      this.getTestList()
-    },
-    getTestList() {
-      this.$api.testList({
-        params: {
-          project: this.$route.params.id,
-          node: this.node,
-          search: this.search,
-          caseNameOrUrl: ''
+
+    data() {
+        return {
+            currentTest: '',
+            length: 0,
+            testData: [],
+            currentSuite: '',
+            search: '',
+            next: false,
+            node: '',
+            currentPage: 1,
+            filterText: '',
+            expand: '&#xe65f;',
+            dataTree: [],
+            suiteData: {
+                count: 0,
+                results: []
+            },
+            rules: {
+                name: [
+                    {required: true, message: '请输入任务名称', trigger: 'blur'},
+                    {min: 1, max: 50, message: '长度在 1 到 50 个字符', trigger: 'blur'}
+                ],
+                crontab: [
+                    {required: true, message: '请输入正确的crontab表达式', trigger: 'blur'}
+                ],
+                ci_project_ids: [
+                    {required: false, message: '请输入正确的ci_project_ids', trigger: 'blur'},
+                    {validator: isNumArray, trigger: 'blur'}
+                ]
+
+            },
+            editTestCaseActivate: false,
         }
-      }).then(resp => {
-        this.suiteData = resp
-      })
+    },
+    methods: {
+        handleNewTestCase(kwargsForm) {
+            this.editTestCaseActivate = false;
+            this.next = true;
+            this.testData[this.currentTest]["kwargs"] = kwargsForm;
+        },
+
+        saveTask() {
+            var task = [];
+            for (let value of this.testData) {
+                task.push(value.id);
+            }
+            var form = this.ruleForm;
+            form["data"] = task;
+            form["project"] = this.$route.params.id;
+            if (this.scheduleId === '') {
+                this.$api.addTask(form).then(resp => {
+                    if (resp.success) {
+                        this.$notify.success(resp.msg)
+                        this.$emit("changeStatus", false);
+                    } else {
+                        this.$notify.error(resp.msg)
+                    }
+                })
+            } else {
+                this.$api.updateTask(this.scheduleId, {project: this.$route.params.id}, form).then(resp => {
+                    if (resp.success) {
+                        this.$emit("changeStatus", false);
+                        this.$notify.success('更新定时任务成功');
+                    } else {
+                        this.$notify.error(resp.msg)
+                    }
+                })
+            }
+        },
+
+        dragEnd(event) {
+            if (this.testData.length > this.length) {
+                this.testData.splice(this.length, 1)
+            }
+        },
+        drop(event) {
+            event.preventDefault();
+            this.testData.push(this.currentSuite);
+        },
+        allowDrop(event) {
+            event.preventDefault();
+        },
+        handlePageChange(val) {
+            this.$api.getTestPaginationBypage({
+                params: {
+                    page: this.currentPage,
+                    node: this.node,
+                    project: this.$route.params.id,
+                    search: ''
+                }
+            }).then(res => {
+                this.suiteData = res;
+            })
+        },
+        handleCurrentChange(val) {
+            this.$api.getTestPaginationBypage({
+                params: {
+                    page: this.currentPage,
+                    project: this.$route.params.id,
+                    node: this.node,
+                    search: this.search
+                }
+            }).then(resp => {
+                this.suiteData = resp;
+            })
+        },
+        submitForm(formName) {
+            this.$refs[formName].validate((valid) => {
+                if (valid) {
+                    this.next = true;
+                } else {
+                    return false;
+                }
+            });
+            this.testData = this.args
+            // 用map遍历args的所有caseId,如果和用例集中的id相等,就返回该用例的全部信息
+            // 用map,filter过滤,case的数据在第二页时,会导致name=undefined
+            // this.testData = this.args.map(caseId=> this.suiteData.results.filter(testCase=> testCase.id === caseId)[0]);
+        },
+        resetForm(formName) {
+            this.$refs[formName].resetFields();
+        },
+        filterNode(value, data) {
+            if (!value) return true;
+            return data.label.indexOf(value) !== -1;
+        },
+        getTree() {
+            this.$api.getTree(this.$route.params.id, {params: {type: 2}}).then(resp => {
+                this.dataTree = resp.tree;
+            })
+        },
+
+        handleNodeClick(node) {
+            this.node = node.id;
+            this.getTestList();
+
+        },
+        getTestList() {
+            this.$api.testList({
+                params: {
+                    project: this.$route.params.id,
+                    node: this.node,
+                    search: this.search,
+                    caseNameOrUrl: ""
+                }
+            }).then(resp => {
+                this.suiteData = resp;
+            })
+        },
+
+    },
+    mounted() {
+        this.getTree();
+        this.getTestList();
     }
-
-  },
-  mounted() {
-    this.getTree()
-    this.getTestList()
-  }
 }
 </script>
 
@@ -481,5 +485,6 @@ export default {
     background: rgba(236, 248, 238, .4)
 
 }
+
 
 </style>
