@@ -14,37 +14,27 @@
                             点击保存
                         </el-button>
 
-                        <el-button
-                            icon="el-icon-caret-right"
-                            type="info"
-                            size="small"
-                            @click="handleRunCode"
-                            round
-                        >
+                        <el-button icon="el-icon-caret-right" type="info" size="small" @click="handleRunCode" round>
                             在线运行
                         </el-button>
                     </el-col>
                 </el-row>
             </div>
-
         </el-header>
 
         <el-container>
             <el-main style="padding: 0; margin-left: 10px">
                 <el-row>
-                    <el-col :span="24">
-                        <MonacoEditor
-                            ref="editor"
+                    <el-col :span="24" v-if="true">
+                        <ace-editor
+                            ref="aceEditor"
+                            v-model="code.code"
+                            @init="editorInit"
+                            lang="python"
+                            theme="dracula"
+                            width="100%"
                             :height="codeHeight"
-                            language="python"
-                            :code="code.code"
-                            :options="options"
-                            @mounted="onMounted"
-                            @codeChange="onCodeChange"
-                            :key="timeStamp"
-                        >
-                        </MonacoEditor>
-
+                        ></ace-editor>
                     </el-col>
 
                     <el-col :span="14">
@@ -58,94 +48,98 @@
                         >
                             <RunCodeResult :msg="resp.msg"></RunCodeResult>
                         </el-drawer>
-
                     </el-col>
-
-
                 </el-row>
-
             </el-main>
         </el-container>
     </el-container>
-
 </template>
 
 <script>
-import MonacoEditor from 'vue-monaco-editor'
-import RunCodeResult from "./components/RunCodeResult";
-import BaseMonacoEditor from "../monaco-editor/BaseMonacoEditor";
+import RunCodeResult from './components/RunCodeResult'
+
+window.ace.acequire = window.ace.require
 
 export default {
-    components: {
-        MonacoEditor,
-        RunCodeResult,
-        BaseMonacoEditor,
-    },
-    data() {
-        return {
-            timeStamp: "",
-            isShowDebug: false,
-            options: {
-                selectOnLineNumbers: false,
-            },
-            code: {
-                code: '',
-                id: ''
-            },
-            resp: {
-                msg: ''
-            }
-        }
-    },
-    name: "DebugTalk",
-    methods: {
-        onMounted(editor) {
-            this.editor = editor;
-        },
-        onCodeChange(editor) {
-            this.code.code = editor.getValue()
-            // editor.trigger('随便写点儿啥', 'editor.action.triggerSuggest', {});
-        },
-        handleRunCode() {
-            this.resp.msg = '';
-            this.$api.runDebugtalk(this.code).then(resp => {
-                this.resp = resp;
-            })
-        },
-        handleConfirm() {
-            this.$api.updateDebugtalk(this.code).then(resp => {
-                this.getDebugTalk();
-                this.$message.success("代码保存成功");
-            })
-        },
-        getDebugTalk() {
-            this.$api.getDebugtalk(this.$route.params.id).then(res => {
-                this.code = res;
-            })
-        }
-    },
-    watch: {
-        code() {
-            this.timeStamp = (new Date()).getTime()
-        },
-        resp() {
-            this.isShowDebug = true
-        }
-    },
+  components: {
+    RunCodeResult
+  },
+  data() {
+    return {
+      drawer: false,
+      direction: 'rtl',
+      timeStamp: '',
+      isShowDebug: false,
+      options: {
+        selectOnLineNumbers: false
+      },
 
-    computed: {
-
-        codeHeight() {
-            return window.screen.height - 248
-        }
-    },
-
-    mounted() {
-        this.getDebugTalk();
+      code: {
+        code: '',
+        id: ''
+      },
+      resp: {
+        msg: ''
+      }
     }
+  },
+  name: 'DebugTalk',
+  methods: {
+    editorInit: function() {
+      require('brace/ext/language_tools') // language extension prerequsite...
+      require('brace/mode/python')
+      require('brace/theme/dracula')
+    },
+    onMounted(editor) {
+      this.editor = editor
+    },
+    onCodeChange(editor) {
+      this.code.code = editor.getValue()
+      // editor.trigger('随便写点儿啥', 'editor.action.triggerSuggest', {});
+    },
+    handleRunCode() {
+      this.resp.msg = ''
+      this.$api.runDebugtalk(this.code).then(resp => {
+        this.resp = resp
+      })
+    },
+    handleConfirm() {
+      this.$api.updateDebugtalk(this.code).then(resp => {
+        this.getDebugTalk()
+        this.$message.success('代码保存成功')
+      })
+    },
+    getDebugTalk() {
+      this.$api.getDebugtalk(this.$route.params.id).then(res => {
+        this.code = res
+      })
+    }
+  },
+  watch: {
+    code() {
+      this.timeStamp = new Date().getTime()
+    },
+    resp() {
+      this.isShowDebug = true
+    }
+  },
+
+  computed: {
+    codeHeight() {
+      return window.screen.height - 248
+    }
+  },
+
+  mounted() {
+    this.getDebugTalk()
+    this.$refs.aceEditor.editor.setOptions({
+      enableBasicAutocompletion: true,
+      enableSnippets: true,
+      enableLiveAutocompletion: true,
+      showPrintMargin: false // 隐藏最大长度线
+    })
+  }
 }
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>
