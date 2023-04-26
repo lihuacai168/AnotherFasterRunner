@@ -25,9 +25,12 @@ Vue.use(VJsoneditor)
 Vue.use(VueClipboard)
 Vue.use(VueApexCharts)
 
+import Editor from 'vue2-ace-editor'
+Vue.component('ace-editor', Editor)
 Vue.component('ApexCharts', VueApexCharts)
 
 Vue.filter('datetimeFormat', datetimeObj2str)
+
 Vue.filter('timestampToTime', timestamp2time)
 
 Vue.prototype.setLocalValue = function(name, value) {

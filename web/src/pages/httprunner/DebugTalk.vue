@@ -14,37 +14,27 @@
                             点击保存
                         </el-button>
 
-                        <el-button
-                            icon="el-icon-caret-right"
-                            type="info"
-                            size="small"
-                            @click="handleRunCode"
-                            round
-                        >
+                        <el-button icon="el-icon-caret-right" type="info" size="small" @click="handleRunCode" round>
                             在线运行
                         </el-button>
                     </el-col>
                 </el-row>
             </div>
-
         </el-header>
 
         <el-container>
             <el-main style="padding: 0; margin-left: 10px">
                 <el-row>
-                    <el-col :span="24">
-                        <MonacoEditor
-                            ref="editor"
+                    <el-col :span="24" v-if="true">
+                        <ace-editor
+                            ref="aceEditor"
+                            v-model="code.code"
+                            @init="editorInit"
+                            lang="python"
+                            theme="dracula"
+                            width="100%"
                             :height="codeHeight"
-                            language="python"
-                            :code="code.code"
-                            :options="options"
-                            @mounted="onMounted"
-                            @codeChange="onCodeChange"
-                            :key="timeStamp"
-                        >
-                        </MonacoEditor>
-
+                        ></ace-editor>
                     </el-col>
 
                     <el-col :span="14">
@@ -54,39 +44,36 @@
                             :destroy-on-close="true"
                             :with-header="false"
                             :modal="false"
-                            v-model:visible="isShowDebug"
+                            :visible.sync="isShowDebug"
                         >
                             <RunCodeResult :msg="resp.msg"></RunCodeResult>
                         </el-drawer>
-
                     </el-col>
-
                 </el-row>
-
             </el-main>
         </el-container>
     </el-container>
-
 </template>
 
 <script>
-import MonacoEditor from 'vue-monaco-editor'
 import RunCodeResult from './components/RunCodeResult'
-import BaseMonacoEditor from '../monaco-editor/BaseMonacoEditor'
+
+window.ace.acequire = window.ace.require
 
 export default {
   components: {
-    MonacoEditor,
-    RunCodeResult,
-    BaseMonacoEditor
+    RunCodeResult
   },
   data() {
     return {
+      drawer: false,
+      direction: 'rtl',
       timeStamp: '',
       isShowDebug: false,
       options: {
         selectOnLineNumbers: false
       },
+
       code: {
         code: '',
         id: ''
@@ -98,6 +85,11 @@ export default {
   },
   name: 'DebugTalk',
   methods: {
+    editorInit: function() {
+      require('brace/ext/language_tools') // language extension prerequsite...
+      require('brace/mode/python')
+      require('brace/theme/dracula')
+    },
     onMounted(editor) {
       this.editor = editor
     },
@@ -125,7 +117,7 @@ export default {
   },
   watch: {
     code() {
-      this.timeStamp = (new Date()).getTime()
+      this.timeStamp = new Date().getTime()
     },
     resp() {
       this.isShowDebug = true
@@ -133,7 +125,6 @@ export default {
   },
 
   computed: {
-
     codeHeight() {
       return window.screen.height - 248
     }
@@ -141,10 +132,14 @@ export default {
 
   mounted() {
     this.getDebugTalk()
+    this.$refs.aceEditor.editor.setOptions({
+      enableBasicAutocompletion: true,
+      enableSnippets: true,
+      enableLiveAutocompletion: true,
+      showPrintMargin: false // 隐藏最大长度线
+    })
   }
 }
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

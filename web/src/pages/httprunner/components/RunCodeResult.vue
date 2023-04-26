@@ -1,20 +1,17 @@
 <template>
-    <MonacoEditor
+    <ace-editor
+        :value="msg"
+        @init="editorInit"
+        lang="python"
+        theme="dracula"
+        width="100%"
         :height="codeHeight"
-        language="text"
-        :code="msg"
-        :options="options"
-    >
-    </MonacoEditor>
+    ></ace-editor>
 </template>
 
 <script>
-import MonacoEditor from 'vue-monaco-editor'
 
 export default {
-  components: {
-    MonacoEditor
-  },
   props: {
     msg: {
       require: true
@@ -32,6 +29,14 @@ export default {
     }
   },
   name: 'DebugResult',
+  methods: {
+    editorInit: function() {
+      require('brace/ext/language_tools') // language extension prerequsite...
+      require('brace/mode/text')
+      require('brace/theme/dracula')
+    }
+  },
+
   computed: {
     codeHeight() {
       return window.screen.height
@@ -40,6 +45,4 @@ export default {
 }
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>
