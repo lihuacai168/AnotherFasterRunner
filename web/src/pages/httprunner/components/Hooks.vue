@@ -12,7 +12,7 @@
         <el-table-column
             label="测试之前执行的方法"
             width="500">
-            <template v-slot="scope">
+            <template slot-scope="scope">
                 <el-input clearable
                           v-model="scope.row.setup"
                           placeholder="${ setup_hooks function($request, *args, **kwargs) }"
@@ -24,7 +24,7 @@
         <el-table-column
             label="测试之后执行的方法"
             width="500">
-            <template v-slot="scope">
+            <template slot-scope="scope">
                 <el-input clearable
                           v-model="scope.row.teardown"
                           placeholder="${ teardown_hooks function(response, *args, **kwargs) }"
@@ -33,8 +33,9 @@
             </template>
         </el-table-column>
 
+
         <el-table-column>
-            <template v-slot="scope">
+            <template slot-scope="scope">
                 <el-row v-show="scope.row === currentRow">
                     <el-button
                         icon="el-icon-circle-plus-outline"
@@ -60,75 +61,75 @@
 
 <script>
 export default {
-  props: {
-    save: Boolean,
-    hooks: {
-      require: false
-    }
-  },
-  computed: {
-    height() {
-      return window.screen.height - 440
-    }
-  },
-  watch: {
-    save: function() {
-      this.$emit('hooks', this.parse_hooks(), this.tableData)
-    },
-
-    hooks: function() {
-      if (this.hooks.length !== 0) {
-        this.tableData = this.hooks
-      }
-    }
-  },
-
-  methods: {
-    cellMouseEnter(row) {
-      this.currentRow = row
-    },
-
-    cellMouseLeave(row) {
-      this.currentRow = ''
-    },
-
-    handleEdit(index, row, flag) {
-      this.tableData.push({
-        setup: '',
-        teardown: ''
-      })
-    },
-
-    handleDelete(index, row) {
-      this.tableData.splice(index, 1)
-    },
-
-    parse_hooks() {
-      const hooks = {
-        setup_hooks: [],
-        teardown_hooks: []
-      }
-      for (const content of this.tableData) {
-        if (content.setup !== '') {
-          hooks.setup_hooks.push(content.setup)
+    props: {
+        save: Boolean,
+        hooks: {
+            require: false
         }
-        if (content.teardown !== '') {
-          hooks.teardown_hooks.push(content.teardown)
+    },
+    computed: {
+        height() {
+            return window.screen.height - 440
         }
-      }
-      return hooks
-    }
-  },
-  data() {
-    return {
-      currentRow: '',
-      tableData: [{
-        setup: '',
-        teardown: ''
-      }]
-    }
-  },
-  name: 'Hooks'
+    },
+    watch: {
+        save: function () {
+            this.$emit('hooks', this.parse_hooks(), this.tableData);
+        },
+
+        hooks: function () {
+            if (this.hooks.length !== 0) {
+                this.tableData = this.hooks;
+            }
+        }
+    },
+
+    methods: {
+        cellMouseEnter(row) {
+            this.currentRow = row;
+        },
+
+        cellMouseLeave(row) {
+            this.currentRow = '';
+        },
+
+        handleEdit(index, row, flag) {
+            this.tableData.push({
+                setup: '',
+                teardown: ''
+            });
+        },
+
+        handleDelete(index, row) {
+            this.tableData.splice(index, 1);
+        },
+
+        parse_hooks() {
+            let hooks = {
+                setup_hooks: [],
+                teardown_hooks: []
+            };
+            for (let content of this.tableData) {
+                if (content.setup !== '') {
+                    hooks.setup_hooks.push(content.setup);
+                }
+                if (content.teardown !== '') {
+                    hooks.teardown_hooks.push(content.teardown);
+                }
+            }
+            return hooks;
+        }
+    },
+    data() {
+        return {
+            currentRow: '',
+            tableData: [{
+                setup: '',
+                teardown: ''
+            }]
+        }
+    },
+    name: "Hooks"
 }
 </script>
 

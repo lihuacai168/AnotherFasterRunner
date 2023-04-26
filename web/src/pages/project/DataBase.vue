@@ -31,9 +31,10 @@
                         <i class="el-icon-d-arrow-right"></i>
                     </el-button>
 
+
                     <el-dialog
                         title="添加数据库"
-                        v-model:visible="dialogVisible"
+                        :visible.sync="dialogVisible"
                         width="40%"
                         align="center"
                     >
@@ -98,7 +99,7 @@
                         width="250"
                         align="center"
                     >
-                        <template v-slot="scope">
+                        <template slot-scope="scope">
                             <el-tag v-if="scope.row.type===1" type="">Sql Server</el-tag>
                             <el-tag v-if="scope.row.type===2" type="success">MySQL</el-tag>
                             <el-tag v-if="scope.row.type===3" type="warning">Oracle</el-tag>
@@ -115,18 +116,19 @@
                         label="访问地址"
                         width="200"
                         align="center">
-                        <template v-slot="scope">
+                        <template slot-scope="scope">
                             <div slot="reference" class="name-wrapper">
                                 <el-tag type="info" style="font-size: 16px;">{{ scope.row.server }}</el-tag>
                             </div>
                         </template>
                     </el-table-column>
 
+
                     <el-table-column
                         label="用户名/密码"
                         width="250"
                         align="center">
-                        <template v-slot="scope">
+                        <template slot-scope="scope">
                             <div slot="reference" class="name-wrapper">
                                 <el-tag type="info" style="font-size: 16px;">{{ scope.row.desc }}</el-tag>
                             </div>
@@ -137,7 +139,7 @@
                         label="描述"
                         width="300"
                         align="center">
-                        <template v-slot="scope">
+                        <template slot-scope="scope">
                             <div slot="reference" class="name-wrapper">
                                 <el-tag type="info" style="font-size: 16px;">{{ scope.row.desc }}</el-tag>
                             </div>
@@ -147,7 +149,7 @@
                     <el-table-column
                         label="操作"
                         align="center">
-                        <template v-slot="scope">
+                        <template slot-scope="scope">
                             <el-button
                                 size="medium"
                                 @click="handleEdit(scope.$index, scope.row)">编辑
@@ -155,7 +157,7 @@
 
                             <el-dialog
                                 title="编辑数据库"
-                                v-model:visible="editVisible"
+                                :visible.sync="editVisible"
                                 width="40%"
                                 align="center"
                             >
@@ -193,6 +195,7 @@
                       </span>
                             </el-dialog>
 
+
                             <el-button
                                 size="medium"
                                 type="danger"
@@ -206,148 +209,151 @@
         </el-container>
     </el-container>
 
+
 </template>
 
 <script>
 export default {
-  data() {
-    return {
-      editVisible: false,
-      dialogVisible: false,
-      dataBaseData: {
-        results: []
-      },
-      dataBaseForm: {
-        name: '',
-        desc: '',
-        server: '',
-        account: '',
-        password: '',
-        type: 2,
-        id: ''
-      },
-      tags: [
-        {name: 'Sql Server', value: 1},
-        {name: 'MySQL', value: 2},
-        {name: 'Oracle', value: 3},
-        {name: 'Mongodb', value: 4},
-        {name: 'InfluxDB', value: 5}
-      ],
-      rules: {
-        name: [
-          {required: true, message: '请输入数据库名称', trigger: 'blur'},
-          {min: 1, max: 50, message: '最多不超过50个字符', trigger: 'blur'}
-        ],
-        server: [
-          {required: true, message: '请输入数据库访问地址', trigger: 'blur'},
-          {min: 1, max: 50, message: '最多不超过50个字符', trigger: 'blur'}
-        ],
-        account: [
-          {required: true, message: '请输入登陆账号', trigger: 'blur'},
-          {min: 1, max: 50, message: '最多不超过50个字符', trigger: 'blur'}
-        ],
-        password: [
-          {required: true, message: '请输入登陆密码', trigger: 'blur'},
-          {min: 1, max: 50, message: '最多不超过50个字符', trigger: 'blur'}
-        ],
-        desc: [
-          {required: true, message: '请简要描述下该数据库', trigger: 'blur'},
-          {min: 1, max: 100, message: '最多不超过100个字符', trigger: 'blur'}
-        ]
-      }
-    }
-  },
-  methods: {
-    handleEdit(index, row) {
-      this.editVisible = true
-      this.dataBaseForm.name = row['name']
-      this.dataBaseForm.desc = row['desc']
-      this.dataBaseForm.id = row['id']
-      this.dataBaseForm.server = row['server']
-      this.dataBaseForm.type = row['type']
-      this.dataBaseForm.account = row['account']
-      this.dataBaseForm.password = row['password']
-    },
-    handleDelete(index, row) {
-      this.$confirm('此操作将永久删除该数据库, 是否继续?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
-        this.$api.deleteDataBase(row['id']).then(resp => {
-          this.success('数据库删除成功')
-          this.getDataBaseList()
-        }).catch(resp => {
-          this.failure(resp)
-        })
-      })
-    },
-    handleConfirm(formName) {
-      this.$refs[formName].validate((valid) => {
-        if (valid) {
-          this.dialogVisible = false
-          this.editVisible = false
-          let obj
-
-          if (this.dataBaseForm.id === '') {
-            obj = this.$api.addDataBase(this.dataBaseForm)
-          } else {
-            obj = this.$api.updateDataBase(this.dataBaseForm.id, this.dataBaseForm)
-          }
-          obj.then(resp => {
-            if (resp['name'] === this.dataBaseForm.name) {
-              this.success(resp['name'] + '数据库操作成功')
-              this.getDataBaseList()
+    data() {
+        return {
+            editVisible: false,
+            dialogVisible: false,
+            dataBaseData: {
+                results: []
+            },
+            dataBaseForm: {
+                name: '',
+                desc: '',
+                server: '',
+                account: '',
+                password: '',
+                type: 2,
+                id: ''
+            },
+            tags: [
+                {name: 'Sql Server', value: 1},
+                {name: 'MySQL', value: 2},
+                {name: 'Oracle', value: 3},
+                {name: 'Mongodb', value: 4},
+                {name: 'InfluxDB', value: 5}
+            ],
+            rules: {
+                name: [
+                    {required: true, message: '请输入数据库名称', trigger: 'blur'},
+                    {min: 1, max: 50, message: '最多不超过50个字符', trigger: 'blur'}
+                ],
+                server: [
+                    {required: true, message: '请输入数据库访问地址', trigger: 'blur'},
+                    {min: 1, max: 50, message: '最多不超过50个字符', trigger: 'blur'}
+                ],
+                account: [
+                    {required: true, message: '请输入登陆账号', trigger: 'blur'},
+                    {min: 1, max: 50, message: '最多不超过50个字符', trigger: 'blur'}
+                ],
+                password: [
+                    {required: true, message: '请输入登陆密码', trigger: 'blur'},
+                    {min: 1, max: 50, message: '最多不超过50个字符', trigger: 'blur'}
+                ],
+                desc: [
+                    {required: true, message: '请简要描述下该数据库', trigger: 'blur'},
+                    {min: 1, max: 100, message: '最多不超过100个字符', trigger: 'blur'}
+                ]
             }
-
-            this.dataBaseForm.name = ''
-            this.dataBaseForm.desc = ''
-            this.dataBaseForm.id = ''
-            this.dataBaseForm.account = ''
-            this.dataBaseForm.password = ''
-            this.dataBaseForm.server = ''
-            this.dataBaseForm.type = 2
-          }).catch(resp => {
-            this.failure(resp)
-          })
-        } else {
-          if (this.dataBaseForm.id !== '') {
-            this.editVisible = true
-          } else {
-            this.dialogVisible = true
-          }
-          return false
         }
-      })
-    },
-    success(resp) {
-      this.$notify({
-        message: resp,
-        type: 'success',
-        duration: this.$store.state.duration
-      })
-    },
-    failure(resp) {
-      this.$notify.error({
-        message: resp,
-        duration: this.$store.state.duration
-      })
-    },
-    getDataBaseList() {
-      this.$api.getDataBaseList().then(resp => {
-        this.dataBaseData = resp
-      })
-    },
-    getPagination(url) {
-      this.$api.getPagination(url).then(resp => {
-        this.dataBaseData = resp
-      })
     }
-  },
-  mounted() {
-    this.getDataBaseList()
-  },
-  name: 'DataBase'
+    ,
+    methods: {
+        handleEdit(index, row) {
+            this.editVisible = true;
+            this.dataBaseForm.name = row['name'];
+            this.dataBaseForm.desc = row['desc'];
+            this.dataBaseForm.id = row['id'];
+            this.dataBaseForm.server = row['server'];
+            this.dataBaseForm.type = row['type'];
+            this.dataBaseForm.account = row['account'];
+            this.dataBaseForm.password = row['password'];
+        },
+        handleDelete(index, row) {
+            this.$confirm('此操作将永久删除该数据库, 是否继续?', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+            }).then(() => {
+                this.$api.deleteDataBase(row["id"]).then(resp => {
+                    this.success('数据库删除成功');
+                    this.getDataBaseList();
+                }).catch(resp => {
+                    this.failure(resp)
+                });
+            })
+        },
+        handleConfirm(formName) {
+            this.$refs[formName].validate((valid) => {
+                if (valid) {
+                    this.dialogVisible = false;
+                    this.editVisible = false;
+                    let obj;
+
+                    if (this.dataBaseForm.id === '') {
+                        obj = this.$api.addDataBase(this.dataBaseForm);
+                    } else {
+                        obj = this.$api.updateDataBase(this.dataBaseForm.id, this.dataBaseForm);
+                    }
+                    obj.then(resp => {
+                        if (resp["name"] === this.dataBaseForm.name) {
+                            this.success(resp["name"] + '数据库操作成功');
+                            this.getDataBaseList();
+                        }
+
+                        this.dataBaseForm.name = '';
+                        this.dataBaseForm.desc = '';
+                        this.dataBaseForm.id = '';
+                        this.dataBaseForm.account = '';
+                        this.dataBaseForm.password = '';
+                        this.dataBaseForm.server = '';
+                        this.dataBaseForm.type = 2;
+                    }).catch(resp => {
+                        this.failure(resp);
+                    });
+                } else {
+                    if (this.dataBaseForm.id !== '') {
+                        this.editVisible = true;
+                    } else {
+                        this.dialogVisible = true;
+                    }
+                    return false;
+                }
+            });
+
+        },
+        success(resp) {
+            this.$notify({
+                message: resp,
+                type: 'success',
+                duration: this.$store.state.duration
+            });
+        },
+        failure(resp) {
+            this.$notify.error({
+                message: resp,
+                duration: this.$store.state.duration
+            });
+        },
+        getDataBaseList() {
+            this.$api.getDataBaseList().then(resp => {
+                this.dataBaseData = resp;
+            })
+        },
+        getPagination(url) {
+            this.$api.getPagination(url).then(resp => {
+                this.dataBaseData = resp;
+            })
+        },
+    },
+    mounted() {
+        this.getDataBaseList();
+    },
+    name: "DataBase"
 }
 </script>
 
