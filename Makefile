@@ -2,12 +2,18 @@
 
 env := ${env}
 
-env-file := ${HOME}/.env
+HOME_ENV := ${HOME}/.env
+CURRENT_ENV := .env.example
+env-file := $(CURRENT_ENV)
 
-
-# 如果外部传入了变量值，覆盖默认值
-ifdef ENV_FILE
-    env-file := $(ENV_FILE)
+ifndef ENV_FILE
+	ifneq ($(wildcard $(HOME_ENV)),)
+		env-file := $(HOME_ENV)
+	else
+		WARN_MSG := $(warning WARNING: ${HOME_ENV} not found and no ENV_FILE provided, using .env.example instead)
+	endif
+else
+	env-file := $(ENV_FILE)
 endif
 
 compose-file := docker-compose.yml
@@ -22,6 +28,11 @@ cmd = docker-compose -f $(compose-file) --env-file $(env-file)
 tag := $(tag)
 
 service := $(word 1,$(MAKECMDGOALS))
+
+.PHONY: fastup
+fastup:
+	docker-compose -f docker-compose-for-fastup.yml --env-file .env.example up -d --build --remove-orphans
+	docker-compose -f docker-compose-for-fastup.yml --env-file .env.example restart nginx web
 
 .PHONY: up
 up:

@@ -21,21 +21,30 @@
 
 # Quick Start
 
+## 拉取代码和启动服务
 ```shell
-# 设置环境变量
-cp .env.example $HOME/.env
+# 拉取代码
+git clone git@github.com:lihuacai168/AnotherFasterRunner.git AnotherFasterRunner
 
-# 修改.env文件
+# 如果你的机器连接不上Github，可以用国内的Gitee
+# git clone git@gitee.com:lihuacai/AnotherFasterRunner.git AnotherFasterRunner
+
+# 使用makefile命令快速启动所有服务，没错，一个命令就搞定
+cd AnotherFasterRunner && make
+
+# 或者使用docker-compose原始的命令, 指定配置文件启动
+cd AnotherFasterRunner && docker-compose -f docker-compose-for-fastup.yml --env-file .env.example up -d
 ```
 
+## 访问服务
 ```shell
-# 使用makefile命令快速启动
-make up
+# 默认是80端口，如果80端口被占用，修改env文件中的WEB_PORT即可
+浏览器打开:
+http://你的ip/fastrunner/login
 
-# 或者使用docker-compose原始的命令, 指定配置文件启动, .env是绝对路径
-docker-compose --env-file=$HOME/.env up --build -d
+用户:test
+密码:test2020
 ```
-
 
 # Dev
 - [Django原生部署](https://www.jianshu.com/p/e26ccc21ddf2)
