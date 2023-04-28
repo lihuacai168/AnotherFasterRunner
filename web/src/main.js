@@ -2,7 +2,6 @@
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
 import Vue from 'vue'
 import ElementUI from 'element-ui'
-import VJsoneditor from 'v-jsoneditor'
 import VueClipboard from 'vue-clipboard2'
 import echarts from 'echarts'
 import VueApexCharts from 'vue-apexcharts'
@@ -21,7 +20,6 @@ Vue.config.productionTip = false
 Vue.use(ElementUI)
 Vue.prototype.$api = api
 Vue.prototype.$echarts = echarts
-Vue.use(VJsoneditor)
 Vue.use(VueClipboard)
 Vue.use(VueApexCharts)
 

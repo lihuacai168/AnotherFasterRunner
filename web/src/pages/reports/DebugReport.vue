@@ -210,8 +210,13 @@
 
 <script>
 
+import VJsoneditor from 'v-jsoneditor'
+
 export default {
     name: "DebugReport",
+    components: {
+        VJsoneditor
+    },
     props: {
         summary: {
             require: true,

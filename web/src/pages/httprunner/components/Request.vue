@@ -165,9 +165,14 @@
 </template>
 
 <script>
+import VJsoneditor from 'v-jsoneditor'
+
 import bus from '../../../util/bus.js'
 
 export default {
+    components: {
+        VJsoneditor
+    },
     props: {
         save: Boolean,
         request: {
