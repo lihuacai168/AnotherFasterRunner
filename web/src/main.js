@@ -3,7 +3,7 @@
 import Vue from 'vue'
 import ElementUI from 'element-ui'
 import VueClipboard from 'vue-clipboard2'
-import echarts from 'echarts'
+// import echarts from 'echarts'
 import VueApexCharts from 'vue-apexcharts'
 import 'element-ui/lib/theme-chalk/index.css'
 import App from './App'
@@ -19,12 +19,10 @@ import {datetimeObj2str, timestamp2time} from './util/format.js'
 Vue.config.productionTip = false
 Vue.use(ElementUI)
 Vue.prototype.$api = api
-Vue.prototype.$echarts = echarts
+// Vue.prototype.$echarts = echarts
 Vue.use(VueClipboard)
 Vue.use(VueApexCharts)
 
-import Editor from 'vue2-ace-editor'
-Vue.component('ace-editor', Editor)
 Vue.component('ApexCharts', VueApexCharts)
 
 Vue.filter('datetimeFormat', datetimeObj2str)
