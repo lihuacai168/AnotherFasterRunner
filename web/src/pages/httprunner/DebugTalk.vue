@@ -58,11 +58,14 @@
 <script>
 import RunCodeResult from './components/RunCodeResult'
 
-window.ace.acequire = window.ace.require
+import Editor from 'vue2-ace-editor'
+
+// window.ace.acequire = window.ace.require
 
 export default {
   components: {
-    RunCodeResult
+    RunCodeResult,
+      'ace-editor': Editor
   },
   data() {
     return {

@@ -11,7 +11,12 @@
 
 <script>
 
+import Editor from "vue2-ace-editor";
+
 export default {
+    components: {
+      'ace-editor': Editor
+  },
   props: {
     msg: {
       require: true
