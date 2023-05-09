@@ -1,15 +1,3 @@
-最近找工作（已经离职状态）:sob:   
-看广深的测开机会  
-个人简介：
-- 普通全日制本科，8年经验，在虾皮，TCL，广州致景等工作过
-- 擅长：Python，Vue，MySQL，Docker，Linux Shell
-- 略懂：Go，Kafka，Redis，MQTT，大数据相关
-- 弱项：Java，移动端（有ChatGPT Plus加持，我想这不是什么问题）
-
-各位大佬招人或者内推，扫描二维码，带走我  
-<img src="https://img.huacai.one/image-20230412095031719.webp" alt="image-20230412095031719" style="zoom:10%;" />
-
-
 [![LICENSE](https://img.shields.io/github/license/HttpRunner/FasterRunner.svg)](https://github.com/HttpRunner/FasterRunner/blob/master/LICENSE)
 # FasterRunner
 - [X] 支持同步YAPI（Swagger，Postman），无需手动录入接口
