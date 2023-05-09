@@ -43,7 +43,7 @@ docker run --name mysql -v ./mysql:/var/lib/mysql -p 3306:3306 -e MYSQL_ROOT_PAS
 # 编辑Dockerfile，安装必要的依赖及确定WORKDIR
 apk add Nginx
 ...
-WORKDIR /opt/workspace/FasterRunner/
+WORKDIR /app/
 ```
 
 ```shell

@@ -22,11 +22,11 @@ x-env: &env
   EMAIL_PORT: ${EMAIL_PORT}
   EMAIL_HOST_USER: ${EMAIL_HOST_USER}
   EMAIL_HOST_PASSWORD: ${EMAIL_HOST_PASSWORD}
-  DJANGO_SETTINGS_MODULE：FasterRunner.settings.docker
+#  DJANGO_SETTINGS_MODULE：FasterRunner.settings.docker
 
 services:
   db:
-    image: registry-vpc.cn-hangzhou.aliyuncs.com/cbk/mysql:5.7
+    image: mysql:8.0
     container_name: faster-mysql
     privileged: true
     environment:
@@ -54,7 +54,7 @@ services:
 #      - ./mysql:/opt/workspace/FasterRunner/mysql
       - ./nginx.conf:/etc/nginx/sites-enabled/nginx.conf
     entrypoint: /bin/sh
-    command: -c "/opt/workspace/FasterRunner/start.sh"
+    command: -c "/app/start.sh"
     # command: -c "/usr/local/bin/python -m gunicorn FasterRunner.wsgi_docker -b 0.0.0.0 -w 4"
     depends_on:
       - db
@@ -63,42 +63,42 @@ services:
       - "${DJANGO_API_PORT}:8000"
     restart: always
 
-  celery-worker:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    environment:
-      <<: *env
-    entrypoint: /app/start.sh
-    command: "celery-worker"
-    restart: always
-    depends_on:
-      - db
-      - mq
-
-  celery-beat:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    environment:
-      <<: *env
-    entrypoint: /app/start.sh
-    command: "celery-beat"
-    restart: always
-    depends_on:
-      - mq
-      - db
-
-# django-admin & app proxy
-  nginx:
-    build: ./nginx
-    ports:
-      - "${DJANGO_ADMIN_PORT}:8000"
-    depends_on:
-      - app
-    restart: always
-    environment:
-      <<: *env
+#  celery-worker:
+#    build:
+#      context: .
+#      dockerfile: Dockerfile
+#    environment:
+#      <<: *env
+#    entrypoint: /app/start.sh
+#    command: "celery-worker"
+#    restart: always
+#    depends_on:
+#      - db
+#      - mq
+#
+#  celery-beat:
+#    build:
+#      context: .
+#      dockerfile: Dockerfile
+#    environment:
+#      <<: *env
+#    entrypoint: /app/start.sh
+#    command: "celery-beat"
+#    restart: always
+#    depends_on:
+#      - mq
+#      - db
+#
+## django-admin & app proxy
+#  nginx:
+#    build: ./nginx
+#    ports:
+#      - "${DJANGO_ADMIN_PORT}:8000"
+#    depends_on:
+#      - app
+#    restart: always
+#    environment:
+#      <<: *env
   web:
     image: registry-vpc.cn-hangzhou.aliyuncs.com/cbk/fasterrunner:web-latest
     container_name: faster-web
