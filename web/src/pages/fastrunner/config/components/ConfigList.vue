@@ -1,103 +1,98 @@
 <template>
-  <div>
-    <el-header style="padding-top: 8px; padding-left: 10px; height: 50px">
-      <el-row :gutter="30"
-        ><el-col :span="6">
-          <el-input placeholder="请输入配置名称" clearable v-model="search" size="small">
-            <el-button slot="append" icon="el-icon-search" @click="getConfigList"></el-button>
-          </el-input> </el-col
-      ></el-row>
-    </el-header>
+  <el-main style="padding: 10px 10px">
+    <el-input
+      placeholder="请输入配置名称"
+      clearable
+      v-model="search"
+      size="small"
+      style="width: 280px; margin-bottom: 10px"
+    >
+      <el-button slot="append" icon="el-icon-search" @click="getConfigList"></el-button>
+    </el-input>
+    <el-table
+      highlight-current-row
+      :data="configData.results"
+      :show-header="configData.results.length !== 0"
+      stripe
+      @cell-mouse-enter="cellMouseEnter"
+      @cell-mouse-leave="cellMouseLeave"
+      @selection-change="handleSelectionChange"
+    >
+      <el-table-column type="selection" width="35"></el-table-column>
+      <el-table-column label="配置名称" min-width="120">
+        <template v-slot="scope">
+          <div style="height: 20px">{{ scope.row.name }}</div>
+        </template>
+      </el-table-column>
 
-    <el-main style="padding: 0; margin-left: 10px">
-      <div>
-        <el-table
-          style="width: 100%; height: auto"
-          highlight-current-row
-          :data="configData.results"
-          :show-header="configData.results.length !== 0"
-          stripe
-          @cell-mouse-enter="cellMouseEnter"
-          @cell-mouse-leave="cellMouseLeave"
-          @selection-change="handleSelectionChange"
-        >
-          <el-table-column type="selection" width="35"></el-table-column>
-          <el-table-column label="配置名称" min-width="120">
-            <template v-slot="scope">
-              <div style="height: 20px">{{ scope.row.name }}</div>
-            </template>
-          </el-table-column>
+      <el-table-column label="基本请求地址" min-width="120">
+        <template v-slot="scope">
+          <div v-text="scope.row.base_url === '' ? '无' : scope.row.base_url"></div>
+        </template>
+      </el-table-column>
 
-          <el-table-column label="基本请求地址" min-width="120">
-            <template v-slot="scope">
-              <div v-text="scope.row.base_url === '' ? '无' : scope.row.base_url"></div>
-            </template>
-          </el-table-column>
+      <el-table-column width="90" label="是否为默认">
+        <template v-slot="scope">
+          <el-switch disabled v-model="scope.row.is_default" active-color="#13ce66"></el-switch>
+        </template>
+      </el-table-column>
 
-          <el-table-column width="90" label="是否为默认">
-            <template v-slot="scope">
-              <el-switch disabled v-model="scope.row.is_default" active-color="#13ce66"></el-switch>
-            </template>
-          </el-table-column>
+      <el-table-column label="更新时间" width="180">
+        <template v-slot="scope">
+          <div>{{ scope.row.update_time | datetimeFormat }}</div>
+        </template>
+      </el-table-column>
 
-          <el-table-column label="更新时间" width="180">
-            <template v-slot="scope">
-              <div>{{ scope.row.update_time | datetimeFormat }}</div>
-            </template>
-          </el-table-column>
+      <el-table-column width="120" label="操作">
+        <template v-slot="scope">
+          <el-row v-show="currentRow === scope.row">
+            <el-button
+              type="info"
+              icon="el-icon-edit"
+              title="编辑"
+              circle
+              size="mini"
+              @click="handleEditConfig(scope.row)"
+            ></el-button>
 
-          <el-table-column width="120" label="操作">
-            <template v-slot="scope">
-              <el-row v-show="currentRow === scope.row">
-                <el-button
-                  type="info"
-                  icon="el-icon-edit"
-                  title="编辑"
-                  circle
-                  size="mini"
-                  @click="handleEditConfig(scope.row)"
-                ></el-button>
+            <el-button
+              type="success"
+              icon="el-icon-document"
+              circle
+              size="mini"
+              style="margin-left: 0px"
+              @click="handleCopyConfig(scope.row.id, scope.row.name)"
+              title="复制"
+            >
+            </el-button>
 
-                <el-button
-                  type="success"
-                  icon="el-icon-document"
-                  circle
-                  size="mini"
-                  style="margin-left: 0"
-                  @click="handleCopyConfig(scope.row.id, scope.row.name)"
-                  title="复制"
-                >
-                </el-button>
-
-                <el-button
-                  type="danger"
-                  icon="el-icon-delete"
-                  title="删除"
-                  circle
-                  size="mini"
-                  style="margin-left: 0"
-                  @click="handleDelConfig(scope.row.id)"
-                >
-                </el-button>
-              </el-row>
-            </template>
-          </el-table-column>
-        </el-table>
-        <div style="margin: 5px 5px">
-          <el-pagination
-            :page-size="11"
-            v-show="configData.count !== 0"
-            background
-            @current-change="handleCurrentChange"
-            :current-page.sync="currentPage"
-            layout="total, prev, pager, next, jumper"
-            :total="configData.count"
-          >
-          </el-pagination>
-        </div>
-      </div>
-    </el-main>
-  </div>
+            <el-button
+              type="danger"
+              icon="el-icon-delete"
+              title="删除"
+              circle
+              size="mini"
+              style="margin-left: 0px"
+              @click="handleDelConfig(scope.row.id)"
+            >
+            </el-button>
+          </el-row>
+        </template>
+      </el-table-column>
+    </el-table>
+    <div style="margin: 5px 0">
+      <el-pagination
+        :page-size="11"
+        v-show="configData.count !== 0"
+        background
+        @current-change="handleCurrentChange"
+        :current-page.sync="currentPage"
+        layout="total, prev, pager, next, jumper"
+        :total="configData.count"
+      >
+      </el-pagination>
+    </div>
+  </el-main>
 </template>
 
 <script>
