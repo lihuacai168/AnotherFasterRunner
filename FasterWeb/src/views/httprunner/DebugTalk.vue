@@ -51,7 +51,7 @@
 </template>
 
 <script>
-import MonacoEditor from "../monaco-editor/Monaco.vue";
+import MonacoEditor from "../monaco-editor/MonacoEditor.vue";
 import RunCodeResult from "./components/RunCodeResult.vue";
 import BaseMonacoEditor from "../monaco-editor/BaseMonacoEditor.vue";
 

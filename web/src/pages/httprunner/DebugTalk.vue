@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div style="height: 50px; padding: 5px">
+    <div style="height: 48px; padding: 5px 10px; background: #f7f7f7">
       <el-button type="primary" size="small" icon="el-icon-circle-check" @click="handleConfirm"> 点击保存 </el-button>
       <el-button icon="el-icon-caret-right" type="info" size="small" style="margin-left: 0" @click="handleRunCode">
         在线运行
@@ -42,15 +42,15 @@
 </template>
 
 <script>
-import MonacoEditor from "vue-monaco-editor";
+import MonacoEditor from "../monaco-editor/MonacoEditor.vue";
 import RunCodeResult from "./components/RunCodeResult.vue";
 import BaseMonacoEditor from "../monaco-editor/BaseMonacoEditor";
 
 export default {
   components: {
     MonacoEditor,
-    RunCodeResult,
-    BaseMonacoEditor
+    RunCodeResult
+    // BaseMonacoEditor
   },
   data() {
     return {
@@ -122,7 +122,7 @@ export default {
 
   computed: {
     codeHeight() {
-      return window.screen.height - 111;
+      return window.innerHeight - 100;
     }
   },
 

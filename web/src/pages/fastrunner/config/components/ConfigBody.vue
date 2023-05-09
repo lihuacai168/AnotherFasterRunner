@@ -1,26 +1,24 @@
 <template>
-  <div style="margin-left: 10px">
-    <div style="margin-top: 10px">
-      <el-input style="width: 600px" size="small" placeholder="请输入配置名称" v-model="name" clearable>
-        <template slot="prepend">配置信息录入</template>
+  <div style="padding: 10px 10px">
+    <el-input style="width: 600px" placeholder="请输入配置名称" v-model="name" clearable size="small">
+      <template slot="prepend">配置信息录入</template>
+      <!-- <el-button slot="append" type="success" plain @click="save = !save">Save </el-button> -->
+    </el-input>
+    <el-button slot="append" type="success" size="small" style="margin-left: 5px" @click="save = !save"
+      >Save
+    </el-button>
 
-        <!--                <el-button-->
-        <!--                    slot="append"-->
-        <!--                    type="success"-->
-        <!--                    plain-->
-        <!--                    @click="save = !save"-->
-        <!--                >Save-->
-        <!--                </el-button>-->
-      </el-input>
-      <el-button slot="append" type="success" size="small" @click="save = !save">保 存</el-button>
-    </div>
-    <div>
-      <el-input class="input-with-select" size="small" placeholder="请输入 base_url 地址" v-model="baseUrl" clearable>
-        <template slot="prepend">配置请求地址</template>
-      </el-input>
-      <el-switch v-model="is_default" active-color="#13ce66" :disabled="isAddConfig" active-text="默认配置">
-      </el-switch>
-    </div>
+    <el-input class="input-with-select" placeholder="请输入 base_url 地址" v-model="baseUrl" clearable size="small">
+      <template slot="prepend">配置请求地址</template>
+    </el-input>
+    <el-switch
+      v-model="is_default"
+      active-color="#13ce66"
+      :disabled="isAddConfig"
+      active-text="默认配置"
+      style="margin-left: 5px"
+    ></el-switch>
+
     <!--        <div>-->
     <!--            <el-switch-->
     <!--                style="display: block"-->

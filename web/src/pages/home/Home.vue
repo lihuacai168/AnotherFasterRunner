@@ -5,9 +5,9 @@
     </el-header>
     <el-divider></el-divider>
 
-    <!--            <el-aside style="width: 160px" v-show="false">-->
-    <!--                <home-side></home-side>-->
-    <!--            </el-aside>-->
+    <!-- <el-aside style="width: 160px" v-show="false">
+      <home-side></home-side>
+    </el-aside> -->
 
     <el-main :style="defaultHeight">
       <router-view></router-view>
@@ -32,9 +32,9 @@ import HomeHeader from "./components/Header.vue";
 // import HomeSide from "./components/Side.vue";
 
 export default {
-  name: "Home",
+  name: "HomePage",
   components: {
-    HomeHeader,
+    HomeHeader
     // HomeSide
   },
   data() {

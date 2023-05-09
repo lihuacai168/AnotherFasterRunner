@@ -59,7 +59,7 @@
           </template>
         </el-table-column>
 
-        <el-table-column width="80" label="时间配置">
+        <el-table-column width="90" label="时间配置">
           <template v-slot="scope">
             <div>{{ scope.row.kwargs.crontab }}</div>
           </template>

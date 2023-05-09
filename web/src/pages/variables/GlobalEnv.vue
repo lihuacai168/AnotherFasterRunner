@@ -1,99 +1,74 @@
 <template>
   <div>
-    <el-header style="background: #fff; padding: 0; height: 50px">
-      <div style="padding-top: 10px; margin-left: 10px" class="nav-api-header">
-        <el-button
-          type="primary"
-          size="small"
-          icon="el-icon-circle-plus-outline"
-          @click="openFormModal('variablesForm', 'dialogVisible')"
-          >新增变量
-        </el-button>
+    <el-header style="height: 48px; padding: 10px 10px; background: #f7f7f7" class="nav-api-header">
+      <el-button
+        type="primary"
+        size="small"
+        icon="el-icon-circle-plus-outline"
+        @click="openFormModal('variablesForm', 'dialogVisible')"
+        >新增变量
+      </el-button>
 
-        <el-button
-          v-show="variablesData.count !== 0"
-          style="margin-left: 20px"
-          type="danger"
-          icon="el-icon-delete"
-          circle
-          size="mini"
-          @click="delSelectionVariables"
-        ></el-button>
+      <el-button
+        v-show="variablesData.count !== 0"
+        type="danger"
+        icon="el-icon-delete"
+        circle
+        size="mini"
+        @click="delSelectionVariables"
+      ></el-button>
 
-        <el-dialog title="添加变量" :visible.sync="dialogVisible" width="30%" align="center">
-          <el-form :model="variablesForm" :rules="rules" ref="variablesForm" label-width="100px" class="project">
-            <el-form-item label="变量名" prop="key">
-              <el-input v-model="variablesForm.key" clearable placeholder="请输入变量名"></el-input>
-            </el-form-item>
+      <el-dialog title="添加变量" :visible.sync="dialogVisible" width="30%" align="center">
+        <el-form :model="variablesForm" :rules="rules" ref="variablesForm" label-width="100px" class="project">
+          <el-form-item label="变量名" prop="key">
+            <el-input v-model="variablesForm.key" clearable placeholder="请输入变量名"></el-input>
+          </el-form-item>
 
-            <el-form-item label="变量值" prop="value">
-              <el-input v-model="variablesForm.value" clearable placeholder="请输入变量值"></el-input>
-            </el-form-item>
+          <el-form-item label="变量值" prop="value">
+            <el-input v-model="variablesForm.value" clearable placeholder="请输入变量值"></el-input>
+          </el-form-item>
 
-            <el-form-item label="变量描述" prop="description">
-              <el-input v-model="variablesForm.description" clearable placeholder="请输入变量描述"></el-input>
-            </el-form-item>
-          </el-form>
-          <span slot="footer" class="dialog-footer">
-            <el-button @click="resetForm('variablesForm', 'dialogVisible')">取 消</el-button>
-            <el-button type="primary" @click="handleConfirm('variablesForm')">确 定</el-button>
-          </span>
-        </el-dialog>
+          <el-form-item label="变量描述" prop="description">
+            <el-input v-model="variablesForm.description" clearable placeholder="请输入变量描述"></el-input>
+          </el-form-item>
+        </el-form>
+        <span slot="footer" class="dialog-footer">
+          <el-button @click="resetForm('variablesForm', 'dialogVisible')">取 消</el-button>
+          <el-button type="primary" @click="handleConfirm('variablesForm')">确 定</el-button>
+        </span>
+      </el-dialog>
 
-        <el-dialog title="编辑变量" :visible.sync="editdialogVisible" width="30%" align="center">
-          <el-form
-            :model="editVariablesForm"
-            :rules="rules"
-            ref="editVariablesForm"
-            label-width="100px"
-            class="project"
-          >
-            <el-form-item label="变量名" prop="key">
-              <el-input v-model="editVariablesForm.key" clearable placeholder="请输入变量名"></el-input>
-            </el-form-item>
-            <el-form-item label="变量值" prop="value">
-              <el-input v-model="editVariablesForm.value" clearable placeholder="请输入变量值"></el-input>
-            </el-form-item>
-            <el-form-item label="变量描述" prop="description">
-              <el-input v-model="editVariablesForm.description" clearable placeholder="请输入变量描述"></el-input>
-            </el-form-item>
-          </el-form>
-          <span slot="footer" class="dialog-footer">
-            <el-button @click="resetForm('editVariablesForm', 'editdialogVisible')">取 消</el-button>
-            <el-button type="primary" @click="handleEditConfirm('editVariablesForm')">确 定</el-button>
-          </span>
-        </el-dialog>
-      </div>
+      <el-dialog title="编辑变量" :visible.sync="editdialogVisible" width="30%" align="center">
+        <el-form :model="editVariablesForm" :rules="rules" ref="editVariablesForm" label-width="100px" class="project">
+          <el-form-item label="变量名" prop="key">
+            <el-input v-model="editVariablesForm.key" clearable placeholder="请输入变量名"></el-input>
+          </el-form-item>
+          <el-form-item label="变量值" prop="value">
+            <el-input v-model="editVariablesForm.value" clearable placeholder="请输入变量值"></el-input>
+          </el-form-item>
+          <el-form-item label="变量描述" prop="description">
+            <el-input v-model="editVariablesForm.description" clearable placeholder="请输入变量描述"></el-input>
+          </el-form-item>
+        </el-form>
+        <span slot="footer" class="dialog-footer">
+          <el-button @click="resetForm('editVariablesForm', 'editdialogVisible')">取 消</el-button>
+          <el-button type="primary" @click="handleEditConfirm('editVariablesForm')">确 定</el-button>
+        </span>
+      </el-dialog>
     </el-header>
 
-    <el-main style="padding: 10px 10px 0 10px">
-      <el-row :gutter="5">
-        <el-col :span="6">
-          <el-input
-            placeholder="请输入变量名称"
-            v-if="variablesData.count >= 0"
-            clearable
-            size="small"
-            v-model="search"
-          >
-            <el-button slot="append" icon="el-icon-search" @click="getVariablesList"></el-button>
-          </el-input>
-        </el-col>
-        <el-col :span="2">
-          <el-button type="primary" size="small" @click="resetSearch">重置</el-button>
-        </el-col>
-        <!--                        <el-col :span="7">-->
-        <!--                            <el-pagination-->
-        <!--                                :page-size="11"-->
-        <!--                                v-show="variablesData.count !== 0 "-->
-        <!--                                background-->
-        <!--                                @current-change="handleCurrentChange"-->
-        <!--                                :current-page.sync="currentPage"-->
-        <!--                                layout="total, prev, pager, next, jumper"-->
-        <!--                                :total="variablesData.count"-->
-        <!--                            ></el-pagination>-->
-        <!--                        </el-col>-->
-      </el-row>
+    <el-main style="padding: 10px 10px">
+      <el-input
+        placeholder="请输入变量名称"
+        v-if="variablesData.count >= 0"
+        clearable
+        size="small"
+        v-model="search"
+        style="width: 280px; margin: 0 10px 10px 0"
+      >
+        <el-button slot="append" icon="el-icon-search" @click="getVariablesList"></el-button>
+      </el-input>
+      <el-button type="primary" size="small" @click="resetSearch">重置</el-button>
       <el-table
         style="width: 100%; height: auto"
         highlight-current-row
@@ -148,7 +123,7 @@
                 title="复制"
                 circle
                 size="mini"
-                style="margin-left: 0"
+                style="margin-left: 0px"
                 @click="handleCopyVariables(scope.row)"
               ></el-button>
 
@@ -159,7 +134,7 @@
                 title="删除"
                 circle
                 size="mini"
-                style="margin-left: 0"
+                style="margin-left: 0px"
                 @click="handleDelVariables(scope.row.id)"
               ></el-button>
             </el-row>
@@ -245,7 +220,7 @@ export default {
       this.currentRow = row;
     },
 
-    cellMouseLeave(row) {
+    cellMouseLeave() {
       this.currentRow = "";
     },
 
@@ -286,7 +261,7 @@ export default {
       this.selectVariables = val;
     },
 
-    handleCurrentChange(val) {
+    handleCurrentChange() {
       this.$api
         .getVariablesPaginationBypage({
           params: {
@@ -306,7 +281,7 @@ export default {
           cancelButtonText: "取消",
           type: "warning"
         }).then(() => {
-          this.$api.delAllVariabels({ data: this.selectVariables }).then((resp) => {
+          this.$api.delAllVariabels({ data: this.selectVariables }).then(() => {
             this.getVariablesList();
           });
         });
