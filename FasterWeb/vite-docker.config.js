@@ -22,7 +22,7 @@ export default defineConfig({
     },
   },
   build: {
-    outDir: "dist",
+    outDir: "../fastrunner/static/FasterWeb",
     assetsDir: "assets",
     sourcemap: false,
     minify: "esbuild",

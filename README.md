@@ -19,7 +19,7 @@
 
 ## 注意
 
-> 只能使用`python3.9`版本
+> 支持`python3.9-python3.11`版本
 >
 > `V2`版本使用`django-celery-beat`代替`djcelery`, 需要手动执行sql文件夹中的`django_celery_beat_init.sql`
 

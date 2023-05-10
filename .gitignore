@@ -4,7 +4,7 @@
 .idea
 celerybeat.pid
 start.sh.bak
-tempWorkDir
+FasterRunner*/
 mysql
 
 .env
@@ -20,6 +20,7 @@ node_modules/
 .umi/
 web/dist/
 fastrunner/static/web
+fastrunner/static/fasterweb
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*

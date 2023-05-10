@@ -5,10 +5,11 @@
       <el-button icon="el-icon-caret-right" type="info" size="small" style="margin-left: 5px" @click="handleRunCode">
         在线运行
       </el-button>
-      <el-button type="text" size="small" @click="isBaseMonacoShow = true">打开Monaco</el-button>
+      <!-- <el-button type="text" size="small" @click="isBaseMonacoShow = true">打开Monaco</el-button> -->
+      <el-button type="text" size="small" @click="isCodemirror = true">打开Codemirror</el-button>
     </div>
     <div>
-      <MonacoEditor
+      <BaseMonacoEditor
         ref="editor"
         :height="codeHeight"
         language="python"
@@ -17,9 +18,10 @@
         :options="options"
         @mounted="onMounted"
         @codeChange="onCodeChange"
+        @save="handleConfirm"
         :key="timeStamp"
       >
-      </MonacoEditor>
+      </BaseMonacoEditor>
 
       <el-drawer
         size="50%"
@@ -32,8 +34,18 @@
       >
         <RunCodeResult :msg="resp.msg"></RunCodeResult>
       </el-drawer>
-      <el-dialog :visible.sync="isBaseMonacoShow" width="70%">
-        <BaseMonacoEditor
+      <el-drawer
+        size="50%"
+        style="margin-top: 85px"
+        :height="codeHeight"
+        :destroy-on-close="true"
+        :with-header="false"
+        :modal="false"
+        :visible.sync="isCodemirror"
+        ><CodeEditor :code="code.code"></CodeEditor>
+      </el-drawer>
+      <!-- <el-dialog :visible.sync="isBaseMonacoShow" width="70%">
+        <MonacoEditor
           ref="editor"
           :height="codeHeight"
           language="python"
@@ -44,8 +56,8 @@
           @codeChange="onCodeChange"
           :key="timeStamp"
         >
-        </BaseMonacoEditor>
-      </el-dialog>
+        </MonacoEditor>
+      </el-dialog> -->
     </div>
   </div>
 </template>
@@ -54,18 +66,21 @@
 import MonacoEditor from "../monaco-editor/MonacoEditor.vue";
 import RunCodeResult from "./components/RunCodeResult.vue";
 import BaseMonacoEditor from "../monaco-editor/BaseMonacoEditor.vue";
+import CodeEditor from "../components/CodeMirrorEditor.vue";
 
 export default {
   components: {
-    MonacoEditor,
+    // MonacoEditor,
     RunCodeResult,
     BaseMonacoEditor,
+    CodeEditor,
   },
   data() {
     return {
       timeStamp: "",
       isShowDebug: false,
-      isBaseMonacoShow: false,
+      isCodemirror: false,
+      // isBaseMonacoShow: false,
       options: {
         selectOnLineNumbers: false,
       },

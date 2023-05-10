@@ -6,6 +6,8 @@ import VJsoneditor from "v-jsoneditor";
 import VueClipboard from "vue-clipboard2";
 // import echarts from "echarts";
 import VueApexCharts from "vue-apexcharts";
+import VueCodemirror from "vue-codemirror";
+import "codemirror/lib/codemirror.css";
 import "element-ui/lib/theme-chalk/index.css";
 import "./assets/theme/index.css";
 import "./assets/styles/iconfont.css";
@@ -28,6 +30,12 @@ Vue.use(LocalStore);
 Vue.use(VJsoneditor);
 Vue.use(VueClipboard);
 Vue.use(VueApexCharts);
+Vue.use(
+  VueCodemirror /* { 
+  options: { theme: 'base16-dark', ... },
+  events: ['scroll', ...]
+} */
+);
 Vue.config.productionTip = false;
 Vue.prototype.$api = api;
 // Vue.prototype.$echarts = echarts;

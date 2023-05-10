@@ -47,7 +47,7 @@ import "codemirror/addon/lint/lint.css";
 
 import "codemirror/addon/lint/lint.js";
 import "codemirror/addon/lint/json-lint";
-import("script-loader!jsonlint");
+// import("script-loader!jsonlint");
 
 // import "codemirror/addon/lint/html-lint.js";
 

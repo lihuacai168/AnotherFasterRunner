@@ -14,7 +14,6 @@ Dockerfile
 .idea
 celerybeat.pid
 start.sh.bak
-tempWorkDir
 mysql?
 mysql
 ComposeDeploy

@@ -21,9 +21,9 @@ RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
     && echo $TZ > /etc/timezone && rm -rf /var/cache/apk/*
 
 # COPY --from=Base /usr/local/lib/python3.9/site-packages /usr/local/lib/python3.9/site-packages
-WORKDIR /app/
+WORKDIR /app
 COPY nginx.conf /etc/nginx/http.d/default.conf
-COPY . /app/
+COPY . /app
 RUN chmod +x /app/start.sh &&  \
     python manage.py collectstatic --settings=FasterRunner.settings.docker --no-input &&  \
     addgroup -g 1000 TestGroup && adduser testuser -D -G TestGroup -u 1000 &&  \

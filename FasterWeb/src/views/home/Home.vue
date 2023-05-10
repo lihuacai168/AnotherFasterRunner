@@ -32,7 +32,7 @@ import HomeHeader from "./components/Header.vue";
 // import HomeSide from "./components/Side.vue";
 
 export default {
-  name: "Home",
+  name: "HomePage",
   components: {
     HomeHeader,
     // HomeSide,
