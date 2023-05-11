@@ -3,34 +3,14 @@
     <el-header style="background: #fff; padding: 0; height: 50px">
       <div class="nav-api-header">
         <div style="padding-top: 10px; margin-left: 20px">
-          <el-button
-            type="primary"
-            size="small"
-            icon="el-icon-circle-plus-outline"
-            @click="dialogVisible = true"
+          <el-button type="primary" size="small" icon="el-icon-circle-plus-outline" @click="dialogVisible = true"
             >新增Hosts
           </el-button>
 
-          <el-dialog
-            title="添加Hosts"
-            :visible.sync="dialogVisible"
-            width="35%"
-            align="center"
-          >
-            <el-form
-              :model="variablesForm"
-              :rules="rules"
-              ref="variablesForm"
-              label-width="100px"
-              class="project"
-            >
+          <el-dialog title="添加Hosts" :visible.sync="dialogVisible" width="35%" align="center">
+            <el-form :model="variablesForm" :rules="rules" ref="variablesForm" label-width="100px" class="project">
               <el-form-item label="Hosts名" prop="name">
-                <el-input
-                  resize
-                  v-model="variablesForm.name"
-                  clearable
-                  placeholder="请输入Hosts名"
-                ></el-input>
+                <el-input resize v-model="variablesForm.name" clearable placeholder="请输入Hosts名"></el-input>
               </el-form-item>
               <el-form-item label="IP域名映射" prop="value">
                 <el-input
@@ -45,18 +25,11 @@
             </el-form>
             <span slot="footer" class="dialog-footer">
               <el-button @click="dialogVisible = false">取 消</el-button>
-              <el-button type="primary" @click="handleConfirm('variablesForm')"
-                >确 定</el-button
-              >
+              <el-button type="primary" @click="handleConfirm('variablesForm')">确 定</el-button>
             </span>
           </el-dialog>
 
-          <el-dialog
-            title="编辑Hosts"
-            :visible.sync="editdialogVisible"
-            width="35%"
-            align="center"
-          >
+          <el-dialog title="编辑Hosts" :visible.sync="editdialogVisible" width="35%" align="center">
             <el-form
               :model="editVariablesForm"
               :rules="rules"
@@ -65,12 +38,7 @@
               class="project"
             >
               <el-form-item label="Hosts名" prop="name">
-                <el-input
-                  resize
-                  v-model="editVariablesForm.name"
-                  clearable
-                  placeholder="请输入Hosts名"
-                ></el-input>
+                <el-input resize v-model="editVariablesForm.name" clearable placeholder="请输入Hosts名"></el-input>
               </el-form-item>
               <el-form-item label="IP域名映射" prop="value">
                 <el-input
@@ -85,11 +53,7 @@
             </el-form>
             <span slot="footer" class="dialog-footer">
               <el-button @click="editdialogVisible = false">取 消</el-button>
-              <el-button
-                type="primary"
-                @click="handleEditConfirm('editVariablesForm')"
-                >确 定</el-button
-              >
+              <el-button type="primary" @click="handleEditConfirm('editVariablesForm')">确 定</el-button>
             </span>
           </el-dialog>
         </div>
@@ -114,15 +78,7 @@
 
       <el-container>
         <el-main style="padding: 0; margin-left: 10px; margin-top: 10px">
-          <div
-            style="
-              position: fixed;
-              bottom: 0;
-              right: 0;
-              left: 220px;
-              top: 150px;
-            "
-          >
+          <div style="position: fixed; bottom: 0; right: 0; left: 220px; top: 150px">
             <el-table
               highlight-current-row
               :data="hostIPData.results"
@@ -295,18 +251,16 @@ export default {
       this.$refs[formName].validate((valid) => {
         if (valid) {
           this.editdialogVisible = false;
-          this.$api
-            .updateHost(this.editVariablesForm.id, this.editVariablesForm)
-            .then((resp) => {
-              if (!resp.success) {
-                this.$message.info({
-                  message: resp.msg,
-                  duration: this.$store.state.duration,
-                });
-              } else {
-                this.getHostIPList();
-              }
-            });
+          this.$api.updateHost(this.editVariablesForm.id, this.editVariablesForm).then((resp) => {
+            if (!resp.success) {
+              this.$message.info({
+                message: resp.msg,
+                duration: this.$store.state.duration,
+              });
+            } else {
+              this.getHostIPList();
+            }
+          });
         }
       });
     },

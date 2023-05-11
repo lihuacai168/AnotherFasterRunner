@@ -80,7 +80,7 @@ export default {
       });
     }
   },
-  name: "Header",
+  name: "HeaderNav",
 };
 </script>
 

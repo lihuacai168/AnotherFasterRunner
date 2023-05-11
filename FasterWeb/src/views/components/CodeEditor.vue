@@ -1,35 +1,45 @@
 <template>
-  <codemirror
-    ref="cmEditor"
-    :value="code"
-    :options="cmOptions"
-    @ready="onCmReady"
-    @focus="onCmFocus"
-    @input="onCmCodeChange"
-  />
+  <div class="codeMirror">
+    <codemirror
+      ref="cmEditor"
+      :value="code"
+      :options="cmOptions"
+      @ready="onCmReady"
+      @focus="onCmFocus"
+      @input="onCmCodeChange"
+    />
+  </div>
 </template>
 
 <script>
-import codemirror from "vue-codemirror";
+import { codemirror } from "vue-codemirror";
 import "codemirror/mode/javascript/javascript.js";
 import "codemirror/lib/codemirror.css";
-import "codemirror/theme/cobalt.css";
+import "codemirror/theme/panda-syntax.css";
+import "codemirror/theme/idea.css";
+import "codemirror/theme/darcula.css";
 import "codemirror/mode/python/python.js";
+
+import "codemirror/addon/hint/show-hint";
 import "codemirror/addon/hint/show-hint.css";
 import "codemirror/addon/hint/javascript-hint";
 
 export default {
+  props: {
+    code: { type: String, required: true },
+    theme: { type: String, default: "darcula" },
+    mode: { type: String, default: "python" },
+  },
   name: "CodeEditor",
   components: {
     codemirror,
   },
   data() {
     return {
-      code: "const a = 1",
       cmOptions: {
         tabSize: 4,
-        mode: "javascript",
-        theme: "cobalt",
+        mode: this.mode,
+        theme: this.theme,
         lineNumbers: true,
         line: true,
         // more CodeMirror options...
@@ -38,17 +48,13 @@ export default {
   },
   methods: {
     onCmReady(cm) {
-      console.log("the editor is readied!", cm);
       cm.on("keypress", () => {
-        cm.showHint();
+        // cm.showHint();
       });
     },
-    onCmFocus(cm) {
-      console.log("the editor is focused!", cm);
-    },
+    onCmFocus(cm) {},
     onCmCodeChange(newCode) {
-      console.log("this is new code", newCode);
-      this.code = newCode;
+      this.$emit("codeChange", newCode);
     },
   },
   computed: {
@@ -62,3 +68,12 @@ export default {
   },
 };
 </script>
+
+<style lang="scss">
+.codeMirror {
+  .CodeMirror {
+    // overscroll-y: scroll !important;
+    height: auto !important;
+  }
+}
+</style>

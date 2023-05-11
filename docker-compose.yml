@@ -34,8 +34,8 @@ services:
       <<: *env
     volumes:
       - ./mysql:/var/lib/mysql # 挂载宿主机的mysql数据到docker中
-      - ./db/my.cnf:/etc/mysql/mysql.conf.d/mysqld.cnf
-      - ./db:/docker-entrypoint-initdb.d/:ro
+      - ./ComposeDeploy/db/my.cnf:/etc/mysql/mysql.conf.d/mysqld.cnf
+      - ./ComposeDeploy/db:/docker-entrypoint-initdb.d/:ro
     # 端口映射,格式 宿主机端口:容器端口
     ports:
       - "3306:3306"

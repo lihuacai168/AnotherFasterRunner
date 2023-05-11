@@ -171,7 +171,13 @@ REST_FRAMEWORK = {
         "rest_framework.parsers.FileUploadParser",
     ],
     "DEFAULT_PAGINATION_CLASS": "FasterRunner.pagination.MyPageNumberPagination",
-    "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.AllowAny",),
+    "DEFAULT_PERMISSION_CLASSES": (
+        "rest_framework.permissions.AllowAny",
+        # 访问权限管理设置，导致访问时为只读
+        # 这个权限类绑定到 Django 的标准 Django.contrib.auth 模型权限。此权限只能应用于具有查询集属性集。
+        # 只有在用户经过身份验证并分配了相关模型权限的情况下，才会授予授权。
+        # "rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly",
+    ),
 }
 JWT_AUTH = {
     # 'JWT_SECRET_KEY': SECRET_KEY,
