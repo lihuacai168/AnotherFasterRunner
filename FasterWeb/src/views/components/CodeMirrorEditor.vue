@@ -17,7 +17,7 @@
     >
       <el-option v-for="item in cmEditorModeOptions" :key="item" :label="item" :value="item"></el-option>
     </el-select>
-
+    <br />
     <el-button type="info" size="small" @click="setStyle">修改样式</el-button>
 
     <el-button type="primary" size="small" @click="getValue">获取内容</el-button>
