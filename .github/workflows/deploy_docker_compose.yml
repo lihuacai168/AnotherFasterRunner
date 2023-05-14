@@ -1,0 +1,46 @@
+name: Execute remote shell script
+
+on:
+  workflow_dispatch:
+  workflow_run:
+    workflows:
+      - "Build Frontend and Push Docker Image"
+      - "Build Backend and Push Docker Image"
+    types:
+      - completed
+
+jobs:
+  execute_remote_script:
+    runs-on: ubuntu-latest
+    env:
+      WORKFLOW_COUNT: 0
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Update workflow count
+      run: |
+        if [ "${{ github.event.workflow_run.name }}" == "Build Frontend and Push Docker Image" ]; then
+          echo "WORKFLOW_COUNT=$(echo ${{ env.WORKFLOW_COUNT }} + 1 | bc)" >> $GITHUB_ENV
+        elif [ "${{ github.event.workflow_run.name }}" == "Build Backend and Push Docker Image" ]; then
+          echo "WORKFLOW_COUNT=$(echo ${{ env.WORKFLOW_COUNT }} + 1 | bc)" >> $GITHUB_ENV
+        fi
+        echo "Updated workflow count: ${{ env.WORKFLOW_COUNT }}"
+
+    - name: (nd) executing remote ssh commands using ssh key
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.REMOTE_SERVER_HOST }}
+        username: ${{ secrets.REMOTE_SERVER_USER }}
+        key: ${{ secrets.REMOTE_SERVER_PRIVATE_KEY }}
+        port: ${{ secrets.REMOTE_SERVER_PORT }}
+        script: sh ${{ secrets.REMOTE_SCRIPT_PATH }}
+
+    - name: (tx) executing remote ssh commands using ssh key
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.TX_REMOTE_SERVER_HOST }}
+        username: ${{ secrets.REMOTE_SERVER_USER }}
+        key: ${{ secrets.REMOTE_SERVER_PRIVATE_KEY }}
+        port: ${{ secrets.REMOTE_SERVER_PORT }}
+        script: sh ${{ secrets.REMOTE_SCRIPT_PATH }}

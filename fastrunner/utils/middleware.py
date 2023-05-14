@@ -7,7 +7,7 @@ from django.conf import settings
 from django.utils.deprecation import MiddlewareMixin
 
 from fastrunner.models import Visit
-from fastrunner.utils import email
+from fastrunner.utils import email_helper
 
 logger = logging.getLogger(__name__)
 
@@ -101,7 +101,7 @@ class ExceptionMiddleware(MiddlewareMixin):
             and settings.EMAIL_PORT
         ):
             try:
-                email.send_mail(
+                email_helper.send_mail(
                     subject=f"测试平台异常告警",
                     html_message=self.build_html_message(
                         request=request, exception=exception

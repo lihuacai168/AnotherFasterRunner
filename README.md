@@ -64,7 +64,11 @@ docker build -t registry-vpc.cn-hangzhou.aliyuncs.com/cbk/fasterrunner:web-lates
 # 设置环境变量
 cp .env.example $HOME/.env
 
-# 修改.env文件
+# 使用makefile命令快速启动所有服务，没错，一个命令就搞定
+cd AnotherFasterRunner && make
+
+# 或者使用docker-compose原始的命令, 指定配置文件启动
+cd AnotherFasterRunner && docker-compose -f docker-compose-for-fastup.yml --env-file .env.example up -d
 ```
 
 ```shell
@@ -111,6 +115,13 @@ or
 ## Star History
 
 ![Star History Chart](https://api.star-history.com/svg?repos=lihuacai168/AnotherFasterRunner&type=Date)
+
+
+
+# 贡献者
+<a href="https://github.com/lihuacai168/AnotherFasterRunner/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=lihuacai168/AnotherFasterRunner" />
+</a>
 
 ## 鸣谢
 

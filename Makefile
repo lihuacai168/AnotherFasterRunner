@@ -2,14 +2,37 @@
 
 env := ${env}
 
-env-file := ${HOME}/.env
+HOME_ENV := ${HOME}/.env
+CURRENT_ENV := .env.example
+env-file := $(CURRENT_ENV)
 
-cmd = docker-compose -f docker-compose.yml --env-file $(env-file)
+ifndef ENV_FILE
+	ifneq ($(wildcard $(HOME_ENV)),)
+		env-file := $(HOME_ENV)
+	else
+		WARN_MSG := $(warning WARNING: ${HOME_ENV} not found and no ENV_FILE provided, using .env.example instead)
+	endif
+else
+	env-file := $(ENV_FILE)
+endif
+
+compose-file := docker-compose.yml
+
+ifdef COMPOSE_FILE
+    compose-file := $(COMPOSE_FILE)
+endif
+
+cmd = docker-compose -f $(compose-file) --env-file $(env-file)
 
 
 tag := $(tag)
 
 service := $(word 1,$(MAKECMDGOALS))
+
+.PHONY: fastup
+fastup:
+	docker-compose -f docker-compose-for-fastup.yml --env-file .env.example up -d --build --remove-orphans
+	docker-compose -f docker-compose-for-fastup.yml --env-file .env.example restart nginx web
 
 .PHONY: up
 up:
@@ -65,4 +88,4 @@ restart:
 
 .PHONY: exec
 exec:
-	$(cmd) exec $(service) /bin/sh
+	$(cmd) exec $(service) /bin/bash

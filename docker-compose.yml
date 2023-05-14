@@ -12,6 +12,7 @@ x-env: &env
   MQ_PORT: ${MQ_PORT}
   MQ_HOST: ${MQ_HOST:-mq}
   MQ_ADMIN_PORT: ${MQ_ADMIN_PORT}
+  MQ_VHOST: ${MQ_VHOST:-/}
 
   # celery-worker
   SERVER_IP: ${SERVER_IP}

@@ -523,7 +523,10 @@ def format_summary_to_ding(msg_type, summary, report_name=None):
     if msg_type == 'markdown':
         fail_detail_markdown = ''
         report_id = models.Report.objects.last().id
-        report_url = f'http://10.0.3.57:8000/api/fastrunner/reports/{report_id}/'
+        import os
+        ip: str = os.getenv("SERVER_IP", "快去环境变量配置SERVER_IP")
+        port: str = os.getenv("DJANGO_API_PORT", "8000")
+        report_url = f'http://{ip}:{port}/api/fastrunner/reports/{report_id}/'
         for item in fail_count_list:
             case_name_and_fail_message = f'> - **{item["case_name"]} - {item["request_url"]} - {item["fail_message"]}**\n'
             fail_detail_markdown += case_name_and_fail_message

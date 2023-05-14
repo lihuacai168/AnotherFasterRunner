@@ -28,7 +28,7 @@ nohup python -m celery -A FasterRunner.mycelery beat -l info > ./logs/beat.log 2
 
 # if [ $1 = "app" ]; then
 #     echo "start app"
-#     /usr/local/bin/python -m gunicorn FasterRunner.wsgi_docker -b 0.0.0.0 -w 4
+#     /usr/local/bin/python -m gunicorn FasterRunner.wsgi_docker -b 0.0.0.0 -w 4  -k gevent
 # fi
 
 # if [ $1 = "celery-worker" ]; then
@@ -39,9 +39,5 @@ nohup python -m celery -A FasterRunner.mycelery beat -l info > ./logs/beat.log 2
 # if [ $1 = "celery-beat" ]; then
 #     echo "start celery beat"
 #     python manage.py celery -A FasterRunner.mycelery beat -l info --settings=FasterRunner.settings.docker --logfile=./logs/beat.log
-# fi
-
-# if [ $1 = "celery-beat" ]; then
-#     echo "start celery beat"
 #     export DJANGO_SETTINGS_MODULE=FasterRunner.settings.docker; /usr/local/bin/python -m celery -A FasterRunner.mycelery beat -l info
 # fi
