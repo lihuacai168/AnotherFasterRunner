@@ -107,6 +107,8 @@ def schedule_debug_suite(*args, **kwargs):
 
     strategy = kwargs["strategy"]
     if strategy == "始终发送" or (strategy == "仅失败发送" and summary["stat"]["failures"] > 0):
+        # ding_message = DingMessage(run_type)
+        # ding_message.send_ding_msg(summary, report_name=task_name)
         webhook = kwargs.get("webhook", "")
         log.info(f"开始发送消息, {webhook=}")
         DING_OPEN_API: str = "https://oapi.dingtalk.com"

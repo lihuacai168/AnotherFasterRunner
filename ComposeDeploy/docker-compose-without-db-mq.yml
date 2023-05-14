@@ -34,8 +34,8 @@ services:
   app:
     image: fasterrunner_app:latest
     build:
-      context: .
-      dockerfile: Dockerfile
+      context: ..
+      dockerfile: ../Dockerfile
       args:
         PIP_INDEX_URL: ${PIP_INDEX_URL:-https://pypi.tuna.tsinghua.edu.cn/simple}
         DEBIAN_REPO: ${DEBIAN_REPO:-mirrors.aliyun.com}
@@ -47,8 +47,8 @@ services:
 
   celery-worker:
     build:
-      context: .
-      dockerfile: Dockerfile
+      context: ..
+      dockerfile: ../Dockerfile
       args:
         PIP_INDEX_URL: ${PIP_INDEX_URL:-https://pypi.tuna.tsinghua.edu.cn/simple}
         DEBIAN_REPO: ${DEBIAN_REPO:-mirrors.aliyun.com}
@@ -60,8 +60,8 @@ services:
 
   celery-beat:
     build:
-      context: .
-      dockerfile: Dockerfile
+      context: ..
+      dockerfile: ../Dockerfile
       args:
         PIP_INDEX_URL: ${PIP_INDEX_URL:-https://pypi.tuna.tsinghua.edu.cn/simple}
         DEBIAN_REPO: ${DEBIAN_REPO:-mirrors.aliyun.com}
@@ -83,8 +83,8 @@ services:
       <<: *env
   web:
     build:
-      context: ./web
-      dockerfile: Dockerfile
+      context: ../web
+      dockerfile: ../web/Dockerfile
     ports:
       - "${WEB_PORT}:80"
     volumes:

@@ -64,7 +64,7 @@ services:
 
 # django-admin & app proxy
   nginx:
-    build: ./nginx-remote
+    build: nginx-remote
     ports:
       - "${DJANGO_ADMIN_PORT}:8000"
     depends_on:

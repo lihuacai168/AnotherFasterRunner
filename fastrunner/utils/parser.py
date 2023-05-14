@@ -526,7 +526,7 @@ def format_summary_to_ding(msg_type, summary, report_name=None):
         import os
         ip: str = os.getenv("SERVER_IP", "快去环境变量配置SERVER_IP")
         port: str = os.getenv("DJANGO_API_PORT", "8000")
-        report_url = f'http://{ip}:{port}/api/fastrunner/reports/{report_id}/'
+        report_url = f'https://{ip}:{port}/api/fastrunner/reports/{report_id}/'
         for item in fail_count_list:
             case_name_and_fail_message = f'> - **{item["case_name"]} - {item["request_url"]} - {item["fail_message"]}**\n'
             fail_detail_markdown += case_name_and_fail_message
