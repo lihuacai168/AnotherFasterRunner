@@ -51,10 +51,11 @@ INSTALLED_APPS = [
     "fastrunner.apps.FastrunnerConfig",
     "fastuser",
     "rest_framework",
+    "rest_framework_simplejwt",
     "corsheaders",
     # 'djcelery',
     "django_celery_beat",
-    "rest_framework_swagger",
+    # "rest_framework_swagger",
     "drf_yasg",
 ]
 
@@ -131,11 +132,31 @@ USE_L10N = True
 
 USE_TZ = False
 
+# The 'CELERY_TIMEZONE' setting is deprecated and scheduled for removal in version 6.0.0.
+#  Use the timezone instead
+# CELERY_TIMEZONE = TIME_ZONE
+# https://github.com/celery/celery/issues/4796
+timezone = "Asia/Shanghai"
+DJANGO_CELERY_BEAT_TZ_AWARE = False
+CELERY_BEAT_SCHEDULER="django_celery_beat.schedulers:DatabaseScheduler"
+
+# Define MEDIA_URL as the base public URL of that directory. Make sure that this directory is writable by the Web
+# server's user account. Define MEDIA_ROOT as the full path to a directory where you'd like Django to store uploaded
+# files. (For performance, these files are not stored in the database.)
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+MEDIA_URL = "/media/"
+
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
 REST_FRAMEWORK = {
     # 'DEFAULT_AUTHENTICATION_CLASSES': ['FasterRunner.auth.DeleteAuthenticator', 'FasterRunner.auth.Authenticator', ],
     "DEFAULT_AUTHENTICATION_CLASSES": [
         "FasterRunner.auth.MyJWTAuthentication",
+        'FasterRunner.auth.DeleteAuthenticator',
+        'FasterRunner.auth.Authenticator',
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+        "rest_framework.authentication.SessionAuthentication",
+        "rest_framework.authentication.BasicAuthentication",
     ],
     "UNAUTHENTICATED_USER": None,
     "UNAUTHENTICATED_TOKEN": None,
@@ -153,6 +174,12 @@ JWT_AUTH = {
     # 'JWT_SECRET_KEY': SECRET_KEY,
     "JWT_EXPIRATION_DELTA": datetime.timedelta(days=365),
     "JWT_ALLOW_REFRESH": True,
+}
+SIMPLE_JWT = {
+    # token有效时长(返回的 access 有效时长)
+    'ACCESS_TOKEN_LIFETIME': datetime.timedelta(days=30),
+    # token刷新的有效时间(返回的 refresh 有效时长)
+    'REFRESH_TOKEN_LIFETIME': datetime.timedelta(seconds=600),
 }
 AUTH_USER_MODEL = "fastuser.MyUser"
 

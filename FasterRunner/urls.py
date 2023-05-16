@@ -14,8 +14,8 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.conf.urls import url
-from django.urls import path, include, re_path
+# from django.conf.urls import url
+from django.urls import path, include, re_path, re_path as url
 
 from fastrunner.views import run_all_auto_case
 
@@ -23,8 +23,8 @@ from fastrunner.views import run_all_auto_case
 from rest_framework import permissions
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
-
-from rest_framework_jwt.views import obtain_jwt_token
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+# from rest_framework_jwt.views import obtain_jwt_token
 schema_view = get_schema_view(
     openapi.Info(
         title="Snippets API",
@@ -40,9 +40,11 @@ schema_view = get_schema_view(
 )
 
 urlpatterns = [
-    path(r"login", obtain_jwt_token),
+    path(r"login", TokenObtainPairView.as_view(), name="token_obtain_pair"),
+    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('admin/', admin.site.urls),
-    url(r'^docs/', schema_view, name="docs"),
+    url(r'^docs/', schema_view.as_view(), name="docs"),
     url(r'^accounts/', include('rest_framework.urls',)),
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework_api_auth')),
     path('api/user/', include('fastuser.urls')),

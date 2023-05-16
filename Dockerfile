@@ -1,11 +1,11 @@
-FROM python:3.9-buster as Base
+FROM python:3.11-buster as Base
 
 
 
 COPY requirements.txt .
 
 ARG DEBIAN_REPO="deb.debian.org"
-ARG PIP_INDEX_URL="https://pypi.org/simple"
+ARG PIP_INDEX_URL="https://pypi.tuna.tsinghua.edu.cn/simple"
 
 RUN echo "deb http://$DEBIAN_REPO/debian/ buster main contrib non-free" > /etc/apt/sources.list && \
     echo "deb-src http://$DEBIAN_REPO/debian/ buster main contrib non-free" >> /etc/apt/sources.list && \
@@ -16,13 +16,13 @@ RUN echo "deb http://$DEBIAN_REPO/debian/ buster main contrib non-free" > /etc/a
 
 RUN apt-get update && \
     apt-get install -y default-libmysqlclient-dev python3-dev build-essential netcat-openbsd libpcre3-dev && \
-    pip install setuptools==57.5.0 -i ${PIP_INDEX_URL} && \
+    # pip install setuptools==57.5.0 -i ${PIP_INDEX_URL} && \
     pip install -r requirements.txt -i ${PIP_INDEX_URL} && \
     apt-get remove -y python3-dev build-essential libpcre3-dev && \
     apt-get autoremove -y && \
     rm -rf /var/lib/apt/lists/*
 
-FROM python:3.9-buster
+FROM python:3.11-buster
 ENV TZ=Asia/Shanghai
 
 ARG DEBIAN_REPO="deb.debian.org"
@@ -40,7 +40,7 @@ RUN apt-get update && \
     echo $TZ > /etc/timezone && \
     rm -rf /var/lib/apt/lists/*
 
-COPY --from=Base /usr/local/lib/python3.9/site-packages /usr/local/lib/python3.9/site-packages
+COPY --from=Base /usr/local/lib/python3.11/site-packages /usr/local/lib/python3.11/site-packages
 WORKDIR /app
 COPY . /app
 RUN chmod +x /app/start.sh
