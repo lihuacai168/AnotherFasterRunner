@@ -55,7 +55,7 @@ services:
 #      - ./mysql:/opt/workspace/FasterRunner/mysql
       - ./nginx.conf:/etc/nginx/sites-enabled/nginx.conf
     entrypoint: /bin/sh
-    command: -c "/app/start.sh"
+    command: -c "/home/FR/start.sh"
     # command: -c "/usr/local/bin/python -m gunicorn FasterRunner.wsgi_docker -b 0.0.0.0 -w 4"
     depends_on:
       - db
@@ -100,16 +100,16 @@ services:
 #    restart: always
 #    environment:
 #      <<: *env
-  web:
-    image: registry-vpc.cn-hangzhou.aliyuncs.com/cbk/fasterrunner:web-latest
-    container_name: faster-web
-    build:
-      context: ./FasterWeb
-      dockerfile: Dockerfile
-    ports:
-      - "${WEB_PORT}:8888"
-    # volumes:
-    #   - ./FasterWeb/dist:/usr/share/nginx/html
+  # web:
+  #   image: registry-vpc.cn-hangzhou.aliyuncs.com/cbk/fasterrunner:web-latest
+  #   container_name: faster-web
+  #   build:
+  #     context: ./FasterWeb
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - "${WEB_PORT}:8888"
+  #   volumes:
+  #     - ./FasterWeb/dist:/usr/share/nginx/html
 
   mq:
     image: rabbitmq:management-alpine

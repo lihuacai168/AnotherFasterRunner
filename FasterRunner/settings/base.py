@@ -124,7 +124,7 @@ AUTH_PASSWORD_VALIDATORS = [
 LANGUAGE_CODE = "zh-Hans"
 
 TIME_ZONE = "Asia/Shanghai"
-timezone = "Asia/Shanghai"
+
 USE_I18N = True
 
 USE_L10N = True
@@ -135,11 +135,9 @@ USE_TZ = False
 #  Use the timezone instead
 # CELERY_TIMEZONE = TIME_ZONE
 # https://github.com/celery/celery/issues/4796
+timezone = "Asia/Shanghai"
 DJANGO_CELERY_BEAT_TZ_AWARE = False
 CELERY_BEAT_SCHEDULER="django_celery_beat.schedulers:DatabaseScheduler"
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/2.1/howto/static-files/
 
 # Define MEDIA_URL as the base public URL of that directory. Make sure that this directory is writable by the Web
 # server's user account. Define MEDIA_ROOT as the full path to a directory where you'd like Django to store uploaded
@@ -148,6 +146,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 MEDIA_URL = "/media/"
 
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
+
 REST_FRAMEWORK = {
     # 认证类
     # 先进行token的验证，如果没有携带token就进行session认证，如果没有session就就基本认证

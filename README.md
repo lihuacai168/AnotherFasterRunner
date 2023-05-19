@@ -116,12 +116,9 @@ or
 
 ![Star History Chart](https://api.star-history.com/svg?repos=lihuacai168/AnotherFasterRunner&type=Date)
 
+## 贡献者
 
-
-# 贡献者
-<a href="https://github.com/lihuacai168/AnotherFasterRunner/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=lihuacai168/AnotherFasterRunner" />
-</a>
+![![contributors](https://github.com/lihuacai168/AnotherFasterRunner/graphs/contributors)](https://contrib.rocks/image?repo=lihuacai168/AnotherFasterRunner)
 
 ## 鸣谢
 

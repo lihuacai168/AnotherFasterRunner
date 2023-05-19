@@ -26,7 +26,7 @@ nohup.out
 static
 .DS_Store
 web
-FasterWeb
+#FasterWeb
 tyadmin
 web/node_modules/
 */node_modules*

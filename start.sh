@@ -2,11 +2,6 @@
 echo "--------------start nginx--------------"
 nginx
 
-echo "--------------start app--------------"
-uwsgi --ini ./FasterRunner/uwsgi_docker.ini
-# uwsgi --ini ./ComposeDeploy/uwsgi_docker.ini --logto ./logs/uwsgi.log
-# /usr/local/bin/python manage.py runserver 0.0.0.0:8000 --settings=FasterRunner.settings.docker
-
 echo "--------------start celery worker--------------"
 export DJANGO_SETTINGS_MODULE=FasterRunner.settings.docker;
 nohup python manage.py runserver 0.0.0.0:8002 > ./logs/run.log 2>&1 &
@@ -25,6 +20,10 @@ nohup python -m celery -A FasterRunner.mycelery beat -l info > ./logs/beat.log 2
 #if [ -f celerybeat.pid ]; then rm celerybeat.pid;fi
 #python3 manage.py  celery -A FasterRunner.mycelery beat -l info --settings=FasterRunner.settings.pro --logfile=./logs/beat.log 2>&1 &
 
+echo "--------------start app--------------"
+uwsgi --ini ./FasterRunner/uwsgi_docker.ini
+# uwsgi --ini ./ComposeDeploy/uwsgi_docker.ini --logto ./logs/uwsgi.log
+# /usr/local/bin/python manage.py runserver 0.0.0.0:8000 --settings=FasterRunner.settings.docker
 
 # if [ $1 = "app" ]; then
 #     echo "start app"

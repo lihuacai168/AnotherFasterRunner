@@ -6,7 +6,7 @@ from os import environ
 from .base import *
 
 DEBUG = False
-# WEBSOCKET_FACTORY_CLASS = "dwebsocket.backends.uwsgi.factory.uWsgiWebSocketFactory"
+WEBSOCKET_FACTORY_CLASS = "dwebsocket.backends.uwsgi.factory.uWsgiWebSocketFactory"
 # RabbitMQ和MySQL配置相关的设置
 
 # RabbitMQ 账号密码
