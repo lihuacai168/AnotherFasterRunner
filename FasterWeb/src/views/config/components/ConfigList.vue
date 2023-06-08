@@ -17,9 +17,7 @@
 
     <el-container>
       <el-main style="padding: 0; margin-left: 10px; margin-top: 10px">
-        <div
-          style="position: fixed; bottom: 0; right: 0; left: 220px; top: 150px"
-        >
+        <div style="position: fixed; bottom: 0; right: 0; left: 220px; top: 150px">
           <el-table
             :data="configData.results"
             :show-header="configData.results.length !== 0"
@@ -38,9 +36,7 @@
 
             <el-table-column width="300" label="配置请求地址">
               <template v-slot="scope">
-                <div
-                  v-text="scope.row.base_url === '' ? '无' : scope.row.base_url"
-                ></div>
+                <div v-text="scope.row.base_url === '' ? '无' : scope.row.base_url"></div>
               </template>
             </el-table-column>
 
@@ -205,11 +201,9 @@ export default {
     },
 
     getConfigList() {
-      this.$api
-        .configList({ params: { project: this.project } })
-        .then((resp) => {
-          this.configData = resp;
-        });
+      this.$api.configList({ params: { project: this.project } }).then((resp) => {
+        this.configData = resp;
+      });
     },
   },
   mounted() {

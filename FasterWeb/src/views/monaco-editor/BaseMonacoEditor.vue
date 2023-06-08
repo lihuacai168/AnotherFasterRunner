@@ -99,8 +99,7 @@ export default {
       return Object.assign({}, this.defaultOptions, this.options, props);
     },
     onValueChange() {
-      this.$emit("input", this.editorInstance.getValue());
-      this.$emit("change", this.editorInstance.getValue());
+      this.$emit("codeChange", this.editorInstance);
     },
     initEditor() {
       this.MonacoEnvironment = {
@@ -117,7 +116,7 @@ export default {
         this.onValueChange();
       });
       this.editorInstance.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_S, () => {
-        this.$emit("save", this.editorInstance.getValue());
+        this.$emit("save");
       });
     },
   },

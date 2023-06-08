@@ -1,64 +1,39 @@
-setuptools~=57.5.0
 aiocontextvars==0.2.2
-amqp
-# anyjson==0.3.3
-tyadmin-api-cli==0.8.2
 beautifulsoup4==4.6.3
-# billiard==3.3.0.23
-celery~=5.0
-certifi==2019.9.11
+celery~=5.2.7
 chardet==3.0.4
-colorama==0.4.1
+colorama==0.4.6
 colorlog==4.0.2
 contextvars==2.4
-coreapi==2.3.3
-coreschema==0.0.4
 DingtalkChatbot==1.3.0
-Django==3.2.15
+Django~=4.2
 django-celery-beat
-django-cors-headers~=3.10
-django-jsonfield==1.4.0
+django-cors-headers~=3.14
 django-model-utils==4.0.0
-django-rest-swagger==2.2.0
-django-simpleui==2020.7
+
+django-simpleui
 django-utils-six==2.0
-djangorestframework==3.12.4
+djangorestframework~=3.14.0
+djangorestframework-simplejwt==5.2.2
 djangorestframework-jwt==1.11.0
-drf-yasg==1.21.3
+drf-yasg==1.21.5
 har2case==0.3.1
-# HttpRunner==1.5.15
-idna==2.8
-immutables==0.14
-inflection==0.5.0
-itypes==1.1.0
-Jinja2==2.10.3
-# kombu
-loguru==0.5.1
-MarkupSafe==1.1.1
-mysqlclient~=2.0.1
-openapi-codec==1.3.2
-# packaging==20.4
-PyJWT==1.7.1
+immutables==0.19
+loguru==0.6.0
+mysqlclient~=2.1.1
+
 pyparsing==2.4.7
 python-dotenv==0.10.3
-pytz==2022.2.1
-PyYAML~=5.3.1
-requests==2.22.0
+requests==2.28.2
 requests-toolbelt==0.9.1
-# ruamel.yaml==0.16.10
-# ruamel.yaml.clib==0.2.0
-simplejson==3.17.0
-six==1.15.0
-sqlparse==0.3.1
-tornado==4.5.3
-uritemplate==3.0.1
-urllib3==1.25.7
-uWSGI==2.0.18
+
+tornado==6.2.0
+uWSGI~=2.0.21
 django_mysql
 json5==0.9.5
 django_bulk_update==2.2.0
 xmltodict~=0.12.0
-django-jsonfield==1.4.0
+
 genson~=1.2.2
 Faker~=7.0.1
 curlify~=2.2.1
@@ -68,9 +43,11 @@ pydantic==1.9.0
 gunicorn
 dwebsocket2
 sentry-sdk~=1.5.8
-croniter~=1.3.5 # 计算下一次crontab
+# calc next crontab
+croniter~=1.3.5
+django-log-request-id~=2.0.0
 zmq~=0.0.0
 pyzmq~=24.0.1
-gevent~=21.12.0
+gevent~=22.10.2
 django-simple-captcha~=0.5.17
 django-filter~=22.1

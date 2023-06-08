@@ -19,11 +19,11 @@
 
 ## 注意
 
-> 只能使用`python3.9`版本
+> 支持`python3.9-python3.11`版本
 >
 > `V2`版本使用`django-celery-beat`代替`djcelery`, 需要手动执行sql文件夹中的`django_celery_beat_init.sql`
 
-## [使用文档](https://www.yuque.com/lihuacai/sggdx7/cn5ncg)
+## [使用文档](https://www.yuque.com/lihuacai/fasterunner)
 
 - 使用文档 <https://www.yuque.com/lihuacai/fasterunner>
 
@@ -43,7 +43,7 @@ docker run --name mysql -v ./mysql:/var/lib/mysql -p 3306:3306 -e MYSQL_ROOT_PAS
 # 编辑Dockerfile，安装必要的依赖及确定WORKDIR
 apk add Nginx
 ...
-WORKDIR /opt/workspace/FasterRunner/
+WORKDIR /app/
 ```
 
 ```shell
@@ -64,11 +64,18 @@ docker build -t registry-vpc.cn-hangzhou.aliyuncs.com/cbk/fasterrunner:web-lates
 # 设置环境变量
 cp .env.example $HOME/.env
 
-# 修改.env文件
+# 使用makefile命令快速启动所有服务，没错，一个命令就搞定
+cd AnotherFasterRunner && make
+
+# 或者使用docker-compose原始的命令, 指定配置文件启动
+cd AnotherFasterRunner && docker-compose -f docker-compose-for-fastup.yml --env-file .env.example up -d
 ```
 
 ```shell
-# 指定配置文件启动, .env是绝对路径
+# 使用makefile命令快速启动
+make up
+
+# 或者使用docker-compose原始的命令, 指定配置文件启动, .env是绝对路径
 docker-compose --env-file=$HOME/.env up --build -d
 ```
 
@@ -104,3 +111,19 @@ or
 # 版权声明：本文为CSDN博主「gblfy」的原创文章，遵循CC 4.0 BY-SA版权协议，转载请附上原文出处链接及本声明。
 # 原文链接：https://blog.csdn.net/weixin_40816738/article/details/121512708
 ```
+
+## Star History
+
+![Star History Chart](https://api.star-history.com/svg?repos=lihuacai168/AnotherFasterRunner&type=Date)
+
+## 贡献者
+
+![![contributors](https://github.com/lihuacai168/AnotherFasterRunner/graphs/contributors)](https://contrib.rocks/image?repo=lihuacai168/AnotherFasterRunner)
+
+## 鸣谢
+
+感谢 JetBrains 对开源项目的支持
+
+<a href="https://jb.gg/OpenSourceSupport">
+  <img src="https://user-images.githubusercontent.com/8643542/160519107-199319dc-e1cf-4079-94b7-01b6b8d23aa6.png" align="left" height="150" width="150" alt="JetBrains">
+</a>

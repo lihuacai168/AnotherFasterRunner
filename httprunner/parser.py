@@ -1,10 +1,11 @@
 # encoding: utf-8
 
 import ast
-import os
+import logging
 import re
 
-from loguru import logger
+# from loguru import logger
+import logging
 
 from httprunner import exceptions, utils
 from httprunner.compat import basestring, builtin_str, numeric_types, str
@@ -19,6 +20,9 @@ dolloar_regex_compile = re.compile(r"\$\$")
 variable_regex_compile = re.compile(r"\$\{(\w+)\}|\$(\w+)")
 # function notation, e.g. ${func1($var_1, $var_3)}
 function_regex_compile = re.compile(r"\$\{(\w+)\(([\$\w\.\-/\s=,]*)\)\}")
+
+
+logger = logging.getLogger(__name__)
 
 
 def parse_string_value(str_value):

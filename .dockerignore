@@ -14,7 +14,6 @@ Dockerfile
 .idea
 celerybeat.pid
 start.sh.bak
-tempWorkDir?
 mysql?
 mysql
 ComposeDeploy
@@ -24,6 +23,7 @@ venv/
 nohup.out
 
 # web
+static
 .DS_Store
 web
 FasterWeb
@@ -39,6 +39,7 @@ yarn-error.log*
 # Editor directories and files
 .idea?
 .vscode?
+.vscode
 *.suo
 *.ntvs*
 *.njsproj

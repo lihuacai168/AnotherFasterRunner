@@ -1,9 +1,12 @@
 # encoding: utf-8
 
 import copy
+import logging
 
-from httprunner import exceptions, logger, parser, utils
+from httprunner import exceptions, parser, utils
 from httprunner.compat import OrderedDict
+
+logger = logging.getLogger(__name__)
 
 
 class Context(object):
@@ -215,7 +218,7 @@ class Context(object):
             validator_dict["check_result"] = "pass"
             validate_func(check_value, expect_value)
             validate_msg += "\t==> pass"
-            logger.log_debug(validate_msg)
+            logger.debug(validate_msg)
         except (AssertionError, TypeError):
             validate_msg += "\t==> fail"
             validate_msg += "\n{}({}) {} {}({})".format(
@@ -225,7 +228,7 @@ class Context(object):
                 expect_value,
                 type(expect_value).__name__
             )
-            logger.log_error(validate_msg)
+            logger.error(validate_msg)
             validator_dict["check_result"] = "fail"
             raise exceptions.ValidationFailure(validate_msg)
 
@@ -236,7 +239,7 @@ class Context(object):
         if not validators:
             return evaluated_validators
 
-        logger.log_info("start to validate.")
+        logger.info("start to validate.")
         validate_pass = True
         failures = []
 

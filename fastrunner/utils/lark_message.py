@@ -4,15 +4,19 @@
 # @Email   : lihuacai168@gmail.com
 # @File    : lark_message.py
 # @Software: PyCharm
+
 import requests
 import json
 
-from loguru import logger
+# from loguru import logger
 
 from fastrunner import models
 from django.conf import settings
 
 from fastrunner.utils.loader import back_async
+
+import logging
+logger = logging.getLogger(__name__)
 
 
 def get_base_post_content():

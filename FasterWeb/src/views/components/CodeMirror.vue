@@ -47,7 +47,7 @@ import "codemirror/addon/lint/lint.css";
 
 import "codemirror/addon/lint/lint.js";
 import "codemirror/addon/lint/json-lint";
-import("script-loader!jsonlint");
+// import("script-loader!jsonlint");
 
 // import "codemirror/addon/lint/html-lint.js";
 
@@ -154,7 +154,8 @@ export default {
       try {
         let theme = this.cmTheme == "default" ? "blackboard" : this.cmTheme;
 
-        import("codemirror/theme/" + theme + ".css");
+        // import("codemirror/theme/" + theme + ".css");
+        this.importModule("codemirror/theme/" + theme + ".css");
 
         this.cmOptions.theme = theme;
 
@@ -298,6 +299,10 @@ export default {
 
         this.defaultJsonIndentation
       );
+    },
+
+    importModule(path) {
+      return import(path);
     },
   },
 

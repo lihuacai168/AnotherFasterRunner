@@ -5,10 +5,13 @@ import io
 import json
 import os
 import sys
+import logging
 
 import yaml
-from httprunner import builtin, exceptions, logger, parser, utils, validator
+from httprunner import builtin, exceptions, parser, utils, validator
 from httprunner.compat import OrderedDict
+
+logger = logging.getLogger(__name__)
 
 
 ###############################################################################
@@ -22,13 +25,13 @@ def _check_format(file_path, content):
     if not content:
         # testcase file content is empty
         err_msg = u"Testcase file content is empty: {}".format(file_path)
-        logger.log_error(err_msg)
+        logger.error(err_msg)
         raise exceptions.FileFormatError(err_msg)
 
     elif not isinstance(content, (list, dict)):
         # testcase file content does not match testcase format
         err_msg = u"Testcase file content format invalid: {}".format(file_path)
-        logger.log_error(err_msg)
+        logger.error(err_msg)
         raise exceptions.FileFormatError(err_msg)
 
 
@@ -49,7 +52,7 @@ def load_json_file(json_file):
             json_content = json.load(data_file)
         except exceptions.JSONDecodeError:
             err_msg = u"JSONDecodeError: JSON file format error: {}".format(json_file)
-            logger.log_error(err_msg)
+            logger.error(err_msg)
             raise exceptions.FileFormatError(err_msg)
 
         _check_format(json_file, json_content)
@@ -98,7 +101,7 @@ def load_file(file_path):
     else:
         # '' or other suffix
         err_msg = u"Unsupported file format: {}".format(file_path)
-        logger.log_warning(err_msg)
+        logger.warning(err_msg)
         return []
 
 
@@ -165,7 +168,7 @@ def load_dot_env_file(dot_env_path):
     if not os.path.isfile(dot_env_path):
         raise exceptions.FileNotFound(".env file path is not exist.")
 
-    logger.log_info("Loading environment variables from {}".format(dot_env_path))
+    logger.info("Loading environment variables from {}".format(dot_env_path))
     env_variables_mapping = {}
     with io.open(dot_env_path, 'r', encoding='utf-8') as fp:
         for line in fp:
@@ -343,6 +346,7 @@ def _load_teststeps(test_block, project_mapping):
         list: loaded teststeps list
 
     """
+
     def extend_api_definition(block):
         ref_call = block["api"]
         def_block = _get_block_by_name(ref_call, "def-api", project_mapping)
@@ -356,7 +360,7 @@ def _load_teststeps(test_block, project_mapping):
         teststeps.append(test_block)
 
     # reference testcase
-    elif "suite" in test_block: # TODO: replace suite with testcase
+    elif "suite" in test_block:  # TODO: replace suite with testcase
         ref_call = test_block["suite"]
         block = _get_block_by_name(ref_call, "def-testcase", project_mapping)
         # TODO: bugfix lost block config variables
@@ -425,7 +429,7 @@ def _load_testcase(raw_testcase, project_mapping):
             loaded_testcase["teststeps"].extend(_load_teststeps(test_block, project_mapping))
 
         else:
-            logger.log_warning(
+            logger.warning(
                 "unexpected block key: {}. block key should only be 'config' or 'test'.".format(key)
             )
 
@@ -458,7 +462,7 @@ def _get_block_by_name(ref_call, ref_type, project_mapping):
         err_msg = "{}: call args number is not equal to defined args number!\n".format(func_name)
         err_msg += "defined args: {}\n".format(def_args)
         err_msg += "reference args: {}".format(call_args)
-        logger.log_error(err_msg)
+        logger.error(err_msg)
         raise exceptions.ParamsError(err_msg)
 
     args_mapping = {}
@@ -538,11 +542,11 @@ def _extend_block(ref_block, def_block):
     ref_validators = ref_block.get("validate") or ref_block.get("validators", [])
 
     def_extrators = def_block.get("extract") \
-        or def_block.get("extractors") \
-        or def_block.get("extract_binds", [])
+                    or def_block.get("extractors") \
+                    or def_block.get("extract_binds", [])
     ref_extractors = ref_block.get("extract") \
-        or ref_block.get("extractors") \
-        or ref_block.get("extract_binds", [])
+                     or ref_block.get("extractors") \
+                     or ref_block.get("extract_binds", [])
 
     ref_block.update(def_block)
     ref_block["validate"] = _merge_validator(
@@ -658,7 +662,7 @@ def _merge_extractor(def_extrators, ref_extractors):
         extractor_dict = OrderedDict()
         for api_extrator in def_extrators:
             if len(api_extrator) != 1:
-                logger.log_warning("incorrect extractor: {}".format(api_extrator))
+                logger.warning("incorrect extractor: {}".format(api_extrator))
                 continue
 
             var_name = list(api_extrator.keys())[0]
@@ -666,7 +670,7 @@ def _merge_extractor(def_extrators, ref_extractors):
 
         for test_extrator in ref_extractors:
             if len(test_extrator) != 1:
-                logger.log_warning("incorrect extractor: {}".format(test_extrator))
+                logger.warning("incorrect extractor: {}".format(test_extrator))
                 continue
 
             var_name = list(test_extrator.keys())[0]
@@ -757,7 +761,7 @@ def load_api_folder(api_folder_path):
             func_name = function_meta["func_name"]
 
             if func_name in api_definition_mapping:
-                logger.log_warning("API definition duplicated: {}".format(func_name))
+                logger.warning("API definition duplicated: {}".format(func_name))
 
             api_dict["function_meta"] = function_meta
             api_definition_mapping[func_name] = api_dict
@@ -831,7 +835,7 @@ def load_test_folder(test_folder_path):
                 func_name = function_meta["func_name"]
 
                 if func_name in test_definition_mapping:
-                    logger.log_warning("API definition duplicated: {}".format(func_name))
+                    logger.warning("API definition duplicated: {}".format(func_name))
 
                 testcase["function_meta"] = function_meta
                 test_definition_mapping[func_name] = testcase
@@ -965,7 +969,7 @@ def load_tests(path, dot_env_path=None):
 
     if not os.path.exists(path):
         err_msg = "path not exist: {}".format(path)
-        logger.log_error(err_msg)
+        logger.error(err_msg)
         raise exceptions.FileNotFound(err_msg)
 
     if not os.path.isabs(path):

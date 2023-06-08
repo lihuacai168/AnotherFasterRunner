@@ -5,10 +5,11 @@
       <el-button icon="el-icon-caret-right" type="info" size="small" style="margin-left: 5px" @click="handleRunCode">
         在线运行
       </el-button>
-      <el-button type="text" size="small" @click="isBaseMonacoShow = true">打开Monaco</el-button>
+      <!-- <el-button type="text" size="small" @click="isBaseMonacoShow = true">打开Monaco</el-button> -->
+      <el-button type="text" size="small" @click="isCodemirror = true">打开Codemirror</el-button>
     </div>
     <div>
-      <BaseMonacoEditor
+      <!-- <BaseMonacoEditor
         ref="editor"
         :height="codeHeight"
         language="python"
@@ -17,13 +18,14 @@
         :options="options"
         @mounted="onMounted"
         @codeChange="onCodeChange"
+        @save="handleConfirm"
         :key="timeStamp"
       >
-      </BaseMonacoEditor>
-
+      </BaseMonacoEditor> -->
+      <CodeEditor :code="code.code" @codeChange="onCodemirrorChange"></CodeEditor>
       <el-drawer
         size="50%"
-        style="margin-top: 85px"
+        style="margin: 85px 0 24px 0"
         :height="codeHeight"
         :destroy-on-close="true"
         :with-header="false"
@@ -32,7 +34,17 @@
       >
         <RunCodeResult :msg="resp.msg"></RunCodeResult>
       </el-drawer>
-      <el-dialog :visible.sync="isBaseMonacoShow" width="70%">
+      <el-drawer
+        size="50%"
+        style="margin: 85px 0 24px 0"
+        :height="codeHeight"
+        :destroy-on-close="true"
+        :with-header="false"
+        :modal="false"
+        :visible.sync="isCodemirror"
+        ><CodeEditor :code="code.code" @codeChange="onCodemirrorChange"></CodeEditor>
+      </el-drawer>
+      <!-- <el-dialog :visible.sync="isBaseMonacoShow" width="70%">
         <MonacoEditor
           ref="editor"
           :height="codeHeight"
@@ -45,27 +57,30 @@
           :key="timeStamp"
         >
         </MonacoEditor>
-      </el-dialog>
+      </el-dialog> -->
     </div>
   </div>
 </template>
 
 <script>
-import MonacoEditor from "../monaco-editor/MonacoEditor.vue";
+// import MonacoEditor from "../monaco-editor/MonacoEditor.vue";
 import RunCodeResult from "./components/RunCodeResult.vue";
-import BaseMonacoEditor from "../monaco-editor/BaseMonacoEditor.vue";
+// import BaseMonacoEditor from "../monaco-editor/BaseMonacoEditor.vue";
+import CodeEditor from "../components/CodeEditor.vue";
 
 export default {
   components: {
-    MonacoEditor,
+    // MonacoEditor,
     RunCodeResult,
-    BaseMonacoEditor,
+    // BaseMonacoEditor,
+    CodeEditor,
   },
   data() {
     return {
       timeStamp: "",
       isShowDebug: false,
-      isBaseMonacoShow: false,
+      isCodemirror: false,
+      // isBaseMonacoShow: false,
       options: {
         selectOnLineNumbers: false,
       },
@@ -86,6 +101,9 @@ export default {
     onCodeChange(editor) {
       this.code.code = editor.getValue();
       // editor.trigger('随便写点儿啥', 'editor.action.triggerSuggest', {});
+    },
+    onCodemirrorChange(newCode) {
+      this.code.code = newCode;
     },
     handleRunCode() {
       this.resp.msg = "";

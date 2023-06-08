@@ -5,7 +5,8 @@ from django.contrib.auth import get_user_model
 from django.utils.translation import gettext as _
 from rest_framework import exceptions
 from rest_framework.authentication import BaseAuthentication
-from rest_framework_jwt.authentication import JSONWebTokenAuthentication, jwt_get_username_from_payload
+# from rest_framework_jwt.authentication import JSONWebTokenAuthentication, jwt_get_username_from_payload
+from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework_jwt.settings import api_settings
 from FasterRunner.settings.base import INVALID_TIME
 from fastuser import models
@@ -92,7 +93,7 @@ class DeleteAuthenticator(BaseAuthentication):
         return 'PermissionDenied'
 
 
-class MyJWTAuthentication(JSONWebTokenAuthentication):
+class MyJWTAuthentication(JWTAuthentication):
 
     def authenticate(self, request):
         """
@@ -121,7 +122,7 @@ class MyJWTAuthentication(JSONWebTokenAuthentication):
         Returns an active user that matches the payload's user id and email.
         """
         User = get_user_model()
-        username = jwt_get_username_from_payload(payload)
+        username = payload.get('username')
 
         if not username:
             msg = _('Invalid payload.')
