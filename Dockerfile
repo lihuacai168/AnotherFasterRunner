@@ -12,13 +12,13 @@
 #COPY requirements.txt .
 #RUN pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
 
-FROM node:lts as web-builder
-# make the 'app' folder the current working directory
-WORKDIR /FasterWeb
-# copy both 'package.json' and 'package-lock.json' (if available)
-COPY ./FasterWeb .
-RUN npm install
-RUN npm run build
+# FROM node:lts as web-builder
+# # make the 'app' folder the current working directory
+# WORKDIR /FasterWeb
+# # copy both 'package.json' and 'package-lock.json' (if available)
+# COPY ./FasterWeb .
+# RUN npm install
+# RUN npm run build
 
 FROM registry-vpc.cn-hangzhou.aliyuncs.com/cbk/fasterrunner:base-latest
 ENV TZ=Asia/Shanghai
@@ -33,7 +33,7 @@ RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
 ENV WORKSPACE=/home/FR
 WORKDIR $WORKSPACE
 COPY nginx.conf /etc/nginx/http.d/default.conf
-COPY --from=web-builder /FasterWeb/dist /static/fasterweb
+# COPY --from=web-builder /FasterWeb/dist /static/fasterweb
 COPY . $WORKSPACE
 RUN chmod +x $WORKSPACE/start.sh \
     && python manage.py collectstatic --settings=FasterRunner.settings.docker --no-input \

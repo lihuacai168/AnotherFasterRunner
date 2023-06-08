@@ -4,7 +4,7 @@ nginx
 
 echo "--------------start celery worker--------------"
 export DJANGO_SETTINGS_MODULE=FasterRunner.settings.docker;
-nohup python manage.py runserver 0.0.0.0:8002 > ./logs/run.log 2>&1 &
+
 nohup python -m celery -A FasterRunner.mycelery worker -l info > ./logs/worker.log 2>&1 &
 # nohup /usr/local/bin/python manage.py celery -A FasterRunner.mycelery worker -l info --settings=FasterRunner.settings.docker --logfile=./logs/worker.log 2>&1 &
 #celery multi start w1 -A FasterRunner -l info --logfile=./logs/worker.log
@@ -12,7 +12,6 @@ nohup python -m celery -A FasterRunner.mycelery worker -l info > ./logs/worker.l
 
 echo "--------------start celery beat--------------"
 # nohup python manage.py celery -A FasterRunner.mycelery beat -l info --settings=FasterRunner.settings.docker --logfile=./logs/beat.log 2>&1 &
-export DJANGO_SETTINGS_MODULE=FasterRunner.settings.docker;
 nohup python -m celery -A FasterRunner.mycelery beat -l info > ./logs/beat.log 2>&1 &
 #nohup python3 manage.py celery beat -l info > ./logs/beat.log 2>&1 &
 #nohup python3 manage.py FasterRunner.mycelery beat -l info > ./logs/beat.log 2>&1 &
