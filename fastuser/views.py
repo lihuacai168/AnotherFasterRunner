@@ -6,7 +6,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from drf_yasg.utils import swagger_auto_schema
 from django.http import HttpResponse, JsonResponse
-from fastrunner.utils import response
+
 from fastuser.common import response
 from fastuser import models
 from fastuser import serializers
