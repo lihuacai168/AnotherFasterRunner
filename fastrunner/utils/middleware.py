@@ -25,6 +25,10 @@ class VisitTimesMiddleware(MiddlewareMixin):
         else:
             body = str(body, encoding="utf-8")
 
+        url: str = request.path
+        # 去除测试报告页字体相关的访问
+        if '/fonts/roboto/' in url or response.headers['Content-Type'] != 'application/json':
+            return response
         if request.user is None:
             # 报告页面不需要登录，获取不到用户名
             user = "AnonymousUser"
@@ -45,6 +49,8 @@ class VisitTimesMiddleware(MiddlewareMixin):
             # <QueryDict: {'page': ['1'], 'node': [''], 'project': ['11'], 'search': [''], 'tag': ['']}>
             for k, v in request.GET.items():
                 query_params += f"{k}={v}&"
+            if len(query_params)>200:
+                query_params = ""
             url += query_params[:-1]
         else:
             query_params = ""

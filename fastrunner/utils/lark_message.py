@@ -44,7 +44,8 @@ def parse_message(summary: dict, msg_type: str, **kwargs):
     report_id = summary['report_id']
     base_url = settings.IM_REPORT_SETTING.get('base_url')
     port = settings.IM_REPORT_SETTING.get('port')
-    report_url = f'{base_url}:{port}/api/fastrunner/reports/{report_id}/'
+    # report_url = f'{base_url}:{port}/api/fastrunner/reports/{report_id}/'
+    report_url = f'{base_url}/api/fastrunner/reports/{report_id}/'
     executed = rows_count
     fail_rate = '{:.2%}'.format(fail_count / executed)
     # 富文本
@@ -57,10 +58,10 @@ def parse_message(summary: dict, msg_type: str, **kwargs):
                    [{'text': f'失败接口: {fail_count}'}],
                    [{'text': f'失败比例: {fail_rate}'}],
                    [{'text': f'查看详情: {report_url}'}]]
-        ci_job_url: str = kwargs.get('ci_job_url')
+        ci_job_url: str = kwargs.get('ci_job_url', '')
         if ci_job_url:
             content.append([{'text': f'ci_job: {ci_job_url}'}])
-        ci_pipeline_url: str = kwargs.get('ci_pipeline_url')
+        ci_pipeline_url: str = kwargs.get('ci_pipeline_url', '')
         if ci_pipeline_url:
             content.append([{'text': f'ci_pipeline: {ci_pipeline_url}'}])
 
@@ -94,21 +95,41 @@ def send_message(summary: dict, webhook: str, **kwargs):
             msg['content']['post']['zh_cn']['title'] = title
             data = msg
         else:
-            msg = parse_message(summary=summary, msg_type=None)
+            msg = parse_message(summary=summary, msg_type='')
             data = {
                 "title": title,
                 "text": msg
             }
         if 'seatalk' in webhook:
-            msg = parse_message(summary=summary, msg_type=None)
+            msg = parse_message(summary=summary, msg_type='')
             data = {
                 "tag": "text",
                 "text": {
                     "content": msg
                 }
             }
+        if 'weixin' in webhook:
+            """
+            {
+                "msgtype": "text",
+                "text": {
+                    "content": msg,
+                    "mentioned_list":["shisi"],
+                    "mentioned_mobile_list":["17621034206","@all"]
+                }
+            }
+            """
+            msg = parse_message(summary=summary, msg_type='')
+            data = {
+                "msgtype": "text",
+                "text": {
+                    "content": msg,
+                    "mentioned_list": ["shisi"],
+                    "mentioned_mobile_list": ["17621034206", ]
+                }
+            }
         res = requests.post(url=webhook, data=json.dumps(data).encode("utf-8")).json()
-        if res.get('StatusCode') == 0:
+        if res.get('StatusCode') == 0 or res.get('errcode') == 0:
             logger.info(f"发送通知成功，请求的webhook是: {webhook}")
         else:
             logger.error(f"发送通知失败，请求的webhook是: {webhook}， 响应是：{res}")

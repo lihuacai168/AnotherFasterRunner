@@ -12,7 +12,6 @@ from datetime import datetime
 
 from jinja2 import Template
 from markupsafe import escape
-
 from httprunner.__about__ import __version__
 from httprunner.compat import basestring, bytes, json, numeric_types
 

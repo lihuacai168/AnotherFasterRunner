@@ -117,6 +117,7 @@ class Format(object):
         """
         返回标准化HttpRunner "desc" 字段运行需去除
         """
+        test = dict()
         if not hasattr(self, 'rig_id'):
             self.rig_id = None
 
@@ -433,7 +434,13 @@ def format_json(value):
         return value
 
 
-def yapi_properties2json(properties, req_json={}, variables=[], desc={}):
+def yapi_properties2json(properties, req_json=None, variables=None, desc=None):
+    if desc is None:
+        desc = {}
+    if variables is None:
+        variables = []
+    if req_json is None:
+        req_json = {}
     for field_name, field_value in properties.items():
         value_type = field_value['type']
         if not (value_type == 'array' or value_type == 'object'):
@@ -519,7 +526,7 @@ def format_summary_to_ding(msg_type, summary, report_name=None):
         import os
         ip: str = os.getenv("SERVER_IP", "快去环境变量配置SERVER_IP")
         port: str = os.getenv("DJANGO_API_PORT", "8000")
-        report_url = f'http://{ip}:{port}/api/fastrunner/reports/{report_id}/'
+        report_url = f'https://{ip}:{port}/api/fastrunner/reports/{report_id}/'
         for item in fail_count_list:
             case_name_and_fail_message = f'> - **{item["case_name"]} - {item["request_url"]} - {item["fail_message"]}**\n'
             fail_detail_markdown += case_name_and_fail_message

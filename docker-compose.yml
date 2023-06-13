@@ -23,99 +23,98 @@ x-env: &env
   EMAIL_PORT: ${EMAIL_PORT}
   EMAIL_HOST_USER: ${EMAIL_HOST_USER}
   EMAIL_HOST_PASSWORD: ${EMAIL_HOST_PASSWORD}
+#  DJANGO_SETTINGS_MODULE：FasterRunner.settings.docker
 
 services:
   db:
-    #image: mysql:8.0.21
-    image: mariadb:10.6.1
-    # privileged: true
+    image: mysql:8.0
+    container_name: faster-mysql
+    privileged: true
     environment:
       # 设置默认数据库和root默认密码,如果宿主机中/var/lib/mysql已经存在,这两个设置都不会生效
       <<: *env
     volumes:
-#      - "/var/lib/mysql:/var/lib/mysql" # 挂载宿主机的mysql数据到docker中
-      - ./db/my.cnf:/etc/mysql/mysql.conf.d/mysqld.cnf
-      - ./db:/docker-entrypoint-initdb.d/:ro
+      - ./mysql:/var/lib/mysql # 挂载宿主机的mysql数据到docker中
+      - ./ComposeDeploy/db/my.cnf:/etc/mysql/mysql.conf.d/mysqld.cnf
+      - ./ComposeDeploy/db:/docker-entrypoint-initdb.d/:ro
     # 端口映射,格式 宿主机端口:容器端口
     ports:
-      - "${MYSQL_PORT_OUT}:3306"
+      - "3306:3306"
     restart: always
-    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
-
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --socket=/var/lib/mysql/mysql.sock
 
   app:
-    image: fasterrunner_app:latest
+    image: registry-vpc.cn-hangzhou.aliyuncs.com/cbk/fasterrunner:app-latest
+    container_name: faster-app
     build:
       context: .
       dockerfile: Dockerfile
-      args:
-        PIP_INDEX_URL: ${PIP_INDEX_URL:-https://pypi.tuna.tsinghua.edu.cn/simple}
-        DEBIAN_REPO: ${DEBIAN_REPO:-mirrors.aliyun.com}
     environment:
       <<: *env
-    entrypoint: /app/start.sh
-    command: "app"
-    depends_on:
-      - db
-    restart: always
-
-  celery-worker:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      args:
-        PIP_INDEX_URL: ${PIP_INDEX_URL:-https://pypi.tuna.tsinghua.edu.cn/simple}
-        DEBIAN_REPO: ${DEBIAN_REPO:-mirrors.aliyun.com}
-    environment:
-      <<: *env
-    entrypoint: /app/start.sh
-    command: "celery-worker"
-    restart: always
-    depends_on:
-      - db
-      - mq
-
-  celery-beat:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      args:
-        PIP_INDEX_URL: ${PIP_INDEX_URL:-https://pypi.tuna.tsinghua.edu.cn/simple}
-        DEBIAN_REPO: ${DEBIAN_REPO:-mirrors.aliyun.com}
-    environment:
-      <<: *env
-    entrypoint: /app/start.sh
-    command: "celery-beat"
-    restart: always
-    depends_on:
-      - mq
-      - db
-
-# django-admin & app proxy
-  nginx:
-    build: ./nginx
-    ports:
-      - "${DJANGO_ADMIN_PORT}:8000"
-    depends_on:
-      - app
-    restart: always
-    environment:
-      <<: *env
-  web:
-    build:
-      context: ./web
-      dockerfile: Dockerfile
-    ports:
-      - "${WEB_PORT}:80"
     volumes:
-      - ./web/dist:/usr/share/nginx/html
-    environment:
-      - FasterRunner=${MYSQL_USER}
+#      - ./mysql:/opt/workspace/FasterRunner/mysql
+      - ./nginx.conf:/etc/nginx/sites-enabled/nginx.conf
+    entrypoint: /bin/sh
+    command: -c "/home/FR/start.sh"
+    # command: -c "/usr/local/bin/python -m gunicorn FasterRunner.wsgi_docker -b 0.0.0.0 -w 4"
     depends_on:
-      - app
+      - db
+      - mq
+    ports:
+      - "${DJANGO_API_PORT}:8000"
+      - "8888:8000"
+    restart: always
+
+#  celery-worker:
+#    build:
+#      context: .
+#      dockerfile: Dockerfile
+#    environment:
+#      <<: *env
+#    entrypoint: /app/start.sh
+#    command: "celery-worker"
+#    restart: always
+#    depends_on:
+#      - db
+#      - mq
+#
+#  celery-beat:
+#    build:
+#      context: .
+#      dockerfile: Dockerfile
+#    environment:
+#      <<: *env
+#    entrypoint: /app/start.sh
+#    command: "celery-beat"
+#    restart: always
+#    depends_on:
+#      - mq
+#      - db
+#
+## django-admin & app proxy
+#  nginx:
+#    build: ./nginx
+#    ports:
+#      - "${DJANGO_ADMIN_PORT}:8000"
+#    depends_on:
+#      - app
+#    restart: always
+#    environment:
+#      <<: *env
+  # web:
+  #   image: registry-vpc.cn-hangzhou.aliyuncs.com/cbk/fasterrunner:web-latest
+  #   container_name: faster-web
+  #   build:
+  #     context: ./FasterWeb
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - "${WEB_PORT}:8888"
+  #   volumes:
+  #     - ./FasterWeb/dist:/usr/share/nginx/html
 
   mq:
     image: rabbitmq:management-alpine
+    container_name: rabbitmq
     environment:
       <<: *env
     restart: always

@@ -1,0 +1,96 @@
+version: '3.8'
+
+# 用来快速启动测试平台的前后端，不包含db和mq
+# 用到本地的代码构建
+# 可以搭配docker-compose-build-db—mq使用
+# 或者已有mq和db也是OK的
+
+x-env: &env
+  # db
+  MYSQL_DATABASE: ${MYSQL_DATABASE}
+  MYSQL_USER: ${MYSQL_USER}
+  MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+  MYSQL_HOST: ${MYSQL_HOST:-db}
+  MYSQL_PORT: ${MYSQL_PORT:-3306}
+  # mq
+  RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
+  RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
+  MQ_PORT: ${MQ_PORT}
+  MQ_HOST: ${MQ_HOST:-mq}
+  MQ_ADMIN_PORT: ${MQ_ADMIN_PORT}
+  MQ_VHOST: ${MQ_VHOST:-/}
+
+  # celery-worker
+  SERVER_IP: ${SERVER_IP}
+  DJANGO_API_PORT: ${DJANGO_API_PORT}
+
+  # app
+  EMAIL_HOST: ${EMAIL_HOST}
+  EMAIL_PORT: ${EMAIL_PORT}
+  EMAIL_HOST_USER: ${EMAIL_HOST_USER}
+  EMAIL_HOST_PASSWORD: ${EMAIL_HOST_PASSWORD}
+
+services:
+  app:
+    image: fasterrunner_app:latest
+    build:
+      context: ..
+      dockerfile: ../Dockerfile
+      args:
+        PIP_INDEX_URL: ${PIP_INDEX_URL:-https://pypi.tuna.tsinghua.edu.cn/simple}
+        DEBIAN_REPO: ${DEBIAN_REPO:-mirrors.aliyun.com}
+    environment:
+      <<: *env
+    entrypoint: /app/start.sh
+    command: "app"
+    restart: always
+
+  celery-worker:
+    build:
+      context: ..
+      dockerfile: ../Dockerfile
+      args:
+        PIP_INDEX_URL: ${PIP_INDEX_URL:-https://pypi.tuna.tsinghua.edu.cn/simple}
+        DEBIAN_REPO: ${DEBIAN_REPO:-mirrors.aliyun.com}
+    environment:
+      <<: *env
+    entrypoint: /app/start.sh
+    command: "celery-worker"
+    restart: always
+
+  celery-beat:
+    build:
+      context: ..
+      dockerfile: ../Dockerfile
+      args:
+        PIP_INDEX_URL: ${PIP_INDEX_URL:-https://pypi.tuna.tsinghua.edu.cn/simple}
+        DEBIAN_REPO: ${DEBIAN_REPO:-mirrors.aliyun.com}
+    environment:
+      <<: *env
+    entrypoint: /app/start.sh
+    command: "celery-beat"
+    restart: always
+
+# django-admin & app proxy
+  nginx:
+    build: ./nginx
+    ports:
+      - "${DJANGO_ADMIN_PORT}:8000"
+    depends_on:
+      - app
+    restart: always
+    environment:
+      <<: *env
+  web:
+    build:
+      context: ../web
+      dockerfile: ../web/Dockerfile
+    ports:
+      - "${WEB_PORT}:80"
+    volumes:
+      - ./web/dist:/usr/share/nginx/html
+    environment:
+      - FasterRunner=${MYSQL_USER}
+    depends_on:
+      - app
+

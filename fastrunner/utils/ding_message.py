@@ -18,7 +18,6 @@ import logging
 # django.setup()
 
 from dingtalkchatbot.chatbot import DingtalkChatbot
-
 from fastrunner.utils.parser import format_summary_to_ding
 
 log = logging.getLogger(__name__)
@@ -30,6 +29,19 @@ class DingMessage:
 
     def __init__(self, run_type: str = "auto", webhook: str = ""):
         self.run_type = run_type
+        if run_type == 'auto':
+            webhook = 'https://oapi.dingtalk.com/robot/send?access_token' \
+                      '=998422738ca7d32f8641e9369da7f1b5545aa09c8fcec5ae17324e609c5d1af0 '
+            # webhook = 'https://oapi.dingtalk.com/robot/send?access_token
+            # =cb1ece248f594144a11bc0cf467ae4fd0f73beb3133f6a79b16d07ef23da0a59' # 调试机器人
+        elif run_type == 'deploy':
+            webhook = 'https://oapi.dingtalk.com/robot/send?access_token' \
+                      '=16c4dbf613c5f1f288bbf695c1997ad41d37ad580d94ff1a0b7ceae6797bbc70 '
+            # webhook = 'https://oapi.dingtalk.com/robot/send?access_token
+            # =cb1ece248f594144a11bc0cf467ae4fd0f73beb3133f6a79b16d07ef23da0a59' # 调试机器人
+        else:
+            webhook = 'https://oapi.dingtalk.com/robot/send?access_token \
+            =cb1ece248f594144a11bc0cf467ae4fd0f73beb3133f6a79b16d07ef23da0a59' # 调试机器人
         self.robot = DingtalkChatbot(webhook)
 
     def send_ding_msg(self, summary, report_name=None):
@@ -69,7 +81,8 @@ if __name__ == "__main__":
     import django
 
     django.setup()
-    webhook: str = "https://oapi.dingtalk.com/robot/send?access_token=694e9cfa98612c9da56d0c190e73717ab13095c83a1302da075b946c8f3940b0"
+    webhook: str = "https://oapi.dingtalk.com/robot/send?access_token" \
+                   "=694e9cfa98612c9da56d0c190e73717ab13095c83a1302da075b946c8f3940b0"
     robot = DingMessage(webhook=webhook)
     summary = {
         "success": True,
@@ -118,7 +131,8 @@ if __name__ == "__main__":
                         "attachment": "",
                         "meta_data": {
                             "request": {
-                                "url": "http://localhost:8000/api/user/login/?s=d&sxx=dsx&sxx22=&sxx2=dsx&sx2x22=&d55555553d=sd&1s=d&2sxx=dsx&3sxx22=&4sxx2=dsx&4sx2x22=&5d55555553d=sd",
+                                "url": "http://localhost:8000/api/user/login/?s=d&sxx=dsx&sxx22=&sxx2=dsx&sx2x22"
+                                       "=&d55555553d=sd&1s=d&2sxx=dsx&3sxx22=&4sxx2=dsx&4sx2x22=&5d55555553d=sd",
                                 "method": "POST",
                                 "headers": {
                                     "User-Agent": "python-requests/2.22.0",
@@ -169,13 +183,16 @@ if __name__ == "__main__":
                                 "response_time_ms": 143.51,
                                 "elapsed_ms": 140.834,
                                 "encoding": None,
-                                "content": '{"code":"0001","success":true,"msg":"login success","token":"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjo1LCJ1c2VybmFtZSI6InFhMSIsImV4cCI6MTcxMzU5ODQwNywiZW1haWwiOiJxYTFAcXEuY29tIiwib3JpZ19pYXQiOjE2ODIwNjI0MDd9.nFBrmUsariqGuZ3zZSao29yKjiOMmlhi3al6UoV2uCI","user":"qa1","is_superuser":false,"show_hosts":false}',
+                                "content": '{"code":"0001","success":true,"msg":"login success",'
+                                           '"token":"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjo1LCJ1c2VybmFtZSI6InFhMSIsImV4cCI6MTcxMzU5ODQwNywiZW1haWwiOiJxYTFAcXEuY29tIiwib3JpZ19pYXQiOjE2ODIwNjI0MDd9.nFBrmUsariqGuZ3zZSao29yKjiOMmlhi3al6UoV2uCI","user":"qa1","is_superuser":false,"show_hosts":false}',
                                 "content_type": "application/json",
                                 "ok": True,
-                                "url": "http://localhost:8000/api/user/login/?s=d&sxx=dsx&sxx22=&sxx2=dsx&sx2x22=&d55555553d=sd&1s=d&2sxx=dsx&3sxx22=&4sxx2=dsx&4sx2x22=&5d55555553d=sd",
+                                "url": "http://localhost:8000/api/user/login/?s=d&sxx=dsx&sxx22=&sxx2=dsx&sx2x22"
+                                       "=&d55555553d=sd&1s=d&2sxx=dsx&3sxx22=&4sxx2=dsx&4sx2x22=&5d55555553d=sd",
                                 "reason": "OK",
                                 "cookies": {},
-                                "text": '{"code":"0001","success":true,"msg":"login success","token":"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjo1LCJ1c2VybmFtZSI6InFhMSIsImV4cCI6MTcxMzU5ODQwNywiZW1haWwiOiJxYTFAcXEuY29tIiwib3JpZ19pYXQiOjE2ODIwNjI0MDd9.nFBrmUsariqGuZ3zZSao29yKjiOMmlhi3al6UoV2uCI","user":"qa1","is_superuser":false,"show_hosts":false}',
+                                "text": '{"code":"0001","success":true,"msg":"login success",'
+                                        '"token":"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjo1LCJ1c2VybmFtZSI6InFhMSIsImV4cCI6MTcxMzU5ODQwNywiZW1haWwiOiJxYTFAcXEuY29tIiwib3JpZ19pYXQiOjE2ODIwNjI0MDd9.nFBrmUsariqGuZ3zZSao29yKjiOMmlhi3al6UoV2uCI","user":"qa1","is_superuser":false,"show_hosts":false}',
                                 "teardown_hooks_start": 1682062407.815586,
                                 "teardown_hooks_duration": 0.0005848407745361328,
                             },

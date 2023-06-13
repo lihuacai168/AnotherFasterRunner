@@ -9,8 +9,8 @@ from fastrunner.utils.loader import save_summary, debug_suite, debug_api
 from fastrunner.utils.ding_message import DingMessage
 from fastrunner.utils import lark_message
 
-
 log = logging.getLogger(__name__)
+
 
 def update_task_total_run_count(task_id):
     if task_id:
@@ -94,9 +94,7 @@ def schedule_debug_suite(*args, **kwargs):
         test_sets.append(testcase_list)
 
     is_parallel = kwargs.get("is_parallel", False)
-    summary, _ = debug_suite(
-        test_sets, project, suite, config_list, save=False, allow_parallel=is_parallel
-    )
+    summary, _ = debug_suite(test_sets, project, suite, config_list, save=False, allow_parallel=is_parallel)
     task_name = kwargs["task_name"]
 
     if kwargs.get("run_type") == "deploy":
@@ -105,17 +103,16 @@ def schedule_debug_suite(*args, **kwargs):
     else:
         report_type = 3
 
-    report_id = save_summary(
-        task_name, summary, project, type=report_type, user=kwargs.get("user", "")
-    )
+    report_id = save_summary(task_name, summary, project, type_v=report_type, user=kwargs.get('user', ''))
 
     strategy = kwargs["strategy"]
     if strategy == "始终发送" or (strategy == "仅失败发送" and summary["stat"]["failures"] > 0):
+        # ding_message = DingMessage(run_type)
+        # ding_message.send_ding_msg(summary, report_name=task_name)
         webhook = kwargs.get("webhook", "")
         log.info(f"开始发送消息, {webhook=}")
         DING_OPEN_API: str = "https://oapi.dingtalk.com"
         FEISHU_OPEN_API: str = "https://open.feishu.cn"
-
 
         if webhook.startswith(DING_OPEN_API) is False and webhook.startswith(FEISHU_OPEN_API) is False:
             log.warning(f"{webhook=}还不支持, 目前仅支持钉钉和飞书")
@@ -131,8 +128,5 @@ def schedule_debug_suite(*args, **kwargs):
             log.info("开始发送飞书消息")
             summary["task_name"] = task_name
             summary["report_id"] = report_id
-            lark_message.send_message(
-                summary=summary, webhook=webhook, case_count=len(args)
-            )
+            lark_message.send_message(summary=summary, webhook=webhook, case_count=len(args))
             log.info("发送飞书消息完成")
-

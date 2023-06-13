@@ -1,0 +1,137 @@
+.block_post {
+    border: 1px solid #49cc90;
+    background-color: rgba(73, 204, 144, .1)
+}
+
+.block_method_post {
+    background-color: #49cc90;
+}
+
+.block_put {
+    border: 1px solid #fca130;
+    background-color: rgba(252, 161, 48, .1)
+}
+
+.block_method_put {
+    background-color: #fca130;
+}
+
+.block_get {
+    border: 1px solid #61affe;
+    background-color: rgba(97, 175, 254, .1)
+}
+
+.block_method_get {
+    background-color: #61affe;
+}
+
+.block_delete {
+    border: 1px solid #f93e3e;
+    background-color: rgba(249, 62, 62, .1)
+}
+
+.block_method_delete {
+    background-color: #f93e3e;
+}
+
+.block_patch {
+    border: 1px solid #50e3c2;
+    background-color: rgba(80, 227, 194, .1)
+}
+
+.block_method_patch {
+    background-color: #50e3c2;
+}
+
+.block_head {
+    border: 1px solid #e6a23c;
+    background-color: rgba(230, 162, 60, .1)
+}
+
+.block_method_head {
+    background-color: #e6a23c;
+}
+
+.block_options {
+    border: 1px solid #409eff;
+    background-color: rgba(64, 158, 255, .1)
+}
+
+.block_method_options {
+    background-color: #409eff;
+}
+
+.block {
+    position: relative;
+    border-radius: 4px;
+    height: 38px;
+    overflow: hidden;
+    padding: 5px;
+    display: flex;
+    align-items: center;
+}
+
+.block_url {
+    word-break: normal;
+    width: auto;
+    display: block;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    overflow: hidden;
+    -webkit-box-flex: 1;
+    -ms-flex: 1;
+    font-family: Open Sans, sans-serif;
+    color: #3b4151;
+}
+
+.block_name {
+    padding-left: 5px;
+    word-break: normal;
+    width: auto;
+    display: block;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    overflow: hidden;
+    -webkit-box-flex: 1;
+    -ms-flex: 1;
+    font-family: Open Sans, sans-serif;
+    color: #3b4151;
+}
+
+.block_method_color {
+    cursor: pointer;
+    color: #fff;
+}
+
+.block-method {
+    font-size: 12px;
+    font-weight: 600;
+    min-width: 50px;
+    padding: 3px 0px;
+    text-align: center;
+    border-radius: 3px;
+    text-shadow: 0 1px 0 rgba(0, 0, 0, .1);
+    font-family: Titillium Web, sans-serif;
+}
+
+.block-summary-description {
+    word-break: normal;
+    width: auto;
+    display: block;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    overflow: hidden;
+    -webkit-box-flex: 1;
+    -ms-flex: 1;
+    font-family: Open Sans, sans-serif;
+    color: #3b4151;
+}
+
+h4 {
+    display: block;
+    -webkit-margin-before: 1.33em;
+    -webkit-margin-after: 1.33em;
+    -webkit-margin-start: 0px;
+    -webkit-margin-end: 0px;
+    font-weight: bold;
+}

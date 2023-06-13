@@ -6,7 +6,7 @@ from os import environ
 from .base import *
 
 DEBUG = False
-
+WEBSOCKET_FACTORY_CLASS = "dwebsocket.backends.uwsgi.factory.uWsgiWebSocketFactory"
 # RabbitMQ和MySQL配置相关的设置
 
 # RabbitMQ 账号密码
@@ -70,10 +70,10 @@ broker_url = f"amqp://{MQ_USER}:{MQ_PASSWORD}@{MQ_HOST}:{MQ_PORT}/{MQ_VHOST}"
 
 SERVER_IP = environ.get("SERVER_IP", "")
 DJANGO_API_PORT = environ.get("DJANGO_API_PORT", "8000")
-BASE_REPORT_URL = f"http://{SERVER_IP}:{DJANGO_API_PORT}/api/fastrunner/reports"
+BASE_REPORT_URL = f"https://{SERVER_IP}:{DJANGO_API_PORT}/api/fastrunner/reports"
 
 IM_REPORT_SETTING = {
-    "base_url": f"http://{SERVER_IP}",
+    "base_url": f"https://{SERVER_IP}",
     "port": environ.get("DJANGO_API_PORT", "8000"),
     "report_title": "自动化测试报告",
 }

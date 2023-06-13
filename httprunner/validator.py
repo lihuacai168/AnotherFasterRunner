@@ -2,10 +2,10 @@
 import os
 import types
 
-
 """ validate data format
 TODO: refactor with JSON schema validate
 """
+
 
 def is_testcase(data_structure):
     """ check if data_structure is a testcase.

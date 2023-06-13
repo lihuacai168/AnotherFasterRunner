@@ -28,7 +28,7 @@ requests==2.28.2
 requests-toolbelt==0.9.1
 
 tornado==6.2.0
-uWSGI~=2.0.18
+# uWSGI~=2.0.21
 django_mysql
 json5==0.9.5
 django_bulk_update==2.2.0

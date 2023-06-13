@@ -1,12 +1,15 @@
 import json
 import logging
+from typing import Any, Union
 
 import pydash
 import requests
+# from django.core.cache import cache
 from django.db.models import Sum, Count, Q
 from django.db.models.functions import Concat
 from django_celery_beat.models import PeriodicTask as celery_models
 # from loguru import logger
+# import django_celery_beat.models as celery_models
 
 from fastrunner import models
 from fastrunner.utils.day import get_day, get_week, get_month
@@ -59,6 +62,7 @@ def complete_list(arr, date_type):
 
 
 def get_sql_dateformat(date_type):
+    create_time = ""
     if date_type == "week":
         create_time = "YEARWEEK(create_time,'%%Y-%%m-%%d')"
     elif date_type == "month":
@@ -228,11 +232,17 @@ def get_project_detail_v2(pk):
     res = {
         "api_count_by_create_type": {
             "type": api_create_type,
-            "count": api_create_type_count,
+            "count": api_create_type_count
         },
-        "case_count_by_tag": {"tag": case_tag, "count": case_tag_count},
-        "report_count_by_type": {"type": report_type, "count": report_type_count},
-        "daily_create_count": daily_create_count,
+        "case_count_by_tag": {
+            "tag": case_tag,
+            "count": case_tag_count
+        },
+        "report_count_by_type": {
+            'type': report_type,
+            'count': report_type_count
+        },
+        "daily_create_count": daily_create_count
     }
     return res
 
@@ -354,15 +364,17 @@ def tree_end(params, project):
         type: int
     }
     """
-    type = params["type"]
+    type_value = params["type"]
     node = params["node"]
 
-    if type == 1:
-        models.API.objects.filter(relation=node, project=project).delete()
+    if type_value == 1:
+        models.API.objects. \
+            filter(relation=node, project=project).delete()
 
     # remove node testcase
-    elif type == 2:
-        case = models.Case.objects.filter(relation=node, project=project).values("id")
+    elif type_value == 2:
+        case = models.Case.objects. \
+            filter(relation=node, project=project).values("id")
 
         for case_id in case:
             models.CaseStep.objects.filter(case__id=case_id["id"]).delete()

@@ -13,6 +13,7 @@ from httprunner.compat import OrderedDict
 
 logger = logging.getLogger(__name__)
 
+
 ###############################################################################
 ##   file loader
 ###############################################################################
@@ -345,6 +346,7 @@ def _load_teststeps(test_block, project_mapping):
         list: loaded teststeps list
 
     """
+
     def extend_api_definition(block):
         ref_call = block["api"]
         def_block = _get_block_by_name(ref_call, "def-api", project_mapping)
@@ -358,7 +360,7 @@ def _load_teststeps(test_block, project_mapping):
         teststeps.append(test_block)
 
     # reference testcase
-    elif "suite" in test_block: # TODO: replace suite with testcase
+    elif "suite" in test_block:  # TODO: replace suite with testcase
         ref_call = test_block["suite"]
         block = _get_block_by_name(ref_call, "def-testcase", project_mapping)
         # TODO: bugfix lost block config variables
@@ -540,11 +542,11 @@ def _extend_block(ref_block, def_block):
     ref_validators = ref_block.get("validate") or ref_block.get("validators", [])
 
     def_extrators = def_block.get("extract") \
-        or def_block.get("extractors") \
-        or def_block.get("extract_binds", [])
+                    or def_block.get("extractors") \
+                    or def_block.get("extract_binds", [])
     ref_extractors = ref_block.get("extract") \
-        or ref_block.get("extractors") \
-        or ref_block.get("extract_binds", [])
+                     or ref_block.get("extractors") \
+                     or ref_block.get("extract_binds", [])
 
     ref_block.update(def_block)
     ref_block["validate"] = _merge_validator(

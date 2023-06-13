@@ -36,11 +36,10 @@ DATABASES = {
 }
 # IM_REPORT_SETTING.update({'platform_name': '银河飞梭测试平台'})
 
-BROKER_URL = "amqp://username:password@localhost:5672//"
+BROKER_URL = 'amqp://root:Xsp20504544@localhost:5672//'
 # 需要先在RabbitMQ上创建fast_dev这个vhost
 
 BROKER_URL = 'amqp://root:Xsp20504544@localhost:5672/fast_dev'
-
 
 BASE_REPORT_URL = "http://localhost:8000/api/fastrunner/reports"
 
