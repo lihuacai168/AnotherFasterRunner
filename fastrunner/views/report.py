@@ -30,9 +30,7 @@ class ConvertRequest(object):
             ("curl", None),
             ("-X", request.method),
         ]
-        parts += [
-            (None, request.url),
-        ]
+        parts += [(None, request.url), ]
 
         for k, v in sorted(request.headers.items()):
             parts += [("-H", "{0}: {1}".format(k, v))]

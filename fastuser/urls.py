@@ -10,11 +10,11 @@ Class-based views
     1. Add an import:  from other_app.views import Home
     2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
 Including another URLconf
-    1. Import the include() function: from django.urls import include, path
+    1. Import to include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 
-from django.urls import path,re_path
+from django.urls import path, re_path
 from fastuser import views
 from fastrunner.views import timer_task
 
@@ -23,5 +23,8 @@ urlpatterns = [
     # path('register/', views.RegisterView.as_view()),
     path('login/', views.LoginView.as_view()),
     path('list/', views.UserView.as_view()),
+    path('salog/h5', views.send),
+    path('salog/app', views.send),
+    path('salog/link', views.link),
     re_path(r'^auto_run_testsuite_pk/$', timer_task.auto_run_testsuite_pk, name='auto_run_testsuite_pk'),
 ]

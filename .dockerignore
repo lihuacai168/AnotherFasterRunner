@@ -1,8 +1,46 @@
 .git
 **/*.log
+**/*.sock
 **/*-log-*
 **/*.tar.gz
 Dockerfile
 .dockerignore
 *.md
 /web/node_modules/
+
+*.log
+*.pyc
+*.iml
+.idea
+celerybeat.pid
+start.sh.bak
+mysql?
+mysql
+ComposeDeploy
+
+# .env
+venv/
+nohup.out
+
+# web
+static
+.DS_Store
+web
+FasterWeb
+tyadmin
+web/node_modules/
+*/node_modules*
+*/*/.umi*
+web/dist/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Editor directories and files
+.idea?
+.vscode?
+.vscode
+*.suo
+*.ntvs*
+*.njsproj
+*.sln

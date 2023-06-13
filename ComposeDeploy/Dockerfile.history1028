@@ -1,0 +1,82 @@
+# FROM python:3.9-alpine as Base
+
+# COPY requirements.txt .
+# RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
+# RUN apk add --no-cache mariadb-connector-c-dev
+# RUN apk update &&  \
+#     apk add python3-dev mariadb-dev build-base netcat-openbsd linux-headers pcre-dev && \
+#     pip install setuptools~=57.5.0 -i https://pypi.tuna.tsinghua.edu.cn/simple && \
+#     pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple && \
+#     apk del python3-dev mariadb-dev build-base linux-headers pcre-dev
+
+#COPY requirements.txt .
+#RUN pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
+
+FROM fasterrunner_base:latest
+ENV TZ=Asia/Shanghai
+ENV LANG=C.UTF-8
+RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories \
+    && apk --no-cache add tzdata mariadb-connector-c-dev linux-headers nginx uwsgi\
+    && ln -snf /usr/share/zoneinfo/$TZ /etc/localtime \
+    && echo $TZ > /etc/timezone && rm -rf /var/cache/apk/*
+
+# COPY --from=Base /usr/local/lib/python3.9/site-packages /usr/local/lib/python3.9/site-packages
+WORKDIR /opt/workspace/FasterRunner/
+COPY . /opt/workspace/FasterRunner/
+RUN chmod +x /opt/workspace/FasterRunner/start.sh &&  \
+    python manage.py collectstatic --settings=FasterRunner.settings.docker --no-input
+
+EXPOSE 8000
+
+CMD [ "bash ./start.sh" ]
+
+#### Test Safe Dockerfile
+
+
+# using ubuntu LTS version
+FROM ubuntu:20.04 AS builder-image
+
+# avoid stuck build due to user prompt
+ARG DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get update && apt-get install --no-install-recommends -y \
+    python3.9 python3.9-dev python3.9-venv python3-pip python3-wheel build-essential && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# create and activate virtual environment
+# using final folder name to avoid path issues with packages
+RUN python3.9 -m venv /home/myuser/venv
+ENV PATH="/home/myuser/venv/bin:$PATH"
+
+# install requirements
+COPY requirements.txt .
+RUN pip3 install --no-cache-dir wheel -i https://pypi.tuna.tsinghua.edu.cn/simple
+RUN pip3 install --no-cache-dir -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
+
+FROM ubuntu:20.04 AS runner-image
+RUN apt-get update && apt-get install --no-install-recommends -y python3.9 python3-venv && \
+ apt-get clean && rm -rf /var/lib/apt/lists/*
+
+RUN useradd --create-home myuser
+COPY --from=builder-image /home/myuser/venv /home/myuser/venv
+
+# make sure all messages always reach console
+ENV PYTHONUNBUFFERED=1
+
+# activate virtual environment
+ENV VIRTUAL_ENV=/home/myuser/venv
+ENV PATH="/home/myuser/venv/bin:$PATH"
+
+RUN mkdir /home/myuser/code
+WORKDIR /home/myuser/code
+COPY . /home/myuser/code/
+RUN chmod +x /home/myuser/code/start.sh &&  \
+    python3 manage.py collectstatic --settings=FasterRunner.settings.docker --no-input
+
+USER myuser
+EXPOSE 8000
+
+
+# /dev/shm is mapped to shared memory and should be used for gunicorn heartbeat
+# this will improve performance and avoid random freezes
+CMD ["gunicorn", "FasterRunner.wsgi_docker", "-b", "0.0.0.0:8000", "-w", "4", "-k", "gevent", "--worker-tmp-dir", "/dev/shm", "app:app"]

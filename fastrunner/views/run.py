@@ -48,10 +48,12 @@ def run_api(request):
     if host != "请选择":
         host = models.HostIP.objects.get(name=host, project__id=api.project).value.splitlines()
         api.testcase = parse_host(host, api.testcase)
-
-    summary = loader.debug_api(api.testcase, api.project, name=api.name, config=parse_host(host, config),
-                               user=request.user)
-
+    try:
+        summary = loader.debug_api(
+            api.testcase, api.project, name=api.name,
+            config=parse_host(host, config), user=request.user)
+    except Exception as e:
+        return Response({'traceback': str(e)}, status=400)
     return Response(summary)
 
 
@@ -69,9 +71,11 @@ def run_api_pk(request, **kwargs):
     if host != "请选择":
         host = models.HostIP.objects.get(name=host, project=api.project).value.splitlines()
         test_case = parse_host(host, test_case)
-
-    summary = loader.debug_api(test_case, api.project.id, name=api.name, config=parse_host(host, config),
-                               user=request.user)
+    try:
+        summary = loader.debug_api(
+            test_case, api.project.id, name=api.name, config=parse_host(host, config), user=request.user)
+    except Exception as e:
+        return Response({'traceback': str(e)}, status=400)
     return Response(summary)
 
 
@@ -176,8 +180,15 @@ def run_api_tree(request):
         summary = loader.TEST_NOT_EXISTS
         summary["msg"] = "接口运行中，请稍后查看报告"
     else:
-        summary = loader.debug_api(test_case, project, name=f'批量运行{len(test_case)}条API',
-                                   config=parse_host(host, config), user=request.user)
+        try:
+            summary = loader.debug_api(
+                test_case, project,
+                name=f'批量运行{len(test_case)}条API',
+                config=parse_host(host, config),
+                user=request.user
+            )
+        except Exception as e:
+            return Response({'traceback': str(e)}, status=400)
 
     return Response(summary)
 
@@ -210,8 +221,10 @@ def run_testsuite(request):
             continue
 
         test_case.append(parse_host(host, test))
-
-    summary = loader.debug_api(test_case, project, name=name, config=parse_host(host, config), user=request.user)
+    try:
+        summary = loader.debug_api(test_case, project, name=name, config=parse_host(host, config), user=request.user)
+    except Exception as e:
+        return Response({'traceback': str(e)}, status=400)
 
     return Response(summary)
 
@@ -228,8 +241,7 @@ def run_testsuite_pk(request, **kwargs):
     """
     pk = kwargs["pk"]
 
-    test_list = models.CaseStep.objects. \
-        filter(case__id=pk).order_by("step").values("body")
+    test_list = models.CaseStep.objects.filter(case__id=pk).order_by("step").values("body")
 
     project = request.query_params["project"]
     name = request.query_params["name"]
@@ -250,13 +262,17 @@ def run_testsuite_pk(request, **kwargs):
             continue
 
         test_case.append(parse_host(host, body))
-
-    if back_async:
-        tasks.async_debug_api.delay(test_case, project, name=name, config=parse_host(host, config))
-        summary = response.TASK_RUN_SUCCESS
-
-    else:
-        summary = loader.debug_api(test_case, project, name=name, config=parse_host(host, config), user=request.user)
+    try:
+        if back_async:
+            tasks.async_debug_api.delay(test_case, project, name=name, config=parse_host(host, config))
+            summary = response.TASK_RUN_SUCCESS
+        else:
+            summary = loader.debug_api(
+                test_case, project, name=name,
+                config=parse_host(host, config), user=request.user
+            )
+    except Exception as e:
+        return Response({'traceback': str(e)}, status=400)
 
     return Response(summary)
 
@@ -310,14 +326,15 @@ def run_suite_tree(request):
             test_sets.append(testcase_list)
             config = None
         suite_list.extend(case_name_id_mapping_list)
-
-    if back_async:
-        tasks.async_debug_suite.delay(test_sets, project, suite_list, report, config_list)
-        summary = loader.TEST_NOT_EXISTS
-        summary["msg"] = "用例运行中，请稍后查看报告"
-    else:
-        summary, _ = loader.debug_suite(test_sets, project, suite_list, config_list, save=True, user=request.user)
-
+    try:
+        if back_async:
+            tasks.async_debug_suite.delay(test_sets, project, suite_list, report, config_list)
+            summary = loader.TEST_NOT_EXISTS
+            summary["msg"] = "用例运行中，请稍后查看报告"
+        else:
+            summary, _ = loader.debug_suite(test_sets, project, suite_list, config_list, save=True, user=request.user)
+    except Exception as e:
+        return Response({'traceback': str(e)}, status=400)
     return Response(summary)
 
 
@@ -370,22 +387,23 @@ def run_multi_tests(request):
         test_sets.append(parsed_case_step_list)
     # 用例和配置的映射关系
     suite_list.extend(case_config_mapping_list)
-
-    if back_async:
-        tasks.async_debug_suite.delay(test_sets, project, suite_list, report_name, config_list)
-        summary = loader.TEST_NOT_EXISTS
-        summary["msg"] = "用例运行中，请稍后查看报告"
-    else:
-        summary, _ = loader.debug_suite(
-            test_sets,
-            project,
-            suite_list,
-            config_list,
-            save=True,
-            user=request.user,
-            report_name=report_name
-        )
-
+    try:
+        if back_async:
+            tasks.async_debug_suite.delay(test_sets, project, suite_list, report_name, config_list)
+            summary = loader.TEST_NOT_EXISTS
+            summary["msg"] = "用例运行中，请稍后查看报告"
+        else:
+            summary, _ = loader.debug_suite(
+                test_sets,
+                project,
+                suite_list,
+                config_list,
+                save=True,
+                user=request.user,
+                report_name=report_name
+            )
+    except Exception as e:
+        return Response({'traceback': str(e)}, status=400)
     return Response(summary)
 
 
@@ -411,16 +429,14 @@ def run_test(request):
 
     if config:
         config = eval(models.Config.objects.get(project=project, name=config["name"]).body)
-
-    summary = loader.debug_api(
-        parse_host(
-            host,
-            loader.load_test(body)
-        ),
-        project,
-        name=body.get('name', None),
-        config=parse_host(host, config),
-        user=request.user
-    )
-
+    try:
+        summary = loader.debug_api(
+            parse_host(host, loader.load_test(body)),
+            project,
+            name=body.get('name', None),
+            config=parse_host(host, config),
+            user=request.user
+        )
+    except Exception as e:
+        return Response({'traceback': str(e)}, status=400)
     return Response(summary)

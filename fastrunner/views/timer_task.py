@@ -44,7 +44,7 @@ def auto_run_testsuite_pk(**kwargs):
 
     summary = debug_api(testcase_list, project_id, name=name, config=config, save=False)
 
-    save_summary(f'{name}_'+datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'), summary, project_id, type=3)
+    save_summary(f'{name}_'+datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'), summary, project_id, type_v=3)
 
     ding_message = DingMessage(run_type)
     ding_message.send_ding_msg(summary)

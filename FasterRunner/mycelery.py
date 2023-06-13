@@ -31,11 +31,14 @@ app.conf.update(
     task_reject_on_worker_lost=True,
     task_acks_late=True,
     # celery worker的并发数 根据并发量是适当配置，不易太大
-    CELERYD_CONCURRENCY=20,
+    CELERYD_CONCURRENCY=1 if settings.DEBUG else 4,
     # 每个worker执行了多少次任务后就会死掉，建议数量大一些
-    CELERYD_MAX_TASKS_PER_CHILD=300,
+    CELERYD_MAX_TASKS_PER_CHILD=100,
     # 每个worker一次性拿的任务数
     CELERYD_PREFETCH_MULTIPLIER=1,
+    CELERY_TASK_RESULT_EXPIRES=3600,
+    CELERY_FORCE_EXECV=True,  # 有些情况可以防止死锁
+    CELERY_TASK_TIME_LIMIT=3*60*60,  # 单个任务最大运行时间
 )
 
 

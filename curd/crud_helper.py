@@ -25,9 +25,7 @@ def create(creator: str, model: BModel, payload: dict) -> int:
     logger.info(f"create {model.__name__} success, id: {obj.id}")
 
 
-def get_or_create(
-    model: BModel, filter_kwargs: dict, defaults: dict
-) -> tuple["obj", bool]:
+def get_or_create(model: BModel, filter_kwargs: dict, defaults: dict) -> tuple["obj", bool]:
     """
     :raises DoesNotExist
     """
@@ -41,11 +39,7 @@ def get_or_create(
     return obj, created
 
 
-def update(
-    obj,
-    updater: str,
-    payload: dict,
-) -> int:
+def update(obj, updater: str, payload: dict,) -> int:
     logger.info(
         f"input: update model={obj.__class__.__name__}, id={obj.id}, payload={payload}"
     )

@@ -4,25 +4,35 @@
 .idea
 celerybeat.pid
 start.sh.bak
-tempWorkDir
+FasterRunner*/
 mysql
+
 .env
 /venv/
+/static/
+nohup.out
 /CACHE/
-
 
 # web
 .DS_Store
 web/node_modules/
+node_modules/
+.umi/
 web/dist/
+fastrunner/static/web
+fastrunner/static/fasterweb
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+pnpm-lock.yaml
 
 # Editor directories and files
-.idea
 .vscode
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
+templates/FasterWeb/index.html
+templates/TyAdmin/index.html
+ComposeDeploy/DockerMySQL/Redis/data/
+tyadmin/pnpm-lock.yaml
