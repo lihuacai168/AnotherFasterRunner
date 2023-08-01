@@ -118,14 +118,11 @@ export default {
         }
     },
     watch: {
-        response: {
-            deep: true,
-            handler(val) {
-                this.name = val.body.name;
-                this.baseUrl = val.body.base_url;
-                this.id = val.id;
-                this.is_default = val.is_default
-            }
+        response() {
+            this.id = this.response.id;
+            this.name = this.response.name;
+            this.baseUrl = this.response.base_url;
+            this.is_default = this.response.is_default;
         }
     },
     methods: {

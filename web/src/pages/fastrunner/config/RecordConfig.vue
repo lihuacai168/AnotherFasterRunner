@@ -92,8 +92,10 @@ export default {
             set(value) {
                 this.addConfigActivate = value;
                 this.respConfig = {
+                    id: "",
+                    name: "",
+                    base_url: "",
                     is_default: false,
-                    id: '',
                     body: {
                         name: '',
                         base_url: '',
