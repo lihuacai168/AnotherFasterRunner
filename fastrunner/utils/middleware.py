@@ -31,7 +31,7 @@ class VisitTimesMiddleware(MiddlewareMixin):
         else:
             user = request.user
 
-        ip = request.META.get("HTTP_X_FORWARDED_FOR", request.META.get("REMOTE_ADDR"))
+        ip: str = request.META.get("HTTP_X_FORWARDED_FOR", request.META.get("REMOTE_ADDR"))
         # 前端请求头没传project，就默认为0
         project = request.META.get("HTTP_PROJECT", 0)
 
@@ -54,7 +54,7 @@ class VisitTimesMiddleware(MiddlewareMixin):
             url=url,
             request_method=request.method,
             request_body=body,
-            ip=ip,
+            ip=ip.split(',')[0], # 有时候会有多个ip，取第一个
             path=request.path,
             request_params=query_params[1:-1],
             project=project,
