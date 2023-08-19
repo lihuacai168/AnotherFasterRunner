@@ -53,7 +53,7 @@ axios.interceptors.response.use(function (response) {
         }
         if (error.response.status === 500) {
             Message.error({
-                message: '哦豁，服务器出现了一点状况',
+                message: `哦豁,服务器出现了一点状况.trace_id:${error.response.headers['trace-id']}`,
                 duration: err_msg_duration
             })
         }
