@@ -233,8 +233,8 @@ class Hrp(object):
             params=self.faster_req_json.get('params', {}),
             headers=self.get_headers(),
             body=self.faster_req_json.get('body', {}),
-            req_json=self.faster_req_json['json'],
-            verify=self.faster_req_json['verify'],
+            req_json=self.faster_req_json.get('json', {}),
+            verify=self.faster_req_json.get('verify', False),
         )
         return req
 

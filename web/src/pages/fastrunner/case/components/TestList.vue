@@ -743,7 +743,6 @@ export default {
 
         caseTypeChangeHandle(command) {
             this.caseType = command
-            debugger
             this.getTestList()
         },
 
