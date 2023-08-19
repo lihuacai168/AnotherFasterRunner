@@ -147,7 +147,6 @@ export default {
 
         addConfig() {
             if (this.validateData()) {
-                debugger
                 this.$api.addConfig({
                     parameters: this.parameters,
                     header: this.header,

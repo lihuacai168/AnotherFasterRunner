@@ -297,8 +297,6 @@ export default {
             // TODO 修复产生2个editor
             if (tab.label === "Content") {
                 for (let i = 0; i < this.expandedRows; i++) {
-                    debugger
-                    console.log(i)
                     this.$refs.jsonEditor[i * 2].editor.expandAll()
                 }
             }
