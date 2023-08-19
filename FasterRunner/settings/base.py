@@ -151,7 +151,7 @@ REST_FRAMEWORK = {
 }
 JWT_AUTH = {
     # 'JWT_SECRET_KEY': SECRET_KEY,
-    "JWT_EXPIRATION_DELTA": datetime.timedelta(days=365),
+    "JWT_EXPIRATION_DELTA": datetime.timedelta(days=30),
     "JWT_ALLOW_REFRESH": True,
 }
 AUTH_USER_MODEL = "fastuser.MyUser"
