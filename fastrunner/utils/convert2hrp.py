@@ -31,7 +31,7 @@ class MethodEnum(Text, Enum):
     HEAD = "HEAD"
     OPTIONS = "OPTIONS"
     PATCH = "PATCH"
-
+    NA = "N/A"
 
 class TConfig(BaseModel):
     name: Name
