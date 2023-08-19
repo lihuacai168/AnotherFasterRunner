@@ -8,6 +8,8 @@ on:
     branches:
       - master
     types: [closed]
+    paths-ignore:
+      - '**/*.py'
 
 jobs:
   build_and_push:
