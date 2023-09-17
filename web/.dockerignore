@@ -1,4 +1,8 @@
+.git
+**/*.log
+**/*-log-*
+**/*.tar.gz
 Dockerfile
 .dockerignore
-node_modules
-dist
+*.md
+node_modules/

@@ -56,6 +56,7 @@ INSTALLED_APPS = [
     "django_celery_beat",
     "rest_framework_swagger",
     "drf_yasg",
+    "system",
 ]
 
 MIDDLEWARE = [
@@ -232,8 +233,7 @@ LOGGING = {
     "disable_existing_loggers": True,
     "formatters": {
         "standard": {
-            "format": "%(levelname)-2s [%(asctime)s] [%(request_id)s] %(name)s: %(message)s",
-            "datefmt": "%Y-%m-%d %H:%M:%S",
+            "format": "%(levelname)-2s [%(asctime)s] [%(request_id)s] %(name)s [%(filename)s->%(funcName)s:%(lineno)s]:  %(message)s",
         },
         "color": {
             "()": "colorlog.ColoredFormatter",
@@ -287,20 +287,25 @@ LOGGING = {
             "formatter": "color",
             "filters": ["request_id"],
         },
+        'db': {
+            'level': 'INFO',
+            "formatter": "standard",
+            'class': 'FasterRunner.log.DatabaseLogHandler',  # 指向你的自定义处理器
+        },
     },
     "loggers": {
         "django": {
-            "handlers": ["default", "console", "error"],
+            "handlers": ["default", "console", "error", "db"],
             "level": "INFO",
             "propagate": True,
         },
         "fastrunner": {
-            "handlers": ["default", "console", "error"],
+            "handlers": ["default", "console", "error", "db"],
             "level": "INFO",
             "propagate": True,
         },
         "httprunner": {
-            "handlers": ["default", "console", "error"],
+            "handlers": ["default", "console", "error", "db"],
             "level": "INFO",
             "propagate": True,
         },
