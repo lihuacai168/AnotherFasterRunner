@@ -320,10 +320,10 @@ class ResponseObject(object):
         logger.info("start to extract from response object.")
         extracted_variables_mapping = OrderedDict()
         extract_binds_order_dict = utils.convert_mappinglist_to_orderdict(extractors)
-
+        logger.info("extractors:  %s" , extract_binds_order_dict)
         for key, field in extract_binds_order_dict.items():
             if '$' in field:
                 field = context.eval_content(field)
             extracted_variables_mapping[key] = self.extract_field(field)
-
+        logger.info("extract finish, extracted_variables_mapping: %s" , extracted_variables_mapping)
         return extracted_variables_mapping
