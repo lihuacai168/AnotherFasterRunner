@@ -119,7 +119,7 @@ class HttpRunner(object):
 
         for testcase in test_suite:
             testcase_name = testcase.config.get("name")
-            logger.info("Start to run testcase: {}".format(testcase_name))
+            logger.info("🚀🚀🚀 Start to run testcase: {}".format(testcase_name))
 
             result = self.unittest_runner.run(testcase)
             tests_results.append((testcase, result))
