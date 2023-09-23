@@ -119,7 +119,11 @@
                                             label="取值表达式"
                                             width="300"
                                         ></el-table-column>
-                                        <el-table-column prop="actual_value"></el-table-column>
+                                        <el-table-column prop="actual_value" label="实际值">
+                                            <template slot-scope="scope">
+                                                {{ scope.row.actual_value }}
+                                            </template>
+                                        </el-table-column>
                                     </el-table>
                                 </template>
                                 <template v-else>
