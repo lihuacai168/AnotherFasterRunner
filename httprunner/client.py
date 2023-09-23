@@ -76,7 +76,10 @@ class HttpSession(requests.Session):
                 "encoding": None,
                 "content": None,
                 "content_type": ""
-            }
+            },
+            "validators":  [],
+            "logs": [],
+            "extractors": [],
         }
 
     def request(self, method, url, name=None, **kwargs):

@@ -33,7 +33,8 @@ class Context(object):
         self.evaluated_validators = []
         self.init_context_variables(level="testcase")
 
-        self.logs = []
+        self.logs: list[str] = []
+        self.extractors: list[dict] = []
 
     def init_context_variables(self, level="testcase"):
         """ initialize testcase/teststep context

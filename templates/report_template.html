@@ -13,7 +13,6 @@
     {% load custom_tags %}
 
 
-
     <title>{{ html_report_name }} - 测试报告</title>
 
     <style type='text/css'>
@@ -7881,6 +7880,12 @@
             color: blue;
         }
 
+        .my-collapsed {
+            height: 50px; /* 你可以根据需要调整这个值 */
+            overflow: hidden;
+            cursor: pointer;
+        }
+
     </style>
 </head>
 
@@ -8205,9 +8210,69 @@
                                                         class='material-icons'>low_priority</i></td>
                                                 <td class='timestamp'>Validators</td>
                                                 <td class='step-details'>
-                                                    {% for validator in record.meta_data.validators %}
-                                                        <pre class="code-block">check-{{ validator.desc }}: {{ validator.check }} - {{ validator.comparator }}:[{{ validator.expect }},&nbsp;{{ validator.check_value }}]</pre>
-                                                    {% endfor %}
+                                                    {% if not props.row.meta_data.extractors %}
+                                                        哦豁，并没有validator，快去加一个吧，没有断言的用例不够健壮哦
+                                                    {% else %}
+                                                        <table style="width: 100%; border-collapse: collapse;">
+                                                            <thead>
+                                                            <tr>
+                                                                <th style="width: 80px; border: 1px solid #ccc;">是否通过
+                                                                </th>
+                                                                <th style="width: 350px; border: 1px solid #ccc;">
+                                                                    取值表达式
+                                                                </th>
+                                                                <th style="border: 1px solid #ccc;">实际值</th>
+                                                                <th style="border: 1px solid #ccc;">比较器</th>
+                                                                <th style="border: 1px solid #ccc;">期望值</th>
+                                                                <th style="border: 1px solid #ccc;">描述</th>
+                                                            </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                            {% for validator in record.meta_data.validators %}
+                                                                <tr>
+                                                                    <td style="border: 1px solid #ccc;">{{ validator.check_result }}</td>
+                                                                    <td style="border: 1px solid #ccc;">{{ validator.check }}</td>
+                                                                    <td style="border: 1px solid #ccc;">{{ validator.check_value }}</td>
+                                                                    <td style="border: 1px solid #ccc;">{{ validator.comparator }}</td>
+                                                                    <td style="border: 1px solid #ccc;">{{ validator.expect }}</td>
+                                                                    <td style="border: 1px solid #ccc;">{{ validator.desc }}</td>
+                                                                </tr>
+                                                            {% endfor %}
+                                                            </tbody>
+                                                        </table>
+                                                    {% endif %}
+                                                </td>
+                                            </tr>
+                                            <tr class='pass' status='pass'>
+                                                <td class='status pass' title='抽取' alt='pass'><i
+                                                        class='material-icons'>low_priority</i></td>
+                                                <td class='timestamp'>Extractors</td>
+                                                <td class='step-details'>
+                                                    {% if not props.row.meta_data.extractors %}
+                                                        哦豁，运行的时候并没有extractor
+                                                    {% else %}
+                                                        <table style="width: 100%; border-collapse: collapse;">
+                                                            <thead>
+                                                            <tr>
+                                                                <th style="width: 350px; border: 1px solid #ccc;">
+                                                                    取值表达式
+                                                                </th>
+                                                                <th style="border: 1px solid #ccc;">实际值</th>
+                                                                <th style="border: 1px solid #ccc;">输出的变量名</th>
+                                                            </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                            {% for extractor in props.row.meta_data.extractors %}
+                                                                <tr>
+                                                                    <td style="border: 1px solid #ccc;">{{ extractor.extract_expr }}</td>
+                                                                    <td style="border: 1px solid #ccc;">{{ extractor.actual_value }}</td>
+                                                                    <td style="border: 1px solid #ccc;">{{ extractor.output_variable_name }}</td>
+                                                                </tr>
+                                                            {% endfor %}
+                                                            </tbody>
+                                                        </table>
+                                                    {% endif %}
+
                                                 </td>
                                             </tr>
 

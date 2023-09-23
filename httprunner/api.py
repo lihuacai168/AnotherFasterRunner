@@ -64,8 +64,9 @@ class HttpRunner(object):
                 finally:
                     if hasattr(test_runner.http_client_session, "meta_data"):
                         self.meta_data = test_runner.http_client_session.meta_data
-                        self.meta_data["validators"] = test_runner.evaluated_validators
-                        self.meta_data["logs"] = test_runner.context.logs
+                        self.meta_data["validators"]: list[dict] = test_runner.evaluated_validators
+                        self.meta_data["logs"]: list[str] = test_runner.context.logs
+                        self.meta_data["extractors"]: list[dict] = test_runner.context.extractors
                         # 赋值完之后，需要重新输出化http_client_session的meta数据，否则下次就会共享
                         test_runner.http_client_session.init_meta_data()
 

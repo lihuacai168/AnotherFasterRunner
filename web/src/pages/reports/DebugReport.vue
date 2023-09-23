@@ -106,23 +106,65 @@
                             <el-tab-pane label="Response">
                                 <pre class="code-block" v-text="handleResponse(props.row.meta_data.response)"></pre>
                             </el-tab-pane>
-                            <el-tab-pane label="Validators" v-if="props.row.meta_data.validators.length !== 0">
-                                <!--                                <pre class="code-block" v-html="props.row.meta_data.validators"></pre>-->
-                                <el-table :data="props.row.meta_data.validators" stripe border style="width: 100%">
-                                    <el-table-column prop="check_result" label="是否通过" width="80"></el-table-column>
-                                    <el-table-column prop="check" label="取值表达式" width="350"></el-table-column>
-                                    <el-table-column prop="check_value" label="实际值" :formatter="checkValueFormatter">
-                                    </el-table-column>
-                                    <el-table-column prop="comparator" label="比较器"></el-table-column>
-                                    <el-table-column prop="expect" label="期望值" :formatter="expectValueFormatter">
-                                    </el-table-column>
-                                    <el-table-column prop="desc" label="描述" :formatter="descValueFormatter">
-                                    </el-table-column>
-                                </el-table>
+                            <el-tab-pane label="Extractors">
+                                <template v-if="props.row.meta_data.extractors.length !== 0">
+                                    <el-table :data="props.row.meta_data.extractors" stripe border style="width: 100%">
+                                        <el-table-column
+                                            prop="output_variable_name"
+                                            label="输出的变量名"
+                                            width="130"
+                                        ></el-table-column>
+                                        <el-table-column
+                                            prop="extract_expr"
+                                            label="取值表达式"
+                                            width="300"
+                                        ></el-table-column>
+                                        <el-table-column prop="actual_value"></el-table-column>
+                                    </el-table>
+                                </template>
+                                <template v-else>
+                                    <i class="el-icon-warning centered-content"
+                                        >暂无提取器, 提取出来的变量可以用来验证和传递给下面的步骤哦，去加一个试试吧~</i
+                                    >
+                                </template>
                             </el-tab-pane>
-                            <el-tab-pane label="Exception" v-if="props.row.attachment !== ''">
-                                <pre class="code-block" v-html="props.row.attachment"></pre>
+
+                            <el-tab-pane label="Validators">
+                                <template v-if="props.row.meta_data.validators.length !== 0">
+                                    <el-table :data="props.row.meta_data.validators" stripe border style="width: 100%">
+                                        <el-table-column
+                                            prop="check_result"
+                                            label="是否通过"
+                                            width="80"
+                                        ></el-table-column>
+                                        <el-table-column prop="check" label="取值表达式" width="350"></el-table-column>
+                                        <el-table-column
+                                            prop="check_value"
+                                            label="实际值"
+                                            :formatter="checkValueFormatter"
+                                        ></el-table-column>
+                                        <el-table-column prop="comparator" label="比较器"></el-table-column>
+                                        <el-table-column
+                                            prop="expect"
+                                            label="期望值"
+                                            :formatter="expectValueFormatter"
+                                        ></el-table-column>
+                                        <el-table-column
+                                            prop="desc"
+                                            label="描述"
+                                            :formatter="descValueFormatter"
+                                        ></el-table-column>
+                                    </el-table>
+                                </template>
+                                <template v-else>
+                                    <div class="centered-content">
+                                        <i class="el-icon-warning"
+                                            >暂无验证器， 验证器可以使用例更加健壮哦， 去加一个试试吧~</i
+                                        >
+                                    </div>
+                                </template>
                             </el-tab-pane>
+
                             <el-tab-pane label="Logs">
                                 <el-timeline>
                                     <el-timeline-item
@@ -133,6 +175,17 @@
                                         {{ log }}
                                     </el-timeline-item>
                                 </el-timeline>
+                            </el-tab-pane>
+
+                            <el-tab-pane label="Exception">
+                                <template v-if="props.row.meta_data.attachment == ''">
+                                    <pre class="code-block" v-html="props.row.attachment"></pre>
+                                </template>
+                                <template v-else>
+                                    <div class="centered-content">
+                                        <i class="el-icon-warning">莫慌，没有异常呢~~~</i>
+                                    </div>
+                                </template>
                             </el-tab-pane>
                         </el-tabs>
                     </template>
@@ -384,5 +437,14 @@ export default {
 pre {
     white-space: pre-wrap;
     word-wrap: break-word;
+}
+
+.centered-content {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%; /* 根据你的需要调整高度 */
+    width: 100%; /* 根据你的需要调整宽度 */
+    text-align: center;
 }
 </style>
