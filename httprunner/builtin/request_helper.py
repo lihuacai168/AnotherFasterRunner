@@ -13,7 +13,7 @@ import pydash
 
 # from loguru import logger
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger('httprunner')
 
 
 def _load_json(in_data):

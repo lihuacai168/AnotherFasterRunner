@@ -13,7 +13,7 @@ from httprunner.compat import is_py2
 from httprunner.utils import (create_scaffold, get_python2_retire_msg,
                               prettify_json_file, validate_json_file)
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger('httprunner')
 
 
 def main_hrun():

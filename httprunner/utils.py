@@ -12,7 +12,7 @@ import logging
 from httprunner import exceptions
 from httprunner.compat import OrderedDict, basestring, is_py2
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger('httprunner')
 
 
 def remove_prefix(text, prefix):

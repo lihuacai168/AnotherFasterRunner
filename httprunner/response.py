@@ -13,7 +13,7 @@ from httprunner.compat import OrderedDict, basestring, is_py2
 text_extractor_regexp_compile = re.compile(r".*\(.*\).*")
 list_condition_extractor_regexp_compile = re.compile(r'^for#\w+.*#\w.*')
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger('httprunner')
 
 
 class ResponseObject(object):
@@ -37,6 +37,8 @@ class ResponseObject(object):
             err_msg = "ResponseObject does not have attribute: {}".format(key)
             logger.error(err_msg)
             raise exceptions.ParamsError(err_msg)
+    def __str__(self):
+        return self.resp_obj.text
 
     def _extract_field_with_regex(self, field):
         """ extract field from response content with regex.

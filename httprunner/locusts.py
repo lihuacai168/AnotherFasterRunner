@@ -10,7 +10,7 @@ import logging
 from httprunner import loader
 from locust.main import main
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger('httprunner')
 
 
 def parse_locustfile(file_path):

@@ -7,7 +7,7 @@ import unittest
 from httprunner import (exceptions, loader, parser, report, runner, utils,
                         validator)
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger('httprunner')
 
 
 class HttpRunner(object):
@@ -65,6 +65,8 @@ class HttpRunner(object):
                     if hasattr(test_runner.http_client_session, "meta_data"):
                         self.meta_data = test_runner.http_client_session.meta_data
                         self.meta_data["validators"] = test_runner.evaluated_validators
+                        self.meta_data["logs"] = test_runner.context.logs
+                        # 赋值完之后，需要重新输出化http_client_session的meta数据，否则下次就会共享
                         test_runner.http_client_session.init_meta_data()
 
             try:

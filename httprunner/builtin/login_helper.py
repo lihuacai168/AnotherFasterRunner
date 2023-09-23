@@ -13,7 +13,7 @@ import requests
 
 uac_token_url = 'http://192.168.22.19:8002/api/uac/token/'
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger('httprunner')
 
 
 def _get_token(biz, account, password, env='qa'):

@@ -11,7 +11,7 @@ import yaml
 from httprunner import builtin, exceptions, parser, utils, validator
 from httprunner.compat import OrderedDict
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger('httprunner')
 
 ###############################################################################
 ##   file loader

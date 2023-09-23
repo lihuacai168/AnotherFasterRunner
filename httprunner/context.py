@@ -6,7 +6,7 @@ import logging
 from httprunner import exceptions, parser, utils
 from httprunner.compat import OrderedDict
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger('httprunner')
 
 
 class Context(object):
@@ -32,6 +32,8 @@ class Context(object):
 
         self.evaluated_validators = []
         self.init_context_variables(level="testcase")
+
+        self.logs = []
 
     def init_context_variables(self, level="testcase"):
         """ initialize testcase/teststep context
@@ -89,6 +91,7 @@ class Context(object):
             self.teststep_variables_mapping,
             self.TESTCASE_SHARED_FUNCTIONS_MAPPING
         )
+
 
     def update_testcase_runtime_variables_mapping(self, variables):
         """ update testcase_runtime_variables_mapping with extracted vairables in teststep.
@@ -207,7 +210,7 @@ class Context(object):
             and comparator not in ["is", "eq", "equals", "not_equals", "=="]:
             raise exceptions.ParamsError("Null value can only be compared with comparator: eq/equals/==")
 
-        validate_msg = "validate: {} {} {}({})".format(
+        validate_msg = "validate expression: {} {} {}({})".format(
             check_item,
             comparator,
             expect_value,
@@ -261,5 +264,5 @@ class Context(object):
         if not validate_pass:
             failures_string = "\n".join([failure for failure in failures])
             raise exceptions.ValidationFailure(failures_string)
-
+        logger.info("validation passed.")
         return evaluated_validators
