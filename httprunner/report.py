@@ -15,7 +15,7 @@ from jinja2 import Template, escape
 from httprunner.__about__ import __version__
 from httprunner.compat import basestring, bytes, json, numeric_types
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger('httprunner')
 
 
 def get_platform():
@@ -199,6 +199,9 @@ class HtmlTestResult(unittest.TextTestResult):
             "meta_data": {},
         }
         if hasattr(test, "meta_data"):
+            # client初始化meta_data
+            # 经过runner一次性操作http_client_session
+            # 最后在HttpRunner再赋值validators和logs
             data["meta_data"] = test.meta_data
 
         self.records.append(data)

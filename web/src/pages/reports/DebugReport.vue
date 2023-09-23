@@ -6,18 +6,18 @@
             style="width: 100%"
             border
             stripe
-            :header-cell-style="{textAlign:'center', background: '#F8F8FA'}"
-            :cell-style="{textAlign:'center'}"
+            :header-cell-style="{ textAlign: 'center', background: '#F8F8FA' }"
+            :cell-style="{ textAlign: 'center' }"
         >
             <el-table-column label="测试时间" width="160">
                 <template slot-scope="scope">
-                    <span>{{ scope.row.time.start_at|timestampToTime }}</span>
+                    <span>{{ scope.row.time.start_at | timestampToTime }}</span>
                 </template>
             </el-table-column>
 
             <el-table-column label="持续时间" width="100">
                 <template slot-scope="scope">
-                    <span v-text="scope.row.time.duration.toFixed(3)+' 秒'"></span>
+                    <span v-text="scope.row.time.duration.toFixed(3) + ' 秒'"></span>
                 </template>
             </el-table-column>
 
@@ -64,8 +64,8 @@
             </el-table-column>
         </el-table>
 
-        <br/>
-        <br/>
+        <br />
+        <br />
 
         <slot v-for="item in summary.details">
             <div>
@@ -81,8 +81,8 @@
                 :row-class-name="tableRowClassName"
                 style="width: 100%"
                 border
-                :header-cell-style="{textAlign:'center', background: '#F8F8FA'}"
-                :cell-style="{textAlign:'center'}"
+                :header-cell-style="{ textAlign: 'center', background: '#F8F8FA' }"
+                :cell-style="{ textAlign: 'center' }"
             >
                 <el-table-column type="expand">
                     <template slot-scope="props">
@@ -92,10 +92,14 @@
                             </el-tab-pane>
 
                             <el-tab-pane label="Content" v-if="props.row.meta_data.response.jsonCopy !== null">
-                                <v-jsoneditor ref="jsonEditor" v-model="props.row.meta_data.response.jsonCopy"
-                                              :options="options" :plus="true"
-                                              :height="height"
-                                              @error="onError">
+                                <v-jsoneditor
+                                    ref="jsonEditor"
+                                    v-model="props.row.meta_data.response.jsonCopy"
+                                    :options="options"
+                                    :plus="true"
+                                    :height="height"
+                                    @error="onError"
+                                >
                                 </v-jsoneditor>
                             </el-tab-pane>
 
@@ -104,50 +108,32 @@
                             </el-tab-pane>
                             <el-tab-pane label="Validators" v-if="props.row.meta_data.validators.length !== 0">
                                 <!--                                <pre class="code-block" v-html="props.row.meta_data.validators"></pre>-->
-                                <el-table
-                                    :data="props.row.meta_data.validators"
-                                    stripe
-                                    border
-                                    style="width: 100%">
-                                    <el-table-column
-                                        prop="check_result"
-                                        label="是否通过"
-                                        width="80">
+                                <el-table :data="props.row.meta_data.validators" stripe border style="width: 100%">
+                                    <el-table-column prop="check_result" label="是否通过" width="80"></el-table-column>
+                                    <el-table-column prop="check" label="取值表达式" width="350"></el-table-column>
+                                    <el-table-column prop="check_value" label="实际值" :formatter="checkValueFormatter">
                                     </el-table-column>
-                                    <el-table-column
-
-                                        prop="check"
-                                        label="取值表达式"
-                                        width="350">
+                                    <el-table-column prop="comparator" label="比较器"></el-table-column>
+                                    <el-table-column prop="expect" label="期望值" :formatter="expectValueFormatter">
                                     </el-table-column>
-                                    <el-table-column
-                                        prop="check_value"
-                                        label="实际值"
-                                        :formatter="checkValueFormatter"
-                                    >
-                                    </el-table-column>
-                                    <el-table-column
-                                        prop="comparator"
-                                        label="比较器">
-                                    </el-table-column>
-                                    <el-table-column
-                                        prop="expect"
-                                        label="期望值"
-                                        :formatter="expectValueFormatter"
-                                    >
-                                    </el-table-column>
-                                    <el-table-column
-                                        prop="desc"
-                                        label="描述"
-                                        :formatter="descValueFormatter"
-                                    >
+                                    <el-table-column prop="desc" label="描述" :formatter="descValueFormatter">
                                     </el-table-column>
                                 </el-table>
                             </el-tab-pane>
                             <el-tab-pane label="Exception" v-if="props.row.attachment !== ''">
                                 <pre class="code-block" v-html="props.row.attachment"></pre>
                             </el-tab-pane>
-
+                            <el-tab-pane label="Logs">
+                                <el-timeline>
+                                    <el-timeline-item
+                                        v-for="(log, index) in props.row.meta_data.logs"
+                                        :key="index"
+                                        :color="getLogColor(log)"
+                                    >
+                                        {{ log }}
+                                    </el-timeline-item>
+                                </el-timeline>
+                            </el-tab-pane>
                         </el-tabs>
                     </template>
                 </el-table-column>
@@ -166,9 +152,9 @@
 
                 <el-table-column label="请求方法" width="100px">
                     <template slot-scope="scope">
-            <span
-                :class="scope.row.meta_data.request.method"
-            >{{ scope.row.meta_data.request.method }}</span>
+                        <span :class="scope.row.meta_data.request.method">{{
+                            scope.row.meta_data.request.method
+                        }}</span>
                     </template>
                 </el-table-column>
 
@@ -185,47 +171,47 @@
                 </el-table-column>
 
                 <el-table-column label="Convert" width="200px">
-
                     <template slot-scope="scope">
-<!--                        <el-popover placement="right-start" width="400" trigger="hover">-->
-<!--                            <pre class="code-block">{{ scope.row.meta_data.boomer }}</pre>-->
-<!--                            <el-button slot="reference" round type="text"-->
-<!--                                       @click="copyDataText(scope.row.meta_data.boomer, 'boomer')">boomer-->
-<!--                            </el-button>-->
-<!--                        </el-popover>-->
+                        <!--                        <el-popover placement="right-start" width="400" trigger="hover">-->
+                        <!--                            <pre class="code-block">{{ scope.row.meta_data.boomer }}</pre>-->
+                        <!--                            <el-button slot="reference" round type="text"-->
+                        <!--                                       @click="copyDataText(scope.row.meta_data.boomer, 'boomer')">boomer-->
+                        <!--                            </el-button>-->
+                        <!--                        </el-popover>-->
                         <el-popover placement="right-start" width="400" trigger="hover">
                             <pre class="code-block">{{ scope.row.meta_data.curl }}</pre>
-                            <el-button slot="reference" round type="text"
-                                       @click="copyDataText(scope.row.meta_data.curl, 'curl')">curl
+                            <el-button
+                                slot="reference"
+                                round
+                                type="text"
+                                @click="copyDataText(scope.row.meta_data.curl, 'curl')"
+                                >curl
                             </el-button>
                         </el-popover>
-
                     </template>
                 </el-table-column>
-
             </el-table>
         </slot>
     </div>
 </template>
 
 <script>
-
 import VJsoneditor from 'v-jsoneditor'
 
 export default {
-    name: "DebugReport",
+    name: 'DebugReport',
     components: {
         VJsoneditor
     },
     props: {
         summary: {
-            require: true,
-        },
+            require: true
+        }
     },
     data() {
         let self = this
         return {
-            jsonPathOrValue: "",
+            jsonPathOrValue: '',
             expandedRows: [],
             options: {
                 onModeChange(newMode, oldMode) {
@@ -233,7 +219,7 @@ export default {
                         self.$refs.jsonEditor[0].editor.expandAll()
                     }
                 },
-                onEvent: function (node, event) {
+                onEvent: function(node, event) {
                     if (event.type === 'click') {
                         let value = node.value
                         // 当前点击的位置有value，复制value
@@ -243,23 +229,34 @@ export default {
                         } else {
                             // 当前点击的位置是key，复制key的jsonpath
                             let arr = node.path
-                            arr.unshift("content")
-                            self.jsonPathOrValue = arr.join(".")
+                            arr.unshift('content')
+                            self.jsonPathOrValue = arr.join('.')
                             self.copyData('复制jsonpath成功')
                         }
                     }
                 },
                 mode: 'view',
-                modes: ['view', 'code'], // allowed modes
-            },
+                modes: ['view', 'code'] // allowed modes
+            }
         }
     },
     computed: {
         height() {
-            return (window.screen.height - 464).toString() + "px"
+            return (window.screen.height - 464).toString() + 'px'
         }
     },
     methods: {
+        getLogColor(log) {
+            if (log.includes('ERROR')) {
+                return 'red'
+            } else if (log.includes('WARN')) {
+                return 'yellow'
+            } else if (log.includes('INFO')) {
+                return 'green'
+            } else {
+                return 'blue' // 默认颜色，可以根据需要修改
+            }
+        },
         checkValueFormatter(row, column) {
             return this.valueFormatter(row.check_value)
         },
@@ -270,16 +267,16 @@ export default {
             return this.valueFormatter(row.desc)
         },
         valueFormatter(value) {
-            let parsedValue = ""
+            let parsedValue = ''
             switch (typeof value) {
-                case "object":
+                case 'object':
                     parsedValue = JSON.stringify(value)
                     break
-                case "boolean":
+                case 'boolean':
                     if (value === true) {
-                        parsedValue = "True"
+                        parsedValue = 'True'
                     } else {
-                        parsedValue = "False"
+                        parsedValue = 'False'
                     }
                     break
                 default:
@@ -290,94 +287,97 @@ export default {
         expandChange(row, expandedRow) {
             this.expandedRows = expandedRow.length
         },
-        tableRowClassName({row, rowIndex}) {
+        tableRowClassName({ row, rowIndex }) {
             row.row_index = rowIndex
         },
         handleClick(tab, event) {
             // TODO 修复产生2个editor
-            if (tab.label === "Content") {
+            if (tab.label === 'Content') {
                 for (let i = 0; i < this.expandedRows; i++) {
                     this.$refs.jsonEditor[i * 2].editor.expandAll()
                 }
             }
         },
         copyDataText(text, title) {
-            this.$copyText(text).then(e => {
-                this.$notify.success({
-                    title: 'copy ' + title,
-                    message: text,
-                    duration: 2000
-                });
-            }, function (e) {
-                this.$notify.error({
-                    title: '复制' + title + '失败',
-                    message: e,
-                    duration: 2000
-                });
-            })
+            this.$copyText(text).then(
+                e => {
+                    this.$notify.success({
+                        title: 'copy ' + title,
+                        message: text,
+                        duration: 2000
+                    })
+                },
+                function(e) {
+                    this.$notify.error({
+                        title: '复制' + title + '失败',
+                        message: e,
+                        duration: 2000
+                    })
+                }
+            )
         },
         copyData(title) {
-            this.$copyText(this.jsonPathOrValue).then(e => {
-                this.$notify.success({
-                    title: title,
-                    message: this.jsonPathOrValue,
-                    duration: 2000
-                });
-            }, function (e) {
-                this.$notify.error({
-                    title: '复制提取路径错误',
-                    message: e,
-                    duration: 2000
-                });
-            })
+            this.$copyText(this.jsonPathOrValue).then(
+                e => {
+                    this.$notify.success({
+                        title: title,
+                        message: this.jsonPathOrValue,
+                        duration: 2000
+                    })
+                },
+                function(e) {
+                    this.$notify.error({
+                        title: '复制提取路径错误',
+                        message: e,
+                        duration: 2000
+                    })
+                }
+            )
         },
-
 
         onError() {
             console.log('error')
         },
         handleRequest(request) {
-            const keys = ["start_timestamp"];
+            const keys = ['start_timestamp']
 
-            keys.forEach(function (item) {
-                delete request[item];
-            });
+            keys.forEach(function(item) {
+                delete request[item]
+            })
             try {
-                request["body"] = JSON.parse(request["body"]);
-            } catch (e) {
-            }
+                request['body'] = JSON.parse(request['body'])
+            } catch (e) {}
 
-            return request;
+            return request
         },
 
         handleContent(content) {
             try {
-                content = JSON.parse(content);
-            } catch (e) {
-            }
-            return content;
+                content = JSON.parse(content)
+            } catch (e) {}
+            return content
         },
 
         handleResponse(response) {
             const keys = [
-                "response_time_ms",
-                "encoding",
-                "ok",
-                "reason",
-                "url",
-                "text",
-                "json",
-                "content_size",
-                "content_type",
-            ];
+                'response_time_ms',
+                'encoding',
+                'ok',
+                'reason',
+                'url',
+                'text',
+                'json',
+                'content_size',
+                'content_type'
+            ]
 
-            keys.forEach(function (item) {
-                delete response[item];
-            });
-            return response;
-        },
-    },
-};
+            keys.forEach(function(item) {
+                delete response[item]
+            })
+            return response
+        }
+    }
+}
 </script>
 
 <style scoped>

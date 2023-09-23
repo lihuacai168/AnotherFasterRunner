@@ -4667,33 +4667,22 @@
         }
 
         @media only screen and (max-width: 600px){#toast-container {
-            min-width:
-
-        100%;bottom:
-
-        0%
+            min-width: 100%;
+            bottom: 0%
         }
 
         }
         @media only screen and (min-width: 601px) and (max-width: 992px){#toast-container {
-            left:
-
-        5%;bottom:
-
-        7%;max-width:
-
-        90%
+            left: 5%;
+            bottom: 7%;
+            max-width: 90%
         }
 
         }
         @media only screen and (min-width: 993px){#toast-container {
-            top:
-
-        10%;right:
-
-        7%;max-width:
-
-        86%
+            top: 10%;
+            right: 7%;
+            max-width: 86%
         }
 
         }
@@ -7875,6 +7864,23 @@
                 left: 0;
             }
         }
+
+        .log-error {
+            color: red;
+        }
+
+        .log-warn {
+            color: yellow;
+        }
+
+        .log-info {
+            color: green;
+        }
+
+        .log-default {
+            color: blue;
+        }
+
     </style>
 </head>
 
@@ -8227,8 +8233,26 @@
                                                 <td class='timestamp'>Curl</td>
                                                 <td class='step-details'>
                                                     <div>
-                                                         {{ record.meta_data.curl }}
+                                                        {{ record.meta_data.curl }}
                                                     </div>
+                                                </td>
+                                            </tr>
+
+                                            <tr class='info' status='info'>
+                                                <td class='status info' title='info' alt='info'><i
+                                                        class='material-icons'>low_priority</i></td>
+                                                <td class='timestamp'>Logs</td>
+                                                <td class='step-details'>
+                                                    <div>
+                                                        {% for log in record.meta_data.logs %}
+                                                            <div class="{% if 'ERROR' in log %}log-error{% elif 'WARN' in log %}log-warn{% elif 'INFO' in log %}log-info{% else %}log-default{% endif %}">
+                                                                {{ log }}
+                                                            </div>
+                                                        {% endfor %}
+                                                    </div>
+                                                </td>
+
+
                                                 </td>
                                             </tr>
 

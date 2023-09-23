@@ -19,7 +19,7 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 absolute_http_url_regexp = re.compile(r"^https?://", re.I)
 
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger('httprunner')
 
 
 class ApiResponse(Response):

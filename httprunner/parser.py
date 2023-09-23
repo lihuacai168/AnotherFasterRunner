@@ -5,7 +5,6 @@ import logging
 import re
 
 # from loguru import logger
-import logging
 
 from httprunner import exceptions, utils
 from httprunner.compat import basestring, builtin_str, numeric_types, str
@@ -22,7 +21,7 @@ variable_regex_compile = re.compile(r"\$\{(\w+)\}|\$(\w+)")
 function_regex_compile = re.compile(r"\$\{(\w+)\(([\$\w\.\-/\s=,]*)\)\}")
 
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger('httprunner')
 
 
 def parse_string_value(str_value):
@@ -556,6 +555,20 @@ def parse_function_params(params) -> dict:
 
     return function_meta
 
+
+def _format_func(func_name, parsed_args, parsed_kwargs):
+    args_str = ", ".join(map(str, parsed_args))
+    kwargs_str = ",".join(f"{k}={v}" for k, v in parsed_kwargs.items())
+
+    if not args_str and not kwargs_str:
+        return f'{func_name}()'
+    elif not args_str:
+        return f'{func_name}({kwargs_str})'
+    elif not kwargs_str:
+        return f'{func_name}({args_str})'
+    else:
+        return f'{func_name}({args_str}, {kwargs_str})'
+
 def parse_string(
     raw_string,
     variables_mapping,
@@ -601,14 +614,17 @@ def parse_string(
             func = get_mapping_function(func_name, functions_mapping)
 
             func_params_str = func_match.group(2)
+            logger.info("raw func_params_str:  %s", func_params_str)
             function_meta = parse_function_params(func_params_str)
+            logger.info("function_meta: %s",  function_meta)
             args = function_meta["args"]
             kwargs = function_meta["kwargs"]
             parsed_args = parse_data(args, variables_mapping, functions_mapping)
             parsed_kwargs = parse_data(kwargs, variables_mapping, functions_mapping)
-
             try:
+                logger.info('parsed func: %s', _format_func(func_name, parsed_args, parsed_kwargs))
                 func_eval_value = func(*parsed_args, **parsed_kwargs)
+                logger.info("func return value: %s", func_eval_value)
             except Exception as ex:
                 logger.error(
                     f"call function error:\n"
@@ -708,8 +724,12 @@ def parse_data(content, variables_mapping=None, functions_mapping=None):
     if isinstance(content, basestring):
         variables_mapping = variables_mapping or {}
         functions_mapping = functions_mapping or {}
+        has_variable_match = variable_regex_compile.search(content)
+        if has_variable_match:
+            logger.info('source string content: %s', content)
         content = parse_string(content, variables_mapping, functions_mapping)
-
+        if has_variable_match:
+            logger.info('parsed string content: %s', content)
         # replace $$ notation with $ and consider it as normal char.
         # if '$$' in content:
         #     return content.replace("$$", "$")

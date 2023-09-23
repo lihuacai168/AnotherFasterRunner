@@ -11,8 +11,20 @@ from httprunner.client import HttpSession
 from httprunner.compat import OrderedDict
 from httprunner.context import Context
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger('httprunner')
 
+class ListHandler(logging.Handler):
+    def __init__(self, log_list: list):
+        super().__init__()
+        self.log_list = log_list
+        formatter = logging.Formatter(
+            "%(levelname)-2s [%(asctime)s] [%(request_id)s] %(name)s [%(filename)s->%(funcName)s:%(lineno)s]:  %(message)s"
+        )
+        self.setFormatter(formatter)
+
+    def emit(self, record):
+        log_entry = self.format(record)
+        self.log_list.append(log_entry)
 
 class Runner(object):
     # 每个线程对应Runner类的实例
@@ -39,6 +51,8 @@ class Runner(object):
 
         if testcase_setup_hooks:
             self.do_hook_actions(testcase_setup_hooks)
+
+        self.logs = []
 
         Runner.instances[threading.current_thread().name] = self
 
@@ -132,7 +146,7 @@ class Runner(object):
 
     def do_hook_actions(self, actions):
         for action in actions:
-            logger.debug("call hook: {}".format(action))
+            logger.info("call hook: %s",action)
             # TODO: check hook function if valid
             self.context.eval_content(action)
 
@@ -168,94 +182,108 @@ class Runner(object):
             exceptions.ExtractFailure
 
         """
-        # check skip
-        self._handle_skip_feature(teststep_dict)
-
-        # prepare
-        extractors = teststep_dict.get("extract", []) or teststep_dict.get("extractors", [])
-        validators = teststep_dict.get("validate", []) or teststep_dict.get("validators", [])
-        parsed_request = self.init_test(teststep_dict, level="teststep")
-        self.context.update_teststep_variables_mapping("request", parsed_request)
-
-        # setup hooks
-        setup_hooks = teststep_dict.get("setup_hooks", [])
-        setup_hooks.insert(0, "${setup_hook_prepare_kwargs($request)}")
-        setup_hooks_start = time.time()
-        self.do_hook_actions(setup_hooks)
-        # 计算前置setup_hooks消耗的时间
-        setup_hooks_duration = 0
-        self.http_client_session.meta_data['request']['setup_hooks_start'] = setup_hooks_start
-        if len(setup_hooks) > 1:
-            setup_hooks_duration = time.time() - setup_hooks_start
-        self.http_client_session.meta_data['request']['setup_hooks_duration'] = setup_hooks_duration
-
+        all_logs: list[str] = []
+        list_handler = ListHandler(all_logs)
+        self.context.logs = []
         try:
-            url = parsed_request.pop('url')
-            method = parsed_request.pop('method')
-            group_name = parsed_request.pop("group", None)
-        except KeyError:
-            raise exceptions.ParamsError("URL or METHOD missed!")
+        # 临时添加自定义处理器
+            logger.addHandler(list_handler)
 
-        # TODO: move method validation to json schema
-        valid_methods = ["GET", "HEAD", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"]
-        if method.upper() not in valid_methods:
-            err_msg = u"Invalid HTTP method! => {}\n".format(method)
-            err_msg += "Available HTTP methods: {}".format("/".join(valid_methods))
-            logger.error(err_msg)
-            raise exceptions.ParamsError(err_msg)
+            # check skip
+            self._handle_skip_feature(teststep_dict)
 
-        logger.info("{method} {url}".format(method=method, url=url))
-        logger.debug("request kwargs(raw): {kwargs}".format(kwargs=parsed_request))
+            # prepare
+            extractors = teststep_dict.get("extract", []) or teststep_dict.get("extractors", [])
+            validators = teststep_dict.get("validate", []) or teststep_dict.get("validators", [])
+            parsed_request = self.init_test(teststep_dict, level="teststep")
+            self.context.update_teststep_variables_mapping("request", parsed_request)
 
-        user_timeout: str = str(pydash.get(parsed_request, 'headers.timeout'))
-        if user_timeout and user_timeout.isdigit():
-            parsed_request['timeout'] = int(user_timeout)
+            # setup hooks
+            setup_hooks = teststep_dict.get("setup_hooks", [])
+            # setup_hooks.insert(0, "${setup_hook_prepare_kwargs($request)}")
+            setup_hooks_start = time.time()
+            logger.info("start to execute setup hooks")
+            self.do_hook_actions(setup_hooks)
+            logger.info("execute setup hooks end")
+            # 计算前置setup_hooks消耗的时间
+            setup_hooks_duration = 0
+            self.http_client_session.meta_data['request']['setup_hooks_start'] = setup_hooks_start
+            if len(setup_hooks) > 1:
+                setup_hooks_duration = time.time() - setup_hooks_start
+            self.http_client_session.meta_data['request']['setup_hooks_duration'] = setup_hooks_duration
 
-        # request
-        resp = self.http_client_session.request(
-            method,
-            url,
-            name=group_name,
-            **parsed_request
-        )
-        resp_obj = response.ResponseObject(resp)
+            try:
+                url = parsed_request.pop('url')
+                method = parsed_request.pop('method')
+                group_name = parsed_request.pop("group", None)
+            except KeyError:
+                raise exceptions.ParamsError("URL or METHOD missed!")
 
-        # teardown hooks
-        teardown_hooks = teststep_dict.get("teardown_hooks", [])
-        # 计算teardown_hooks消耗的时间
-        teardown_hooks_duration = 0
-        teardown_hooks_start = time.time()
-        if teardown_hooks:
-            logger.info("start to run teardown hooks")
-            self.context.update_teststep_variables_mapping("response", resp_obj)
-            self.do_hook_actions(teardown_hooks)
-            teardown_hooks_duration = time.time() - teardown_hooks_start
-        self.http_client_session.meta_data['response']['teardown_hooks_start'] = teardown_hooks_start
-        self.http_client_session.meta_data['response']['teardown_hooks_duration'] = teardown_hooks_duration
+            # TODO: move method validation to json schema
+            valid_methods = ["GET", "HEAD", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"]
+            if method.upper() not in valid_methods:
+                err_msg = u"Invalid HTTP method! => {}\n".format(method)
+                err_msg += "Available HTTP methods: {}".format("/".join(valid_methods))
+                logger.error(err_msg)
+                raise exceptions.ParamsError(err_msg)
 
-        # extract
-        extracted_variables_mapping = resp_obj.extract_response(extractors, self.context)
-        self.context.update_testcase_runtime_variables_mapping(extracted_variables_mapping)
+            logger.info("{method} {url}".format(method=method, url=url))
+            logger.debug("request kwargs(raw): {kwargs}".format(kwargs=parsed_request))
 
-        # validate
-        try:
-            self.evaluated_validators = self.context.validate(validators, resp_obj)
-        except (exceptions.ParamsError, exceptions.ValidationFailure, exceptions.ExtractFailure):
-            # log request
-            err_req_msg = "request: \n"
-            err_req_msg += "headers: {}\n".format(parsed_request.pop("headers", {}))
-            for k, v in parsed_request.items():
-                err_req_msg += "{}: {}\n".format(k, repr(v))
-            logger.error(err_req_msg)
+            user_timeout: str = str(pydash.get(parsed_request, 'headers.timeout'))
+            if user_timeout and user_timeout.isdigit():
+                parsed_request['timeout'] = int(user_timeout)
 
-            # log response
-            err_resp_msg = "response: \n"
-            err_resp_msg += "status_code: {}\n".format(resp_obj.status_code)
-            err_resp_msg += "headers: {}\n".format(resp_obj.headers)
-            err_resp_msg += "body: {}\n".format(repr(resp_obj.text))
-            logger.error(err_resp_msg)
+            # request
+            resp = self.http_client_session.request(
+                method,
+                url,
+                name=group_name,
+                **parsed_request
+            )
+            resp_obj = response.ResponseObject(resp)
 
-            raise
+            # teardown hooks
+            teardown_hooks = teststep_dict.get("teardown_hooks", [])
+            # 计算teardown_hooks消耗的时间
+            teardown_hooks_duration = 0
+            teardown_hooks_start = time.time()
+            if teardown_hooks:
+                logger.info("start to run teardown hooks")
+                logger.info("update_teststep_variables_mapping, response: %s", resp_obj.resp_obj.text)
+                self.context.update_teststep_variables_mapping("response", resp_obj)
+                self.do_hook_actions(teardown_hooks)
+                teardown_hooks_duration = time.time() - teardown_hooks_start
+                logger.info("run teardown hooks end, duration: %s", teardown_hooks_duration)
+            self.http_client_session.meta_data['response']['teardown_hooks_start'] = teardown_hooks_start
+            self.http_client_session.meta_data['response']['teardown_hooks_duration'] = teardown_hooks_duration
+
+            # extract
+            extracted_variables_mapping = resp_obj.extract_response(extractors, self.context)
+            self.context.update_testcase_runtime_variables_mapping(extracted_variables_mapping)
+
+            # validate
+            try:
+                self.evaluated_validators = self.context.validate(validators, resp_obj)
+            except (exceptions.ParamsError, exceptions.ValidationFailure, exceptions.ExtractFailure):
+                # log request
+                err_req_msg = "request: \n"
+                err_req_msg += "headers: {}\n".format(parsed_request.pop("headers", {}))
+                for k, v in parsed_request.items():
+                    err_req_msg += "{}: {}\n".format(k, repr(v))
+                logger.error(err_req_msg)
+
+                # log response
+                err_resp_msg = "response: \n"
+                err_resp_msg += "status_code: {}\n".format(resp_obj.status_code)
+                err_resp_msg += "headers: {}\n".format(resp_obj.headers)
+                err_resp_msg += "body: {}\n".format(repr(resp_obj.text))
+                logger.error(err_resp_msg)
+
+                raise
+        finally:
+            self.context.logs = all_logs
+            logger.removeHandler(list_handler)
 
     def extract_output(self, output_variables_list):
         """ extract output variables
