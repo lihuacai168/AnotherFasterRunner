@@ -154,10 +154,7 @@
                                             label="期望值"
                                             :formatter="expectValueFormatter"
                                         ></el-table-column>
-                                        <el-table-column
-                                            prop="validate_msg"
-                                            label="验证信息"
-                                        ></el-table-column>
+                                        <el-table-column prop="validate_msg" label="验证信息"></el-table-column>
                                         <el-table-column
                                             prop="desc"
                                             label="描述"
@@ -188,7 +185,7 @@
                             </el-tab-pane>
 
                             <el-tab-pane label="Exception">
-                                <template v-if="props.row.meta_data.attachment !== ''">
+                                <template v-if="props.row.attachment && props.row.attachment !== ''">
                                     <pre class="code-block" v-html="props.row.attachment"></pre>
                                 </template>
                                 <template v-else>
