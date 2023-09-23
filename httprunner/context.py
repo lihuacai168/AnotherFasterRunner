@@ -239,12 +239,13 @@ class Context(object):
     def validate(self, validators, resp_obj) -> (bool, list[dict]):
         """ make validations
         """
-        evaluated_validators = []
-        if not validators:
-            return evaluated_validators
-
         logger.info("start to validate.")
         is_validate_passed = True
+        evaluated_validators = []
+        if not validators:
+            logger.warning("no validators")
+            return is_validate_passed, evaluated_validators
+
         fail_msg = ""
 
         for validator in validators:
