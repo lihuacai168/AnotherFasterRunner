@@ -325,5 +325,5 @@ class ResponseObject(object):
             if '$' in field:
                 field = context.eval_content(field)
             extracted_variables_mapping[key] = self.extract_field(field)
-        logger.info("extract finish, extracted_variables_mapping: %s" , extracted_variables_mapping)
+        logger.info("🚀🚀🚀 extract finish, extracted_variables_mapping: %s" , dict(extracted_variables_mapping))
         return extracted_variables_mapping

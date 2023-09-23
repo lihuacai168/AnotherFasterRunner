@@ -236,7 +236,7 @@ class Context(object):
             validator_dict["check_result"] = "fail"
             raise exceptions.ValidationFailure(validate_msg)
 
-    def validate(self, validators, resp_obj):
+    def validate(self, validators, resp_obj) -> (bool, list[dict]):
         """ make validations
         """
         evaluated_validators = []
@@ -244,8 +244,8 @@ class Context(object):
             return evaluated_validators
 
         logger.info("start to validate.")
-        validate_pass = True
-        failures = []
+        is_validate_passed = True
+        fail_msg = ""
 
         for validator in validators:
             # evaluate validators with context variable mapping.
@@ -253,17 +253,23 @@ class Context(object):
                 parser.parse_validator(validator),
                 resp_obj
             )
+            evaluated_validator['validate_msg'] = 'ok'
 
             try:
                 self._do_validation(evaluated_validator)
             except exceptions.ValidationFailure as ex:
-                validate_pass = False
-                failures.append(str(ex))
-
-            evaluated_validators.append(evaluated_validator)
-
-        if not validate_pass:
-            failures_string = "\n".join([failure for failure in failures])
-            raise exceptions.ValidationFailure(failures_string)
-        logger.info("validation passed.")
-        return evaluated_validators
+                is_validate_passed = False
+                fail_msg = str(ex)
+                logger.info("❌❌❌ validate failed: %s", str(ex))
+            finally:
+                if fail_msg:
+                    evaluated_validator['validate_msg'] = fail_msg
+                fail_msg = ""
+                evaluated_validators.append(evaluated_validator)
+        if not is_validate_passed:
+            return False, evaluated_validators
+        # if not validate_pass:
+        #     failures_string = "\n".join([failure for failure in failures])
+        #     raise exceptions.ValidationFailure(failures_string)
+        logger.info("✅✅✅ validation passed.")
+        return True, evaluated_validators

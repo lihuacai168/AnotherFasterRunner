@@ -132,12 +132,13 @@
                             <el-tab-pane label="Validators">
                                 <template v-if="props.row.meta_data.validators.length !== 0">
                                     <el-table :data="props.row.meta_data.validators" stripe border style="width: 100%">
-                                        <el-table-column
-                                            prop="check_result"
-                                            label="是否通过"
-                                            width="80"
-                                        ></el-table-column>
-                                        <el-table-column prop="check" label="取值表达式" width="350"></el-table-column>
+                                        <el-table-column prop="check_result" label="是否通过" width="80">
+                                            <template slot-scope="scope">
+                                                <span v-if="scope.row.check_result === 'pass'">✅</span>
+                                                <span v-else>❌</span>
+                                            </template>
+                                        </el-table-column>
+                                        <el-table-column prop="check" label="取值表达式" width="150"></el-table-column>
                                         <el-table-column
                                             prop="check_value"
                                             label="实际值"
@@ -150,6 +151,10 @@
                                             :formatter="expectValueFormatter"
                                         ></el-table-column>
                                         <el-table-column
+                                            prop="validate_msg"
+                                            label="验证信息"
+                                        ></el-table-column>
+                                        <el-table-column
                                             prop="desc"
                                             label="描述"
                                             :formatter="descValueFormatter"
@@ -159,7 +164,8 @@
                                 <template v-else>
                                     <div class="centered-content">
                                         <i class="el-icon-warning"
-                                            >暂无验证器， 验证器可以使用例更加健壮哦， 去加一个试试吧~</i
+                                            >暂无验证器或者解析验证器异常了， 验证器可以使用例更加健壮哦，
+                                            去加一个试试吧~</i
                                         >
                                     </div>
                                 </template>
@@ -178,7 +184,7 @@
                             </el-tab-pane>
 
                             <el-tab-pane label="Exception">
-                                <template v-if="props.row.meta_data.attachment == ''">
+                                <template v-if="props.row.meta_data.attachment !== ''">
                                     <pre class="code-block" v-html="props.row.attachment"></pre>
                                 </template>
                                 <template v-else>

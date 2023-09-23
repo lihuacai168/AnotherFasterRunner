@@ -366,7 +366,8 @@ def get_builtin_item(item_type, item_name):
         try:
             return built_in_module["variables"][item_name]
         except KeyError:
-            raise exceptions.VariableNotFound("{} is not found.".format(item_name))
+            logger.error("variables_mapping and built_in_module, not found variable: %s", item_name, exc_info=True)
+            raise exceptions.VariableNotFound("variables_mapping and built_in_module, not found variable: %s", item_name)
     else:
         # item_type == "functions":
         try:

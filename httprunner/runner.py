@@ -320,10 +320,12 @@ class Runner(object):
 
             # validate
             try:
-                self.evaluated_validators = self.context.validate(validators, resp_obj)
+                is_validate_passed, self.evaluated_validators = self.context.validate(validators, resp_obj)
+                if not is_validate_passed:
+                    fail_validators: list[dict] = [v['validate_msg'] for v in self.evaluated_validators if v['validate_msg'] != 'ok']
+                    raise exceptions.ValidationFailure('\n'.join(fail_validators))
             except (
                 exceptions.ParamsError,
-                exceptions.ValidationFailure,
                 exceptions.ExtractFailure,
             ):
                 # log request
@@ -331,15 +333,14 @@ class Runner(object):
                 err_req_msg += "headers: {}\n".format(parsed_request.pop("headers", {}))
                 for k, v in parsed_request.items():
                     err_req_msg += "{}: {}\n".format(k, repr(v))
-                logger.error(err_req_msg)
+                logger.error("❌❌❌ err_req_msg: %s", err_req_msg)
 
                 # log response
                 err_resp_msg = "response: \n"
                 err_resp_msg += "status_code: {}\n".format(resp_obj.status_code)
                 err_resp_msg += "headers: {}\n".format(resp_obj.headers)
                 err_resp_msg += "body: {}\n".format(repr(resp_obj.text))
-                logger.error(err_resp_msg)
-
+                logger.error("❌❌❌ err_resp_msg: %s", err_resp_msg)
                 raise
         finally:
             self.context.logs = all_logs
