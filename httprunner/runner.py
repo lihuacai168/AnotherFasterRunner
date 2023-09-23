@@ -11,7 +11,8 @@ from httprunner.client import HttpSession
 from httprunner.compat import OrderedDict
 from httprunner.context import Context
 
-logger = logging.getLogger('httprunner')
+logger = logging.getLogger("httprunner")
+
 
 class ListHandler(logging.Handler):
     def __init__(self, log_list: list):
@@ -26,13 +27,39 @@ class ListHandler(logging.Handler):
         log_entry = self.format(record)
         self.log_list.append(log_entry)
 
+
+def _transform_to_list_of_dict(extractors: list[dict], extracted_variables_mapping: dict) -> list[dict]:
+    """transform extractors to list of dict.
+
+    Args:
+        extractors (list): list of extractors
+        extracted_variables_mapping (dict): mapping between variable name and variable value
+
+    Returns:
+        list: list of dict
+
+    """
+    if not extractors:
+        return []
+
+    result = []
+    for extractor in extractors:
+        for key, value in extractor.items():
+            extract_expr = value
+            actual_value = extracted_variables_mapping[key]
+            result.append({
+                'output_variable_name': key,
+                'extract_expr': extract_expr,
+                'actual_value': actual_value
+            })
+    return result
+
+
 class Runner(object):
     # 每个线程对应Runner类的实例
     instances = {}
 
     def __init__(self, config_dict=None, http_client_session=None):
-        """
-        """
         self.http_client_session = http_client_session
         config_dict = config_dict or {}
         self.evaluated_validators = []
@@ -61,7 +88,7 @@ class Runner(object):
             self.do_hook_actions(self.testcase_teardown_hooks)
 
     def init_test(self, test_dict, level):
-        """ create/update context variables binds
+        """create/update context variables binds
 
         Args:
             test_dict (dict):
@@ -100,11 +127,12 @@ class Runner(object):
         test_dict = utils.lower_test_dict_keys(test_dict)
 
         self.context.init_context_variables(level)
-        variables = test_dict.get('variables') \
-            or test_dict.get('variable_binds', OrderedDict())
+        variables = test_dict.get("variables") or test_dict.get(
+            "variable_binds", OrderedDict()
+        )
         self.context.update_context_variables(variables, level)
 
-        request_config = test_dict.get('request', {})
+        request_config = test_dict.get("request", {})
         parsed_request = self.context.get_parsed_request(request_config, level)
 
         base_url = parsed_request.pop("base_url", None)
@@ -113,7 +141,7 @@ class Runner(object):
         return parsed_request
 
     def _handle_skip_feature(self, teststep_dict):
-        """ handle skip feature for teststep
+        """handle skip feature for teststep
             - skip: skip current test unconditionally
             - skipIf: skip current test if condition is true
             - skipUnless: skip current test unless condition is true
@@ -146,12 +174,12 @@ class Runner(object):
 
     def do_hook_actions(self, actions):
         for action in actions:
-            logger.info("call hook: %s",action)
+            logger.info("call hook: %s", action)
             # TODO: check hook function if valid
             self.context.eval_content(action)
 
     def run_test(self, teststep_dict):
-        """ run single teststep.
+        """run single teststep.
 
         Args:
             teststep_dict (dict): teststep info
@@ -185,16 +213,21 @@ class Runner(object):
         all_logs: list[str] = []
         list_handler = ListHandler(all_logs)
         self.context.logs = []
+        self.context.extractors = []
         try:
-        # 临时添加自定义处理器
+            # 临时添加自定义处理器
             logger.addHandler(list_handler)
 
             # check skip
             self._handle_skip_feature(teststep_dict)
 
             # prepare
-            extractors = teststep_dict.get("extract", []) or teststep_dict.get("extractors", [])
-            validators = teststep_dict.get("validate", []) or teststep_dict.get("validators", [])
+            extractors = teststep_dict.get("extract", []) or teststep_dict.get(
+                "extractors", []
+            )
+            validators = teststep_dict.get("validate", []) or teststep_dict.get(
+                "validators", []
+            )
             parsed_request = self.init_test(teststep_dict, level="teststep")
             self.context.update_teststep_variables_mapping("request", parsed_request)
 
@@ -207,14 +240,18 @@ class Runner(object):
             logger.info("execute setup hooks end")
             # 计算前置setup_hooks消耗的时间
             setup_hooks_duration = 0
-            self.http_client_session.meta_data['request']['setup_hooks_start'] = setup_hooks_start
+            self.http_client_session.meta_data["request"][
+                "setup_hooks_start"
+            ] = setup_hooks_start
             if len(setup_hooks) > 1:
                 setup_hooks_duration = time.time() - setup_hooks_start
-            self.http_client_session.meta_data['request']['setup_hooks_duration'] = setup_hooks_duration
+            self.http_client_session.meta_data["request"][
+                "setup_hooks_duration"
+            ] = setup_hooks_duration
 
             try:
-                url = parsed_request.pop('url')
-                method = parsed_request.pop('method')
+                url = parsed_request.pop("url")
+                method = parsed_request.pop("method")
                 group_name = parsed_request.pop("group", None)
             except KeyError:
                 raise exceptions.ParamsError("URL or METHOD missed!")
@@ -222,7 +259,7 @@ class Runner(object):
             # TODO: move method validation to json schema
             valid_methods = ["GET", "HEAD", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"]
             if method.upper() not in valid_methods:
-                err_msg = u"Invalid HTTP method! => {}\n".format(method)
+                err_msg = "Invalid HTTP method! => {}\n".format(method)
                 err_msg += "Available HTTP methods: {}".format("/".join(valid_methods))
                 logger.error(err_msg)
                 raise exceptions.ParamsError(err_msg)
@@ -230,16 +267,13 @@ class Runner(object):
             logger.info("{method} {url}".format(method=method, url=url))
             logger.debug("request kwargs(raw): {kwargs}".format(kwargs=parsed_request))
 
-            user_timeout: str = str(pydash.get(parsed_request, 'headers.timeout'))
+            user_timeout: str = str(pydash.get(parsed_request, "headers.timeout"))
             if user_timeout and user_timeout.isdigit():
-                parsed_request['timeout'] = int(user_timeout)
+                parsed_request["timeout"] = int(user_timeout)
 
             # request
             resp = self.http_client_session.request(
-                method,
-                url,
-                name=group_name,
-                **parsed_request
+                method, url, name=group_name, **parsed_request
             )
             resp_obj = response.ResponseObject(resp)
 
@@ -250,22 +284,48 @@ class Runner(object):
             teardown_hooks_start = time.time()
             if teardown_hooks:
                 logger.info("start to run teardown hooks")
-                logger.info("update_teststep_variables_mapping, response: %s", resp_obj.resp_obj.text)
+                logger.info(
+                    "update_teststep_variables_mapping, response: %s",
+                    resp_obj.resp_obj.text,
+                )
                 self.context.update_teststep_variables_mapping("response", resp_obj)
                 self.do_hook_actions(teardown_hooks)
                 teardown_hooks_duration = time.time() - teardown_hooks_start
-                logger.info("run teardown hooks end, duration: %s", teardown_hooks_duration)
-            self.http_client_session.meta_data['response']['teardown_hooks_start'] = teardown_hooks_start
-            self.http_client_session.meta_data['response']['teardown_hooks_duration'] = teardown_hooks_duration
+                logger.info(
+                    "run teardown hooks end, duration: %s", teardown_hooks_duration
+                )
+            self.http_client_session.meta_data["response"][
+                "teardown_hooks_start"
+            ] = teardown_hooks_start
+            self.http_client_session.meta_data["response"][
+                "teardown_hooks_duration"
+            ] = teardown_hooks_duration
 
             # extract
-            extracted_variables_mapping = resp_obj.extract_response(extractors, self.context)
-            self.context.update_testcase_runtime_variables_mapping(extracted_variables_mapping)
+            extracted_variables_mapping = resp_obj.extract_response(
+                extractors, self.context
+            )
+            self.context.extractors = _transform_to_list_of_dict(extractors, extracted_variables_mapping)
+            logger.info(
+                "source testcase_runtime_variables_mapping: %s",
+                dict(self.context.testcase_runtime_variables_mapping),
+            )
+            logger.info(
+                "source testcase_runtime_variables_mapping update with: %s",
+                dict(extracted_variables_mapping)
+            )
+            self.context.update_testcase_runtime_variables_mapping(
+                extracted_variables_mapping
+            )
 
             # validate
             try:
                 self.evaluated_validators = self.context.validate(validators, resp_obj)
-            except (exceptions.ParamsError, exceptions.ValidationFailure, exceptions.ExtractFailure):
+            except (
+                exceptions.ParamsError,
+                exceptions.ValidationFailure,
+                exceptions.ExtractFailure,
+            ):
                 # log request
                 err_req_msg = "request: \n"
                 err_req_msg += "headers: {}\n".format(parsed_request.pop("headers", {}))
@@ -286,16 +346,16 @@ class Runner(object):
             logger.removeHandler(list_handler)
 
     def extract_output(self, output_variables_list):
-        """ extract output variables
-        """
+        """extract output variables"""
         variables_mapping = self.context.teststep_variables_mapping
 
         output = {}
         for variable in output_variables_list:
             if variable not in variables_mapping:
                 logger.warning(
-                    "variable '{}' can not be found in variables mapping, failed to output!"\
-                        .format(variable)
+                    "variable '{}' can not be found in variables mapping, failed to output!".format(
+                        variable
+                    )
                 )
                 continue
 
@@ -328,7 +388,9 @@ class Hrun(object):
         # 在运行时修改配置中请求头的信息
         # 比如: 用例中需要切换账号，实现同时请求头中token和userId
         current_context = Hrun.get_current_context()
-        pydash.set_(current_context.TESTCASE_SHARED_REQUEST_MAPPING, f'headers.{name}', value)
+        pydash.set_(
+            current_context.TESTCASE_SHARED_REQUEST_MAPPING, f"headers.{name}", value
+        )
 
     @staticmethod
     def set_step_var(name, value):
