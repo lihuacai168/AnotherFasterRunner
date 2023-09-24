@@ -69,10 +69,65 @@
 
         <slot v-for="item in summary.details">
             <div>
-                <span style="font-weight: bold; font-size: medium">{{ item.name }}</span>
-                <el-popover placement="top-start" width="400" trigger="hover">
-                    <pre class="code-block">{{ item.in_out }}</pre>
-                    <el-button slot="reference" round type="text">parameters & output</el-button>
+                <!-- 鼠标悬停时显示的popover -->
+                <el-popover placement="top" width="1600" trigger="hover" popper-class="custom-popper">
+                    <div class="popover-content">
+                        <!-- 左侧：JSON编辑器 -->
+                        <div class="json-editor">
+                            <!-- 左侧标题 -->
+                            <div class="section-title">
+                                <h3>初始变量，包含：配置变量，全局变量，驱动代码变量</h3>
+                            </div>
+                            <v-jsoneditor
+                                ref="jsonEditor"
+                                v-model="item.vars_trace[0].before"
+                                :options="options"
+                                :plus="true"
+                                :height="height"
+                                @error="onError"
+                            >
+                            </v-jsoneditor>
+                        </div>
+                        <!-- 右侧：Timeline -->
+                        <div class="timeline-container">
+                            <!-- 右侧标题 -->
+                            <div class="section-title">
+                                <h3>变量trace</h3>
+                            </div>
+                            <el-timeline>
+                                <el-timeline-item
+                                    v-for="(trace, index) in item.vars_trace"
+                                    :key="index"
+                                    :timestamp="`Step_${trace.step_index + 1} ${trace.step_name}， 更新的变量：`"
+                                    size="normal"
+                                    icon="🚀"
+                                    :type="trace.update.length > 0 ? 'success' : 'info'"
+                                    placement="top"
+                                >
+                                    <el-table :data="trace.update" stripe border style="width: 100%" v-if="trace.update.length > 0">
+                                        <el-table-column type="index" width="50" label="序号"></el-table-column>
+                                        <el-table-column
+                                            prop="output_variable_name"
+                                            label="变量名"
+                                            width="130"
+                                        ></el-table-column>
+                                        <el-table-column
+                                            prop="extract_expr"
+                                            label="取值表达式"
+                                            width="300"
+                                        ></el-table-column>
+                                        <el-table-column prop="actual_value" label="实际值">
+                                            <template slot-scope="scope">
+                                                {{ scope.row.actual_value }}
+                                            </template>
+                                        </el-table-column>
+                                    </el-table>
+                                    <p v-if="trace.update.length ===0 ">😊😊😊木有变量变更~</p>
+                                </el-timeline-item>
+                            </el-timeline>
+                        </div>
+                    </div>
+                    <el-button slot="reference">查看变量trace</el-button>
                 </el-popover>
             </div>
             <el-table
@@ -453,5 +508,27 @@ pre {
     height: 100%; /* 根据你的需要调整高度 */
     width: 100%; /* 根据你的需要调整宽度 */
     text-align: center;
+}
+
+.popover-content {
+    display: flex;
+    justify-content: space-between;
+}
+
+.json-editor {
+    width: 50%;
+    padding-right: 10px;
+}
+
+.timeline-container {
+    padding-left: 10px;
+    width: 50%;
+    overflow-y: auto;
+}
+
+.section-title {
+    text-align: center;
+    font-weight: bold;
+    margin-bottom: 10px;
 }
 </style>
