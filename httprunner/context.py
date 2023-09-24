@@ -35,6 +35,8 @@ class Context(object):
 
         self.logs: list[str] = []
         self.extractors: list[dict] = []
+        # before, update, after step_name, step_index, run_times
+        self.vars_trace: list[dict] = []
 
     def init_context_variables(self, level="testcase"):
         """ initialize testcase/teststep context

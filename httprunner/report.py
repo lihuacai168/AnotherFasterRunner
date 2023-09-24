@@ -61,6 +61,8 @@ def get_summary(result):
     else:
         summary["records"] = []
 
+    if getattr(result, "vars_trace", None):
+        summary["vars_trace"]: list[dict] =  result.vars_trace
     return summary
 
 
@@ -190,6 +192,8 @@ class HtmlTestResult(unittest.TextTestResult):
     def __init__(self, stream, descriptions, verbosity):
         super(HtmlTestResult, self).__init__(stream, descriptions, verbosity)
         self.records = []
+        # before, update, after step_name, step_index, run_times
+        self.vars_trace: list[dict] = []
 
     def _record_test(self, test, status, attachment=""):
         data = {
