@@ -213,11 +213,11 @@
                                 <!-- Add a checkbox before each item -->
 
                                 <div class="block block_options">
-                                    <el-checkbox v-model="selected" :label="index + 1"></el-checkbox>
+                                    <el-checkbox v-model="selected" :label="index+1"><br></el-checkbox>
                                     <span
                                         class="block-method block_method_options block_method_color"
                                         style="margin-left: 5px"
-                                        >Case</span
+                                        >Case_{{ index+1 }}</span
                                     >
                                     <span class="block_name">{{ item.name }}</span>
                                     <i
