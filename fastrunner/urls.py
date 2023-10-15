@@ -16,6 +16,7 @@ Including another URLconf
 
 from django.urls import path
 from fastrunner.views import project, api, config, schedule, run, suite, report, yapi, ci
+from fastrunner.views.screen import ApiCountView, CaseCountView, ScheduleListView, WarningListView
 
 urlpatterns = [
     # 访问统计相关接口
@@ -172,4 +173,10 @@ urlpatterns = [
         "patch": "update",
         "get": "all"
     })),
+
+    path('screen/api_count', ApiCountView.as_view(), name='api_count'),
+    path('screen/case_count', CaseCountView.as_view(), name='case_count'),
+    path('screen/schedule_list', ScheduleListView.as_view(), name='schedule_list'),
+    path('screen/warning_list', WarningListView.as_view(), name='warning_list'),
+
 ]

@@ -478,3 +478,19 @@ class ScheduleDeSerializer(serializers.Serializer):
                 raise serializers.ValidationError(
                     f"{','.join(validation_errors)} 已经在其他项目存在"
                 )
+
+
+class WarningListSerializer(serializers.ModelSerializer):
+    time = serializers.SerializerMethodField()
+    project_name = serializers.CharField(source='project.name')
+
+    class Meta:
+        model = models.Report
+        fields = ['id', 'name', 'project_name', 'time']
+
+    def get_time(self, obj) -> dict:
+        summary = json.loads(obj.summary)
+        return {
+            'start_at': summary['time']['start_at'],
+            'duration': summary['time']['duration'],
+        }
