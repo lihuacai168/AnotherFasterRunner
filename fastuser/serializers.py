@@ -31,9 +31,9 @@ class UserInfoSerializer(serializers.Serializer):
         return models.UserInfo.objects.create(**validated_data)
 
 
-class UserLoginSerialzer(serializers.Serializer):
+class UserLoginSerializer(serializers.Serializer):
     username = serializers.CharField(required=True)
-    password = serializers.CharField(required=True)
+    password = serializers.CharField(required=True, min_length=6)
 
 
 class UserModelSerializer(serializers.ModelSerializer):
