@@ -801,7 +801,7 @@ class Yapi:
 
         def handle_request(response):
             try:
-                res = json.loads(response.body, encoding='utf-8')
+                res = json.loads(response.body)
                 api_info.append(res['data'])
             except Exception as e:
                 err_info.add(e)
