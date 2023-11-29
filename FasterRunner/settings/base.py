@@ -345,11 +345,13 @@ DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 import ldap
 from django_auth_ldap.config import LDAPSearch
 
-AUTHENTICATION_BACKENDS = (
-    'django_auth_ldap.backend.LDAPBackend',
-)
-
 USE_LDAP = False # 如果需要开启LDAP认证，就设置位True
+
+if USE_LDAP:
+    AUTHENTICATION_BACKENDS = (
+    'django_auth_ldap.backend.LDAPBackend',
+    )
+
 AUTH_LDAP_SERVER_URI = "ldap://localhost:389" # LDAP服务器地址，默认端口389
 
 AUTH_LDAP_BIND_DN = "cn=admin,dc=myorg,dc=com" # LDAP管理员账号
