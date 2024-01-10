@@ -184,7 +184,6 @@
                             <el-button
                                 size="medium"
                                 type="danger"
-                                v-show="false"
                                 :title="isSuperuser ? '删除项目' : '权限不足，请联系管理员'"
                                 :disabled="!isSuperuser"
                                 @click="handleDelete(scope.$index, scope.row)"

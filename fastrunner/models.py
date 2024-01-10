@@ -34,6 +34,7 @@ class Project(BaseTable):
     jira_bearer_token = models.CharField(
         "jira bearer_token", null=False, default="", max_length=45, blank=True
     )
+    is_deleted = models.IntegerField("是否删除", null=True, default=0)
 
 
 class Debugtalk(BaseTable):
