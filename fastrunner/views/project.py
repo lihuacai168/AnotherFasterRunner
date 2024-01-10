@@ -24,7 +24,7 @@ class ProjectView(GenericViewSet):
     项目增删改查
     """
 
-    queryset = models.Project.objects.all().order_by("-update_time")
+    queryset = models.Project.objects.filter(is_deleted=0).all().order_by("-update_time")
     serializer_class = serializers.ProjectSerializer
     pagination_class = pagination.MyCursorPagination
 
@@ -97,9 +97,10 @@ class ProjectView(GenericViewSet):
             return Response(status=status.HTTP_401_UNAUTHORIZED)
         try:
             project = models.Project.objects.get(id=request.data["id"])
-
-            project.delete()
-            prepare.project_end(project)
+            # 改完软删除
+            project.is_deleted = 1
+            project.save(update_fields=['is_deleted'])
+            # prepare.project_end(project)
 
             return Response(response.PROJECT_DELETE_SUCCESS)
         except ObjectDoesNotExist:
