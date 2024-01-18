@@ -1,0 +1,17 @@
+{
+  "name": "Python 3.9 & Node 16",
+  "build": { 
+    "dockerfile": "Dockerfile"
+  },
+
+  "forwardPorts": [],
+  
+  "settings": {
+      "terminal.integrated.shell.linux": "/bin/zsh"
+  },
+  "mounts": [
+    "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=cached"
+  ],
+
+  "workspaceFolder": "/workspace"
+}
