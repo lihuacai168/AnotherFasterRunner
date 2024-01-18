@@ -1,0 +1,3 @@
+[submodule "playwright_demo"]
+	path = playwright_demo
+	url = git@github.com:lihuacai168/playwright_demo.git
