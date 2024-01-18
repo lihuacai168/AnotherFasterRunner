@@ -6,12 +6,12 @@ on:
   pull_request:
     branches:
       - master
-    types: [closed]
+    types: [ closed ]
     paths:
       - '**.py'
       - '!./web/**'
 jobs:
-  build_and_push:
+  build_app_image:
     runs-on: ubuntu-latest
 
     env:
@@ -37,7 +37,7 @@ jobs:
         GIT_TAG=$(git describe --tags --exact-match ${{ github.sha }} 2> /dev/null || echo "")
         echo "GIT_TAG=$GIT_TAG" >> $GITHUB_ENV
 
-    - name: Build and push Docker image
+    - name: Build APP Image
       uses: docker/build-push-action@v2
       with:
         context: .
