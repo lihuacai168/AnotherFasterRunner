@@ -6,7 +6,7 @@ on:
   pull_request:
     branches:
       - master
-    types: [opened, closed, synchronize]
+    types: [ closed ]
     paths:
       - '**.py'
       - '!./web/**'
@@ -43,7 +43,7 @@ jobs:
         context: .
         file: ./Dockerfile
         platforms: linux/amd64
-        push: ${{ github.event.pull_request.state == 'closed' }}
+        push: true
         tags: |
           ${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKER_REPOSITORY_NAME }}:latest
           ${{ env.GIT_TAG != '' && format('{0}/{1}:{2}', env.DOCKERHUB_USERNAME, env.DOCKER_REPOSITORY_NAME, env.GIT_TAG) || '' }}
