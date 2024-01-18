@@ -1,0 +1,43 @@
+name: Playwright Tests
+on:
+  workflow_dispatch:
+  workflow_run:
+    workflows:
+      - "Execute remote shell script"
+    types:
+      - completed
+  schedule:
+    - cron: '0 0,4,12 * * *'
+jobs:
+  test:
+    timeout-minutes: 60
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        base_url: ['', 'https://fast.huacai.one']
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+    - name: Install dependencies
+      run: |
+        cd playwright_demo
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+    - name: Ensure browsers are installed
+      run: python -m playwright install --with-deps
+    - name: Run your tests
+      run:  |
+        cd playwright_demo
+        pytest --base-url=${{ matrix.base_url }} --reruns 3 --reruns-delay 2
+    - uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: playwright-traces_and_results
+        path: |
+          playwright_demo/allure-results/
+          playwright_demo/*trace.zip
