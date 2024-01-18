@@ -7,7 +7,7 @@ on:
     types:
       - completed
   schedule:
-    - cron: '0 0,4,12 * * *'
+    - cron: '10 0,4,12 * * *'
 jobs:
   test:
     timeout-minutes: 60
