@@ -5,6 +5,7 @@ on:
     types: [opened, synchronize]
     paths:
       - '**.py'
+      - 'requirements.txt'
       - '!./web/**'
 jobs:
   build_and_push:
