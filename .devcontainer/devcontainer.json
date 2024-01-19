@@ -1,5 +1,5 @@
 {
-  "image": "mcr.microsoft.com/vscode/devcontainers/python3.9",
+  "image": "mcr.microsoft.com/vscode/devcontainers/python:3.9",
   "features": {
   },
   "args": {
