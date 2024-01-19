@@ -1,9 +1,8 @@
 {
   "image": "mcr.microsoft.com/vscode/devcontainers/python:3.9",
   "features": {
-  },
-  "args": {
-    "VARIANT": "3",
-    "NODE_VERSION": "16" // Set to "none" to skip Node.js installation
-}
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "16"
+    }
+  }
 }
