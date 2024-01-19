@@ -9,6 +9,7 @@ on:
     types: [ closed ]
     paths:
       - '**.py'
+      - 'requirements.txt'
       - '!./web/**'
 jobs:
   build_app_image:
