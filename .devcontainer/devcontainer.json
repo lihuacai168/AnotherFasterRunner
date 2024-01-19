@@ -1,0 +1,9 @@
+{
+  "image": "mcr.microsoft.com/vscode/devcontainers/python3.9",
+  "features": {
+  },
+  "args": {
+    "VARIANT": "3",
+    "NODE_VERSION": "16" // Set to "none" to skip Node.js installation
+}
+}
