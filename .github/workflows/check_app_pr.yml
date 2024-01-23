@@ -9,7 +9,8 @@ on:
       - '!./web/**'
 jobs:
   build_and_push:
-    runs-on: ubuntu-latest
+    #runs-on: ubuntu-latest
+    runs-on: self-hosted
 
     env:
       DOCKERHUB_USERNAME: rikasai
