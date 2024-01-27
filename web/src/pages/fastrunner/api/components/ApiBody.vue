@@ -218,6 +218,14 @@ export default {
     },
     methods: {
         reverseStatus() {
+            console.log(this.url)
+            console.log(this.config)
+            console.log(this.host)
+            // 如果没有选择配置的时候，并且api的不是http开头的, 并且不是变量的时候，提示用户选择配置
+            if (this.config.name === '请选择' && this.host === '请选择' && !this.url.startsWith("http") && !this.url.startsWith("$")){
+                this.$message.warning("请先在左上角选择配置再运行哦~")
+                return
+            }
             this.save = !this.save;
             this.run = true;
         },

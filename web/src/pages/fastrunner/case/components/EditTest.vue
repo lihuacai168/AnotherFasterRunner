@@ -514,7 +514,7 @@ export default {
                 this.$notify.warning({
                     title: '提示',
                     duration: this.$store.state.duration,
-                    message: '测试用例必须包含配置'
+                    message: '请先在左上角选择配置后，再运行用例哦~'
                 });
                 return false
             }
