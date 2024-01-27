@@ -23,10 +23,17 @@ export default new Router({
             path: '/fastrunner/register',
             name: 'Register',
             component: Register,
+            redirect: Login,
             meta: {
                 title: '用户注册'
             }
-        }, {
+        },
+        {
+            path: '/',
+            name: 'HomeRedirect',
+            redirect: '/fastrunner/login'
+        },{
+
             path: '/fastrunner/login',
             name: 'Login',
             component: Login,

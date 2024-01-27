@@ -56,17 +56,26 @@ router.beforeEach((to, from, next) => {
       document.title = to.meta.title
     }
 
-    if (to.meta.requireAuth) {
-      if (store.state.token !== '') {
-        next()
-      } else {
-        next({
-          name: 'Login'
-        })
-      }
+if (to.meta.requireAuth) {
+  if (store.state.token !== '') {
+    if (to.name === 'HomeRedirect' || to.name === 'Login') {
+      next({name: 'ProjectList'});
     } else {
-      next()
+      next();
     }
+  } else {
+    next({
+      name: 'Login'
+    });
+  }
+} else {
+    // 如果已经登录了，重新登录时，跳转到项目首页
+    if(store.state.token !== '' && store.state.token !== null && store.state.token !== 'null' && to.name === 'Login'){
+        next({name: 'ProjectList'});
+    } else{
+        next();
+    }
+}
   })
 })
 
