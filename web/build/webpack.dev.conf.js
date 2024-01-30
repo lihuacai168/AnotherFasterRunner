@@ -82,10 +82,11 @@ module.exports = new Promise((resolve, reject) => {
       // add port to devServer config
       devWebpackConfig.devServer.port = port
 
+        const baseUrl = `http://${devWebpackConfig.devServer.host}:${port}`
       // Add FriendlyErrorsPlugin
       devWebpackConfig.plugins.push(new FriendlyErrorsPlugin({
         compilationSuccessInfo: {
-          messages: [`Your application is running here: http://${devWebpackConfig.devServer.host}:${port}/fastrunner/login`],
+          messages: [`Your application is running here: ${baseUrl}`],
         },
         onErrors: config.dev.notifyOnErrors
         ? utils.createNotifierCallback()
