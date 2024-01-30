@@ -20,9 +20,7 @@ import {Message} from 'element-ui';
 // }
 
 axios.defaults.withCredentials = true;
-axios.defaults.baseURL = process.env.VUE_APP_API_URL || "http://localhost:8000";
-
-console.log(`get env from .env VUE_APP_API_URL: ${JSON.stringify(process.env)}`)
+// axios.defaults.baseURL = baseUrl;
 
 const err_msg_duration = 2000 // ms
 
