@@ -1,7 +1,6 @@
 'use strict'
-require('dotenv').config()
 const FasterRunner = process.env.FasterRunner ? process.env.FasterRunner : "Another FasterRunner"
-const API_URL = process.env.VUE_APP_API_URL ? process.env.VUE_APP_API_URL : ""
+const API_URL = process.env.API_URL ? process.env.API_URL : ""
 console.log('process args: ' + process.argv)
 console.log('get env from env API_URL: ' + API_URL)
 module.exports = {
