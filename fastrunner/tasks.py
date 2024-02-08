@@ -44,7 +44,7 @@ def async_debug_api(api, project, name, config=None):
 def async_debug_suite(suite, project, obj, report, config, user=""):
     """异步执行suite"""
     summary, _ = debug_suite(suite, project, obj, config=config, save=False)
-    save_summary(report, summary, project, user)
+    save_summary(name=report, summary=summary, project=project, type=2, user=user)
 
 
 @shared_task(base=MyBaseTask)
