@@ -37,7 +37,6 @@ loguru==0.5.1
 MarkupSafe==1.1.1
 #mysqlclient==2.0.1
 openapi-codec==1.3.2
-packaging==20.4
 PyJWT==1.7.1
 pyparsing==2.4.7
 python-dotenv==0.10.3
