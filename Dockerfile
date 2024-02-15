@@ -15,8 +15,7 @@ RUN echo "deb http://$DEBIAN_REPO/debian/ buster main contrib non-free" > /etc/a
     echo "deb-src http://$DEBIAN_REPO/debian/ buster-updates main contrib non-free" >> /etc/apt/sources.list
 
 RUN apt-get update && \
-    apt-get install -y default-libmysqlclient-dev python3-dev build-essential netcat-openbsd libpcre3-dev libldap2-dev libsasl2-dev && \
-    pip install setuptools==57.5.0 -i ${PIP_INDEX_URL} && \
+    apt-get install -y python3-dev build-essential netcat-openbsd libpcre3-dev libldap2-dev libsasl2-dev && \
     pip install -r requirements.txt -i ${PIP_INDEX_URL} && \
     apt-get remove -y python3-dev build-essential libpcre3-dev && \
     apt-get autoremove -y && \
@@ -35,7 +34,7 @@ RUN echo "deb http://$DEBIAN_REPO/debian/ buster main contrib non-free" > /etc/a
 
 
 RUN apt-get update && \
-    apt-get install -y default-libmysqlclient-dev tzdata && \
+    apt-get install -y tzdata && \
     ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && \
     echo $TZ > /etc/timezone && \
     rm -rf /var/lib/apt/lists/*
