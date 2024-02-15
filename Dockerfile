@@ -16,7 +16,6 @@ RUN echo "deb http://$DEBIAN_REPO/debian/ buster main contrib non-free" > /etc/a
 
 RUN apt-get update && \
     apt-get install -y python3-dev build-essential netcat-openbsd libpcre3-dev libldap2-dev libsasl2-dev && \
-    pip install setuptools==57.5.0 -i ${PIP_INDEX_URL} && \
     pip install -r requirements.txt -i ${PIP_INDEX_URL} && \
     apt-get remove -y python3-dev build-essential libpcre3-dev && \
     apt-get autoremove -y && \
