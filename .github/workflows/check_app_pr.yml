@@ -7,6 +7,7 @@ on:
       - '**.py'
       - 'requirements.txt'
       - '!./web/**'
+      - 'Dockerfile'
 jobs:
   build_and_push:
     runs-on: ubuntu-latest
