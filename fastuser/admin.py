@@ -30,7 +30,9 @@ class UserAdmin(BaseUserAdmin):
     )
     filter_horizontal = ('groups',)
 
+    @admin.display(
+        description='所属分组'
+    )
     def belong_groups(self, obj):
         return ", ".join([g.name for g in obj.groups.all()])
 
-    belong_groups.short_description = '所属分组'

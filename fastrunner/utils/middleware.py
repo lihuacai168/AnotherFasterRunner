@@ -31,9 +31,9 @@ class VisitTimesMiddleware(MiddlewareMixin):
         else:
             user = request.user
 
-        ip: str = request.META.get("HTTP_X_FORWARDED_FOR", request.META.get("REMOTE_ADDR"))
+        ip: str = request.headers.get("x-forwarded-for", request.META.get("REMOTE_ADDR"))
         # 前端请求头没传project，就默认为0
-        project = request.META.get("HTTP_PROJECT", 0)
+        project = request.headers.get("project", 0)
 
         url: str = request.path
         # 去除测试报告页字体相关的访问
