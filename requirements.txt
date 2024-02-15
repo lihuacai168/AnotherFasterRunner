@@ -71,3 +71,4 @@ django-log-request-id~=2.0.0
 gevent==22.10.2
 django-filter~=2.4.0
 django-auth-ldap==2.3.0
+pymysql==1.1.0
