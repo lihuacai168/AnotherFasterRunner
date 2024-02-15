@@ -100,7 +100,7 @@ class MyJWTAuthentication(JSONWebTokenAuthentication):
         supplied using JWT-based authentication.  Otherwise returns `None`.
         """
         # jwt_value = request.query_params.get("token", None)
-        jwt_value = request.META.get('HTTP_AUTHORIZATION', None)
+        jwt_value = request.headers.get('authorization', None)
         try:
             payload = jwt_decode_handler(jwt_value)
         except jwt.ExpiredSignature:
