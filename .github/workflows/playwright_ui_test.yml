@@ -15,7 +15,7 @@ jobs:
 
     strategy:
       matrix:
-        base_url: ['', 'https://fast.huacai.one']
+        base_url: ['https://fast.huacai.one']
 
     steps:
     - name: Checkout repository and submodules
