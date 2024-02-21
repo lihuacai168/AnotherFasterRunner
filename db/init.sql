@@ -1076,6 +1076,7 @@ CREATE TABLE `project` (
   `yapi_openapi_token` varchar(128) NOT NULL,
   `jira_bearer_token` varchar(45) NOT NULL,
   `jira_project_key` varchar(30) NOT NULL,
+  `is_deleted`   int default 0 not null,
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE KEY `name` (`name`) USING BTREE
 ) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4;
@@ -1087,7 +1088,7 @@ CREATE TABLE `project` (
 
 LOCK TABLES `project` WRITE;
 /*!40000 ALTER TABLE `project` DISABLE KEYS */;
-INSERT INTO `project` VALUES (7,'2019-11-19 10:00:25.568775','2022-02-24 22:35:30.585009','示例项目','用来查看FasterRunner常用操作','test','test','test','','','','');
+INSERT INTO `project` VALUES (7,'2019-11-19 10:00:25.568775','2022-02-24 22:35:30.585009','示例项目','用来查看FasterRunner常用操作','test','test','test','','','','', 0);
 /*!40000 ALTER TABLE `project` ENABLE KEYS */;
 UNLOCK TABLES;
 
