@@ -7,7 +7,7 @@ import platform
 import time
 import unittest
 from base64 import b64encode
-from collections import Iterable
+from typing import Iterable
 from datetime import datetime
 
 from jinja2 import Template, escape
