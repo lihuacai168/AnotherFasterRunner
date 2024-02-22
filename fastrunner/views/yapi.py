@@ -22,6 +22,7 @@ logger = logging.getLogger(__name__)
 class YAPIView(APIView):
 
     def post(self, request, **kwargs):
+        logger.info("开始批量导入yapi接口...")
         faster_project_id = kwargs['pk']
         obj = models.Project.objects.get(pk=faster_project_id)
         token = obj.yapi_openapi_token
@@ -37,6 +38,7 @@ class YAPIView(APIView):
             # 通过id获取所有api的详情
             create_ids.extend(update_ids)
             if len(create_ids) == 0:
+                logger.info("yapi没有需要导入到平台的接口...")
                 return Response(response.YAPI_NOT_NEED_CREATE_OR_UPDATE)
             api_info = yapi.get_batch_api_detail(create_ids)
         except Exception as e:
@@ -55,5 +57,6 @@ class YAPIView(APIView):
                 "createdCount": created_apis_count,
                 "updatedCount": updated_apis_count,
         }
+        logger.info(f"导入完成， {created_apis_count=}, {updated_apis_count=}")
         resp.update(response.YAPI_ADD_SUCCESS)
         return Response(resp)
