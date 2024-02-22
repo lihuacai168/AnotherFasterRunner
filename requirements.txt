@@ -28,9 +28,7 @@ packaging==23.2
 har2case==0.3.1
 # HttpRunner==1.5.15
 idna==2.8
-immutables==0.14
 inflection==0.5.0
-itypes==1.1.0
 Jinja2==2.10.3
 # kombu
 loguru==0.5.1
@@ -47,7 +45,6 @@ requests-toolbelt==0.9.1
 simplejson==3.17.0
 six==1.15.0
 sqlparse==0.3.1
-tornado==4.5.3
 uritemplate==3.0.1
 urllib3==1.25.7
 #uWSGI==2.0.18
