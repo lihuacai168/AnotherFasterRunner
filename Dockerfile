@@ -1,4 +1,4 @@
-FROM python:3.9-buster as Base
+FROM python:3.11-buster as Base
 
 
 
@@ -21,7 +21,7 @@ RUN apt-get update && \
     apt-get autoremove -y && \
     rm -rf /var/lib/apt/lists/*
 
-FROM python:3.9-buster
+FROM python:3.11-buster
 ENV TZ=Asia/Shanghai
 
 ARG DEBIAN_REPO="deb.debian.org"
@@ -39,7 +39,7 @@ RUN apt-get update && \
     echo $TZ > /etc/timezone && \
     rm -rf /var/lib/apt/lists/*
 
-COPY --from=Base /usr/local/lib/python3.9/site-packages /usr/local/lib/python3.9/site-packages
+COPY --from=Base /usr/local/lib/python3.11/site-packages /usr/local/lib/python3.11/site-packages
 WORKDIR /app
 COPY . /app
 RUN chmod +x /app/start.sh

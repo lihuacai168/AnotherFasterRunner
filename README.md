@@ -14,7 +14,9 @@
 
 
 # 注意
-> 只能使用`python3.9`版本
+> python版本需要>=3.9 
+> 
+> 3.9, 3.10和3.11都经过测试
  
 # 文档
 - 使用文档 https://www.yuque.com/lihuacai/fasterunner
