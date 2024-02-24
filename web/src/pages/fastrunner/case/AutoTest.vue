@@ -250,8 +250,10 @@
 <script>
 import EditTest from './components/EditTest'
 import TestList from './components/TestList'
+import configMixin from "@/mixins/configMixin";
 
 export default {
+    mixins: [configMixin],
     computed: {
         buttonActivate: {
             get: function () {
@@ -313,14 +315,6 @@ export default {
     methods: {
         handleDragEnd() {
             this.updateTree(false);
-        },
-        getConfig() {
-            this.$api.getAllConfig(this.$route.params.id).then(resp => {
-                this.configOptions = resp;
-                this.configOptions.push({
-                    name: '请选择'
-                })
-            })
         },
 
         handleBackList() {
