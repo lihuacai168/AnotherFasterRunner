@@ -1,10 +1,11 @@
 import random
 
+from locust import HttpLocust, TaskSet, task
+from locust.events import request_failure
+
 from httprunner.exceptions import MyBaseError, MyBaseFailure
 from httprunner.loader import load_locust_tests
 from httprunner.runner import Runner
-from locust import HttpLocust, TaskSet, task
-from locust.events import request_failure
 
 
 class WebPageTasks(TaskSet):

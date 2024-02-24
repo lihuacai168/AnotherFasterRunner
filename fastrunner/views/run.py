@@ -1,16 +1,16 @@
 # from loguru import logger
-import logging
 import datetime
+import logging
 
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework.decorators import api_view
-from fastrunner.utils import loader, response
-from fastrunner import tasks
 from rest_framework.response import Response
+
+from fastrunner import models, tasks
+from fastrunner.utils import loader, response
 from fastrunner.utils.decorator import request_log
 from fastrunner.utils.host import parse_host
 from fastrunner.utils.parser import Format
-from fastrunner import models
 
 logger = logging.getLogger(__name__)
 
@@ -32,20 +32,14 @@ def run_api(request):
     config = None
     if name != "请选择":
         try:
-            config = eval(
-                models.Config.objects.get(
-                    name=name, project__id=api.project
-                ).body
-            )
+            config = eval(models.Config.objects.get(name=name, project__id=api.project).body)
 
         except ObjectDoesNotExist:
-            logger.error("指定配置文件不存在:{name}".format(name=name))
+            logger.error(f"指定配置文件不存在:{name}")
             return Response(config_err)
 
     if host != "请选择":
-        host = models.HostIP.objects.get(
-            name=host, project__id=api.project
-        ).value.splitlines()
+        host = models.HostIP.objects.get(name=host, project__id=api.project).value.splitlines()
         api.testcase = parse_host(host, api.testcase)
 
     summary = loader.debug_api(
@@ -66,19 +60,11 @@ def run_api_pk(request, **kwargs):
     host = request.query_params["host"]
     api = models.API.objects.get(id=kwargs["pk"])
     name = request.query_params["config"]
-    config = (
-        None
-        if name == "请选择"
-        else eval(
-            models.Config.objects.get(name=name, project=api.project).body
-        )
-    )
+    config = None if name == "请选择" else eval(models.Config.objects.get(name=name, project=api.project).body)
 
     test_case = eval(api.body)
     if host != "请选择":
-        host = models.HostIP.objects.get(
-            name=host, project=api.project
-        ).value.splitlines()
+        host = models.HostIP.objects.get(name=host, project=api.project).value.splitlines()
         test_case = parse_host(host, test_case)
 
     summary = loader.debug_api(
@@ -97,9 +83,7 @@ def auto_run_api_pk(**kwargs):
     env = kwargs["config"]
     config_name = "rig_prod" if env == 1 else "rig_test"
     api = models.API.objects.get(id=id)
-    config = eval(
-        models.Config.objects.get(name=config_name, project=api.project).body
-    )
+    config = eval(models.Config.objects.get(name=config_name, project=api.project).body)
     test_case = eval(api.body)
 
     summary = loader.debug_api(test_case, api.project.id, config=config)
@@ -147,13 +131,9 @@ def update_auto_case_step(**kwargs):
     kwargs["case_id"] = case_id
     case_step_name = kwargs["name"]
     # api不存在用例中,就新增,已经存在就更新
-    is_case_step_name = models.CaseStep.objects.filter(case_id=case_id).filter(
-        name=case_step_name
-    )
+    is_case_step_name = models.CaseStep.objects.filter(case_id=case_id).filter(name=case_step_name)
     if len(is_case_step_name) == 0:
-        models.Case.objects.filter(id=case_id).update(
-            length=length, update_time=datetime.datetime.now()
-        )
+        models.Case.objects.filter(id=case_id).update(length=length, update_time=datetime.datetime.now())
         models.CaseStep.objects.create(**kwargs)
     else:
         is_case_step_name.update(update_time=datetime.datetime.now(), **kwargs)
@@ -179,36 +159,22 @@ def run_api_tree(request):
     name = request.data["name"]
     config = request.data["config"]
 
-    config = (
-        None
-        if config == "请选择"
-        else eval(
-            models.Config.objects.get(name=config, project__id=project).body
-        )
-    )
+    config = None if config == "请选择" else eval(models.Config.objects.get(name=config, project__id=project).body)
     test_case = []
 
     if host != "请选择":
-        host = models.HostIP.objects.get(
-            name=host, project=project
-        ).value.splitlines()
+        host = models.HostIP.objects.get(name=host, project=project).value.splitlines()
 
     for relation_id in relation:
         api = (
-            models.API.objects.filter(
-                project__id=project, relation=relation_id, delete=0
-            )
-            .order_by("id")
-            .values("body")
+            models.API.objects.filter(project__id=project, relation=relation_id, delete=0).order_by("id").values("body")
         )
         for content in api:
             api = eval(content["body"])
             test_case.append(parse_host(host, api))
 
     if back_async:
-        tasks.async_debug_api.delay(
-            test_case, project, name, config=parse_host(host, config)
-        )
+        tasks.async_debug_api.delay(test_case, project, name, config=parse_host(host, config))
         summary = loader.TEST_NOT_EXISTS
         summary["msg"] = "接口运行中，请稍后查看报告"
     else:
@@ -242,9 +208,7 @@ def run_testsuite(request):
     config = None
 
     if host != "请选择":
-        host = models.HostIP.objects.get(
-            name=host, project=project
-        ).value.splitlines()
+        host = models.HostIP.objects.get(name=host, project=project).value.splitlines()
 
     for test in body:
         test = loader.load_test(test, project=project)
@@ -277,11 +241,7 @@ def run_testsuite_pk(request, **kwargs):
     """
     pk = kwargs["pk"]
 
-    test_list = (
-        models.CaseStep.objects.filter(case__id=pk)
-        .order_by("step")
-        .values("body")
-    )
+    test_list = models.CaseStep.objects.filter(case__id=pk).order_by("step").values("body")
 
     project = request.query_params["project"]
     name = request.query_params["name"]
@@ -292,27 +252,19 @@ def run_testsuite_pk(request, **kwargs):
     config = None
 
     if host != "请选择":
-        host = models.HostIP.objects.get(
-            name=host, project=project
-        ).value.splitlines()
+        host = models.HostIP.objects.get(name=host, project=project).value.splitlines()
 
     for content in test_list:
         body = eval(content["body"])
 
         if "base_url" in body["request"].keys():
-            config = eval(
-                models.Config.objects.get(
-                    name=body["name"], project__id=project
-                ).body
-            )
+            config = eval(models.Config.objects.get(name=body["name"], project__id=project).body)
             continue
 
         test_case.append(parse_host(host, body))
 
     if back_async:
-        tasks.async_debug_api.delay(
-            test_case, project, name=name, config=parse_host(host, config)
-        )
+        tasks.async_debug_api.delay(test_case, project, name=name, config=parse_host(host, config))
         summary = response.TASK_RUN_SUCCESS
 
     else:
@@ -352,27 +304,17 @@ def run_suite_tree(request):
         config = eval(models.Config.objects.get(id=config_id).body)
 
     if host != "请选择":
-        host = models.HostIP.objects.get(
-            name=host, project=project
-        ).value.splitlines()
+        host = models.HostIP.objects.get(name=host, project=project).value.splitlines()
 
     test_sets = []
     suite_list = []
     config_list = []
     for relation_id in relation:
         case_name_id_mapping_list = list(
-            models.Case.objects.filter(
-                project__id=project, relation=relation_id
-            )
-            .order_by("id")
-            .values("id", "name")
+            models.Case.objects.filter(project__id=project, relation=relation_id).order_by("id").values("id", "name")
         )
         for content in case_name_id_mapping_list:
-            test_list = (
-                models.CaseStep.objects.filter(case__id=content["id"])
-                .order_by("step")
-                .values("body")
-            )
+            test_list = models.CaseStep.objects.filter(case__id=content["id"]).order_by("step").values("body")
 
             testcase_list = []
             for content in test_list:
@@ -380,20 +322,14 @@ def run_suite_tree(request):
                 if body["request"].get("url"):
                     testcase_list.append(parse_host(host, body))
                 elif config is None and body["request"].get("base_url"):
-                    config = eval(
-                        models.Config.objects.get(
-                            name=body["name"], project__id=project
-                        ).body
-                    )
+                    config = eval(models.Config.objects.get(name=body["name"], project__id=project).body)
             config_list.append(parse_host(host, config))
             test_sets.append(testcase_list)
             config = None
         suite_list.extend(case_name_id_mapping_list)
 
     if back_async:
-        tasks.async_debug_suite.delay(
-            test_sets, project, suite_list, report, config_list
-        )
+        tasks.async_debug_suite.delay(test_sets, project, suite_list, report, config_list)
         summary = loader.TEST_NOT_EXISTS
         summary["msg"] = "用例运行中，请稍后查看报告"
     else:
@@ -437,9 +373,7 @@ def run_multi_tests(request):
         config_name = config["config_name"]
         if not config_body_mapping.get(config_name):
             config_body_mapping[config_name] = eval(
-                models.Config.objects.get(
-                    name=config["config_name"], project__id=project
-                ).body
+                models.Config.objects.get(name=config["config_name"], project__id=project).body
             )
     test_sets = []
     suite_list = []
@@ -448,11 +382,7 @@ def run_multi_tests(request):
         case_id = case_config_mapping["id"]
         config_name = case_config_mapping["config_name"]
         # 获取用例的所有步骤
-        case_step_list = (
-            models.CaseStep.objects.filter(case__id=case_id)
-            .order_by("step")
-            .values("body")
-        )
+        case_step_list = models.CaseStep.objects.filter(case__id=case_id).order_by("step").values("body")
         parsed_case_step_list = []
         for case_step in case_step_list:
             body = eval(case_step["body"])
@@ -467,9 +397,7 @@ def run_multi_tests(request):
     suite_list.extend(case_config_mapping_list)
 
     if back_async:
-        tasks.async_debug_suite.delay(
-            test_sets, project, suite_list, report_name, config_list
-        )
+        tasks.async_debug_suite.delay(test_sets, project, suite_list, report_name, config_list)
         summary = loader.TEST_NOT_EXISTS
         summary["msg"] = "用例运行中，请稍后查看报告"
     else:
@@ -504,16 +432,10 @@ def run_test(request):
     host = request.data["host"]
 
     if host != "请选择":
-        host = models.HostIP.objects.get(
-            name=host, project=project
-        ).value.splitlines()
+        host = models.HostIP.objects.get(name=host, project=project).value.splitlines()
 
     if config:
-        config = eval(
-            models.Config.objects.get(
-                project=project, name=config["name"]
-            ).body
-        )
+        config = eval(models.Config.objects.get(project=project, name=config["name"]).body)
 
     summary = loader.debug_api(
         parse_host(host, loader.load_test(body)),

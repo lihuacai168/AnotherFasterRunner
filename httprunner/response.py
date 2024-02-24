@@ -1,13 +1,12 @@
-# encoding: utf-8
-
 import json
-import re
 import logging
+import re
 
-import pydash
 import jsonpath
-from httprunner import exceptions, utils
+import pydash
 from loguru import logger as log
+
+from httprunner import exceptions, utils
 from httprunner.compat import OrderedDict, basestring, is_py2
 
 text_extractor_regexp_compile = re.compile(r".*\(.*\).*")
@@ -16,7 +15,7 @@ list_condition_extractor_regexp_compile = re.compile(r"^for#\w+.*#\w.*")
 logger = logging.getLogger("httprunner")
 
 
-class ResponseObject(object):
+class ResponseObject:
     def __init__(self, resp_obj):
         """initialize with a requests.Response object
         @param (requests.Response instance) resp_obj
@@ -33,7 +32,7 @@ class ResponseObject(object):
             self.__dict__[key] = value
             return value
         except AttributeError:
-            err_msg = "ResponseObject does not have attribute: {}".format(key)
+            err_msg = f"ResponseObject does not have attribute: {key}"
             logger.error(err_msg)
             raise exceptions.ParamsError(err_msg)
 
@@ -51,10 +50,8 @@ class ResponseObject(object):
         """
         matched = re.search(field, self.text)
         if not matched:
-            err_msg = "Failed to extract data with regex! => {}\n".format(
-                field
-            )
-            err_msg += "response body: {}\n".format(self.text)
+            err_msg = f"Failed to extract data with regex! => {field}\n"
+            err_msg += f"response body: {self.text}\n"
             logger.error(err_msg)
             raise exceptions.ExtractFailure(err_msg)
 
@@ -94,9 +91,7 @@ class ResponseObject(object):
                     return body
                 query_path = sub_query.replace("body.", "", 1)
                 err_msg = f"request body not found: {field}"
-                res = pydash.get(
-                    body, query_path, exceptions.ExtractFailure(err_msg)
-                )
+                res = pydash.get(body, query_path, exceptions.ExtractFailure(err_msg))
                 if isinstance(res, exceptions.ExtractFailure):
                     raise res
                 return res
@@ -105,7 +100,7 @@ class ResponseObject(object):
         if top_query in ["status_code", "encoding", "ok", "reason", "url"]:
             if sub_query:
                 # status_code.XX
-                err_msg = "Failed to extract: {}\n".format(field)
+                err_msg = f"Failed to extract: {field}\n"
                 logger.error(err_msg)
                 raise exceptions.ParamsError(err_msg)
 
@@ -121,8 +116,8 @@ class ResponseObject(object):
             try:
                 return cookies[sub_query]
             except KeyError:
-                err_msg = "Failed to extract cookie! => {}\n".format(field)
-                err_msg += "response cookies: {}\n".format(cookies)
+                err_msg = f"Failed to extract cookie! => {field}\n"
+                err_msg += f"response cookies: {cookies}\n"
                 logger.error(err_msg)
                 raise exceptions.ExtractFailure(err_msg)
 
@@ -139,11 +134,7 @@ class ResponseObject(object):
             elif sub_query == "total_seconds":
                 return self.elapsed.total_seconds()
             else:
-                err_msg = (
-                    "{} is not valid datetime.timedelta attribute.\n".format(
-                        sub_query
-                    )
-                )
+                err_msg = f"{sub_query} is not valid datetime.timedelta attribute.\n"
                 err_msg += available_attributes
                 logger.error(err_msg)
                 raise exceptions.ParamsError(err_msg)
@@ -158,8 +149,8 @@ class ResponseObject(object):
             try:
                 return headers[sub_query]
             except KeyError:
-                err_msg = "Failed to extract header! => {}\n".format(field)
-                err_msg += "response headers: {}\n".format(headers)
+                err_msg = f"Failed to extract header! => {field}\n"
+                err_msg += f"response headers: {headers}\n"
                 logger.error(err_msg)
                 raise exceptions.ExtractFailure(err_msg)
 
@@ -185,10 +176,8 @@ class ResponseObject(object):
                 return utils.query_json(body, sub_query)
             else:
                 # content = "<html>abcdefg</html>", content.xxx
-                err_msg = "Failed to extract attribute from response body! => {}\n".format(
-                    field
-                )
-                err_msg += "response body: {}\n".format(body)
+                err_msg = f"Failed to extract attribute from response body! => {field}\n"
+                err_msg += f"response body: {body}\n"
                 logger.error(err_msg)
                 raise exceptions.ExtractFailure(err_msg)
 
@@ -208,20 +197,14 @@ class ResponseObject(object):
                 return utils.query_json(attributes, sub_query)
             else:
                 # content = "attributes.new_attribute_not_exist"
-                err_msg = "Failed to extract cumstom set attribute from teardown hooks! => {}\n".format(
-                    field
-                )
-                err_msg += "response set attributes: {}\n".format(attributes)
+                err_msg = f"Failed to extract cumstom set attribute from teardown hooks! => {field}\n"
+                err_msg += f"response set attributes: {attributes}\n"
                 logger.error(err_msg)
                 raise exceptions.TeardownHooksFailure(err_msg)
 
         # others
         else:
-            err_msg = (
-                "Failed to extract attribute from response! => {}\n".format(
-                    field
-                )
-            )
+            err_msg = f"Failed to extract attribute from response! => {field}\n"
             err_msg += "available response attributes: status_code, cookies, elapsed, headers, content, text, json, encoding, ok, reason, url.\n\n"
             err_msg += "If you want to set attribute in teardown_hooks, take the following example as reference:\n"
             err_msg += "response.new_attribute = 'new_attribute_value'\n"
@@ -234,9 +217,7 @@ class ResponseObject(object):
         """
         field = field.replace(" ", "")
         separator = "#"
-        keyword, valuepath_and_expression, extract_path = field.split(
-            separator
-        )
+        keyword, valuepath_and_expression, extract_path = field.split(separator)
 
         if keyword == "for":
             try:
@@ -246,21 +227,15 @@ class ResponseObject(object):
                 log.error(err_msg)
                 raise exceptions.ExtractFailure(err_msg)
 
-            condition_list_path, expression = valuepath_and_expression.split(
-                ","
-            )
+            condition_list_path, expression = valuepath_and_expression.split(",")
             # 取值的时候，需要移除content.前缀
-            condition_list = pydash.get(
-                content, condition_list_path.replace("content.", "", 1), None
-            )
+            condition_list = pydash.get(content, condition_list_path.replace("content.", "", 1), None)
 
             err_msg = ""
             if not condition_list:
                 err_msg = f"抽取条件:{condition_list_path}取值不存在"
             elif isinstance(condition_list, list) is False:
-                err_msg = (
-                    f"抽取条件的值只能是list类型，实际是{type(condition_list)}"
-                )
+                err_msg = f"抽取条件的值只能是list类型，实际是{type(condition_list)}"
 
             if err_msg:
                 log.error(err_msg)
@@ -280,9 +255,7 @@ class ResponseObject(object):
                     # 如果抽取路径以content.开头，就从整个json取
                     # 否则,从当前的对象取
                     if extract_path.startswith("content."):
-                        extract_value = pydash.get(
-                            content, extract_path.replace("content.", "", 1)
-                        )
+                        extract_value = pydash.get(content, extract_path.replace("content.", "", 1))
                     else:
                         extract_value = pydash.get(d, extract_path)
                     break
@@ -298,10 +271,8 @@ class ResponseObject(object):
         path = field.replace("content", "$", 1)
         res: list = jsonpath.jsonpath(obj, path)
         if not res:
-            err_msg = "Failed to extract attribute from response body! => {}\n".format(
-                field
-            )
-            err_msg += "response body: {}\n".format(obj)
+            err_msg = f"Failed to extract attribute from response body! => {field}\n"
+            err_msg += f"response body: {obj}\n"
             raise exceptions.ExtractFailure(err_msg)
         else:
             return res[0]
@@ -309,20 +280,15 @@ class ResponseObject(object):
     def extract_field(self, field):
         """extract value from requests.Response."""
         if not isinstance(field, basestring):
-            err_msg = "Invalid extractor! => {}\n".format(field)
+            err_msg = f"Invalid extractor! => {field}\n"
             logger.error(err_msg)
             raise exceptions.ParamsError(err_msg)
 
-        msg = "extract: {}".format(field)
+        msg = f"extract: {field}"
 
-        if (
-            text_extractor_regexp_compile.match(field)
-            and field.startswith("content.") is False
-        ):
+        if text_extractor_regexp_compile.match(field) and field.startswith("content.") is False:
             value = self._extract_field_with_regex(field)
-        elif list_condition_extractor_regexp_compile.match(
-            field.replace(" ", "")
-        ):
+        elif list_condition_extractor_regexp_compile.match(field.replace(" ", "")):
             value = self._extract_with_condition(field)
         else:
             value = self._extract_field_with_delimiter(field)
@@ -330,7 +296,7 @@ class ResponseObject(object):
         if is_py2 and isinstance(value, unicode):
             value = value.encode("utf-8")
 
-        msg += "\t=> {}".format(value)
+        msg += f"\t=> {value}"
         logger.debug(msg)
 
         return value
@@ -351,9 +317,7 @@ class ResponseObject(object):
 
         logger.info("start to extract from response object.")
         extracted_variables_mapping = OrderedDict()
-        extract_binds_order_dict = utils.convert_mappinglist_to_orderdict(
-            extractors
-        )
+        extract_binds_order_dict = utils.convert_mappinglist_to_orderdict(extractors)
         logger.info("extractors:  %s", extract_binds_order_dict)
         for key, field in extract_binds_order_dict.items():
             if "$" in field:

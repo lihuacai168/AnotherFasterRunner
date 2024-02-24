@@ -1,5 +1,4 @@
 # !/usr/bin/python3
-# -*- coding: utf-8 -*-
 
 # @Author: 花菜
 # @File: ci.py
@@ -11,19 +10,19 @@ import re
 import time
 
 import xmltodict
-from django.http import HttpResponse
 from django.conf import settings
+from django.http import HttpResponse
+from django.utils.decorators import method_decorator
 from django_celery_beat.models import PeriodicTask
 from drf_yasg.utils import swagger_auto_schema
-
-from fastrunner import models
-from fastrunner.utils import loader, lark_message
-from fastrunner.utils.decorator import request_log
-from django.utils.decorators import method_decorator
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
-from fastrunner.serializers import CISerializer, CIReportSerializer
+
+from fastrunner import models
+from fastrunner.serializers import CIReportSerializer, CISerializer
+from fastrunner.utils import lark_message, loader
+from fastrunner.utils.decorator import request_log
 from fastrunner.utils.host import parse_host
 from fastrunner.utils.loader import save_summary
 
@@ -48,9 +47,7 @@ def summary2junit(summary: dict) -> dict:
     time_info = summary.get("time")
     res["testsuites"]["testsuite"]["time"] = time_info.get("duration")
     start_at: str = time_info.get("start_at")
-    datetime_str = datetime.datetime.fromtimestamp(
-        int(float(start_at))
-    ).strftime("%Y-%m-%dT%H:%M:%S.%f")
+    datetime_str = datetime.datetime.fromtimestamp(int(float(start_at))).strftime("%Y-%m-%dT%H:%M:%S.%f")
     res["testsuites"]["testsuite"]["timestamp"] = datetime_str
 
     details = summary.get("details", [])
@@ -82,11 +79,7 @@ def summary2junit(summary: dict) -> dict:
                 step_status = record.get("status")
                 if step_status == "failure":
                     failure_details.append(
-                        f"{index}-{record['name']}"
-                        + "\n"
-                        + record.get("attachment")
-                        + "\n"
-                        + "*" * 68
+                        f"{index}-{record['name']}" + "\n" + record.get("attachment") + "\n" + "*" * 68
                     )
                 elif step_status == "error":
                     case_error = True
@@ -131,26 +124,18 @@ class CIView(GenericViewSet):
             for pk_kwargs in pk_kwargs_list:
                 pk: int = pk_kwargs["pk"]
                 kwargs: dict = json.loads(pk_kwargs["kwargs"])
-                ci_project_ids: list = eval(
-                    kwargs.get("ci_project_ids") or "[]"
-                )
+                ci_project_ids: list = eval(kwargs.get("ci_project_ids") or "[]")
                 if isinstance(ci_project_ids, int):
                     ci_project_ids = [ci_project_ids]
 
                 # 定时任务中的ci_project_id和ci_env同时匹配
-                if (
-                    ci_project_id in ci_project_ids
-                    and ci_env
-                    and ci_env == kwargs.get("ci_env")
-                ):
+                if ci_project_id in ci_project_ids and ci_env and ci_env == kwargs.get("ci_env"):
                     enabled_task_ids.append(pk)
                     project = pk_kwargs["description"]
 
             # 没有匹配用例，直接返回
             if not enabled_task_ids:
-                datetime_str = datetime.datetime.fromtimestamp(
-                    int(time.time())
-                ).strftime("%Y-%m-%dT%H:%M:%S.%f")
+                datetime_str = datetime.datetime.fromtimestamp(int(time.time())).strftime("%Y-%m-%dT%H:%M:%S.%f")
                 not_found_case_res = {
                     "testsuites": {
                         "testsuite": {
@@ -181,15 +166,9 @@ class CIView(GenericViewSet):
                 task_obj: str = query.filter(id=task_id).first()
                 # 如果task中存在重载配置，就覆盖用例中的配置
                 override_config = json.loads(task_obj.kwargs).get("config")
-                if (
-                    override_config_body is None
-                    and override_config
-                    and override_config != "请选择"
-                ):
+                if override_config_body is None and override_config and override_config != "请选择":
                     override_config_body = eval(
-                        models.Config.objects.get(
-                            name=override_config, project__id=project
-                        ).body
+                        models.Config.objects.get(name=override_config, project__id=project).body
                     )
 
                 if task_obj:
@@ -202,50 +181,32 @@ class CIView(GenericViewSet):
                 else:
                     continue
                 # 反查出一个task中包含的所有用例
-                suite = list(
-                    models.Case.objects.filter(pk__in=eval(case_ids))
-                    .order_by("id")
-                    .values("id", "name")
-                )
+                suite = list(models.Case.objects.filter(pk__in=eval(case_ids)).order_by("id").values("id", "name"))
                 for case in suite:
-                    case_step_list = (
-                        models.CaseStep.objects.filter(case__id=case["id"])
-                        .order_by("step")
-                        .values("body")
-                    )
+                    case_step_list = models.CaseStep.objects.filter(case__id=case["id"]).order_by("step").values("body")
                     testcase_list = []
                     for case_step in case_step_list:
                         body = eval(case_step["body"])
                         if body["request"].get("url"):
                             testcase_list.append(parse_host(host, body))
-                        elif config is None and body["request"].get(
-                            "base_url"
-                        ):
+                        elif config is None and body["request"].get("base_url"):
                             # 当前步骤是配置
                             # 如果task中存在重载配置，就覆盖用例中的配置
                             if override_config_body:
                                 config = override_config_body
                             else:
-                                config = eval(
-                                    models.Config.objects.get(
-                                        name=body["name"], project__id=project
-                                    ).body
-                                )
+                                config = eval(models.Config.objects.get(name=body["name"], project__id=project).body)
                     config_list.append(parse_host(host, config))
                     test_sets.append(testcase_list)
                     config = None
                 suite_list.extend(suite)
                 override_config_body = None
             # 同步运行用例
-            summary, _ = loader.debug_suite(
-                test_sets, project, suite_list, config_list, save=False
-            )
+            summary, _ = loader.debug_suite(test_sets, project, suite_list, config_list, save=False)
             ci_project_namespace = ser.validated_data["ci_project_namespace"]
             ci_project_name = ser.validated_data["ci_project_name"]
             ci_job_id = ser.validated_data["ci_job_id"]
-            summary[
-                "name"
-            ] = f"{ci_project_namespace}_{ci_project_name}_job{ci_job_id}"
+            summary["name"] = f"{ci_project_namespace}_{ci_project_name}_job{ci_job_id}"
 
             report_id = save_summary(
                 summary.get("name"),
@@ -265,9 +226,7 @@ class CIView(GenericViewSet):
                     webhook=webhook,
                     ci_job_url=ser.validated_data["ci_job_url"],
                     ci_pipeline_url=ser.validated_data["ci_pipeline_url"],
-                    case_count=junit_results["testsuites"]["testsuite"][
-                        "tests"
-                    ],
+                    case_count=junit_results["testsuites"]["testsuite"]["tests"],
                 )
             return HttpResponse(xml_data, content_type="text/xml")
         else:
@@ -281,15 +240,11 @@ class CIView(GenericViewSet):
         ser = CIReportSerializer(data=request.query_params)
         if ser.is_valid():
             ci_job_id = ser.validated_data["ci_job_id"]
-            report_obj = models.Report.objects.filter(
-                ci_job_id=ci_job_id
-            ).first()
+            report_obj = models.Report.objects.filter(ci_job_id=ci_job_id).first()
             if report_obj:
                 report_url = f"{settings.BASE_REPORT_URL}/{report_obj.id}/"
             else:
                 return Response(data=f"查找的ci_job_id: {ci_job_id}不存在")
             return Response(data=report_url)
         else:
-            return Response(
-                data=ser.errors, status=status.HTTP_400_BAD_REQUEST
-            )
+            return Response(data=ser.errors, status=status.HTTP_400_BAD_REQUEST)

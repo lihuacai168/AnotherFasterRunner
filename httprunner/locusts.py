@@ -1,10 +1,8 @@
-# encoding: utf-8
-
 import io
+import logging
 import multiprocessing
 import os
 import sys
-import logging
 
 # from httprunner.logger import color_print
 from locust.main import main
@@ -44,12 +42,10 @@ def gen_locustfile(testcase_file_path):
         "locustfile_template",
     )
 
-    with io.open(template_path, encoding="utf-8") as template:
-        with io.open(locustfile_path, "w", encoding="utf-8") as locustfile:
+    with open(template_path, encoding="utf-8") as template:
+        with open(locustfile_path, "w", encoding="utf-8") as locustfile:
             template_content = template.read()
-            template_content = template_content.replace(
-                "$TESTCASE_FILE", testcase_file_path
-            )
+            template_content = template_content.replace("$TESTCASE_FILE", testcase_file_path)
             locustfile.write(template_content)
 
     return locustfile_path

@@ -1,11 +1,12 @@
 from copy import deepcopy
 
 from django.core.exceptions import ObjectDoesNotExist
-from django.utils.decorators import method_decorator
 from django.db.models import Q
-from rest_framework.viewsets import GenericViewSet
-from fastrunner import models, serializers
+from django.utils.decorators import method_decorator
 from rest_framework.response import Response
+from rest_framework.viewsets import GenericViewSet
+
+from fastrunner import models, serializers
 from fastrunner.utils import response
 from fastrunner.utils.decorator import request_log
 from fastrunner.utils.parser import Format
@@ -21,11 +22,7 @@ class ConfigView(GenericViewSet):
         project = request.query_params["project"]
         search = request.query_params["search"]
 
-        queryset = (
-            self.get_queryset()
-            .filter(project__id=project)
-            .order_by("-update_time")
-        )
+        queryset = self.get_queryset().filter(project__id=project).order_by("-update_time")
 
         if search != "":
             queryset = queryset.filter(name__contains=search)
@@ -70,9 +67,7 @@ class ConfigView(GenericViewSet):
         except ObjectDoesNotExist:
             return Response(response.PROJECT_NOT_EXISTS)
 
-        if models.Config.objects.filter(
-            name=config.name, project=config.project
-        ).first():
+        if models.Config.objects.filter(name=config.name, project=config.project).first():
             return Response(response.CONFIG_EXISTS)
 
         config_body = {
@@ -82,9 +77,7 @@ class ConfigView(GenericViewSet):
             "project": config.project,
         }
 
-        models.Config.objects.create(
-            **config_body, creator=request.user.username
-        )
+        models.Config.objects.create(**config_body, creator=request.user.username)
         return Response(response.CONFIG_ADD_SUCCESS)
 
     @method_decorator(request_log(level="INFO"))
@@ -111,16 +104,10 @@ class ConfigView(GenericViewSet):
         format = Format(request.data, level="config")
         format.parse()
 
-        if (
-            models.Config.objects.exclude(id=pk)
-            .filter(name=format.name)
-            .first()
-        ):
+        if models.Config.objects.exclude(id=pk).filter(name=format.name).first():
             return Response(response.CONFIG_EXISTS)
 
-        case_step = models.CaseStep.objects.filter(
-            method="config", name=config.name
-        )
+        case_step = models.CaseStep.objects.filter(method="config", name=config.name)
 
         for case in case_step:
             case.name = format.name
@@ -131,9 +118,7 @@ class ConfigView(GenericViewSet):
         config.body = format.testcase
         config.base_url = format.base_url
         if format.is_default is True:
-            models.Config.objects.filter(
-                project=config.project_id, is_default=True
-            ).update(is_default=False)
+            models.Config.objects.filter(project=config.project_id, is_default=True).update(is_default=False)
         config.is_default = format.is_default
         config.updater = request.user.username
         config.save()
@@ -184,18 +169,14 @@ class ConfigView(GenericViewSet):
         try:
             if kwargs.get("pk"):  # 单个删除
                 config_obj = models.Config.objects.get(id=kwargs["pk"])
-                if models.CaseStep.objects.filter(
-                    method="config", name=config_obj.name
-                ).exists():
+                if models.CaseStep.objects.filter(method="config", name=config_obj.name).exists():
                     return Response(response.CONFIG_IS_USED)
                 config_obj.delete()
             else:
                 delete_item = 0
                 for content in request.data:
                     config_obj = models.Config.objects.get(id=content["id"])
-                    if models.CaseStep.objects.filter(
-                        method="config", name=config_obj.name
-                    ).exists():
+                    if models.CaseStep.objects.filter(method="config", name=config_obj.name).exists():
                         continue
                     else:
                         config_obj.delete()
@@ -218,17 +199,11 @@ class VariablesView(GenericViewSet):
         project = request.query_params["project"]
         search = request.query_params["search"]
 
-        queryset = (
-            self.get_queryset()
-            .filter(project__id=project)
-            .order_by("-update_time")
-        )
+        queryset = self.get_queryset().filter(project__id=project).order_by("-update_time")
 
         if search != "":
             queryset = queryset.filter(
-                Q(key__contains=search)
-                | Q(value__contains=search)
-                | Q(description__contains=search)
+                Q(key__contains=search) | Q(value__contains=search) | Q(description__contains=search)
             )
 
         pagination_queryset = self.paginate_queryset(queryset)
@@ -249,15 +224,11 @@ class VariablesView(GenericViewSet):
         ser = self.serializer_class(data=request.data)
         if ser.is_valid():
             try:
-                project = models.Project.objects.get(
-                    id=request.data["project"]
-                )
+                project = models.Project.objects.get(id=request.data["project"])
             except ObjectDoesNotExist:
                 return Response(response.PROJECT_NOT_EXISTS)
 
-            if models.Variables.objects.filter(
-                key=request.data["key"], project=project
-            ).first():
+            if models.Variables.objects.filter(key=request.data["key"], project=project).first():
                 return Response(response.VARIABLES_EXISTS)
 
             request.data["project"] = project
@@ -331,11 +302,7 @@ class HostIPView(GenericViewSet):
     @method_decorator(request_log(level="DEBUG"))
     def list(self, request):
         project = request.query_params["project"]
-        queryset = (
-            self.get_queryset()
-            .filter(project__id=project)
-            .order_by("-update_time")
-        )
+        queryset = self.get_queryset().filter(project__id=project).order_by("-update_time")
         pagination_queryset = self.paginate_queryset(queryset)
         serializer = self.get_serializer(pagination_queryset, many=True)
 
@@ -357,9 +324,7 @@ class HostIPView(GenericViewSet):
         except ObjectDoesNotExist:
             return Response(response.PROJECT_NOT_EXISTS)
 
-        if models.HostIP.objects.filter(
-            name=request.data["name"], project=project
-        ).first():
+        if models.HostIP.objects.filter(name=request.data["name"], project=project).first():
             return Response(response.HOSTIP_EXISTS)
 
         request.data["project"] = project
@@ -382,11 +347,7 @@ class HostIPView(GenericViewSet):
         except ObjectDoesNotExist:
             return Response(response.HOSTIP_NOT_EXISTS)
 
-        if (
-            models.HostIP.objects.exclude(id=pk)
-            .filter(name=request.data["name"])
-            .first()
-        ):
+        if models.HostIP.objects.exclude(id=pk).filter(name=request.data["name"]).first():
             return Response(response.HOSTIP_EXISTS)
 
         host.name = request.data["name"]
@@ -412,11 +373,6 @@ class HostIPView(GenericViewSet):
         """
         pk = kwargs["pk"]
 
-        queryset = (
-            self.get_queryset()
-            .filter(project__id=pk)
-            .order_by("-update_time")
-            .values("id", "name")
-        )
+        queryset = self.get_queryset().filter(project__id=pk).order_by("-update_time").values("id", "name")
 
         return Response(queryset)

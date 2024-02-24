@@ -1,5 +1,5 @@
-from urllib.parse import urlparse
 import re
+from urllib.parse import urlparse
 
 
 def parse_host(ip, api):
@@ -29,11 +29,7 @@ def parse_host(ip, api):
                     else:
                         api["request"].setdefault("headers", {"Host": host})
                     try:
-                        api["request"]["url"] = api["request"]["url"].replace(
-                            host, ip[-1]
-                        )
+                        api["request"]["url"] = api["request"]["url"].replace(host, ip[-1])
                     except KeyError:
-                        api["request"]["base_url"] = api["request"][
-                            "base_url"
-                        ].replace(host, ip[-1])
+                        api["request"]["base_url"] = api["request"]["base_url"].replace(host, ip[-1])
     return api

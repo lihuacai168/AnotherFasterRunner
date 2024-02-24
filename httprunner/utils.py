@@ -1,12 +1,10 @@
-# encoding: utf-8
-
 import copy
 import io
 import itertools
 import json
+import logging
 import os.path
 from datetime import datetime
-import logging
 
 from httprunner import exceptions
 from httprunner.compat import OrderedDict, basestring, is_py2
@@ -25,7 +23,7 @@ def set_os_environ(variables_mapping):
     """set variables mapping to os.environ"""
     for variable in variables_mapping:
         os.environ[variable] = variables_mapping[variable]
-        logger.debug("Loaded variable: {}".format(variable))
+        logger.debug(f"Loaded variable: {variable}")
 
 
 def query_json(json_content, query, delimiter="."):
@@ -49,7 +47,7 @@ def query_json(json_content, query, delimiter="."):
     @return queried result
     """
     raise_flag = False
-    response_body = "response body: {}\n".format(json_content)
+    response_body = f"response body: {json_content}\n"
     try:
         for key in query.split(delimiter):
             if isinstance(json_content, (list, basestring)):
@@ -57,17 +55,13 @@ def query_json(json_content, query, delimiter="."):
             elif isinstance(json_content, dict):
                 json_content = json_content[key]
             else:
-                logger.error(
-                    "invalid type value: {}({})".format(
-                        json_content, type(json_content)
-                    )
-                )
+                logger.error(f"invalid type value: {json_content}({type(json_content)})")
                 raise_flag = True
     except (KeyError, ValueError, IndexError):
         raise_flag = True
 
     if raise_flag:
-        err_msg = "Failed to extract! => {}\n".format(query)
+        err_msg = f"Failed to extract! => {query}\n"
         err_msg += response_body
         logger.error(err_msg)
         raise exceptions.ExtractFailure(err_msg)
@@ -412,17 +406,11 @@ def print_io(in_out):
 def create_scaffold(project_name):
     """create scaffold with specified project name."""
     if os.path.isdir(project_name):
-        logger.warning(
-            "Folder {} exists, please specify a new folder name.".format(
-                project_name
-            )
-        )
+        logger.warning(f"Folder {project_name} exists, please specify a new folder name.")
         return
 
-    logger.info(
-        "Start to create new project: {}".format(project_name), "GREEN"
-    )
-    logger.info("CWD: {}\n".format(os.getcwd()), "BLUE")
+    logger.info(f"Start to create new project: {project_name}", "GREEN")
+    logger.info(f"CWD: {os.getcwd()}\n", "BLUE")
 
     def create_path(path, ptype):
         if ptype == "folder":
@@ -430,7 +418,7 @@ def create_scaffold(project_name):
         elif ptype == "file":
             open(path, "w").close()
 
-        msg = "created {}: {}".format(ptype, path)
+        msg = f"created {ptype}: {path}"
         logger.info(msg, "BLUE")
 
     path_list = [
@@ -483,18 +471,12 @@ def validate_json_file(file_list):
     """validate JSON testcase format"""
     for json_file in set(file_list):
         if not json_file.endswith(".json"):
-            logger.warning(
-                "Only JSON file format can be validated, skip: {}".format(
-                    json_file
-                )
-            )
+            logger.warning(f"Only JSON file format can be validated, skip: {json_file}")
             continue
 
-        logger.info(
-            "Start to validate JSON file: {}".format(json_file), "GREEN"
-        )
+        logger.info(f"Start to validate JSON file: {json_file}", "GREEN")
 
-        with io.open(json_file) as stream:
+        with open(json_file) as stream:
             try:
                 json.load(stream)
             except ValueError as e:
@@ -507,32 +489,26 @@ def prettify_json_file(file_list):
     """prettify JSON testcase format"""
     for json_file in set(file_list):
         if not json_file.endswith(".json"):
-            logger.warning(
-                "Only JSON file format can be prettified, skip: {}".format(
-                    json_file
-                )
-            )
+            logger.warning(f"Only JSON file format can be prettified, skip: {json_file}")
             continue
 
-        logger.info(
-            "Start to prettify JSON file: {}".format(json_file), "GREEN"
-        )
+        logger.info(f"Start to prettify JSON file: {json_file}", "GREEN")
 
         dir_path = os.path.dirname(json_file)
         file_name, file_suffix = os.path.splitext(os.path.basename(json_file))
-        outfile = os.path.join(dir_path, "{}.pretty.json".format(file_name))
+        outfile = os.path.join(dir_path, f"{file_name}.pretty.json")
 
-        with io.open(json_file, "r", encoding="utf-8") as stream:
+        with open(json_file, encoding="utf-8") as stream:
             try:
                 obj = json.load(stream)
             except ValueError as e:
                 raise SystemExit(e)
 
-        with io.open(outfile, "w", encoding="utf-8") as out:
+        with open(outfile, "w", encoding="utf-8") as out:
             json.dump(obj, out, indent=4, separators=(",", ": "))
             out.write("\n")
 
-        print("success: {}".format(outfile))
+        print(f"success: {outfile}")
 
 
 def get_python2_retire_msg():
@@ -541,9 +517,7 @@ def get_python2_retire_msg():
     left_days = (retire_day - today).days
 
     if left_days > 0:
-        retire_msg = "Python 2 will retire in {} days, why not move to Python 3?".format(
-            left_days
-        )
+        retire_msg = "Python 2 will retire in {} days, why not move to Python 3?".format(left_days)
     else:
         retire_msg = "Python 2 has been retired, you should move to Python 3."
 

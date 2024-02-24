@@ -1,17 +1,17 @@
 import json
 
 import croniter
-
 from django.utils.decorators import method_decorator
 from django_celery_beat import models
-from rest_framework.viewsets import GenericViewSet
 from rest_framework.response import Response
+from rest_framework.viewsets import GenericViewSet
+
 from FasterRunner import pagination
+from FasterRunner.mycelery import app
 from fastrunner import serializers
 from fastrunner.utils import response
 from fastrunner.utils.decorator import request_log
 from fastrunner.utils.task import Task
-from FasterRunner.mycelery import app
 
 
 class ScheduleView(GenericViewSet):
@@ -44,17 +44,11 @@ class ScheduleView(GenericViewSet):
         project = request.query_params.get("project")
         task_name = request.query_params.get("task_name")
         creator = request.query_params.get("creator")
-        schedule = (
-            self.get_queryset()
-            .filter(description=project)
-            .order_by("-date_changed")
-        )
+        schedule = self.get_queryset().filter(description=project).order_by("-date_changed")
         if task_name:
             schedule = schedule.filter(name__contains=task_name)
         if creator:
-            schedule = schedule.filter(
-                kwargs__contains=f'"creator": "{creator}"'
-            )
+            schedule = schedule.filter(kwargs__contains=f'"creator": "{creator}"')
         page_schedule = self.paginate_queryset(schedule)
         serializer = self.get_serializer(page_schedule, many=True)
         return self.get_paginated_response(serializer.data)
@@ -87,9 +81,7 @@ class ScheduleView(GenericViewSet):
             resp = task.add_task()
             return Response(resp)
         else:
-            return Response(
-                {"code": "0101", "success": False, "msg": "参数校验失败"}
-            )
+            return Response({"code": "0101", "success": False, "msg": "参数校验失败"})
 
     @method_decorator(request_log(level="INFO"))
     def copy(self, request, **kwargs):

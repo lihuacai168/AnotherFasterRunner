@@ -1,8 +1,9 @@
 import json
+from enum import Enum
 from typing import Optional
 
 from pydantic import BaseModel, conint
-from enum import Enum
+
 from fastrunner.utils.convert2hrp import Hrp
 
 
@@ -14,16 +15,16 @@ class JsonValueType(str, Enum):
 
 
 class BoomerExtendCmd(BaseModel):
-    max_rps: Optional[int]
+    max_rps: int | None
     master_host: str = "10.129.144.24"
     master_port: int = 5557
     json_value_type: str = JsonValueType.interface.value
     replace_str_index: dict
     disable_keepalive: conint(gt=0, lt=1) = 0
-    cpu_profile: Optional[str]
-    cpu_profile_duration: Optional[int]
-    mem_profile: Optional[str]
-    mem_profile_duration: Optional[int]
+    cpu_profile: str | None
+    cpu_profile_duration: int | None
+    mem_profile: str | None
+    mem_profile_duration: int | None
 
 
 class BoomerIn(BaseModel):
@@ -32,7 +33,7 @@ class BoomerIn(BaseModel):
     verbose: conint(gt=0, lt=1) = 0
 
 
-class Boomer(object):
+class Boomer:
     def __init__(self, hrp: Hrp, extend_cmd: BoomerExtendCmd):
         self.hrp = hrp
         self.extend_cmd = extend_cmd

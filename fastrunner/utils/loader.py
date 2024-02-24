@@ -63,11 +63,11 @@ def is_variable(tup):
     return True
 
 
-class FileLoader(object):
+class FileLoader:
     @staticmethod
     def dump_yaml_file(yaml_file, data):
         """dump yaml file"""
-        with io.open(yaml_file, "w", encoding="utf-8") as stream:
+        with open(yaml_file, "w", encoding="utf-8") as stream:
             yaml.dump(
                 data,
                 stream,
@@ -80,7 +80,7 @@ class FileLoader(object):
     @staticmethod
     def dump_json_file(json_file, data):
         """dump json file"""
-        with io.open(json_file, "w", encoding="utf-8") as stream:
+        with open(json_file, "w", encoding="utf-8") as stream:
             json.dump(
                 data,
                 stream,
@@ -92,13 +92,13 @@ class FileLoader(object):
     @staticmethod
     def dump_python_file(python_file, data):
         """dump python file"""
-        with io.open(python_file, "w", encoding="utf-8") as stream:
+        with open(python_file, "w", encoding="utf-8") as stream:
             stream.write(data)
 
     @staticmethod
     def dump_binary_file(binary_file, data):
         """dump file"""
-        with io.open(binary_file, "wb") as stream:
+        with open(binary_file, "wb") as stream:
             stream.write(data)
 
     @staticmethod
@@ -221,14 +221,8 @@ def parse_tests(testcases, debugtalk, name=None, config=None, project=None):
         testset["config"]["name"] = name
 
     # 获取当前项目的全局变量
-    global_variables = (
-        models.Variables.objects.filter(project=project)
-        .all()
-        .values("key", "value")
-    )
-    all_config_variables_keys = set().union(
-        *(d.keys() for d in testset["config"].setdefault("variables", []))
-    )
+    global_variables = models.Variables.objects.filter(project=project).all().values("key", "value")
+    all_config_variables_keys = set().union(*(d.keys() for d in testset["config"].setdefault("variables", [])))
     global_variables_list_of_dict = []
     for item in global_variables:
         if item["key"] not in all_config_variables_keys:
@@ -236,9 +230,7 @@ def parse_tests(testcases, debugtalk, name=None, config=None, project=None):
 
     # 有variables就直接extend,没有就加一个[],再extend
     # 配置的variables和全局变量重叠,优先使用配置中的variables
-    testset["config"].setdefault("variables", []).extend(
-        global_variables_list_of_dict
-    )
+    testset["config"].setdefault("variables", []).extend(global_variables_list_of_dict)
     testset["config"]["refs"] = refs
 
     # 配置中的变量和全局变量合并
@@ -255,12 +247,8 @@ def parse_tests(testcases, debugtalk, name=None, config=None, project=None):
         extract: list = testcase.get("extract", [])
         validate: list = testcase.get("validate", [])
         api_variables: list = testcase.get("variables", [])
-        parse_validate_and_extract(
-            extract, variables_mapping, functions_mapping, api_variables
-        )
-        parse_validate_and_extract(
-            validate, variables_mapping, functions_mapping, api_variables
-        )
+        parse_validate_and_extract(extract, variables_mapping, functions_mapping, api_variables)
+        parse_validate_and_extract(validate, variables_mapping, functions_mapping, api_variables)
 
     return testset
 
@@ -273,9 +261,7 @@ def load_debugtalk(project):
     code = models.Debugtalk.objects.get(project__id=project).code
 
     # file_path = os.path.join(tempfile.mkdtemp(prefix='FasterRunner'), "debugtalk.py")
-    tempfile_path = tempfile.mkdtemp(
-        prefix="FasterRunner", dir=os.path.join(BASE_DIR, "tempWorkDir")
-    )
+    tempfile_path = tempfile.mkdtemp(prefix="FasterRunner", dir=os.path.join(BASE_DIR, "tempWorkDir"))
     file_path = os.path.join(tempfile_path, "debugtalk.py")
     os.chdir(tempfile_path)
     try:
@@ -326,10 +312,7 @@ def debug_suite_parallel(test_sets: list):
     workers = min(len(test_sets), 10)
     with ThreadPoolExecutor(max_workers=workers) as executor:
         futures = {executor.submit(run_test, t): t for t in test_sets}
-        results = [
-            future.result()
-            for future in concurrent.futures.as_completed(futures)
-        ]
+        results = [future.result() for future in concurrent.futures.as_completed(futures)]
 
     duration = time.time() - start
     return merge_parallel_result(results, duration)
@@ -395,9 +378,7 @@ def debug_suite(
                 failure_case_config.update(obj[index])
                 failure_case_config_mapping_list.append(failure_case_config)
         case_count = len(test_sets)
-        case_fail_rate = "{:.2%}".format(
-            len(failure_case_config_mapping_list) / case_count
-        )
+        case_fail_rate = "{:.2%}".format(len(failure_case_config_mapping_list) / case_count)
         summary["stat"].update(
             {
                 "failure_case_config_mapping_list": failure_case_config_mapping_list,
@@ -449,9 +430,7 @@ def debug_api(api, project, name=None, config=None, save=True, user=""):
     if config and config.get("parameters"):
         api_params = []
         for item in api:
-            params = item["request"].get("params") or item["request"].get(
-                "json"
-            )
+            params = item["request"].get("params") or item["request"].get("json")
             for v in params.values():
                 if type(v) == list:
                     api_params.extend(v)
@@ -498,9 +477,7 @@ def debug_api(api, project, name=None, config=None, save=True, user=""):
                 json_data = record["meta_data"]["response"].pop("json", {})
                 if json_data:
                     record["meta_data"]["response"]["jsonCopy"] = json_data
-        ConvertRequest.generate_curl(
-            summary["details"], convert_type=("curl", "boomer")
-        )
+        ConvertRequest.generate_curl(summary["details"], convert_type=("curl", "boomer"))
         return summary
     except Exception as e:
         logger.error(f"debug_api error: {e}")
@@ -523,16 +500,12 @@ def load_test(test, project=None):
     except KeyError:
         if "case" in test.keys():
             if test["body"]["method"] == "config":
-                case_step = models.Config.objects.get(
-                    name=test["body"]["name"], project=project
-                )
+                case_step = models.Config.objects.get(name=test["body"]["name"], project=project)
             else:
                 case_step = models.CaseStep.objects.get(id=test["id"])
         else:
             if test["body"]["method"] == "config":
-                case_step = models.Config.objects.get(
-                    name=test["body"]["name"], project=project
-                )
+                case_step = models.Config.objects.get(name=test["body"]["name"], project=project)
             else:
                 case_step = models.API.objects.get(id=test["id"])
 
@@ -564,19 +537,13 @@ def parse_summary(summary):
                 if isinstance(value, bytes):
                     record["meta_data"]["request"][key] = value.decode("utf-8")
                 if isinstance(value, RequestsCookieJar):
-                    record["meta_data"]["request"][
-                        key
-                    ] = requests.utils.dict_from_cookiejar(value)
+                    record["meta_data"]["request"][key] = requests.utils.dict_from_cookiejar(value)
 
             for key, value in record["meta_data"]["response"].items():
                 if isinstance(value, bytes):
-                    record["meta_data"]["response"][key] = value.decode(
-                        "utf-8"
-                    )
+                    record["meta_data"]["response"][key] = value.decode("utf-8")
                 if isinstance(value, RequestsCookieJar):
-                    record["meta_data"]["response"][
-                        key
-                    ] = requests.utils.dict_from_cookiejar(value)
+                    record["meta_data"]["response"][key] = requests.utils.dict_from_cookiejar(value)
 
             if "text/html" in record["meta_data"]["response"]["content_type"]:
                 record["meta_data"]["response"]["content"] = BeautifulSoup(
@@ -611,9 +578,7 @@ def save_summary(name, summary, project, type=2, user="", ci_metadata={}):
         }
     )
 
-    models.ReportDetail.objects.create(
-        summary_detail=summary_detail, report=report
-    )
+    models.ReportDetail.objects.create(summary_detail=summary_detail, report=report)
     return report.id
 
 

@@ -1,5 +1,4 @@
 # !/usr/bin/python3
-# -*- coding: utf-8 -*-
 
 # @Author: 花菜
 # @File: time_helper.py
@@ -128,11 +127,7 @@ def get_ts_int(interval: int = 0, t=None) -> int:
 def get_hour_ts(interval: int = 0) -> str:
     # 当前时间所在的小时，转换为时间戳
     # 2021-3-9 17:0:12, 取2021-3-9 17:0:0，然后转换为时间戳
-    now_hour = int(
-        datetime.datetime.now()
-        .replace(minute=0, second=0, microsecond=0)
-        .timestamp()
-    )
+    now_hour = int(datetime.datetime.now().replace(minute=0, second=0, microsecond=0).timestamp())
     return str(now_hour + interval * 3600)
 
 

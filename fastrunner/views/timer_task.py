@@ -1,5 +1,4 @@
 # !/usr/bin/python3
-# -*- coding: utf-8 -*-
 
 # @Author:梨花菜
 # @File: timer_task.py
@@ -9,8 +8,8 @@
 import datetime
 
 from fastrunner import models
-from fastrunner.utils.loader import debug_api, save_summary
 from fastrunner.utils.ding_message import DingMessage
+from fastrunner.utils.loader import debug_api, save_summary
 
 
 # 单个用例组
@@ -29,11 +28,7 @@ def auto_run_testsuite_pk(**kwargs):
     name = models.Case.objects.get(pk=pk).name
 
     # 通过主键获取单个用例
-    test_list = (
-        models.CaseStep.objects.filter(case__id=pk)
-        .order_by("step")
-        .values("body")
-    )
+    test_list = models.CaseStep.objects.filter(case__id=pk).order_by("step").values("body")
 
     # 把用例加入列表
     testcase_list = []
@@ -41,17 +36,11 @@ def auto_run_testsuite_pk(**kwargs):
         body = eval(content["body"])
 
         if "base_url" in body["request"].keys():
-            config = eval(
-                models.Config.objects.get(
-                    name=body["name"], project__id=project_id
-                ).body
-            )
+            config = eval(models.Config.objects.get(name=body["name"], project__id=project_id).body)
             continue
         testcase_list.append(body)
 
-    summary = debug_api(
-        testcase_list, project_id, name=name, config=config, save=False
-    )
+    summary = debug_api(testcase_list, project_id, name=name, config=config, save=False)
 
     save_summary(
         f"{name}_" + datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),

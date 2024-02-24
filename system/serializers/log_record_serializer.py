@@ -1,5 +1,4 @@
 # !/usr/bin/python3
-# -*- coding: utf-8 -*-
 
 # @Author: 花菜
 # @File: log_record_serializer.py
@@ -7,6 +6,7 @@
 # @Email: lihuacai168@gmail.com
 
 from rest_framework import serializers
+
 from system.models import LogRecord
 
 

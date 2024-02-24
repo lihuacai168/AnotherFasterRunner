@@ -15,8 +15,9 @@ Including another URLconf
 """
 
 from django.urls import path
-from fastuser import views
+
 from fastrunner.views import timer_task
+from fastuser import views
 
 urlpatterns = [
     # 关闭注册入口，改为django admin创建用户

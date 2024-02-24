@@ -1,8 +1,6 @@
-# encoding: utf-8
-
 import argparse
-import multiprocessing
 import logging
+import multiprocessing
 import sys
 
 # from httprunner import logger
@@ -40,17 +38,13 @@ def main_hrun():
         "--html-report-name",
         help="specify html report name, only effective when generating html report.",
     )
-    parser.add_argument(
-        "--html-report-template", help="specify html report template path."
-    )
+    parser.add_argument("--html-report-template", help="specify html report template path.")
     parser.add_argument(
         "--log-level",
         default="INFO",
         help="Specify logging level, default is INFO.",
     )
-    parser.add_argument(
-        "--log-file", help="Write logs to specified file path."
-    )
+    parser.add_argument("--log-file", help="Write logs to specified file path.")
     parser.add_argument(
         "--dot-env-path",
         help="Specify .env file path, which is useful for keeping sensitive data.",
@@ -62,12 +56,8 @@ def main_hrun():
         help="Stop the test run on the first error or failure.",
     )
     parser.add_argument("--startproject", help="Specify new project name.")
-    parser.add_argument(
-        "--validate", nargs="*", help="Validate JSON testcase format."
-    )
-    parser.add_argument(
-        "--prettify", nargs="*", help="Prettify JSON testcase format."
-    )
+    parser.add_argument("--validate", nargs="*", help="Validate JSON testcase format.")
+    parser.add_argument("--prettify", nargs="*", help="Prettify JSON testcase format.")
 
     args = parser.parse_args()
     # logger.setup_logger(args.log_level, args.log_file)
@@ -76,7 +66,7 @@ def main_hrun():
         logger.warning(get_python2_retire_msg())
 
     if args.version:
-        logger.info("{}".format(__version__), "GREEN")
+        logger.info(f"{__version__}", "GREEN")
 
         exit(0)
 
@@ -96,11 +86,7 @@ def main_hrun():
         runner = HttpRunner(failfast=args.failfast)
         runner.run(args.testcase_paths, dot_env_path=args.dot_env_path)
     except Exception:
-        logger.error(
-            "!!!!!!!!!! exception stage: {} !!!!!!!!!!".format(
-                runner.exception_stage
-            )
-        )
+        logger.error(f"!!!!!!!!!! exception stage: {runner.exception_stage} !!!!!!!!!!")
         raise
 
     if not args.no_html_report:
@@ -168,9 +154,7 @@ def main_locust():
         """ locusts -f locustfile.py --processes 4
         """
         if "--no-web" in sys.argv:
-            logger.error(
-                "conflict parameter args: --processes & --no-web. \nexit."
-            )
+            logger.error("conflict parameter args: --processes & --no-web. \nexit.")
             sys.exit(1)
 
         processes_index = sys.argv.index("--processes")
@@ -182,11 +166,7 @@ def main_locust():
                 locusts -f locustfile.py --processes
             """
             processes_count = multiprocessing.cpu_count()
-            logger.warning(
-                "processes count not specified, use {} by default.".format(
-                    processes_count
-                )
-            )
+            logger.warning("processes count not specified, use {} by default.".format(processes_count))
         else:
             try:
                 """ locusts -f locustfile.py --processes 4 """
@@ -195,11 +175,7 @@ def main_locust():
             except ValueError:
                 """ locusts -f locustfile.py --processes -P 8888 """
                 processes_count = multiprocessing.cpu_count()
-                logger.warning(
-                    "processes count not specified, use {} by default.".format(
-                        processes_count
-                    )
-                )
+                logger.warning("processes count not specified, use {} by default.".format(processes_count))
 
         sys.argv.pop(processes_index)
         locusts.run_locusts_with_processes(sys.argv, processes_count)

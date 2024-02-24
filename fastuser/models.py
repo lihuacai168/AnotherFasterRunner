@@ -1,6 +1,5 @@
-from django.db import models
 from django.contrib.auth.models import AbstractUser
-
+from django.db import models
 
 # Create your models here.
 
@@ -34,9 +33,7 @@ class UserInfo(BaseTable):
         (0, "普通用户"),
         (1, "管理员"),
     )
-    username = models.CharField(
-        "用户名", max_length=20, unique=True, null=False
-    )
+    username = models.CharField("用户名", max_length=20, unique=True, null=False)
     password = models.CharField("登陆密码", max_length=100, null=False)
     email = models.EmailField("用户邮箱", unique=True, null=False)
     level = models.IntegerField("用户等级", choices=level_type, default=0)
@@ -51,16 +48,12 @@ class UserToken(BaseTable):
         verbose_name = "用户登陆token"
         db_table = "user_token"
 
-    user = models.OneToOneField(
-        to=UserInfo, on_delete=models.CASCADE, db_constraint=False
-    )
+    user = models.OneToOneField(to=UserInfo, on_delete=models.CASCADE, db_constraint=False)
     token = models.CharField("token", max_length=50)
 
 
 class MyUser(AbstractUser):
-    phone = models.CharField(
-        verbose_name="手机号码", unique=True, null=True, max_length=11
-    )
+    phone = models.CharField(verbose_name="手机号码", unique=True, null=True, max_length=11)
     show_hosts = models.BooleanField(
         verbose_name="是否显示Hosts相关的信息",
         default=False,

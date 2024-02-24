@@ -1,20 +1,20 @@
 import datetime
 
+import coreapi
 from django.core.exceptions import ObjectDoesNotExist
+from django.db import DataError
+from django.db.models import Q
 from django.utils.decorators import method_decorator
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status
-from rest_framework.viewsets import GenericViewSet
-from fastrunner import models, serializers
 from rest_framework.response import Response
+from rest_framework.schemas import AutoSchema
+from rest_framework.viewsets import GenericViewSet
+
+from fastrunner import models, serializers
 from fastrunner.utils import response
 from fastrunner.utils.decorator import request_log
 from fastrunner.utils.parser import Format, Parse
-from django.db import DataError
-from django.db.models import Q
-
-from rest_framework.schemas import AutoSchema
-import coreapi
 
 
 class APITemplateViewSchema(AutoSchema):
@@ -61,11 +61,7 @@ class APITemplateView(GenericViewSet):
             showYAPI = ser.validated_data.get("showYAPI")
             creator = ser.validated_data.get("creator")
 
-            queryset = (
-                self.get_queryset()
-                .filter(project__id=project, delete=delete)
-                .order_by("-update_time")
-            )
+            queryset = self.get_queryset().filter(project__id=project, delete=delete).order_by("-update_time")
 
             if only_me is True:
                 queryset = queryset.filter(creator=request.user)
@@ -79,9 +75,7 @@ class APITemplateView(GenericViewSet):
             if search != "":
                 search: list = search.split()
                 for key in search:
-                    queryset = queryset.filter(
-                        Q(name__contains=key) | Q(url__contains=key)
-                    )
+                    queryset = queryset.filter(Q(name__contains=key) | Q(url__contains=key))
 
             if node != "":
                 queryset = queryset.filter(relation=node)
@@ -166,9 +160,7 @@ class APITemplateView(GenericViewSet):
         ids = [api["id"] for api in apis]
 
         try:
-            models.API.objects.filter(project=project, id__in=ids).update(
-                relation=relation
-            )
+            models.API.objects.filter(project=project, id__in=ids).update(relation=relation)
         except ObjectDoesNotExist:
             return Response(response.API_NOT_FOUND)
 
@@ -205,15 +197,11 @@ class APITemplateView(GenericViewSet):
         try:
             if kwargs.get("pk"):  # 单个删除
                 # models.API.objects.get(id=kwargs['pk']).delete()
-                models.API.objects.filter(id=kwargs["pk"]).update(
-                    delete=1, update_time=datetime.datetime.now()
-                )
+                models.API.objects.filter(id=kwargs["pk"]).update(delete=1, update_time=datetime.datetime.now())
             else:
                 for content in request.data:
                     # models.API.objects.get(id=content['id']).delete()
-                    models.API.objects.filter(id=content["id"]).update(
-                        delete=1
-                    )
+                    models.API.objects.filter(id=content["id"]).update(delete=1)
 
         except ObjectDoesNotExist:
             return Response(response.API_NOT_FOUND)
@@ -250,21 +238,13 @@ class APITemplateView(GenericViewSet):
         3.更新case的update_time, updater
         """
         pk = kwargs["pk"]
-        source_api = (
-            models.API.objects.filter(pk=pk)
-            .values("name", "body", "url", "method", "project")
-            .first()
-        )
+        source_api = models.API.objects.filter(pk=pk).values("name", "body", "url", "method", "project").first()
         # 根据api反向查出project
         project = source_api.pop("project")
 
-        project_case_ids = models.Case.objects.filter(
-            project=project
-        ).values_list("id", flat=True)
+        project_case_ids = models.Case.objects.filter(project=project).values_list("id", flat=True)
         # 限制case_step只在当前项目
-        case_steps = models.CaseStep.objects.filter(
-            source_api_id=pk, case_id__in=project_case_ids
-        )
+        case_steps = models.CaseStep.objects.filter(source_api_id=pk, case_id__in=project_case_ids)
 
         case_steps.update(
             **source_api,
@@ -273,9 +253,7 @@ class APITemplateView(GenericViewSet):
         )
         case_ids = case_steps.values_list("case", flat=True)
         # 限制case只在当前项目
-        models.Case.objects.filter(
-            pk__in=list(case_ids), project=project
-        ).update(
+        models.Case.objects.filter(pk__in=list(case_ids), project=project).update(
             update_time=datetime.datetime.now(), updater=request.user.username
         )
         return Response(response.CASE_STEP_SYNC_SUCCESS)

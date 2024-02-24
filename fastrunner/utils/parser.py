@@ -34,12 +34,12 @@ class FileType(Enum):
     file = 7
 
 
-class Format(object):
+class Format:
     """
     解析标准HttpRunner脚本 前端->后端
     """
 
-    def __init__(self, body: Dict[str, Union[str, Dict]], level: str = "test"):
+    def __init__(self, body: dict[str, str | dict], level: str = "test"):
         """
         body => {
                     header: header -> [{key:'', value:'', desc:''},],
@@ -62,16 +62,10 @@ class Format(object):
 
         self.__headers = body.get("header", {}).pop("header", None)
         if level == "test":
-            self.__params = (
-                body.get("request", {}).get("params", {}).pop("params", None)
-            )
-            self.__data = (
-                body.get("request", {}).get("form", {}).pop("data", None)
-            )
+            self.__params = body.get("request", {}).get("params", {}).pop("params", None)
+            self.__data = body.get("request", {}).get("form", {}).pop("data", None)
             self.__json = body.get("request", {}).pop("json", None)
-            self.__files = (
-                body.get("request", {}).get("files", {}).pop("files", None)
-            )
+            self.__files = body.get("request", {}).get("files", {}).pop("files", None)
         else:
             self.__params = {}
             self.__data = {}
@@ -79,22 +73,14 @@ class Format(object):
             self.__files = {}
         self.__variables = body.get("variables", {}).pop("variables", None)
         self.__setup_hooks = body.get("hooks", {}).pop("setup_hooks", None)
-        self.__teardown_hooks = body.get("hooks", {}).pop(
-            "teardown_hooks", None
-        )
+        self.__teardown_hooks = body.get("hooks", {}).pop("teardown_hooks", None)
 
         if level == "test":
             self.__desc = {
                 "header": body.get("header", {}).pop("desc", None),
-                "data": body.get("request", {})
-                .get("form", {})
-                .pop("desc", None),
-                "files": body.get("request", {})
-                .get("files", {})
-                .pop("desc", None),
-                "params": body.get("request", {})
-                .get("params", {})
-                .pop("desc", None),
+                "data": body.get("request", {}).get("form", {}).pop("desc", None),
+                "files": body.get("request", {}).get("files", {}).pop("desc", None),
+                "params": body.get("request", {}).get("params", {}).pop("desc", None),
                 "variables": body.get("variables", {}).pop("desc", None),
             }
             self.url = body.pop("url", None)
@@ -113,12 +99,8 @@ class Format(object):
 
             self.base_url = body.pop("base_url", None)
             self.is_default = body.pop("is_default", None)
-            self.__parameters = body.get("parameters", {}).pop(
-                "parameters", None
-            )
-            self.__desc["parameters"] = body.get("parameters", {}).pop(
-                "desc", None
-            )
+            self.__parameters = body.get("parameters", {}).pop("parameters", None)
+            self.__desc["parameters"] = body.get("parameters", {}).pop("desc", None)
 
         self.__level = level
         self.testcase = None
@@ -130,7 +112,7 @@ class Format(object):
         self.rig_id = body.get("rig_id", None)
         self.rig_env = body.get("rig_env", 0)
 
-    def parse(self) -> Optional[Dict[str, Union[str, Dict]]]:
+    def parse(self) -> dict[str, str | dict] | None:
         """
         返回标准化HttpRunner "desc" 字段运行需去除
         """
@@ -184,7 +166,7 @@ class Format(object):
         self.testcase = test
 
 
-class Parse(object):
+class Parse:
     """
     标准HttpRunner脚本解析至前端 后端->前端
     """
@@ -261,9 +243,7 @@ class Parse(object):
         test["times"] = self.__times
         test["method"] = self.__request["method"]
         test["url"] = self.__request["url"]
-        test["validate"] = [
-            {"expect": "", "actual": "", "comparator": "equals", "type": 1}
-        ]
+        test["validate"] = [{"expect": "", "actual": "", "comparator": "equals", "type": 1}]
         test["extract"] = [{"key": "", "value": "", "desc": ""}]
 
         if self.__extract:
@@ -367,11 +347,7 @@ class Parse(object):
             test["hooks"] = []
             if len(self.__setup_hooks) > len(self.__teardown_hooks):
                 for index in range(0, len(self.__setup_hooks)):
-                    teardown = (
-                        self.__teardown_hooks[index]
-                        if index < len(self.__teardown_hooks)
-                        else ""
-                    )
+                    teardown = self.__teardown_hooks[index] if index < len(self.__teardown_hooks) else ""
                     test["hooks"].append(
                         {
                             "setup": self.__setup_hooks[index],
@@ -380,11 +356,7 @@ class Parse(object):
                     )
             else:
                 for index in range(0, len(self.__teardown_hooks)):
-                    setup = (
-                        self.__setup_hooks[index]
-                        if index < len(self.__setup_hooks)
-                        else ""
-                    )
+                    setup = self.__setup_hooks[index] if index < len(self.__setup_hooks) else ""
                     test["hooks"].append(
                         {
                             "setup": setup,
@@ -395,9 +367,7 @@ class Parse(object):
 
 def format_json(value):
     try:
-        return json.dumps(
-            value, indent=4, separators=(",", ": "), ensure_ascii=False
-        )
+        return json.dumps(value, indent=4, separators=(",", ": "), ensure_ascii=False)
     except BaseException:
         return value
 
@@ -430,9 +400,7 @@ def format_summary_to_ding(msg_type, summary, report_name=None):
     # celery执行的报告名
     if report_name:
         case_suite_name = report_name
-    start_at = time.strftime(
-        "%Y-%m-%d %H:%M:%S", time.localtime(summary["time"]["start_at"])
-    )
+    start_at = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(summary["time"]["start_at"]))
     duration = "%.2fs" % summary["time"]["duration"]
 
     # 已执行的条数
@@ -441,10 +409,10 @@ def format_summary_to_ding(msg_type, summary, report_name=None):
         env_name, base_url, start_at, duration, case_suite_name
     )
     # 通过率
-    pass_rate = "{:.2%}".format(pass_count / executed)
+    pass_rate = f"{pass_count / executed:.2%}"
 
     # 失败率
-    fail_rate = "{:.2%}".format(fail_count / executed)
+    fail_rate = f"{fail_count / executed:.2%}"
 
     fail_count_list = []
 
@@ -461,12 +429,8 @@ def format_summary_to_ding(msg_type, summary, report_name=None):
                 if record["status"] != "failure":
                     continue
                 else:
-                    response_message = record["meta_data"]["response"]["json"][
-                        "info"
-                    ]["message"]
-                    response_error = record["meta_data"]["response"]["json"][
-                        "info"
-                    ]["error"]
+                    response_message = record["meta_data"]["response"]["json"]["info"]["message"]
+                    response_error = record["meta_data"]["response"]["json"]["info"]["error"]
                     request_url = record["meta_data"]["request"]["url"]
                     case_name = record["name"]
                     expect = []
@@ -484,9 +448,7 @@ def format_summary_to_ding(msg_type, summary, report_name=None):
 
         fail_detail = "失败的接口是:\n"
         for i in fail_count_list:
-            s = "用例名:{0}\n PATH:{1}\n  \n".format(
-                i["case_name"], i["fail_message"]
-            )
+            s = "用例名:{0}\n PATH:{1}\n  \n".format(i["case_name"], i["fail_message"])
             fail_detail += s
 
     if msg_type == "markdown":
@@ -498,7 +460,9 @@ def format_summary_to_ding(msg_type, summary, report_name=None):
         port: str = os.getenv("DJANGO_API_PORT", "8000")
         report_url = f"http://{ip}:{port}/api/fastrunner/reports/{report_id}/"
         for item in fail_count_list:
-            case_name_and_fail_message = f'> - **{item["case_name"]} - {item["request_url"]} - {item["fail_message"]}**\n'
+            case_name_and_fail_message = (
+                f'> - **{item["case_name"]} - {item["request_url"]} - {item["fail_message"]}**\n'
+            )
             fail_detail_markdown += case_name_and_fail_message
         msg_markdown = f"""
 ## FasterRunner自动化测试报告
@@ -512,21 +476,11 @@ def format_summary_to_ding(msg_type, summary, report_name=None):
 ### [查看详情]({report_url})"""
 
     else:
-        msg = """{0}
-        总用例{1}共条,执行了{2}条,异常{3}条.
-        通过{4}条,通过率{5}.
-        失败{6}条,失败率{7}.
-        {8}""".format(
-            title,
-            rows_count,
-            executed,
-            error_count,
-            pass_count,
-            pass_rate,
-            fail_count,
-            fail_rate,
-            fail_detail,
-        )
+        msg = f"""{title}
+        总用例{rows_count}共条,执行了{executed}条,异常{error_count}条.
+        通过{pass_count}条,通过率{pass_rate}.
+        失败{fail_count}条,失败率{fail_rate}.
+        {fail_detail}"""
 
     return (msg_markdown, fail_count) if msg_markdown else (msg, fail_count)
 
@@ -548,19 +502,13 @@ def set_customized_variable(api_info_template, items):
         }
         for attr in attribute_name_enum:
             api_info_template["variables"]["variables"].append({attr: ""})
-            api_info_template["variables"]["desc"][attr] = attr_name.get(
-                "description", ""
-            )
+            api_info_template["variables"]["desc"][attr] = attr_name.get("description", "")
 
         # 查询条件比较类型
         range_type: dict = properties.get("rangeType", {})
         range_type_enum: list = range_type.get("enum", [""])
-        api_info_template["variables"]["variables"].append(
-            {"rangeType": range_type_enum[0]}
-        )
-        api_info_template["variables"]["desc"][
-            "rangeType"
-        ] = f'条件匹配方式: {",".join(range_type_enum)}'
+        api_info_template["variables"]["variables"].append({"rangeType": range_type_enum[0]})
+        api_info_template["variables"]["desc"]["rangeType"] = f'条件匹配方式: {",".join(range_type_enum)}'
 
         # 默认排序
         api_info_template["request"]["json"]["orderBy"] = [
@@ -581,15 +529,11 @@ class Yapi:
         # api详情，包含详细的请求报文
         self.api_detail_url = self.__yapi_base_url + "/api/interface/get"
         # api所有分组目录, 也包含了api的基础信息
-        self.category_info_url = (
-            self.__yapi_base_url + "/api/interface/list_menu"
-        )
+        self.category_info_url = self.__yapi_base_url + "/api/interface/list_menu"
 
     def get_category_info(self):
         try:
-            res = requests.get(
-                self.category_info_url, params={"token": self.__token}
-            ).json()
+            res = requests.get(self.category_info_url, params={"token": self.__token}).json()
         except Exception as e:
             logger.error(f"获取yapi的目录失败: {e}")
         finally:
@@ -781,9 +725,7 @@ class Yapi:
 
         def handle_request(api_id):
             try:
-                response = requests.get(
-                    f"{self.api_detail_url}?token={token}&id={api_id}"
-                )
+                response = requests.get(f"{self.api_detail_url}?token={token}&id={api_id}")
                 res = response.json()
                 api_info.append(res["data"])
             except Exception as e:
@@ -813,9 +755,7 @@ class Yapi:
         category_id_name_mapping: dict = self.get_category_id_name_mapping()
         obj = models.Relation.objects.get(project_id=project_id, type=1)
         eval_tree: list = eval(obj.tree)
-        yapi_catids: list = [
-            yapi_catid for yapi_catid in get_all_ycatid(eval_tree, [])
-        ]
+        yapi_catids: list = [yapi_catid for yapi_catid in get_all_ycatid(eval_tree, [])]
         if category_id_name_mapping is None:
             return
         for cat_id, cat_name in category_id_name_mapping.items():
@@ -859,27 +799,19 @@ class Yapi:
         default_validator = {"equals": ["status_code", 200]}
         api_info_template["validate"]["validate"].append(default_validator)
         # 限制api的名称最大长度，避免溢出
-        api_info_template["name"] = source_api_info.get(
-            "title", "默认api名称"
-        )[:100]
+        api_info_template["name"] = source_api_info.get("title", "默认api名称")[:100]
         # path中{var}替换成$var格式
-        api_info_template["url"] = (
-            source_api_info.get("path", "").replace("{", "$").replace("}", "")
-        )
+        api_info_template["url"] = source_api_info.get("path", "").replace("{", "$").replace("}", "")
         api_info_template["method"] = source_api_info.get("method", "GET")
 
         # yapi的分组id
         api_info_template["yapi_catid"] = source_api_info["catid"]
         api_info_template["yapi_id"] = source_api_info["_id"]
         # 十位时间戳
-        api_info_template["ypai_add_time"] = source_api_info.get(
-            "add_time", ""
-        )
+        api_info_template["ypai_add_time"] = source_api_info.get("add_time", "")
         api_info_template["ypai_up_time"] = source_api_info.get("up_time", "")
         # yapi原作者名
-        api_info_template["ypai_username"] = source_api_info.get(
-            "username", ""
-        )
+        api_info_template["ypai_username"] = source_api_info.get("username", "")
 
         req_body_type = source_api_info.get("req_body_type")
         req_body_other = source_api_info.get("req_body_other", "")
@@ -912,13 +844,9 @@ class Yapi:
 
                             field_type = field_value.get("type", "unKnow")
                             if field_type == "unKnow":
-                                logger.error(
-                                    f'yapi: {source_api_info["_id"]}, req_body json type is unKnow'
-                                )
+                                logger.error(f'yapi: {source_api_info["_id"]}, req_body json type is unKnow')
 
-                            if not (
-                                field_type == "array" or field_type == "object"
-                            ):
+                            if not (field_type == "array" or field_type == "object"):
                                 self.set_ordinary_variable(
                                     api_info_template,
                                     field_name,
@@ -930,15 +858,10 @@ class Yapi:
 
                                 # 特殊字段处理，通用的查询条件
                                 if field_name == "conditions":
-                                    set_customized_variable(
-                                        api_info_template, items
-                                    )
+                                    set_customized_variable(api_info_template, items)
                                 else:
                                     items_type: str = items.get("type")
-                                    if (
-                                        items_type != "array"
-                                        and items_type != "object"
-                                    ):
+                                    if items_type != "array" and items_type != "object":
                                         self.set_ordinary_variable(
                                             api_info_template,
                                             field_name,
@@ -946,19 +869,14 @@ class Yapi:
                                             field_value,
                                         )
                             if field_type == "object":
-                                properties: dict = field_value.get(
-                                    "properties"
-                                )
+                                properties: dict = field_value.get("properties")
                                 if properties and isinstance(properties, dict):
                                     for (
                                         property_name,
                                         property_value,
                                     ) in properties.items():
                                         field_type = property_value["type"]
-                                        if not (
-                                            field_type == "array"
-                                            or field_type == "object"
-                                        ):
+                                        if not (field_type == "array" or field_type == "object"):
                                             self.set_ordinary_variable(
                                                 api_info_template,
                                                 property_name,
@@ -971,15 +889,9 @@ class Yapi:
             for param in req_query:
                 param_name = param["name"]
                 param_desc = param.get("desc", "")
-                api_info_template["request"]["params"]["params"][
-                    param_name
-                ] = f"${param_name}"
-                api_info_template["request"]["params"]["desc"][
-                    param_name
-                ] = param_desc
-                api_info_template["variables"]["variables"].append(
-                    {param_name: ""}
-                )
+                api_info_template["request"]["params"]["params"][param_name] = f"${param_name}"
+                api_info_template["request"]["params"]["desc"][param_name] = param_desc
+                api_info_template["variables"]["variables"].append({param_name: ""})
                 api_info_template["variables"]["desc"][param_name] = param_desc
 
         req_params: list = source_api_info.get("req_params", [])
@@ -994,42 +906,26 @@ class Yapi:
                 param_name = param["name"]
                 param_desc = param.get("desc", "")
                 param_example = param.get("example", "")
-                api_info_template["variables"]["variables"].append(
-                    {param_name: param_example}
-                )
+                api_info_template["variables"]["variables"].append({param_name: param_example})
                 api_info_template["variables"]["desc"][param_name] = param_desc
 
         return api_info_template
 
-    def set_ordinary_variable(
-        self, api_info_template, field_name, field_type, field_value
-    ):
+    def set_ordinary_variable(self, api_info_template, field_name, field_type, field_value):
         api_info_template["request"]["json"][field_name] = f"${field_name}"
         api_info_template["variables"]["variables"].append(
-            {
-                field_name: self.get_variable_default_value(
-                    field_type, field_value
-                )
-            }
+            {field_name: self.get_variable_default_value(field_type, field_value)}
         )
-        api_info_template["variables"]["desc"][field_name] = field_value.get(
-            "description", ""
-        )
+        api_info_template["variables"]["desc"][field_name] = field_value.get("description", "")
 
     def get_parsed_apis(self, api_info):
         """
         批量创建faster的api
         """
 
-        apis = [
-            self.yapi2faster(api)
-            for api in api_info
-            if isinstance(api, dict) is True
-        ]
+        apis = [self.yapi2faster(api) for api in api_info if isinstance(api, dict) is True]
         proj = models.Project.objects.get(id=self.fast_project_id)
-        obj = models.Relation.objects.get(
-            project_id=self.fast_project_id, type=1
-        )
+        obj = models.Relation.objects.get(project_id=self.fast_project_id, type=1)
         eval_tree: list = eval(obj.tree)
         tree_ycatid_mapping = get_tree_ycatid_mapping(eval_tree)
         parsed_api = []
@@ -1063,12 +959,8 @@ class Yapi:
         1、parsed_api.yapi_id不存在测试平台
         2、yapi的id已经存在测试平台，新获取的parsed_api.ypai_up_time > imported_api.ypai_up_time
         """
-        imported_apis_mapping = {
-            api.yapi_id: api.ypai_up_time for api in imported_apis
-        }
-        imported_apis_index = {
-            api.yapi_id: index for index, api in enumerate(imported_apis)
-        }
+        imported_apis_mapping = {api.yapi_id: api.ypai_up_time for api in imported_apis}
+        imported_apis_index = {api.yapi_id: index for index, api in enumerate(imported_apis)}
 
         new_apis = []
         update_apis = []

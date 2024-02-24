@@ -1,8 +1,9 @@
 # !/usr/bin/python3
-# -*- coding: utf-8 -*-
 
-from dotenv import load_dotenv, find_dotenv
 from os import environ
+
+from dotenv import find_dotenv, load_dotenv
+
 from .base import *
 
 DEBUG = False

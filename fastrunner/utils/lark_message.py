@@ -1,19 +1,16 @@
-# -*- coding: utf-8 -*-
 # @Time    : 2020/8/11 16:12
 # @Author  : lihuacai
 # @Email   : lihuacai168@gmail.com
 # @File    : lark_message.py
 # @Software: PyCharm
 
-import requests
 import json
+import logging
+
+import requests
 
 # from loguru import logger
-
 from django.conf import settings
-
-
-import logging
 
 logger = logging.getLogger(__name__)
 
@@ -37,7 +34,7 @@ def parse_message(summary: dict, msg_type: str, **kwargs):
     port = settings.IM_REPORT_SETTING.get("port")
     report_url = f"{base_url}:{port}/api/fastrunner/reports/{report_id}/"
     executed = rows_count
-    fail_rate = "{:.2%}".format(fail_count / executed)
+    fail_rate = f"{fail_count / executed:.2%}"
     # 富文本
     if msg_type == "post":
         msg_template = get_base_post_content()
@@ -74,9 +71,7 @@ def send_message(summary: dict, webhook: str, **kwargs):
     # v1 https://open.feishu.cn/open-apis/bot/hook/xxx
     # v2 https://open.feishu.cn/open-apis/bot/v2/hook/xxx
     title = settings.IM_REPORT_SETTING.get("report_title")
-    platform_name = settings.IM_REPORT_SETTING.get(
-        "platform_name", "FasterRunner测试平台"
-    )
+    platform_name = settings.IM_REPORT_SETTING.get("platform_name", "FasterRunner测试平台")
     if platform_name:
         title = platform_name + title
     webhooks = webhook.split("\n")
@@ -92,12 +87,8 @@ def send_message(summary: dict, webhook: str, **kwargs):
         if "seatalk" in webhook:
             msg = parse_message(summary=summary, msg_type=None)
             data = {"tag": "text", "text": {"content": msg}}
-        res = requests.post(
-            url=webhook, data=json.dumps(data).encode("utf-8")
-        ).json()
+        res = requests.post(url=webhook, data=json.dumps(data).encode("utf-8")).json()
         if res.get("StatusCode") == 0:
             logger.info(f"发送通知成功，请求的webhook是: {webhook}")
         else:
-            logger.error(
-                f"发送通知失败，请求的webhook是: {webhook}， 响应是：{res}"
-            )
+            logger.error(f"发送通知失败，请求的webhook是: {webhook}， 响应是：{res}")

@@ -15,16 +15,17 @@ Including another URLconf
 """
 
 from django.urls import path
+
 from fastrunner.views import (
-    project,
     api,
-    config,
-    schedule,
-    run,
-    suite,
-    report,
-    yapi,
     ci,
+    config,
+    project,
+    report,
+    run,
+    schedule,
+    suite,
+    yapi,
 )
 
 urlpatterns = [
@@ -39,9 +40,7 @@ urlpatterns = [
     ),
     path(
         "gitlab-ci/",
-        ci.CIView.as_view(
-            {"post": "run_ci_tests", "get": "get_ci_report_url"}
-        ),
+        ci.CIView.as_view({"post": "run_ci_tests", "get": "get_ci_report_url"}),
     ),
     # 项目相关接口地址
     path(
@@ -73,9 +72,7 @@ urlpatterns = [
     ),
     path(
         "schedule/<int:pk>/",
-        schedule.ScheduleView.as_view(
-            {"get": "run", "delete": "delete", "put": "update", "post": "copy"}
-        ),
+        schedule.ScheduleView.as_view({"get": "run", "delete": "delete", "put": "update", "post": "copy"}),
     ),
     # debugtalk.py相关接口地址
     path(
@@ -148,9 +145,7 @@ urlpatterns = [
     # test接口地址
     path(
         "test/",
-        suite.TestCaseView.as_view(
-            {"get": "get", "post": "post", "delete": "delete"}
-        ),
+        suite.TestCaseView.as_view({"get": "get", "post": "post", "delete": "delete"}),
     ),
     path(
         "test/<int:pk>/",
@@ -166,9 +161,7 @@ urlpatterns = [
     # config接口地址
     path(
         "config/",
-        config.ConfigView.as_view(
-            {"post": "add", "get": "list", "delete": "delete"}
-        ),
+        config.ConfigView.as_view({"post": "add", "get": "list", "delete": "delete"}),
     ),
     path(
         "config/<int:pk>/",
@@ -183,9 +176,7 @@ urlpatterns = [
     ),
     path(
         "variables/",
-        config.VariablesView.as_view(
-            {"post": "add", "get": "list", "delete": "delete"}
-        ),
+        config.VariablesView.as_view({"post": "add", "get": "list", "delete": "delete"}),
     ),
     path(
         "variables/<int:pk>/",
@@ -207,13 +198,9 @@ urlpatterns = [
         "reports/<int:pk>/",
         report.ReportView.as_view({"delete": "delete", "get": "look"}),
     ),
-    path(
-        "host_ip/", config.HostIPView.as_view({"post": "add", "get": "list"})
-    ),
+    path("host_ip/", config.HostIPView.as_view({"post": "add", "get": "list"})),
     path(
         "host_ip/<int:pk>/",
-        config.HostIPView.as_view(
-            {"delete": "delete", "patch": "update", "get": "all"}
-        ),
+        config.HostIPView.as_view({"delete": "delete", "patch": "update", "get": "all"}),
     ),
 ]

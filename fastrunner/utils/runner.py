@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 
-import shutil
-import sys
 import os
+import shutil
 import subprocess
+import sys
 import tempfile
-from fastrunner.utils import loader
+
 from FasterRunner.settings.base import BASE_DIR
+from fastrunner.utils import loader
 
 EXEC = sys.executable
 
@@ -16,7 +16,7 @@ if "uwsgi" in EXEC:
     EXEC = EXEC.replace("uwsgi", "python")
 
 
-class DebugCode(object):
+class DebugCode:
     def __init__(self, code):
         self.__code = code
         self.resp = None

@@ -1,5 +1,4 @@
 # !/usr/bin/python3
-# -*- coding: utf-8 -*-
 
 # @Author:梨花菜
 # @File: api_rig.py
@@ -8,21 +7,22 @@
 # @Software: PyCharm
 import datetime
 
-from django.db.models import Q
 from django.core.exceptions import ObjectDoesNotExist
+from django.db import DataError
+from django.db.models import Q
 from django.utils.decorators import method_decorator
-from rest_framework.viewsets import GenericViewSet
-from fastrunner import models, serializers
+from rest_framework import exceptions
+from rest_framework.authentication import BaseAuthentication
 from rest_framework.response import Response
+from rest_framework.viewsets import GenericViewSet
+
+from fastrunner import models, serializers
 from fastrunner.utils import response
 from fastrunner.utils.decorator import request_log
 from fastrunner.utils.parser import Format
-from django.db import DataError
-from rest_framework import exceptions
-from rest_framework.authentication import BaseAuthentication
-from fastuser import models as user_model
-from fastrunner.utils.relation import API_RELATION, API_AUTHOR
+from fastrunner.utils.relation import API_AUTHOR, API_RELATION
 from fastrunner.views import run
+from fastuser import models as user_model
 
 
 class Authenticator(BaseAuthentication):
@@ -35,9 +35,7 @@ class Authenticator(BaseAuthentication):
         obj = user_model.UserToken.objects.filter(token=token).first()
 
         if not obj:
-            raise exceptions.AuthenticationFailed(
-                {"code": "9999", "msg": "用户未认证", "success": False}
-            )
+            raise exceptions.AuthenticationFailed({"code": "9999", "msg": "用户未认证", "success": False})
         # valid update valid time
         obj.token = token
         obj.save()
@@ -65,11 +63,7 @@ class APIRigView(GenericViewSet):
         project = request.query_params["project"]
         search = request.query_params["search"]
         # queryset = self.get_queryset().filter(project__id=project).order_by('-update_time')
-        queryset = (
-            self.get_queryset()
-            .filter(project__id=project, delete=0)
-            .order_by("-update_time")
-        )
+        queryset = self.get_queryset().filter(project__id=project, delete=0).order_by("-update_time")
         # queryset = self.get_queryset().filter(Q(project__id=project) and ~Q(delete=1)).order_by('-update_time')
 
         if search != "":
@@ -209,9 +203,9 @@ class APIRigView(GenericViewSet):
         # api_body['relation'] = relation
         try:
             # 增加api之前先删除已经存在的相同id的除了手动调试成功的api
-            models.API.objects.filter(rig_id=api.rig_id).filter(
-                ~Q(tag=1)
-            ).update(delete=1, update_time=datetime.datetime.now())
+            models.API.objects.filter(rig_id=api.rig_id).filter(~Q(tag=1)).update(
+                delete=1, update_time=datetime.datetime.now()
+            )
             # 创建成功,返回对象,方便获取id
             obj = models.API.objects.create(**api_body)
         except DataError:

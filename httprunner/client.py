@@ -1,15 +1,9 @@
-# encoding: utf-8
-
-import re
-
-import time
 import logging
+import re
+import time
 
 import requests
 import urllib3
-
-# from httprunner import logger
-from httprunner.exceptions import ParamsError
 from requests import Request, Response
 from requests.exceptions import (
     InvalidSchema,
@@ -17,6 +11,9 @@ from requests.exceptions import (
     MissingSchema,
     RequestException,
 )
+
+# from httprunner import logger
+from httprunner.exceptions import ParamsError
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
@@ -126,13 +123,9 @@ class HttpSession(requests.Session):
         """
 
         def log_print(request_response):
-            msg = (
-                "\n================== {} details ==================\n".format(
-                    request_response
-                )
-            )
+            msg = "\n================== {} details ==================\n".format(request_response)
             for key, value in self.meta_data[request_response].items():
-                msg += "{:<16} : {}\n".format(key, repr(value))
+                msg += f"{key:<16} : {repr(value)}\n"
             logger.debug(msg)
 
         # record original request info
@@ -149,18 +142,13 @@ class HttpSession(requests.Session):
 
         # record the consumed time
         self.meta_data["response"]["response_time_ms"] = round(
-            (time.time() - self.meta_data["request"]["start_timestamp"])
-            * 1000,
+            (time.time() - self.meta_data["request"]["start_timestamp"]) * 1000,
             2,
         )
-        self.meta_data["response"]["elapsed_ms"] = (
-            response.elapsed.microseconds / 1000.0
-        )
+        self.meta_data["response"]["elapsed_ms"] = response.elapsed.microseconds / 1000.0
 
         # record actual request info
-        self.meta_data["request"]["url"] = (
-            response.history and response.history[0] or response
-        ).request.url
+        self.meta_data["request"]["url"] = (response.history and response.history[0] or response).request.url
         self.meta_data["request"]["headers"] = dict(response.request.headers)
         self.meta_data["request"]["body"] = response.request.body
 
@@ -177,9 +165,7 @@ class HttpSession(requests.Session):
         self.meta_data["response"]["encoding"] = response.encoding
         self.meta_data["response"]["content"] = response.content
         self.meta_data["response"]["text"] = response.text
-        self.meta_data["response"]["content_type"] = response.headers.get(
-            "Content-Type", ""
-        )
+        self.meta_data["response"]["content_type"] = response.headers.get("Content-Type", "")
 
         try:
             self.meta_data["response"]["json"] = response.json()
@@ -190,13 +176,10 @@ class HttpSession(requests.Session):
         # the size from the content-length header, in order to not trigger fetching of the body
         if kwargs.get("stream", False):
             self.meta_data["response"]["content_size"] = int(
-                self.meta_data["response"]["headers"].get("content-length")
-                or 0
+                self.meta_data["response"]["headers"].get("content-length") or 0
             )
         else:
-            self.meta_data["response"]["content_size"] = len(
-                response.content or ""
-            )
+            self.meta_data["response"]["content_size"] = len(response.content or "")
 
         # log response details in debug mode
         log_print("response")
@@ -204,7 +187,7 @@ class HttpSession(requests.Session):
         try:
             response.raise_for_status()
         except RequestException as e:
-            logger.error("{exception}".format(exception=str(e)))
+            logger.error(f"{str(e)}")
         else:
             logger.info(
                 """status_code: {}, response_time(ms): {} ms, response_length: {} bytes""".format(
@@ -223,8 +206,8 @@ class HttpSession(requests.Session):
         """
         try:
             msg = "processed request:\n"
-            msg += "> {method} {url}\n".format(method=method, url=url)
-            msg += "> kwargs: {kwargs}".format(kwargs=kwargs)
+            msg += f"> {method} {url}\n"
+            msg += f"> kwargs: {kwargs}"
             logger.debug(msg)
             return requests.Session.request(self, method, url, **kwargs)
         except (MissingSchema, InvalidSchema, InvalidURL):

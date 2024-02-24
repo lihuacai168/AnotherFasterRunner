@@ -1,5 +1,4 @@
 # !/usr/bin/python3
-# -*- coding: utf-8 -*-
 
 # @Author:梨花菜
 # @File: test.py
@@ -8,6 +7,7 @@
 # @Software: PyCharm
 
 from django.test import TestCase
+
 from fastuser import models
 
 

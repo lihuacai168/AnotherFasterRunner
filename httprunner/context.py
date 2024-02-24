@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 import copy
 import logging
 
@@ -9,7 +7,7 @@ from httprunner.compat import OrderedDict
 logger = logging.getLogger("httprunner")
 
 
-class Context(object):
+class Context:
     """Manages context functions and variables.
     context has two levels, testcase and teststep.
     """
@@ -20,9 +18,7 @@ class Context(object):
         # TESTCASE_SHARED_FUNCTIONS_MAPPING are unchangeable.
         # TESTCASE_SHARED_VARIABLES_MAPPING may change by Hrun.set_config
         if isinstance(variables, list):
-            self.TESTCASE_SHARED_VARIABLES_MAPPING = (
-                utils.convert_mappinglist_to_orderdict(variables)
-            )
+            self.TESTCASE_SHARED_VARIABLES_MAPPING = utils.convert_mappinglist_to_orderdict(variables)
         else:
             # dict
             self.TESTCASE_SHARED_VARIABLES_MAPPING = variables or OrderedDict()
@@ -49,16 +45,12 @@ class Context(object):
         """
         if level == "testcase":
             # testcase level runtime context, will be updated with extracted variables in each teststep.
-            self.testcase_runtime_variables_mapping = copy.deepcopy(
-                self.TESTCASE_SHARED_VARIABLES_MAPPING
-            )
+            self.testcase_runtime_variables_mapping = copy.deepcopy(self.TESTCASE_SHARED_VARIABLES_MAPPING)
 
         # teststep level context, will be altered in each teststep.
         # teststep config shall inherit from testcase configs,
         # but can not change testcase configs, that's why we use copy.deepcopy here.
-        self.teststep_variables_mapping = copy.deepcopy(
-            self.testcase_runtime_variables_mapping
-        )
+        self.teststep_variables_mapping = copy.deepcopy(self.testcase_runtime_variables_mapping)
 
     def update_context_variables(self, variables, level):
         """update context variables, with level specified.
@@ -87,13 +79,9 @@ class Context(object):
             variable_eval_value = self.eval_content(variable_value)
 
             if level == "testcase":
-                self.testcase_runtime_variables_mapping[
-                    variable_name
-                ] = variable_eval_value
+                self.testcase_runtime_variables_mapping[variable_name] = variable_eval_value
 
-            self.update_teststep_variables_mapping(
-                variable_name, variable_eval_value
-            )
+            self.update_teststep_variables_mapping(variable_name, variable_eval_value)
 
     def eval_content(self, content):
         """evaluate content recursively, take effect on each variable and function in content.
@@ -113,12 +101,8 @@ class Context(object):
 
         """
         for variable_name, variable_value in variables.items():
-            self.testcase_runtime_variables_mapping[
-                variable_name
-            ] = variable_value
-            self.update_teststep_variables_mapping(
-                variable_name, variable_value
-            )
+            self.testcase_runtime_variables_mapping[variable_name] = variable_value
+            self.update_teststep_variables_mapping(variable_name, variable_value)
 
     def update_teststep_variables_mapping(self, variable_name, variable_value):
         """bind and update testcase variables mapping"""
@@ -186,9 +170,7 @@ class Context(object):
 
             # convert content.json.0.$k > content.json.0.k
             # extract with content.json.0.k
-            if isinstance(check_value, str) and check_value.startswith(
-                "content."
-            ):
+            if isinstance(check_value, str) and check_value.startswith("content."):
                 check_value = resp_obj.extract_field(check_value)
         else:
             # format 4/5
@@ -219,26 +201,20 @@ class Context(object):
         """
         # TODO: move comparator uniform to init_test_suites
         comparator = utils.get_uniform_comparator(validator_dict["comparator"])
-        validate_func = parser.get_mapping_function(
-            comparator, self.TESTCASE_SHARED_FUNCTIONS_MAPPING
-        )
+        validate_func = parser.get_mapping_function(comparator, self.TESTCASE_SHARED_FUNCTIONS_MAPPING)
 
         check_item = validator_dict["check"]
         check_value = validator_dict["check_value"]
         expect_value = validator_dict["expect"]
 
-        if (
-            check_value is None or expect_value is None
-        ) and comparator not in [
+        if (check_value is None or expect_value is None) and comparator not in [
             "is",
             "eq",
             "equals",
             "not_equals",
             "==",
         ]:
-            raise exceptions.ParamsError(
-                "Null value can only be compared with comparator: eq/equals/=="
-            )
+            raise exceptions.ParamsError("Null value can only be compared with comparator: eq/equals/==")
 
         validate_msg = "validate expression: {} {} {}({})".format(
             check_item, comparator, expect_value, type(expect_value).__name__
@@ -275,9 +251,7 @@ class Context(object):
 
         for validator in validators:
             # evaluate validators with context variable mapping.
-            evaluated_validator = self.__eval_check_item(
-                parser.parse_validator(validator), resp_obj
-            )
+            evaluated_validator = self.__eval_check_item(parser.parse_validator(validator), resp_obj)
             evaluated_validator["validate_msg"] = "ok"
 
             try:

@@ -56,12 +56,9 @@ class RegisterView(APIView):
             return Response(response.SYSTEM_ERROR)
 
 
-def ldap_auth(username: str, password: str) -> Optional[User]:
+def ldap_auth(username: str, password: str) -> User | None:
     ldap_user = authenticate(username=username, password=password)
-    if (
-        ldap_user
-        and ldap_user.backend == "django_auth_ldap.backend.LDAPBackend"
-    ):
+    if ldap_user and ldap_user.backend == "django_auth_ldap.backend.LDAPBackend":
         logger.info(f"LDAP authentication successful for {username}")
         local_user: User = User.objects.filter(username=username).first()
         if local_user:
@@ -73,7 +70,7 @@ def ldap_auth(username: str, password: str) -> Optional[User]:
     return None
 
 
-def local_auth(username: str, password: str) -> Optional[User]:
+def local_auth(username: str, password: str) -> User | None:
     local_user = User.objects.filter(username=username).first()
     if not local_user:
         logger.warning(f"Local user does not exist: {username}")
@@ -114,12 +111,8 @@ class LoginView(APIView):
         if serializer.is_valid():
             username: str = serializer.validated_data["username"]
             password: str = serializer.validated_data["password"]
-            masked_password = (
-                f"{password[0]}{'*' * (len(password) - 2)}{password[-1]}"
-            )
-            logger.info(
-                f"Received login request for {username=}, password={masked_password}"
-            )
+            masked_password = f"{password[0]}{'*' * (len(password) - 2)}{password[-1]}"
+            logger.info(f"Received login request for {username=}, password={masked_password}")
 
             local_user = None
             if settings.USE_LDAP:

@@ -1,18 +1,15 @@
-from rest_framework import viewsets, filters, status
 from django_filters import rest_framework as django_filters
+from rest_framework import filters, status, viewsets
 from rest_framework.response import Response
 
-from .models import LogRecord
 from system.serializers.log_record_serializer import LogRecordSerializer
+
+from .models import LogRecord
 
 
 class LogRecordFilter(django_filters.FilterSet):
-    request_id = django_filters.CharFilter(
-        field_name="request_id", lookup_expr="exact"
-    )
-    message = django_filters.CharFilter(
-        field_name="message", lookup_expr="icontains"
-    )
+    request_id = django_filters.CharFilter(field_name="request_id", lookup_expr="exact")
+    message = django_filters.CharFilter(field_name="message", lookup_expr="icontains")
 
     class Meta:
         model = LogRecord

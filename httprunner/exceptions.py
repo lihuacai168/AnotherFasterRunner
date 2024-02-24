@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 from httprunner.compat import FileNotFoundError
 
 """ failure type exceptions

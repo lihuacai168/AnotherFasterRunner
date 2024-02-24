@@ -1,5 +1,4 @@
 # !/usr/bin/python3
-# -*- coding: utf-8 -*-
 
 # @Author:梨花菜
 # @File: test_tree.py
@@ -7,14 +6,15 @@
 # @Email: lihuacai168@gmail.com
 # @Software: PyCharm
 from unittest import TestCase
+
 from .tree import (
-    get_tree_label,
     get_all_ycatid,
     get_faster_id_by_ycatid,
-    get_tree_ycatid_mapping,
-    get_tree_relation_name,
+    get_tree_label,
     get_tree_max_id,
     get_tree_max_id_old,
+    get_tree_relation_name,
+    get_tree_ycatid_mapping,
 )
 
 

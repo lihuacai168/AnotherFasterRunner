@@ -3,13 +3,13 @@ import logging
 
 import pydash
 import requests
-from django.db.models import Sum, Count, Q
+from django.db.models import Count, Q, Sum
 from django.db.models.functions import Concat
 from django_celery_beat.models import PeriodicTask as celery_models
-# from loguru import logger
 
+# from loguru import logger
 from fastrunner import models
-from fastrunner.utils.day import get_day, get_week, get_month
+from fastrunner.utils.day import get_day, get_month, get_week
 from fastrunner.utils.parser import Format
 
 logger = logging.getLogger(__name__)
@@ -205,9 +205,7 @@ def get_daily_count(project_id, model_name, start, end):
         .values("create_time", "counts")
     )
     # list转dict, key是日期, value是统计数
-    create_time_count_mapping = {
-        data["create_time"]: data["counts"] for data in count_data
-    }
+    create_time_count_mapping = {data["create_time"]: data["counts"] for data in count_data}
 
     # 日期为空的key，补0
     count = [create_time_count_mapping.get(d, 0) for d in recent_days]
@@ -248,10 +246,7 @@ def get_project_detail_v2(pk):
 def get_jira_core_case_cover_rate(pk) -> dict:
     project_obj = models.Project.objects.get(pk=pk)
     jira_cases = []
-    if (
-        project_obj.jira_bearer_token == ""
-        or project_obj.jira_project_key == ""
-    ):
+    if project_obj.jira_bearer_token == "" or project_obj.jira_project_key == "":
         logger.info("jira token或者jira project key没配置")
     else:
         base_url = "https://jira.xxx.com/rest/api/latest/search"
@@ -265,9 +260,7 @@ def get_jira_core_case_cover_rate(pk) -> dict:
         }
         try:
             # TODO 分页查找所有的核心case
-            res = requests.post(
-                url=base_url, headers=headers, data=json.dumps(data)
-            ).json()
+            res = requests.post(url=base_url, headers=headers, data=json.dumps(data)).json()
             err = res.get("errorMessages")
             if err:
                 logger.error(err)
@@ -286,9 +279,7 @@ def get_jira_core_case_cover_rate(pk) -> dict:
     if jira_core_case_count == 0:
         core_case_cover_rate = "0.00"
     else:
-        core_case_cover_rate = "%.2f" % (
-            (covered_case_count / jira_core_case_count) * 100
-        )
+        core_case_cover_rate = "%.2f" % ((covered_case_count / jira_core_case_count) * 100)
 
     return {
         "jira_core_case_count": jira_core_case_count,
@@ -316,9 +307,7 @@ def get_project_detail(pk):
     task_query_set = task_query_set.filter(enabled=1).values("args")
     for i in task_query_set:
         case_id += eval(i.get("args"))
-    case_step_count = models.Case.objects.filter(pk__in=case_id).aggregate(
-        Sum("length")
-    )
+    case_step_count = models.Case.objects.filter(pk__in=case_id).aggregate(Sum("length"))
 
     return {
         "api_count": api_count,
@@ -373,9 +362,7 @@ def tree_end(params, project):
 
     # remove node testcase
     elif type == 2:
-        case = models.Case.objects.filter(
-            relation=node, project=project
-        ).values("id")
+        case = models.Case.objects.filter(relation=node, project=project).values("id")
 
         for case_id in case:
             models.CaseStep.objects.filter(case__id=case_id["id"]).delete()
@@ -399,9 +386,7 @@ def update_casestep(body, case, username):
             if "case" in test.keys():
                 case_step = models.CaseStep.objects.get(id=test["id"])
             elif test["body"]["method"] == "config":
-                case_step = models.Config.objects.get(
-                    name=test["body"]["name"]
-                )
+                case_step = models.Config.objects.get(name=test["body"]["name"])
             else:
                 case_step = models.API.objects.get(id=test["id"])
 
@@ -434,9 +419,7 @@ def update_casestep(body, case, username):
         }
         # is_copy is True表示用例步骤是复制的
         if "case" in test.keys() and test.pop("is_copy", False) is False:
-            models.CaseStep.objects.filter(id=test["id"]).update(
-                **kwargs, updater=username
-            )
+            models.CaseStep.objects.filter(id=test["id"]).update(**kwargs, updater=username)
             step_list.remove({"id": test["id"]})
         else:
             kwargs["case"] = case

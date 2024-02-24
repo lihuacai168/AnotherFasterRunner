@@ -5,13 +5,12 @@ from django.db import transaction
 from django.db.models import Q
 from django.utils.decorators import method_decorator
 from rest_framework import status
+from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import GenericViewSet
-from fastrunner import models, serializers
 
-from rest_framework.response import Response
-from fastrunner.utils import response
-from fastrunner.utils import prepare
+from fastrunner import models, serializers
+from fastrunner.utils import prepare, response
 from fastrunner.utils.decorator import request_log
 
 
@@ -31,9 +30,7 @@ class TestCaseView(GenericViewSet):
         搜索case_step的url或者name
         返回对应的case_id
         """
-        case_id = models.CaseStep.objects.filter(
-            Q(name__contains=search) | Q(url__contains=search)
-        ).values("case_id")
+        case_id = models.CaseStep.objects.filter(Q(name__contains=search) | Q(url__contains=search)).values("case_id")
 
         case_id = set([item["case_id"] for _, item in enumerate(case_id)])
         return case_id
@@ -57,11 +54,7 @@ class TestCaseView(GenericViewSet):
             only_me = ser.validated_data.get("onlyMe")
 
             # update_time 降序排列
-            queryset = (
-                self.get_queryset()
-                .filter(project__id=project)
-                .order_by("-create_time")
-            )
+            queryset = self.get_queryset().filter(project__id=project).order_by("-create_time")
 
             if only_me is True:
                 queryset = queryset.filter(creator=request.user)
@@ -129,9 +122,7 @@ class TestCaseView(GenericViewSet):
 
         # 更新原本的case长度
         case = models.Case.objects.get(id=pk)
-        case_step = models.CaseStep.objects.filter(
-            case__id=pk, name__icontains=split_condition
-        )
+        case_step = models.CaseStep.objects.filter(case__id=pk, name__icontains=split_condition)
         # case_step = case_step.filter(Q(method='config') | Q(name__icontains=split_condition))
         case_step_length = len(case_step)
         case.length -= case_step_length
@@ -171,9 +162,7 @@ class TestCaseView(GenericViewSet):
         body = request.data.pop("body")
         relation = request.data.pop("relation")
 
-        is_exist_case_obj = models.Case.objects.exclude(id=pk).filter(
-            name=request.data["name"], project__id=project
-        )
+        is_exist_case_obj = models.Case.objects.exclude(id=pk).filter(name=request.data["name"], project__id=project)
         if relation:
             # 兼容新建用例时，保存用例步骤就提交修改
             is_exist_case_obj = is_exist_case_obj.filter(relation=relation)
@@ -200,9 +189,7 @@ class TestCaseView(GenericViewSet):
         cases: list = request.data.get("case")
         ids = [case["id"] for case in cases]
         try:
-            models.Case.objects.filter(project=project, id__in=ids).update(
-                relation=relation
-            )
+            models.Case.objects.filter(project=project, id__in=ids).update(relation=relation)
         except ObjectDoesNotExist:
             return Response(response.CASE_NOT_EXISTS)
 
@@ -243,9 +230,7 @@ class TestCaseView(GenericViewSet):
         request.data["tag"] = self.tag_options[request.data["tag"]]
         with transaction.atomic():
             save_point = transaction.savepoint()
-            case = models.Case.objects.create(
-                **request.data, creator=request.user.username
-            )
+            case = models.Case.objects.create(**request.data, creator=request.user.username)
             try:
                 prepare.generate_casestep(body, case, request.user.username)
             except ObjectDoesNotExist:
@@ -293,9 +278,7 @@ class TestCaseView(GenericViewSet):
 
         # 在case_step表中找出case_id对应的所有记录,并且排除config
         api_id_list_of_dict = list(
-            models.CaseStep.objects.filter(case_id=pk)
-            .exclude(method="config")
-            .values("source_api_id", "step")
+            models.CaseStep.objects.filter(case_id=pk).exclude(method="config").values("source_api_id", "step")
         )
 
         # 通过source_api_id找到原来的api
@@ -306,18 +289,10 @@ class TestCaseView(GenericViewSet):
             if source_api_id == 0:
                 continue
             step: int = item["step"]
-            source_api = (
-                models.API.objects.filter(pk=source_api_id)
-                .values("name", "body", "url", "method")
-                .first()
-            )
+            source_api = models.API.objects.filter(pk=source_api_id).values("name", "body", "url", "method").first()
             if source_api is not None:
-                models.CaseStep.objects.filter(
-                    case_id=pk, source_api_id=source_api_id, step=step
-                ).update(**source_api)
-        models.Case.objects.filter(pk=pk).update(
-            update_time=datetime.datetime.now()
-        )
+                models.CaseStep.objects.filter(case_id=pk, source_api_id=source_api_id, step=step).update(**source_api)
+        models.Case.objects.filter(pk=pk).update(update_time=datetime.datetime.now())
         return Response(response.CASE_STEP_SYNC_SUCCESS)
 
     def update_tag(self, request):
@@ -327,9 +302,7 @@ class TestCaseView(GenericViewSet):
         case_ids: list = request.data.get("case_ids", [])
         project_id: list = request.data.get("project_id", 0)
         tag: list = request.data.get("tag")
-        models.Case.objects.filter(
-            project_id=project_id, pk__in=case_ids
-        ).update(tag=tag)
+        models.Case.objects.filter(project_id=project_id, pk__in=case_ids).update(tag=tag)
         return Response(response.CASE_UPDATE_SUCCESS)
 
 
@@ -347,14 +320,10 @@ class CaseStepView(APIView):
 
         queryset = models.CaseStep.objects.filter(case__id=pk).order_by("step")
 
-        serializer = serializers.CaseStepSerializer(
-            instance=queryset, many=True
-        )
+        serializer = serializers.CaseStepSerializer(instance=queryset, many=True)
 
         resp = {
-            "case": serializers.CaseSerializer(
-                instance=models.Case.objects.get(id=pk), many=False
-            ).data,
+            "case": serializers.CaseSerializer(instance=models.Case.objects.get(id=pk), many=False).data,
             "step": serializer.data,
         }
         return Response(resp)

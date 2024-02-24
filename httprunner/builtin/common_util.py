@@ -1,5 +1,4 @@
 # !/usr/bin/python3
-# -*- coding: utf-8 -*-
 
 # @Author: 花菜
 # @File: common_util.py
@@ -19,10 +18,7 @@ from httprunner.exceptions import ParamsError
 
 def gen_random_string(str_len):
     """generate random string with specified length"""
-    return "".join(
-        random.choice(string.ascii_letters + string.digits)
-        for _ in range(str_len)
-    )
+    return "".join(random.choice(string.ascii_letters + string.digits) for _ in range(str_len))
 
 
 def get_timestamp(str_len=13):
@@ -38,9 +34,7 @@ def get_current_date(fmt="%Y-%m-%d"):
     return datetime.datetime.now().strftime(fmt)
 
 
-def multipart_encoder(
-    field_name, file_path, file_type=None, file_headers=None
-):
+def multipart_encoder(field_name, file_path, file_type=None, file_headers=None):
     if not os.path.isabs(file_path):
         file_path = os.path.join(os.getcwd(), file_path)
 

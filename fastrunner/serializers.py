@@ -1,17 +1,15 @@
+import datetime
 import json
 import logging
 from typing import Union
-import datetime
-
 
 import croniter
 from django.db.models import Q
 from django_celery_beat.models import PeriodicTask
-
 from rest_framework import serializers
+
 from fastrunner import models
 from fastrunner.utils.parser import Parse
-
 from fastrunner.utils.tree import get_tree_relation_name
 
 logger = logging.getLogger(__name__)
@@ -45,28 +43,17 @@ class ProjectSerializer(serializers.ModelSerializer):
         """
         接口覆盖率，百分比后去两位小数点
         """
-        apis = (
-            models.API.objects.filter(project_id=obj.id, delete=0)
-            .filter(~Q(tag=4))
-            .values("url", "method")
-        )
+        apis = models.API.objects.filter(project_id=obj.id, delete=0).filter(~Q(tag=4)).values("url", "method")
         api_unique = {f'{api["url"]}_{api["method"]}' for api in apis}
         case_steps = (
-            models.CaseStep.objects.filter(case__project_id=obj.id)
-            .filter(~Q(method="config"))
-            .values("url", "method")
+            models.CaseStep.objects.filter(case__project_id=obj.id).filter(~Q(method="config")).values("url", "method")
         )
-        case_steps_unique = {
-            f'{case_step["url"]}_{case_step["method"]}'
-            for case_step in case_steps
-        }
+        case_steps_unique = {f'{case_step["url"]}_{case_step["method"]}' for case_step in case_steps}
         if len(api_unique) == 0:
             return "0.00"
         if len(case_steps_unique) > len(api_unique):
             return "100.00"
-        return "%.2f" % (
-            len(case_steps_unique & api_unique) / len(api_unique) * 100
-        )
+        return "%.2f" % (len(case_steps_unique & api_unique) / len(api_unique) * 100)
 
 
 class VisitSerializer(serializers.ModelSerializer):
@@ -172,18 +159,14 @@ class CaseStepSerializer(serializers.ModelSerializer):
 
 
 class CIReportSerializer(serializers.Serializer):
-    ci_job_id = serializers.IntegerField(
-        required=True, min_value=1, help_text="gitlab-ci job id"
-    )
+    ci_job_id = serializers.IntegerField(required=True, min_value=1, help_text="gitlab-ci job id")
 
 
 class CISerializer(serializers.Serializer):
     # project = serializers.IntegerField(
     #     required=True, min_value=1, help_text='测试平台中某个项目的id')
     # task_ids = serializers.CharField(required=True, max_length=200, allow_blank=True)
-    ci_job_id = serializers.IntegerField(
-        required=True, min_value=1, help_text="gitlab-ci job id"
-    )
+    ci_job_id = serializers.IntegerField(required=True, min_value=1, help_text="gitlab-ci job id")
     ci_job_url = serializers.CharField(required=True, max_length=500)
     ci_pipeline_id = serializers.IntegerField(required=True)
     ci_pipeline_url = serializers.CharField(required=True, max_length=500)
@@ -191,9 +174,7 @@ class CISerializer(serializers.Serializer):
     ci_project_name = serializers.CharField(required=True, max_length=100)
     ci_project_namespace = serializers.CharField(required=True, max_length=100)
     env = serializers.CharField(required=False, max_length=100)
-    start_job_user = serializers.CharField(
-        required=True, max_length=100, help_text="GITLAB_USER_NAME"
-    )
+    start_job_user = serializers.CharField(required=True, max_length=100, help_text="GITLAB_USER_NAME")
 
 
 class APIRelatedCaseSerializer(serializers.Serializer):
@@ -247,9 +228,7 @@ class APISerializer(serializers.ModelSerializer):
         return case_id.data
 
     def get_relation_name(self, obj):
-        relation_obj = models.Relation.objects.get(
-            project_id=obj.project_id, type=1
-        )
+        relation_obj = models.Relation.objects.get(project_id=obj.project_id, type=1)
         label = get_tree_relation_name(eval(relation_obj.tree), obj.relation)
         return label
 
@@ -331,9 +310,7 @@ class VariablesSerializer(serializers.ModelSerializer):
     变量信息序列化
     """
 
-    key = serializers.CharField(
-        allow_null=False, max_length=100, required=True
-    )
+    key = serializers.CharField(allow_null=False, max_length=100, required=True)
     value = serializers.CharField(allow_null=False, max_length=1024)
     description = serializers.CharField(required=False, allow_blank=True)
 
@@ -392,9 +369,7 @@ class PeriodicTaskSerializer(serializers.ModelSerializer):
     def get_kwargs(self, obj):
         kwargs = json.loads(obj.kwargs)
         if obj.enabled:
-            kwargs["next_execute_time"] = get_cron_next_execute_time(
-                kwargs["crontab"]
-            )
+            kwargs["next_execute_time"] = get_cron_next_execute_time(kwargs["crontab"])
         # ci_project_ids = eval(kwargs.get('ci_project_ids', '[]'))
         # kwargs['ci_project_ids'] = ','.join(map(lambda x: str(x), ci_project_ids))
         kwargs["ci_project_ids"] = kwargs.get("ci_project_ids", "")
@@ -407,13 +382,9 @@ class PeriodicTaskSerializer(serializers.ModelSerializer):
     def get_args(self, obj):
         case_id_list = json.loads(obj.args)
         # 数据格式,list of dict : [{"id":case_id,"name":case_name}]
-        return list(
-            models.Case.objects.filter(pk__in=case_id_list).values(
-                "id", "name"
-            )
-        )
+        return list(models.Case.objects.filter(pk__in=case_id_list).values("id", "name"))
 
-    def get_last_run_at(self, obj) -> Union[str, int]:
+    def get_last_run_at(self, obj) -> str | int:
         if obj.last_run_at:
             return int(obj.last_run_at.timestamp())
         return ""
@@ -436,9 +407,7 @@ class ScheduleDeSerializer(serializers.Serializer):
         allow_blank=True,
         help_text="Gitlab的项目id，多个用逗号分开，一个项目id对应多个task，但只能在同一个项目中",
     )
-    strategy = serializers.CharField(
-        required=True, help_text="发送通知策略", max_length=20
-    )
+    strategy = serializers.CharField(required=True, help_text="发送通知策略", max_length=20)
     receiver = serializers.CharField(
         required=True,
         help_text="邮件接收者，暂时用不上",
@@ -451,9 +420,7 @@ class ScheduleDeSerializer(serializers.Serializer):
         allow_blank=True,
         max_length=100,
     )
-    name = serializers.CharField(
-        required=True, help_text="定时任务的名字", max_length=100
-    )
+    name = serializers.CharField(required=True, help_text="定时任务的名字", max_length=100)
     webhook = serializers.CharField(
         required=True,
         help_text="飞书webhook url",
@@ -476,24 +443,16 @@ class ScheduleDeSerializer(serializers.Serializer):
         allow_blank=True,
     )
     data = serializers.ListField(required=True, help_text="用例id")
-    project = serializers.IntegerField(
-        required=True, help_text="测试平台的项目id", min_value=1
-    )
+    project = serializers.IntegerField(required=True, help_text="测试平台的项目id", min_value=1)
 
     def validate_ci_project_ids(self, ci_project_ids):
         if ci_project_ids:
             not_allowed_project_ids = set()
-            kwargs_list = PeriodicTask.objects.filter(
-                ~Q(description=self.initial_data["project"])
-            ).values("kwargs")
+            kwargs_list = PeriodicTask.objects.filter(~Q(description=self.initial_data["project"])).values("kwargs")
             for kwargs in kwargs_list:
-                not_allowed_project_id: str = json.loads(kwargs["kwargs"]).get(
-                    "ci_project_ids", ""
-                )
+                not_allowed_project_id: str = json.loads(kwargs["kwargs"]).get("ci_project_ids", "")
                 if not_allowed_project_id:
-                    not_allowed_project_ids.update(
-                        not_allowed_project_id.split(",")
-                    )
+                    not_allowed_project_ids.update(not_allowed_project_id.split(","))
 
             validation_errors = set()
             for ci_project_id in ci_project_ids.split(","):
@@ -501,6 +460,4 @@ class ScheduleDeSerializer(serializers.Serializer):
                     validation_errors.add(ci_project_id)
 
             if validation_errors:
-                raise serializers.ValidationError(
-                    f"{','.join(validation_errors)} 已经在其他项目存在"
-                )
+                raise serializers.ValidationError(f"{','.join(validation_errors)} 已经在其他项目存在")

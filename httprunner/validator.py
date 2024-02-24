@@ -1,7 +1,5 @@
-# encoding: utf-8
 import os
 import types
-
 
 """ validate data format
 TODO: refactor with JSON schema validate

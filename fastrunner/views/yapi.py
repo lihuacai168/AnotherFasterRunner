@@ -1,5 +1,4 @@
 # !/usr/bin/python3
-# -*- coding: utf-8 -*-
 
 # @Author: 花菜
 # @File: yapi.py
@@ -8,13 +7,13 @@
 # from loguru import logger
 import logging
 
-from rest_framework.views import APIView
-from rest_framework.response import Response
 from django_bulk_update.helper import bulk_update
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
-from fastrunner.utils.parser import Yapi
-from fastrunner.utils import response
 from fastrunner import models
+from fastrunner.utils import response
+from fastrunner.utils.parser import Yapi
 
 logger = logging.getLogger(__name__)
 
@@ -31,15 +30,9 @@ class YAPIView(APIView):
             token=token,
             faster_project_id=faster_project_id,
         )
-        imported_apis = models.API.objects.filter(
-            project_id=faster_project_id, creator="yapi", delete=0
-        )
-        imported_apis_mapping = {
-            api.yapi_id: api.ypai_up_time for api in imported_apis
-        }
-        create_ids, update_ids = yapi.get_create_or_update_apis(
-            imported_apis_mapping
-        )
+        imported_apis = models.API.objects.filter(project_id=faster_project_id, creator="yapi", delete=0)
+        imported_apis_mapping = {api.yapi_id: api.ypai_up_time for api in imported_apis}
+        create_ids, update_ids = yapi.get_create_or_update_apis(imported_apis_mapping)
         try:
             # 获取yapi的分组，然后更新api tree
             yapi.create_relation_id(yapi.fast_project_id)

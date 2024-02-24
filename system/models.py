@@ -2,7 +2,6 @@ from django.db import models
 
 from fastuser.models import BaseTable
 
-
 # Create your models here.
 
 

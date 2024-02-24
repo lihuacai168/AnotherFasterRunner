@@ -85,7 +85,7 @@ requires-python = ">=3.11"
 
 [tool.ruff]
 # Set the maximum line length to 79.
-line-length = 79
+line-length = 120
 exclude = ["web/*", "**/migrations/**"]
 
 [tool.ruff.lint]
@@ -93,6 +93,12 @@ exclude = ["web/*", "**/migrations/**"]
 # overlap with the use of a formatter, like Black, but we can override this behavior by
 # explicitly adding the rule.
 extend-select = ["E501"]
+select = [
+    # isort
+    "I",
+    # pyupgrade
+    # "UP",
+]
 
 [tool.ruff.lint.pydocstyle]
 convention = "google"

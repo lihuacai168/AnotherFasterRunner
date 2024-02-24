@@ -1,4 +1,3 @@
-# encoding: utf-8
 import copy
 import logging
 import unittest
@@ -16,7 +15,7 @@ from httprunner import (
 logger = logging.getLogger("httprunner")
 
 
-class HttpRunner(object):
+class HttpRunner:
     def __init__(self, **kwargs):
         """initialize HttpRunner.
 
@@ -64,30 +63,18 @@ class HttpRunner(object):
 
             def test(self):
                 try:
-                    before_vars_mapping: dict = copy.deepcopy(
-                        test_runner.context.testcase_runtime_variables_mapping
-                    )
+                    before_vars_mapping: dict = copy.deepcopy(test_runner.context.testcase_runtime_variables_mapping)
                     test_runner.run_test(teststep_dict)
                 except exceptions.MyBaseFailure as ex:
                     self.fail(str(ex))
                 finally:
                     if hasattr(test_runner.http_client_session, "meta_data"):
-                        self.meta_data = (
-                            test_runner.http_client_session.meta_data
-                        )
-                        self.meta_data["validators"]: list[
-                            dict
-                        ] = test_runner.evaluated_validators
-                        self.meta_data["logs"]: list[
-                            str
-                        ] = test_runner.context.logs
-                        self.meta_data["extractors"]: list[
-                            dict
-                        ] = test_runner.context.extractors
+                        self.meta_data = test_runner.http_client_session.meta_data
+                        self.meta_data["validators"]: list[dict] = test_runner.evaluated_validators
+                        self.meta_data["logs"]: list[str] = test_runner.context.logs
+                        self.meta_data["extractors"]: list[dict] = test_runner.context.extractors
 
-                        update_vars_mapping: list[
-                            dict
-                        ] = test_runner.context.extractors
+                        update_vars_mapping: list[dict] = test_runner.context.extractors
                         after_vars_mapping: dict = test_runner.context.testcase_runtime_variables_mapping
                         # 'test_0000_000'
                         (
@@ -133,21 +120,13 @@ class HttpRunner(object):
                 for times_index in range(int(teststep_dict.get("times", 0))):
                     # suppose one testcase should not have more than 9999 steps,
                     # and one step should not run more than 999 times.
-                    test_method_name = "test_{:04}_{:03}".format(
-                        index, times_index + 1
-                    )
-                    test_method = _add_teststep(
-                        test_runner, config, teststep_dict
-                    )
+                    test_method_name = f"test_{index:04}_{times_index + 1:03}"
+                    test_method = _add_teststep(test_runner, config, teststep_dict)
                     setattr(TestSequense, test_method_name, test_method)
 
-            loaded_testcase = self.test_loader.loadTestsFromTestCase(
-                TestSequense
-            )
+            loaded_testcase = self.test_loader.loadTestsFromTestCase(TestSequense)
             setattr(loaded_testcase, "config", config)
-            setattr(
-                loaded_testcase, "teststeps", testcase.get("teststeps", [])
-            )
+            setattr(loaded_testcase, "teststeps", testcase.get("teststeps", []))
             setattr(loaded_testcase, "runner", test_runner)
             test_suite.addTest(loaded_testcase)
 
@@ -167,9 +146,7 @@ class HttpRunner(object):
 
         for testcase in test_suite:
             testcase_name = testcase.config.get("name")
-            logger.info(
-                "🚀🚀🚀 Start to run testcase: {}".format(testcase_name)
-            )
+            logger.info(f"🚀🚀🚀 Start to run testcase: {testcase_name}")
 
             result = self.unittest_runner.run(testcase)
             result.vars_trace = testcase.runner.context.vars_trace
@@ -198,20 +175,14 @@ class HttpRunner(object):
 
             self.summary["success"] &= testcase_summary["success"]
             testcase_summary["name"] = testcase.config.get("name")
-            testcase_summary["base_url"] = testcase.config.get(
-                "request", {}
-            ).get("base_url", "")
+            testcase_summary["base_url"] = testcase.config.get("request", {}).get("base_url", "")
 
             in_out = utils.get_testcase_io(testcase)
             utils.print_io(in_out)
             testcase_summary["in_out"] = in_out
 
-            report.aggregate_stat(
-                self.summary["stat"], testcase_summary["stat"]
-            )
-            report.aggregate_stat(
-                self.summary["time"], testcase_summary["time"]
-            )
+            report.aggregate_stat(self.summary["stat"], testcase_summary["stat"])
+            report.aggregate_stat(self.summary["time"], testcase_summary["time"])
 
             self.summary["details"].append(testcase_summary)
 
@@ -298,9 +269,7 @@ class HttpRunner(object):
 
         return self._run_tests(testcases, mapping)
 
-    def gen_html_report(
-        self, html_report_name=None, html_report_template=None
-    ):
+    def gen_html_report(self, html_report_name=None, html_report_template=None):
         """generate html report and return report path.
 
         Args:
@@ -312,11 +281,7 @@ class HttpRunner(object):
 
         """
         if not self.summary:
-            raise exceptions.MyBaseError(
-                "run method should be called before gen_html_report."
-            )
+            raise exceptions.MyBaseError("run method should be called before gen_html_report.")
 
         self.exception_stage = "generate report"
-        return report.render_html_report(
-            self.summary, html_report_name, html_report_template
-        )
+        return report.render_html_report(self.summary, html_report_name, html_report_template)

@@ -1,14 +1,15 @@
 # !/usr/bin/python3
-# -*- coding: utf-8 -*-
 
 # @Author: 花菜
 # @File: login_helper.py
 # @Time : 2021/8/9 17:30
 # @Email: lihuacai168@gmail.com
-import logging
 import json
+import logging
+
 import pydash
 import requests
+
 # from loguru import logger
 
 uac_token_url = "http://192.168.22.19:8002/api/uac/token/"
@@ -19,9 +20,7 @@ logger = logging.getLogger("httprunner")
 def _get_token(biz, account, password, env="qa"):
     data = {"biz": biz, "account": account, "password": password, "env": env}
     headers = {"Content-Type": "application/json; charset=utf-8"}
-    res = requests.post(
-        url=uac_token_url, headers=headers, data=json.dumps(data)
-    ).json()
+    res = requests.post(url=uac_token_url, headers=headers, data=json.dumps(data)).json()
     return res, data
 
 

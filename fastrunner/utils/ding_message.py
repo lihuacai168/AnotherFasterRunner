@@ -1,5 +1,4 @@
 # !/usr/bin/python3
-# -*- coding: utf-8 -*-
 
 # @Author:梨花菜
 # @File: ding_message.py
@@ -8,6 +7,7 @@
 # @Software: PyCharm
 
 import logging
+
 # import os
 # os.environ.setdefault(
 #     "DJANGO_SETTINGS_MODULE", "FasterRunner.settings.dev"
@@ -16,7 +16,6 @@ import logging
 # import django
 #
 # django.setup()
-
 from dingtalkchatbot.chatbot import DingtalkChatbot
 
 from fastrunner.utils.parser import format_summary_to_ding
@@ -34,9 +33,7 @@ class DingMessage:
         self.robot = DingtalkChatbot(webhook)
 
     def send_ding_msg(self, summary, report_name=None):
-        msg_and_fail_count = format_summary_to_ding(
-            "markdown", summary, report_name=report_name
-        )
+        msg_and_fail_count = format_summary_to_ding("markdown", summary, report_name=report_name)
         msg = msg_and_fail_count[0]
         fail_count = msg_and_fail_count[1]
         title = "FasterRunner自动化测试报告"
@@ -57,17 +54,13 @@ class DingMessage:
                 for phone in [f"@{phone} " for phone in receive_msg_mobiles]:
                     at_phone += phone
                 msg += at_phone
-                self.robot.send_markdown(
-                    title=title, text=msg, at_mobiles=receive_msg_mobiles
-                )
+                self.robot.send_markdown(title=title, text=msg, at_mobiles=receive_msg_mobiles)
 
 
 if __name__ == "__main__":
     import os
 
-    os.environ.setdefault(
-        "DJANGO_SETTINGS_MODULE", "FasterRunner.settings.dev"
-    )
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "FasterRunner.settings.dev")
 
     import django
 

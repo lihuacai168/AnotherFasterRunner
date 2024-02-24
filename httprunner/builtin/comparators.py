@@ -1,5 +1,4 @@
 # !/usr/bin/python3
-# -*- coding: utf-8 -*-
 
 # @Author: 花菜
 # @File: comparators.py
@@ -99,9 +98,7 @@ def _get_expression(item, expression, expect_value, jsonpath):
         if isinstance(item_value, (int, float, list, dict, bool, type(None))):
             parsed_expression = f"{item_value} {expression} {expect_value}"
         else:
-            parsed_expression = (
-                f"'{pydash.get(item, jsonpath)}' {expression} '{expect_value}'"
-            )
+            parsed_expression = f"'{pydash.get(item, jsonpath)}' {expression} '{expect_value}'"
 
     if isinstance(item, str):
         parsed_expression = f"{item} {expression} {expect_value}"
@@ -143,9 +140,7 @@ def list_all_item_contains(check_value: list, jsonpath_expression_value):
         )
         try:
             if eval(parsed_expression) is False:
-                raise AssertionError(
-                    f"{check_value} {expression} {expect_value}"
-                )
+                raise AssertionError(f"{check_value} {expression} {expect_value}")
         except Exception as e:
             raise e
 
