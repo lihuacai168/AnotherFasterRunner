@@ -5,7 +5,6 @@ import logging
 import re
 
 # from loguru import logger
-
 from httprunner import exceptions, utils
 from httprunner.compat import basestring, builtin_str, numeric_types, str
 
@@ -21,11 +20,11 @@ variable_regex_compile = re.compile(r"\$\{(\w+)\}|\$(\w+)")
 function_regex_compile = re.compile(r"\$\{(\w+)\(([\$\w\.\-/\s=,]*)\)\}")
 
 
-logger = logging.getLogger('httprunner')
+logger = logging.getLogger("httprunner")
 
 
 def parse_string_value(str_value):
-    """ parse string to number if possible
+    """parse string to number if possible
     e.g. "123" => 123
          "12.2" => 12.3
          "abc" => "abc"
@@ -41,7 +40,7 @@ def parse_string_value(str_value):
 
 
 def extract_variables(content):
-    """ extract all variable names from content, which is in format $variable
+    """extract all variable names from content, which is in format $variable
 
     Args:
         content (str): string content
@@ -71,7 +70,7 @@ def extract_variables(content):
 
 
 def extract_functions(content):
-    """ extract all functions from string content, which are in format ${fun()}
+    """extract all functions from string content, which are in format ${fun()}
 
     Args:
         content (str): string content
@@ -103,7 +102,7 @@ def extract_functions(content):
 
 
 def parse_function(content):
-    """ parse function name and args from string content.
+    """parse function name and args from string content.
 
     Args:
         content (str): string content
@@ -138,21 +137,17 @@ def parse_function(content):
     if not matched:
         raise exceptions.FunctionNotFound("{} not found!".format(content))
 
-    function_meta = {
-        "func_name": matched.group(1),
-        "args": [],
-        "kwargs": {}
-    }
+    function_meta = {"func_name": matched.group(1), "args": [], "kwargs": {}}
 
     args_str = matched.group(2).strip()
     if args_str == "":
         return function_meta
 
-    args_list = args_str.split(',')
+    args_list = args_str.split(",")
     for arg in args_list:
         arg = arg.strip()
-        if '=' in arg:
-            key, value = arg.split('=')
+        if "=" in arg:
+            key, value = arg.split("=")
             function_meta["kwargs"][key.strip()] = parse_string_value(value.strip())
         else:
             function_meta["args"].append(parse_string_value(arg))
@@ -161,7 +156,7 @@ def parse_function(content):
 
 
 def parse_validator(validator):
-    """ parse validator, validator maybe in two format
+    """parse validator, validator maybe in two format
     @param (dict) validator
         format1: this is kept for compatiblity with the previous versions.
             {"check": "status_code", "comparator": "eq", "expect": 201}
@@ -198,14 +193,14 @@ def parse_validator(validator):
         compare_values: list = validator[comparator]
 
         if len(compare_values) == 2:
-            compare_values.append('')
+            compare_values.append("")
 
         if not isinstance(compare_values, list) or len(compare_values) != 3:
             raise exceptions.ParamsError("invalid validator: {}".format(validator))
 
-        if comparator in ('list_any_item_contains', 'list_all_item_contains'):
+        if comparator in ("list_any_item_contains", "list_all_item_contains"):
             # list item比较器特殊检查
-            if len(compare_values[1].split(' ')) != 3:
+            if len(compare_values[1].split(" ")) != 3:
                 msg = f"{compare_values} 是错误的表达式, 正确的期望值表达式比如:k = v,等号前后要有空格符"
                 raise exceptions.ExpectValueParseFailure(msg)
 
@@ -214,16 +209,11 @@ def parse_validator(validator):
     else:
         raise exceptions.ParamsError("invalid validator: {}".format(validator))
 
-    return {
-        "check": check_item,
-        "expect": expect_value,
-        "comparator": comparator,
-        "desc": desc
-    }
+    return {"check": check_item, "expect": expect_value, "comparator": comparator, "desc": desc}
 
 
 def substitute_variables(content, variables_mapping):
-    """ substitute variables in content with variables_mapping
+    """substitute variables in content with variables_mapping
 
     Args:
         content (str/dict/list/numeric/bool/type): content to be substituted.
@@ -250,10 +240,7 @@ def substitute_variables(content, variables_mapping):
 
     """
     if isinstance(content, (list, set, tuple)):
-        return [
-            substitute_variables(item, variables_mapping)
-            for item in content
-        ]
+        return [substitute_variables(item, variables_mapping) for item in content]
 
     if isinstance(content, dict):
         substituted_data = {}
@@ -277,8 +264,9 @@ def substitute_variables(content, variables_mapping):
 
     return content
 
+
 def parse_parameters(parameters, variables_mapping, functions_mapping):
-    """ parse parameters and generate cartesian product.
+    """parse parameters and generate cartesian product.
 
     Args:
         parameters (list) parameters: parameter name and value in list
@@ -347,6 +335,7 @@ def parse_parameters(parameters, variables_mapping, functions_mapping):
 ##  parse content with variables and functions mapping
 ###############################################################################
 
+
 def get_builtin_item(item_type, item_name):
     """
 
@@ -360,6 +349,7 @@ def get_builtin_item(item_type, item_name):
     """
     # override built_in module with debugtalk.py module
     from httprunner import loader
+
     built_in_module = loader.load_builtin_module()
 
     if item_type == "variables":
@@ -367,7 +357,9 @@ def get_builtin_item(item_type, item_name):
             return built_in_module["variables"][item_name]
         except KeyError:
             logger.error("variables_mapping and built_in_module, not found variable: %s", item_name, exc_info=True)
-            raise exceptions.VariableNotFound("variables_mapping and built_in_module, not found variable: %s", item_name)
+            raise exceptions.VariableNotFound(
+                "variables_mapping and built_in_module, not found variable: %s", item_name
+            )
     else:
         # item_type == "functions":
         try:
@@ -377,7 +369,7 @@ def get_builtin_item(item_type, item_name):
 
 
 def get_mapping_variable(variable_name, variables_mapping):
-    """ get variable from variables_mapping.
+    """get variable from variables_mapping.
 
     Args:
         variable_name (str): variable name
@@ -397,7 +389,7 @@ def get_mapping_variable(variable_name, variables_mapping):
 
 
 def get_mapping_function(function_name, functions_mapping):
-    """ get function from functions_mapping,
+    """get function from functions_mapping,
         if not found, then try to check if builtin function.
 
     Args:
@@ -431,7 +423,7 @@ def get_mapping_function(function_name, functions_mapping):
 
 
 def parse_string_functions(content, variables_mapping, functions_mapping):
-    """ parse string content with functions mapping.
+    """parse string content with functions mapping.
 
     Args:
         content (str): string content to be parsed.
@@ -460,6 +452,7 @@ def parse_string_functions(content, variables_mapping, functions_mapping):
 
         if func_name in ["parameterize", "P"]:
             from httprunner import loader
+
             eval_value = loader.load_csv_file(*args, **kwargs)
         else:
             func = get_mapping_function(func_name, functions_mapping)
@@ -471,16 +464,13 @@ def parse_string_functions(content, variables_mapping, functions_mapping):
             content = eval_value
         else:
             # content contains one or many functions, e.g. "abc${add_one(3)}def"
-            content = content.replace(
-                func_content,
-                str(eval_value), 1
-            )
+            content = content.replace(func_content, str(eval_value), 1)
 
     return content
 
 
 def parse_string_variables(content, variables_mapping):
-    """ parse string content with variables mapping.
+    """parse string content with variables mapping.
 
     Args:
         content (str): string content to be parsed.
@@ -509,16 +499,13 @@ def parse_string_variables(content, variables_mapping):
             if not isinstance(variable_value, str):
                 variable_value = builtin_str(variable_value)
 
-            content = content.replace(
-                "${}".format(variable_name),
-                variable_value, 1
-            )
+            content = content.replace("${}".format(variable_name), variable_value, 1)
 
     return content
 
 
 def parse_function_params(params) -> dict:
-    """ parse function params to args and kwargs.
+    """parse function params to args and kwargs.
     Args:
         params (str): function param in string
     Returns:
@@ -562,20 +549,21 @@ def _format_func(func_name, parsed_args, parsed_kwargs):
     kwargs_str = ",".join(f"{k}={v}" for k, v in parsed_kwargs.items())
 
     if not args_str and not kwargs_str:
-        return f'{func_name}()'
+        return f"{func_name}()"
     elif not args_str:
-        return f'{func_name}({kwargs_str})'
+        return f"{func_name}({kwargs_str})"
     elif not kwargs_str:
-        return f'{func_name}({args_str})'
+        return f"{func_name}({args_str})"
     else:
-        return f'{func_name}({args_str}, {kwargs_str})'
+        return f"{func_name}({args_str}, {kwargs_str})"
+
 
 def parse_string(
     raw_string,
     variables_mapping,
     functions_mapping,
 ):
-    """ parse string content with variables and functions mapping.
+    """parse string content with variables and functions mapping.
     Args:
         raw_string: raw string content to be parsed.
         variables_mapping: variables mapping.
@@ -597,7 +585,6 @@ def parse_string(
         return parsed_string
 
     while match_start_position < len(raw_string):
-
         # Notice: notation priority
         # $$ > ${func($a, $b)} > $var
 
@@ -617,13 +604,13 @@ def parse_string(
             func_params_str = func_match.group(2)
             logger.info("raw func_params_str:  %s", func_params_str)
             function_meta = parse_function_params(func_params_str)
-            logger.info("function_meta: %s",  function_meta)
+            logger.info("function_meta: %s", function_meta)
             args = function_meta["args"]
             kwargs = function_meta["kwargs"]
             parsed_args = parse_data(args, variables_mapping, functions_mapping)
             parsed_kwargs = parse_data(kwargs, variables_mapping, functions_mapping)
             try:
-                logger.info('parsed func: %s', _format_func(func_name, parsed_args, parsed_kwargs))
+                logger.info("parsed func: %s", _format_func(func_name, parsed_args, parsed_kwargs))
                 func_eval_value = func(*parsed_args, **parsed_kwargs)
                 logger.info("func return value: %s", func_eval_value)
             except Exception as ex:
@@ -675,8 +662,9 @@ def parse_string(
 
     return parsed_string
 
+
 def parse_data(content, variables_mapping=None, functions_mapping=None):
-    """ parse content with variables mapping
+    """parse content with variables mapping
 
     Args:
         content (str/dict/list/numeric/bool/type): content to be parsed
@@ -708,10 +696,7 @@ def parse_data(content, variables_mapping=None, functions_mapping=None):
         return content
 
     if isinstance(content, (list, set, tuple)):
-        return [
-            parse_data(item, variables_mapping, functions_mapping)
-            for item in content
-        ]
+        return [parse_data(item, variables_mapping, functions_mapping) for item in content]
 
     if isinstance(content, dict):
         parsed_content = {}
@@ -727,10 +712,10 @@ def parse_data(content, variables_mapping=None, functions_mapping=None):
         functions_mapping = functions_mapping or {}
         has_variable_match = variable_regex_compile.search(content)
         if has_variable_match:
-            logger.info('source string content: %s', content)
+            logger.info("source string content: %s", content)
         content = parse_string(content, variables_mapping, functions_mapping)
         if has_variable_match:
-            logger.info('parsed string content: %s', content)
+            logger.info("parsed string content: %s", content)
         # replace $$ notation with $ and consider it as normal char.
         # if '$$' in content:
         #     return content.replace("$$", "$")
@@ -751,7 +736,7 @@ def parse_data(content, variables_mapping=None, functions_mapping=None):
 
 
 def parse_tests(testcases, variables_mapping=None):
-    """ parse testcases configs, including variables/parameters/name/request.
+    """parse testcases configs, including variables/parameters/name/request.
 
     Args:
         testcases (list): testcase list, with config unparsed.
@@ -799,24 +784,13 @@ def parse_tests(testcases, variables_mapping=None):
     for testcase in testcases:
         testcase_config = testcase.setdefault("config", {})
         project_mapping = testcase_config.pop(
-            "refs",
-            {
-                "debugtalk": {
-                    "variables": {},
-                    "functions": {}
-                },
-                "env": {},
-                "def-api": {},
-                "def-testcase": {}
-            }
+            "refs", {"debugtalk": {"variables": {}, "functions": {}}, "env": {}, "def-api": {}, "def-testcase": {}}
         )
 
         # parse config parameters
         config_parameters = testcase_config.pop("parameters", [])
         cartesian_product_parameters_list = parse_parameters(
-            config_parameters,
-            project_mapping["debugtalk"]["variables"],
-            project_mapping["debugtalk"]["functions"]
+            config_parameters, project_mapping["debugtalk"]["variables"], project_mapping["debugtalk"]["functions"]
         ) or [{}]
 
         for parameter_mapping in cartesian_product_parameters_list:
@@ -828,33 +802,27 @@ def parse_tests(testcases, variables_mapping=None):
             parsed_config_variables = parse_data(
                 raw_config_variables,
                 project_mapping["debugtalk"]["variables"],
-                project_mapping["debugtalk"]["functions"]
+                project_mapping["debugtalk"]["functions"],
             )
 
             # priority: passed in > debugtalk.py > parameters > variables
             # override variables mapping with parameters mapping
-            config_variables = utils.override_mapping_list(
-                parsed_config_variables, parameter_mapping)
+            config_variables = utils.override_mapping_list(parsed_config_variables, parameter_mapping)
             # merge debugtalk.py module variables
             config_variables.update(project_mapping["debugtalk"]["variables"])
             # override variables mapping with passed in variables_mapping
-            config_variables = utils.override_mapping_list(
-                config_variables, variables_mapping)
+            config_variables = utils.override_mapping_list(config_variables, variables_mapping)
 
             testcase_dict["config"]["variables"] = config_variables
 
             # parse config name
             testcase_dict["config"]["name"] = parse_data(
-                testcase_dict["config"].get("name", ""),
-                config_variables,
-                project_mapping["debugtalk"]["functions"]
+                testcase_dict["config"].get("name", ""), config_variables, project_mapping["debugtalk"]["functions"]
             )
 
             # parse config request
             testcase_dict["config"]["request"] = parse_data(
-                testcase_dict["config"].get("request", {}),
-                config_variables,
-                project_mapping["debugtalk"]["functions"]
+                testcase_dict["config"].get("request", {}), config_variables, project_mapping["debugtalk"]["functions"]
             )
 
             # put loaded project functions to config

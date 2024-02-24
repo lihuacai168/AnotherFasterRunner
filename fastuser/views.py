@@ -32,7 +32,6 @@ class RegisterView(APIView):
     """
 
     def post(self, request):
-
         try:
             username = request.data["username"]
             password = request.data["password"]
@@ -122,7 +121,8 @@ class LoginView(APIView):
 
             if not local_user:
                 logger.info(
-                    f"LDAP authentication failed or not enabled, falling back to local authentication for {username=}")
+                    f"LDAP authentication failed or not enabled, falling back to local authentication for {username=}"
+                )
                 local_user = local_auth(username, password)
 
             if local_user:
@@ -133,6 +133,7 @@ class LoginView(APIView):
                 return Response(response.LOGIN_FAILED)
         else:
             return Response(serializer.errors)
+
 
 class UserView(APIView):
     def get(self, request):

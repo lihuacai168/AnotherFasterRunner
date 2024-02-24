@@ -4,15 +4,16 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('fastuser', '0005_auto_20200914_2222'),
+        ("fastuser", "0005_auto_20200914_2222"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='myuser',
-            name='show_hosts',
-            field=models.BooleanField(default=False, help_text='是否显示Hosts相关的信息', verbose_name='是否显示Hosts相关的信息'),
+            model_name="myuser",
+            name="show_hosts",
+            field=models.BooleanField(
+                default=False, help_text="是否显示Hosts相关的信息", verbose_name="是否显示Hosts相关的信息"
+            ),
         ),
     ]

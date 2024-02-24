@@ -4,35 +4,34 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('fastrunner', '0017_visit_project'),
+        ("fastrunner", "0017_visit_project"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='api',
-            name='yapi_catid',
-            field=models.IntegerField(default=0, null=True, verbose_name='yapi的分组id'),
+            model_name="api",
+            name="yapi_catid",
+            field=models.IntegerField(default=0, null=True, verbose_name="yapi的分组id"),
         ),
         migrations.AddField(
-            model_name='api',
-            name='yapi_id',
-            field=models.IntegerField(default=0, null=True, verbose_name='yapi的id'),
+            model_name="api",
+            name="yapi_id",
+            field=models.IntegerField(default=0, null=True, verbose_name="yapi的id"),
         ),
         migrations.AddField(
-            model_name='api',
-            name='ypai_add_time',
-            field=models.CharField(default='', max_length=10, null=True, verbose_name='yapi创建时间'),
+            model_name="api",
+            name="ypai_add_time",
+            field=models.CharField(default="", max_length=10, null=True, verbose_name="yapi创建时间"),
         ),
         migrations.AddField(
-            model_name='api',
-            name='ypai_up_time',
-            field=models.CharField(default='', max_length=10, null=True, verbose_name='yapi更新时间'),
+            model_name="api",
+            name="ypai_up_time",
+            field=models.CharField(default="", max_length=10, null=True, verbose_name="yapi更新时间"),
         ),
         migrations.AddField(
-            model_name='api',
-            name='ypai_username',
-            field=models.CharField(default='', max_length=30, null=True, verbose_name='yapi的原作者'),
+            model_name="api",
+            name="ypai_username",
+            field=models.CharField(default="", max_length=30, null=True, verbose_name="yapi的原作者"),
         ),
     ]

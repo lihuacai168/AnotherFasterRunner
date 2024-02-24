@@ -13,8 +13,7 @@ from loguru import logger
 from curd.base_curd import GenericCURD
 from fastrunner.dto.tree_dto import TreeOut, TreeUniqueIn, TreeUpdateIn
 from fastrunner.models import Relation
-from fastrunner.utils.response import (TREE_ADD_SUCCESS, TREE_UPDATE_SUCCESS,
-                                       StandResponse)
+from fastrunner.utils.response import TREE_ADD_SUCCESS, TREE_UPDATE_SUCCESS, StandResponse
 from fastrunner.utils.tree import get_tree_max_id
 
 
@@ -43,12 +42,10 @@ class TreeService:
         }
         return StandResponse[TreeOut](**TREE_ADD_SUCCESS, data=TreeOut(**tree))
 
-    def patch(
-        self, pk: int, payload: TreeUpdateIn
-    ) -> StandResponse[Union[TreeOut, None]]:
+    def patch(self, pk: int, payload: TreeUpdateIn) -> StandResponse[Union[TreeOut, None]]:
         try:
             pk: int = self.curd.update_obj_by_pk(pk, None, payload.dict())
-        except Exception as e:
+        except Exception:
             err: str = traceback.format_exc()
             logger.warning(f"update tree {err=}")
             return StandResponse[None](code="9999", success=False, msg=err, data=None)

@@ -7,7 +7,6 @@ from rest_framework.views import APIView
 from rest_framework.viewsets import GenericViewSet
 
 from FasterRunner import pagination
-from FasterRunner.auth import OnlyGetAuthenticator
 from fastrunner import models, serializers
 from fastrunner.dto.tree_dto import TreeOut, TreeUniqueIn, TreeUpdateIn
 from fastrunner.services.tree_service_impl import tree_service
@@ -99,7 +98,7 @@ class ProjectView(GenericViewSet):
             project = models.Project.objects.get(id=request.data["id"])
             # 改完软删除
             project.is_deleted = 1
-            project.save(update_fields=['is_deleted'])
+            project.save(update_fields=["is_deleted"])
             # prepare.project_end(project)
 
             return Response(response.PROJECT_DELETE_SUCCESS)
@@ -208,9 +207,7 @@ class DebugTalkView(GenericViewSet):
         """
         pk = request.data["id"]
         try:
-            models.Debugtalk.objects.filter(id=pk).update(
-                code=request.data["code"], updater=request.user.username
-            )
+            models.Debugtalk.objects.filter(id=pk).update(code=request.data["code"], updater=request.user.username)
 
         except ObjectDoesNotExist:
             return Response(response.SYSTEM_ERROR)
@@ -291,18 +288,14 @@ class VisitView(GenericViewSet):
         recent7days = [day.get_day(d)[5:] for d in range(-5, 0)]
         count_data = (
             self.get_queryset()
-            .filter(
-                project=project, create_time__range=(day.get_day(-5), day.get_day())
-            )
+            .filter(project=project, create_time__range=(day.get_day(-5), day.get_day()))
             .extra(select={"create_time": "DATE_FORMAT(create_time,'%%m-%%d')"})
             .values("create_time")
             .annotate(counts=Count("id"))
             .values("create_time", "counts")
         )
 
-        create_time_report_map = {
-            data["create_time"]: data["counts"] for data in count_data
-        }
+        create_time_report_map = {data["create_time"]: data["counts"] for data in count_data}
         report_count = [create_time_report_map.get(d, 0) for d in recent7days]
 
         return Response({"recent7days": recent7days, "report_count": report_count})

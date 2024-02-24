@@ -4,16 +4,15 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('fastrunner', '0002_auto_20200509_1122'),
+        ("fastrunner", "0002_auto_20200509_1122"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='casestep',
-            name='source_api_id',
-            field=models.IntegerField(default=0, verbose_name='api来源'),
+            model_name="casestep",
+            name="source_api_id",
+            field=models.IntegerField(default=0, verbose_name="api来源"),
             preserve_default=False,
         ),
     ]

@@ -3,13 +3,13 @@ import logging
 
 import pydash
 import requests
-from django.db.models import Sum, Count, Q
+from django.db.models import Count, Q, Sum
 from django.db.models.functions import Concat
 from django_celery_beat.models import PeriodicTask as celery_models
-# from loguru import logger
 
+# from loguru import logger
 from fastrunner import models
-from fastrunner.utils.day import get_day, get_week, get_month
+from fastrunner.utils.day import get_day, get_month, get_week
 from fastrunner.utils.parser import Format
 
 logger = logging.getLogger(__name__)
@@ -191,18 +191,14 @@ def get_daily_count(project_id, model_name, start, end):
 
     # 统计给定日期范围内，每天创建的条数
     count_data: list = (
-        query.filter(
-            project_id=project_id, create_time__range=[get_day(start), get_day(end)]
-        )
+        query.filter(project_id=project_id, create_time__range=[get_day(start), get_day(end)])
         .extra(select={"create_time": "DATE_FORMAT(create_time,'%%m-%%d')"})
         .values("create_time")
         .annotate(counts=Count("id"))
         .values("create_time", "counts")
     )
     # list转dict, key是日期, value是统计数
-    create_time_count_mapping = {
-        data["create_time"]: data["counts"] for data in count_data
-    }
+    create_time_count_mapping = {data["create_time"]: data["counts"] for data in count_data}
 
     # 日期为空的key，补0
     count = [create_time_count_mapping.get(d, 0) for d in recent_days]
@@ -254,9 +250,7 @@ def get_jira_core_case_cover_rate(pk) -> dict:
         }
         try:
             # TODO 分页查找所有的核心case
-            res = requests.post(
-                url=base_url, headers=headers, data=json.dumps(data)
-            ).json()
+            res = requests.post(url=base_url, headers=headers, data=json.dumps(data)).json()
             err = res.get("errorMessages")
             if err:
                 logger.error(err)
@@ -275,9 +269,7 @@ def get_jira_core_case_cover_rate(pk) -> dict:
     if jira_core_case_count == 0:
         core_case_cover_rate = "0.00"
     else:
-        core_case_cover_rate = "%.2f" % (
-            (covered_case_count / jira_core_case_count) * 100
-        )
+        core_case_cover_rate = "%.2f" % ((covered_case_count / jira_core_case_count) * 100)
 
     return {
         "jira_core_case_count": jira_core_case_count,
@@ -305,9 +297,7 @@ def get_project_detail(pk):
     task_query_set = task_query_set.filter(enabled=1).values("args")
     for i in task_query_set:
         case_id += eval(i.get("args"))
-    case_step_count = models.Case.objects.filter(pk__in=case_id).aggregate(
-        Sum("length")
-    )
+    case_step_count = models.Case.objects.filter(pk__in=case_id).aggregate(Sum("length"))
 
     return {
         "api_count": api_count,
@@ -373,7 +363,6 @@ def update_casestep(body, case, username):
     step_list = list(models.CaseStep.objects.filter(case=case).values("id"))
 
     for index in range(len(body)):
-
         test = body[index]
         try:
             format_http = Format(test["newBody"])
@@ -420,9 +409,7 @@ def update_casestep(body, case, username):
         }
         # is_copy is True表示用例步骤是复制的
         if "case" in test.keys() and test.pop("is_copy", False) is False:
-            models.CaseStep.objects.filter(id=test["id"]).update(
-                **kwargs, updater=username
-            )
+            models.CaseStep.objects.filter(id=test["id"]).update(**kwargs, updater=username)
             step_list.remove({"id": test["id"]})
         else:
             kwargs["case"] = case
@@ -448,7 +435,6 @@ def generate_casestep(body, case, username):
     #  index也是case step的执行顺序
     case_steps: list = []
     for index in range(len(body)):
-
         test = body[index]
         try:
             format_http = Format(test["newBody"])

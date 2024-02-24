@@ -4,16 +4,15 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('fastrunner', '0012_auto_20201013_1029'),
+        ("fastrunner", "0012_auto_20201013_1029"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='visit',
-            name='ip',
-            field=models.CharField(default='127.0.0.1', max_length=20, verbose_name='用户的ip'),
+            model_name="visit",
+            name="ip",
+            field=models.CharField(default="127.0.0.1", max_length=20, verbose_name="用户的ip"),
             preserve_default=False,
         ),
     ]

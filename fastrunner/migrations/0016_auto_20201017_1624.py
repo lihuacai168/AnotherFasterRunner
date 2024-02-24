@@ -4,45 +4,56 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('fastrunner', '0015_auto_20201017_1623'),
+        ("fastrunner", "0015_auto_20201017_1623"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='visit',
-            name='create_time',
-            field=models.DateTimeField(auto_now_add=True, db_index=True, verbose_name='创建时间'),
+            model_name="visit",
+            name="create_time",
+            field=models.DateTimeField(auto_now_add=True, db_index=True, verbose_name="创建时间"),
         ),
         migrations.AlterField(
-            model_name='visit',
-            name='ip',
-            field=models.CharField(db_index=True, max_length=20, verbose_name='用户的ip'),
+            model_name="visit",
+            name="ip",
+            field=models.CharField(db_index=True, max_length=20, verbose_name="用户的ip"),
         ),
         migrations.AlterField(
-            model_name='visit',
-            name='path',
-            field=models.CharField(db_index=True, default='', max_length=100, verbose_name='被访问的接口路径'),
+            model_name="visit",
+            name="path",
+            field=models.CharField(db_index=True, default="", max_length=100, verbose_name="被访问的接口路径"),
         ),
         migrations.AlterField(
-            model_name='visit',
-            name='request_method',
-            field=models.CharField(choices=[('GET', 'GET'), ('POST', 'POST'), ('PUT', 'PUT'), ('PATCH', 'PATCH'), ('DELETE', 'DELETE'), ('OPTION', 'OPTION')], db_index=True, max_length=7, verbose_name='请求方法'),
+            model_name="visit",
+            name="request_method",
+            field=models.CharField(
+                choices=[
+                    ("GET", "GET"),
+                    ("POST", "POST"),
+                    ("PUT", "PUT"),
+                    ("PATCH", "PATCH"),
+                    ("DELETE", "DELETE"),
+                    ("OPTION", "OPTION"),
+                ],
+                db_index=True,
+                max_length=7,
+                verbose_name="请求方法",
+            ),
         ),
         migrations.AlterField(
-            model_name='visit',
-            name='request_params',
-            field=models.CharField(db_index=True, default='', max_length=255, verbose_name='请求参数'),
+            model_name="visit",
+            name="request_params",
+            field=models.CharField(db_index=True, default="", max_length=255, verbose_name="请求参数"),
         ),
         migrations.AlterField(
-            model_name='visit',
-            name='url',
-            field=models.CharField(db_index=True, max_length=255, verbose_name='被访问的url'),
+            model_name="visit",
+            name="url",
+            field=models.CharField(db_index=True, max_length=255, verbose_name="被访问的url"),
         ),
         migrations.AlterField(
-            model_name='visit',
-            name='user',
-            field=models.CharField(db_index=True, max_length=100, verbose_name='访问url的用户名'),
+            model_name="visit",
+            name="user",
+            field=models.CharField(db_index=True, max_length=100, verbose_name="访问url的用户名"),
         ),
     ]

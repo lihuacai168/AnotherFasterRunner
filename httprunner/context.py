@@ -2,20 +2,20 @@
 
 import copy
 import logging
+from collections import OrderedDict
 
 from httprunner import exceptions, parser, utils
-from httprunner.compat import OrderedDict
 
-logger = logging.getLogger('httprunner')
+logger = logging.getLogger("httprunner")
 
 
 class Context(object):
-    """ Manages context functions and variables.
-        context has two levels, testcase and teststep.
+    """Manages context functions and variables.
+    context has two levels, testcase and teststep.
     """
+
     def __init__(self, variables=None, functions=None):
-        """ init Context with testcase variables and functions.
-        """
+        """init Context with testcase variables and functions."""
         # testcase level context
         # TESTCASE_SHARED_FUNCTIONS_MAPPING are unchangeable.
         # TESTCASE_SHARED_VARIABLES_MAPPING may change by Hrun.set_config
@@ -39,7 +39,7 @@ class Context(object):
         self.vars_trace: list[dict] = []
 
     def init_context_variables(self, level="testcase"):
-        """ initialize testcase/teststep context
+        """initialize testcase/teststep context
 
         Args:
             level (enum): "testcase" or "teststep"
@@ -55,7 +55,7 @@ class Context(object):
         self.teststep_variables_mapping = copy.deepcopy(self.testcase_runtime_variables_mapping)
 
     def update_context_variables(self, variables, level):
-        """ update context variables, with level specified.
+        """update context variables, with level specified.
 
         Args:
             variables (list/OrderedDict): testcase config block or teststep block
@@ -86,18 +86,13 @@ class Context(object):
             self.update_teststep_variables_mapping(variable_name, variable_eval_value)
 
     def eval_content(self, content):
-        """ evaluate content recursively, take effect on each variable and function in content.
-            content may be in any data structure, include dict, list, tuple, number, string, etc.
+        """evaluate content recursively, take effect on each variable and function in content.
+        content may be in any data structure, include dict, list, tuple, number, string, etc.
         """
-        return parser.parse_data(
-            content,
-            self.teststep_variables_mapping,
-            self.TESTCASE_SHARED_FUNCTIONS_MAPPING
-        )
-
+        return parser.parse_data(content, self.teststep_variables_mapping, self.TESTCASE_SHARED_FUNCTIONS_MAPPING)
 
     def update_testcase_runtime_variables_mapping(self, variables):
-        """ update testcase_runtime_variables_mapping with extracted vairables in teststep.
+        """update testcase_runtime_variables_mapping with extracted vairables in teststep.
 
         Args:
             variables (OrderDict): extracted variables in teststep
@@ -108,12 +103,11 @@ class Context(object):
             self.update_teststep_variables_mapping(variable_name, variable_value)
 
     def update_teststep_variables_mapping(self, variable_name, variable_value):
-        """ bind and update testcase variables mapping
-        """
+        """bind and update testcase variables mapping"""
         self.teststep_variables_mapping[variable_name] = variable_value
 
     def get_parsed_request(self, request_dict, level="teststep"):
-        """ get parsed request with variables and functions.
+        """get parsed request with variables and functions.
 
         Args:
             request_dict (dict): request config mapping
@@ -131,14 +125,11 @@ class Context(object):
         else:
             # teststep
             return self.eval_content(
-                utils.deep_update_dict(
-                    copy.deepcopy(self.TESTCASE_SHARED_REQUEST_MAPPING),
-                    request_dict
-                )
+                utils.deep_update_dict(copy.deepcopy(self.TESTCASE_SHARED_REQUEST_MAPPING), request_dict)
             )
 
     def __eval_check_item(self, validator, resp_obj):
-        """ evaluate check item in validator.
+        """evaluate check item in validator.
 
         Args:
             validator (dict): validator
@@ -164,9 +155,11 @@ class Context(object):
         # 4, string joined by delimiter. e.g. "status_code", "headers.content-type"
         # 5, regex string, e.g. "LB[\d]*(.*)RB[\d]*"
 
-        if isinstance(check_item, (dict, list)) \
-            or parser.extract_variables(check_item) \
-            or parser.extract_functions(check_item):
+        if (
+            isinstance(check_item, (dict, list))
+            or parser.extract_variables(check_item)
+            or parser.extract_functions(check_item)
+        ):
             # format 1/2/3
             check_value = self.eval_content(check_item)
 
@@ -189,7 +182,7 @@ class Context(object):
         return validator
 
     def _do_validation(self, validator_dict):
-        """ validate with functions
+        """validate with functions
 
         Args:
             validator_dict (dict): validator dict
@@ -209,15 +202,17 @@ class Context(object):
         check_value = validator_dict["check_value"]
         expect_value = validator_dict["expect"]
 
-        if (check_value is None or expect_value is None) \
-            and comparator not in ["is", "eq", "equals", "not_equals", "=="]:
+        if (check_value is None or expect_value is None) and comparator not in [
+            "is",
+            "eq",
+            "equals",
+            "not_equals",
+            "==",
+        ]:
             raise exceptions.ParamsError("Null value can only be compared with comparator: eq/equals/==")
 
         validate_msg = "validate expression: {} {} {}({})".format(
-            check_item,
-            comparator,
-            expect_value,
-            type(expect_value).__name__
+            check_item, comparator, expect_value, type(expect_value).__name__
         )
 
         try:
@@ -228,19 +223,14 @@ class Context(object):
         except (AssertionError, TypeError):
             validate_msg += "\t==> fail"
             validate_msg += "\n{}({}) {} {}({})".format(
-                check_value,
-                type(check_value).__name__,
-                comparator,
-                expect_value,
-                type(expect_value).__name__
+                check_value, type(check_value).__name__, comparator, expect_value, type(expect_value).__name__
             )
             logger.error(validate_msg)
             validator_dict["check_result"] = "fail"
             raise exceptions.ValidationFailure(validate_msg)
 
     def validate(self, validators, resp_obj) -> (bool, list[dict]):
-        """ make validations
-        """
+        """make validations"""
         logger.info("start to validate.")
         is_validate_passed = True
         evaluated_validators = []
@@ -252,11 +242,8 @@ class Context(object):
 
         for validator in validators:
             # evaluate validators with context variable mapping.
-            evaluated_validator = self.__eval_check_item(
-                parser.parse_validator(validator),
-                resp_obj
-            )
-            evaluated_validator['validate_msg'] = 'ok'
+            evaluated_validator = self.__eval_check_item(parser.parse_validator(validator), resp_obj)
+            evaluated_validator["validate_msg"] = "ok"
 
             try:
                 self._do_validation(evaluated_validator)
@@ -266,7 +253,7 @@ class Context(object):
                 logger.info("❌❌❌ validate failed: %s", str(ex))
             finally:
                 if fail_msg:
-                    evaluated_validator['validate_msg'] = fail_msg
+                    evaluated_validator["validate_msg"] = fail_msg
                 fail_msg = ""
                 evaluated_validators.append(evaluated_validator)
         if not is_validate_passed:

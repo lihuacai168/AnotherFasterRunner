@@ -6,5 +6,3 @@ try:
     # from gevent import monkey; monkey.patch_all()
 except ImportError:
     pass
-
-from httprunner.api import HttpRunner

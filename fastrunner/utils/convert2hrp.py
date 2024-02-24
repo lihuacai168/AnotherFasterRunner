@@ -1,13 +1,10 @@
 import json
 import os
 from enum import Enum
-from typing import Any
-from typing import Dict, Text, Union, Callable
-from typing import List
+from typing import Any, Callable, Dict, List, Text, Union
 from urllib.parse import urlparse
 
-from pydantic import BaseModel, Field
-from pydantic import HttpUrl
+from pydantic import BaseModel, Field, HttpUrl
 
 Name = Text
 Url = Text
@@ -32,6 +29,7 @@ class MethodEnum(Text, Enum):
     OPTIONS = "OPTIONS"
     PATCH = "PATCH"
     NA = "N/A"
+
 
 class TConfig(BaseModel):
     name: Name
@@ -160,7 +158,7 @@ class StepData(BaseModel):
 
     success: bool = False
     name: Text = ""  # teststep name
-    data: Union[SessionData, List['StepData']] = None
+    data: Union[SessionData, List["StepData"]] = None
     export_vars: VariablesMapping = {}
 
 
@@ -214,27 +212,27 @@ class Hrp(object):
         self.faster_req_json = faster_req_json
 
     def parse_url(self):
-        url = self.faster_req_json['url']
+        url = self.faster_req_json["url"]
         o = urlparse(url=url)
-        baseurl = o.scheme + '://' + o.netloc
+        baseurl = o.scheme + "://" + o.netloc
         return baseurl, o.path
 
     def get_headers(self):
-        headers: dict = self.faster_req_json.get('headers', {})
+        headers: dict = self.faster_req_json.get("headers", {})
         # Content-Length may be error
-        headers.pop('Content-Length', None)
+        headers.pop("Content-Length", None)
         return headers
 
     def get_request(self) -> TRequest:
         base_url, path = self.parse_url()
         req = TRequest(
-            method=self.faster_req_json['method'],
+            method=self.faster_req_json["method"],
             url=base_url + path,
-            params=self.faster_req_json.get('params', {}),
+            params=self.faster_req_json.get("params", {}),
             headers=self.get_headers(),
-            body=self.faster_req_json.get('body', {}),
-            req_json=self.faster_req_json.get('json', {}),
-            verify=self.faster_req_json.get('verify', False),
+            body=self.faster_req_json.get("body", {}),
+            req_json=self.faster_req_json.get("json", {}),
+            verify=self.faster_req_json.get("verify", False),
         )
         return req
 
@@ -261,7 +259,7 @@ class Hrp(object):
         )
 
 
-source_json = '''
+source_json = """
 {
   "url": "http://10.129.144.22:8081/post",
   "method": "POST",
@@ -318,8 +316,8 @@ source_json = '''
     ]
   }
 }
-'''
+"""
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     hrp = Hrp(json.loads(source_json))
     print(hrp.get_testcase().json())

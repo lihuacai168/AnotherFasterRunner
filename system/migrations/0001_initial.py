@@ -4,27 +4,25 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='LogRecord',
+            name="LogRecord",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('create_time', models.DateTimeField(auto_now_add=True, verbose_name='创建时间')),
-                ('update_time', models.DateTimeField(auto_now=True, verbose_name='更新时间')),
-                ('creator', models.CharField(max_length=20, null=True, verbose_name='创建人')),
-                ('updater', models.CharField(max_length=20, null=True, verbose_name='更新人')),
-                ('request_id', models.CharField(db_index=True, max_length=100, null=True)),
-                ('level', models.CharField(max_length=20)),
-                ('message', models.TextField(db_index=True)),
+                ("id", models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                ("create_time", models.DateTimeField(auto_now_add=True, verbose_name="创建时间")),
+                ("update_time", models.DateTimeField(auto_now=True, verbose_name="更新时间")),
+                ("creator", models.CharField(max_length=20, null=True, verbose_name="创建人")),
+                ("updater", models.CharField(max_length=20, null=True, verbose_name="更新人")),
+                ("request_id", models.CharField(db_index=True, max_length=100, null=True)),
+                ("level", models.CharField(max_length=20)),
+                ("message", models.TextField(db_index=True)),
             ],
             options={
-                'db_table': 'log_record',
+                "db_table": "log_record",
             },
         ),
     ]

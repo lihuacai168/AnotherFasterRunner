@@ -4,14 +4,13 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('fastrunner', '0009_auto_20200822_1206'),
+        ("fastrunner", "0009_auto_20200822_1206"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='case',
-            name='apis',
+            model_name="case",
+            name="apis",
         ),
     ]
