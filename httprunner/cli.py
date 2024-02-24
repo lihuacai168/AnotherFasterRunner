@@ -1,63 +1,61 @@
+# encoding: utf-8
+
 import argparse
-import logging
 import multiprocessing
+import logging
 import sys
+import unittest
 
 # from httprunner import logger
 from httprunner.__about__ import __description__, __version__
 from httprunner.api import HttpRunner
 from httprunner.compat import is_py2
-from httprunner.utils import (
-    create_scaffold,
-    get_python2_retire_msg,
-    prettify_json_file,
-    validate_json_file,
-)
+from httprunner.utils import (create_scaffold, get_python2_retire_msg,
+                              prettify_json_file, validate_json_file)
 
-logger = logging.getLogger("httprunner")
+logger = logging.getLogger('httprunner')
 
 
 def main_hrun():
-    """API test: parse command line options and run commands."""
+    """ API test: parse command line options and run commands.
+    """
     parser = argparse.ArgumentParser(description=__description__)
     parser.add_argument(
-        "-V",
-        "--version",
-        dest="version",
-        action="store_true",
-        help="show version",
-    )
-    parser.add_argument("testcase_paths", nargs="*", help="testcase file path")
+        '-V', '--version', dest='version', action='store_true',
+        help="show version")
     parser.add_argument(
-        "--no-html-report",
-        action="store_true",
-        default=False,
-        help="do not generate html report.",
-    )
+        'testcase_paths', nargs='*',
+        help="testcase file path")
     parser.add_argument(
-        "--html-report-name",
-        help="specify html report name, only effective when generating html report.",
-    )
-    parser.add_argument("--html-report-template", help="specify html report template path.")
+        '--no-html-report', action='store_true', default=False,
+        help="do not generate html report.")
     parser.add_argument(
-        "--log-level",
-        default="INFO",
-        help="Specify logging level, default is INFO.",
-    )
-    parser.add_argument("--log-file", help="Write logs to specified file path.")
+        '--html-report-name',
+        help="specify html report name, only effective when generating html report.")
     parser.add_argument(
-        "--dot-env-path",
-        help="Specify .env file path, which is useful for keeping sensitive data.",
-    )
+        '--html-report-template',
+        help="specify html report template path.")
     parser.add_argument(
-        "--failfast",
-        action="store_true",
-        default=False,
-        help="Stop the test run on the first error or failure.",
-    )
-    parser.add_argument("--startproject", help="Specify new project name.")
-    parser.add_argument("--validate", nargs="*", help="Validate JSON testcase format.")
-    parser.add_argument("--prettify", nargs="*", help="Prettify JSON testcase format.")
+        '--log-level', default='INFO',
+        help="Specify logging level, default is INFO.")
+    parser.add_argument(
+        '--log-file',
+        help="Write logs to specified file path.")
+    parser.add_argument(
+        '--dot-env-path',
+        help="Specify .env file path, which is useful for keeping sensitive data.")
+    parser.add_argument(
+        '--failfast', action='store_true', default=False,
+        help="Stop the test run on the first error or failure.")
+    parser.add_argument(
+        '--startproject',
+        help="Specify new project name.")
+    parser.add_argument(
+        '--validate', nargs='*',
+        help="Validate JSON testcase format.")
+    parser.add_argument(
+        '--prettify', nargs='*',
+        help="Prettify JSON testcase format.")
 
     args = parser.parse_args()
     # logger.setup_logger(args.log_level, args.log_file)
@@ -66,7 +64,7 @@ def main_hrun():
         logger.warning(get_python2_retire_msg())
 
     if args.version:
-        logger.info(f"{__version__}", "GREEN")
+        logger.info("{}".format(__version__), "GREEN")
 
         exit(0)
 
@@ -83,24 +81,29 @@ def main_hrun():
         exit(0)
 
     try:
-        runner = HttpRunner(failfast=args.failfast)
-        runner.run(args.testcase_paths, dot_env_path=args.dot_env_path)
+        runner = HttpRunner(
+            failfast=args.failfast
+        )
+        runner.run(
+            args.testcase_paths,
+            dot_env_path=args.dot_env_path
+        )
     except Exception:
-        logger.error(f"!!!!!!!!!! exception stage: {runner.exception_stage} !!!!!!!!!!")
+        logger.error("!!!!!!!!!! exception stage: {} !!!!!!!!!!".format(runner.exception_stage))
         raise
 
     if not args.no_html_report:
         runner.gen_html_report(
             html_report_name=args.html_report_name,
-            html_report_template=args.html_report_template,
+            html_report_template=args.html_report_template
         )
 
     summary = runner.summary
     return 0 if summary["success"] else 1
 
-
 def main_locust():
-    """Performance test with locust: parse command line options and run commands."""
+    """ Performance test with locust: parse command line options and run commands.
+    """
     try:
         from httprunner import locusts
     except ImportError:
@@ -109,7 +112,7 @@ def main_locust():
         print(msg)
         exit(1)
 
-    sys.argv[0] = "locust"
+    sys.argv[0] = 'locust'
     if len(sys.argv) == 1:
         sys.argv.extend(["-h"])
 
@@ -119,9 +122,9 @@ def main_locust():
 
     # set logging level
     if "-L" in sys.argv:
-        loglevel_index = sys.argv.index("-L") + 1
+        loglevel_index = sys.argv.index('-L') + 1
     elif "--loglevel" in sys.argv:
-        loglevel_index = sys.argv.index("--loglevel") + 1
+        loglevel_index = sys.argv.index('--loglevel') + 1
     else:
         loglevel_index = None
 
@@ -136,9 +139,9 @@ def main_locust():
     # get testcase file path
     try:
         if "-f" in sys.argv:
-            testcase_index = sys.argv.index("-f") + 1
+            testcase_index = sys.argv.index('-f') + 1
         elif "--locustfile" in sys.argv:
-            testcase_index = sys.argv.index("--locustfile") + 1
+            testcase_index = sys.argv.index('--locustfile') + 1
         else:
             testcase_index = None
 
@@ -157,7 +160,7 @@ def main_locust():
             logger.error("conflict parameter args: --processes & --no-web. \nexit.")
             sys.exit(1)
 
-        processes_index = sys.argv.index("--processes")
+        processes_index = sys.argv.index('--processes')
 
         processes_count_index = processes_index + 1
 

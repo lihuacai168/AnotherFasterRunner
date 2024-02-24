@@ -1,4 +1,6 @@
-from httprunner.compat import FileNotFoundError
+# encoding: utf-8
+
+from httprunner.compat import JSONDecodeError, FileNotFoundError
 
 """ failure type exceptions
     these exceptions will mark test as failure

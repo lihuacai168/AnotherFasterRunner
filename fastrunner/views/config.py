@@ -1,15 +1,15 @@
 from copy import deepcopy
 
 from django.core.exceptions import ObjectDoesNotExist
-from django.db.models import Q
 from django.utils.decorators import method_decorator
-from rest_framework.response import Response
+from django.db.models import Q
 from rest_framework.viewsets import GenericViewSet
-
 from fastrunner import models, serializers
+from rest_framework.response import Response
 from fastrunner.utils import response
 from fastrunner.utils.decorator import request_log
 from fastrunner.utils.parser import Format
+from FasterRunner.auth import OnlyGetAuthenticator
 
 
 class ConfigView(GenericViewSet):
@@ -17,14 +17,14 @@ class ConfigView(GenericViewSet):
     serializer_class = serializers.ConfigSerializer
     queryset = models.Config.objects
 
-    @method_decorator(request_log(level="DEBUG"))
+    @method_decorator(request_log(level='DEBUG'))
     def list(self, request):
-        project = request.query_params["project"]
+        project = request.query_params['project']
         search = request.query_params["search"]
 
-        queryset = self.get_queryset().filter(project__id=project).order_by("-update_time")
+        queryset = self.get_queryset().filter(project__id=project).order_by('-update_time')
 
-        if search != "":
+        if search != '':
             queryset = queryset.filter(name__contains=search)
 
         pagination_queryset = self.paginate_queryset(queryset)
@@ -32,34 +32,30 @@ class ConfigView(GenericViewSet):
 
         return self.get_paginated_response(serializer.data)
 
-    @method_decorator(request_log(level="DEBUG"))
+    @method_decorator(request_log(level='DEBUG'))
     def all(self, request, **kwargs):
         """
         get all config
         """
         pk = kwargs["pk"]
 
-        queryset = (
-            self.get_queryset()
-            .filter(project__id=pk)
-            .order_by("-update_time")
-            .values("id", "name", "is_default", "base_url")
-        )
+        queryset = self.get_queryset().filter(project__id=pk). \
+            order_by('-update_time').values("id", "name", "is_default", "base_url")
 
         return Response(queryset)
 
-    @method_decorator(request_log(level="INFO"))
+    @method_decorator(request_log(level='INFO'))
     def add(self, request):
         """
-        add new config
-        {
-            name: str
-            project: int
-            body: dict
-        }
+            add new config
+            {
+                name: str
+                project: int
+                body: dict
+            }
         """
 
-        config = Format(request.data, level="config")
+        config = Format(request.data, level='config')
         config.parse()
 
         try:
@@ -74,13 +70,13 @@ class ConfigView(GenericViewSet):
             "name": config.name,
             "base_url": config.base_url,
             "body": config.testcase,
-            "project": config.project,
+            "project": config.project
         }
 
         models.Config.objects.create(**config_body, creator=request.user.username)
         return Response(response.CONFIG_ADD_SUCCESS)
 
-    @method_decorator(request_log(level="INFO"))
+    @method_decorator(request_log(level='INFO'))
     def update(self, request, **kwargs):
         """
         pk: int
@@ -93,7 +89,7 @@ class ConfigView(GenericViewSet):
             }
         }
         """
-        pk = kwargs["pk"]
+        pk = kwargs['pk']
 
         try:
             config = models.Config.objects.get(id=pk)
@@ -125,7 +121,7 @@ class ConfigView(GenericViewSet):
 
         return Response(response.CONFIG_UPDATE_SUCCESS)
 
-    @method_decorator(request_log(level="INFO"))
+    @method_decorator(request_log(level='INFO'))
     def copy(self, request, **kwargs):
         """
         pk: int
@@ -133,7 +129,7 @@ class ConfigView(GenericViewSet):
             name: str
         }
         """
-        pk = kwargs["pk"]
+        pk = kwargs['pk']
         try:
             config = models.Config.objects.get(id=pk)
         except ObjectDoesNotExist:
@@ -145,9 +141,9 @@ class ConfigView(GenericViewSet):
         config.id = None
         config.is_default = False
         body = eval(config.body)
-        name = request.data["name"]
+        name = request.data['name']
 
-        body["name"] = name
+        body['name'] = name
         config.name = name
         config.body = body
         config.creator = request.user.username
@@ -156,7 +152,7 @@ class ConfigView(GenericViewSet):
 
         return Response(response.CONFIG_ADD_SUCCESS)
 
-    @method_decorator(request_log(level="INFO"))
+    @method_decorator(request_log(level='INFO'))
     def delete(self, request, **kwargs):
         """
         删除一个配置 pk
@@ -167,15 +163,15 @@ class ConfigView(GenericViewSet):
         """
 
         try:
-            if kwargs.get("pk"):  # 单个删除
-                config_obj = models.Config.objects.get(id=kwargs["pk"])
+            if kwargs.get('pk'):  # 单个删除
+                config_obj = models.Config.objects.get(id=kwargs['pk'])
                 if models.CaseStep.objects.filter(method="config", name=config_obj.name).exists():
                     return Response(response.CONFIG_IS_USED)
                 config_obj.delete()
             else:
                 delete_item = 0
                 for content in request.data:
-                    config_obj = models.Config.objects.get(id=content["id"])
+                    config_obj = models.Config.objects.get(id=content['id'])
                     if models.CaseStep.objects.filter(method="config", name=config_obj.name).exists():
                         continue
                     else:
@@ -194,16 +190,18 @@ class VariablesView(GenericViewSet):
     serializer_class = serializers.VariablesSerializer
     queryset = models.Variables.objects
 
-    @method_decorator(request_log(level="DEBUG"))
+    @method_decorator(request_log(level='DEBUG'))
     def list(self, request):
-        project = request.query_params["project"]
+        project = request.query_params['project']
         search = request.query_params["search"]
 
-        queryset = self.get_queryset().filter(project__id=project).order_by("-update_time")
+        queryset = self.get_queryset().filter(project__id=project).order_by('-update_time')
 
-        if search != "":
+        if search != '':
             queryset = queryset.filter(
-                Q(key__contains=search) | Q(value__contains=search) | Q(description__contains=search)
+                Q(key__contains=search) |
+                Q(value__contains=search) |
+                Q(description__contains=search)
             )
 
         pagination_queryset = self.paginate_queryset(queryset)
@@ -211,15 +209,15 @@ class VariablesView(GenericViewSet):
 
         return self.get_paginated_response(serializer.data)
 
-    @method_decorator(request_log(level="INFO"))
+    @method_decorator(request_log(level='INFO'))
     def add(self, request):
         """
-        add new variables
-        {
-            key: str
-            value: str
-            project: int
-        }
+            add new variables
+            {
+                key: str
+                value: str
+                project: int
+            }
         """
         ser = self.serializer_class(data=request.data)
         if ser.is_valid():
@@ -237,10 +235,10 @@ class VariablesView(GenericViewSet):
             return Response(response.CONFIG_ADD_SUCCESS)
         else:
             res = deepcopy(response.PROJECT_NOT_EXISTS)
-            res["msg"] = ser.errors
+            res['msg'] = ser.errors
             return Response(res)
 
-    @method_decorator(request_log(level="INFO"))
+    @method_decorator(request_log(level='INFO'))
     def update(self, request, **kwargs):
         """
         pk: int
@@ -250,7 +248,7 @@ class VariablesView(GenericViewSet):
         }
         """
 
-        project_id = kwargs["pk"]
+        project_id = kwargs['pk']
         variable_id = request.data["id"]
         try:
             variables = models.Variables.objects.get(id=variable_id)
@@ -258,11 +256,10 @@ class VariablesView(GenericViewSet):
         except ObjectDoesNotExist:
             return Response(response.VARIABLES_NOT_EXISTS)
 
-        if (
-            models.Variables.objects.exclude(id=variable_id)
-            .filter(project_id=project_id, key=request.data["key"])
-            .first()
-        ):
+        if models.Variables.objects.exclude(id=variable_id).filter(
+                project_id=project_id,
+                key=request.data['key']
+        ).first():
             return Response(response.VARIABLES_EXISTS)
 
         variables.key = request.data["key"]
@@ -272,7 +269,7 @@ class VariablesView(GenericViewSet):
 
         return Response(response.VARIABLES_UPDATE_SUCCESS)
 
-    @method_decorator(request_log(level="INFO"))
+    @method_decorator(request_log(level='INFO'))
     def delete(self, request, **kwargs):
         """
         删除一个变量 pk
@@ -283,11 +280,11 @@ class VariablesView(GenericViewSet):
         """
 
         try:
-            if kwargs.get("pk"):  # 单个删除
-                models.Variables.objects.get(id=kwargs["pk"]).delete()
+            if kwargs.get('pk'):  # 单个删除
+                models.Variables.objects.get(id=kwargs['pk']).delete()
             else:
                 for content in request.data:
-                    models.Variables.objects.get(id=content["id"]).delete()
+                    models.Variables.objects.get(id=content['id']).delete()
 
         except ObjectDoesNotExist:
             return Response(response.VARIABLES_NOT_EXISTS)
@@ -299,24 +296,24 @@ class HostIPView(GenericViewSet):
     serializer_class = serializers.HostIPSerializer
     queryset = models.HostIP.objects
 
-    @method_decorator(request_log(level="DEBUG"))
+    @method_decorator(request_log(level='DEBUG'))
     def list(self, request):
-        project = request.query_params["project"]
-        queryset = self.get_queryset().filter(project__id=project).order_by("-update_time")
+        project = request.query_params['project']
+        queryset = self.get_queryset().filter(project__id=project).order_by('-update_time')
         pagination_queryset = self.paginate_queryset(queryset)
         serializer = self.get_serializer(pagination_queryset, many=True)
 
         return self.get_paginated_response(serializer.data)
 
-    @method_decorator(request_log(level="INFO"))
+    @method_decorator(request_log(level='INFO'))
     def add(self, request):
         """
-        add new variables
-        {
-            name: str
-            value: str
-            project: int
-        }
+            add new variables
+            {
+                name: str
+                value: str
+                project: int
+            }
         """
 
         try:
@@ -332,14 +329,14 @@ class HostIPView(GenericViewSet):
         models.HostIP.objects.create(**request.data)
         return Response(response.HOSTIP_ADD_SUCCESS)
 
-    @method_decorator(request_log(level="INFO"))
+    @method_decorator(request_log(level='INFO'))
     def update(self, request, **kwargs):
         """pk: int{
           name: str
           value:str
         }
         """
-        pk = kwargs["pk"]
+        pk = kwargs['pk']
 
         try:
             host = models.HostIP.objects.get(id=pk)
@@ -347,7 +344,7 @@ class HostIPView(GenericViewSet):
         except ObjectDoesNotExist:
             return Response(response.HOSTIP_NOT_EXISTS)
 
-        if models.HostIP.objects.exclude(id=pk).filter(name=request.data["name"]).first():
+        if models.HostIP.objects.exclude(id=pk).filter(name=request.data['name']).first():
             return Response(response.HOSTIP_EXISTS)
 
         host.name = request.data["name"]
@@ -356,23 +353,25 @@ class HostIPView(GenericViewSet):
 
         return Response(response.HOSTIP_UPDATE_SUCCESS)
 
-    @method_decorator(request_log(level="INFO"))
+    @method_decorator(request_log(level='INFO'))
     def delete(self, request, **kwargs):
-        """删除host"""
+        """删除host
+        """
         try:
-            models.HostIP.objects.get(id=kwargs["pk"]).delete()
+            models.HostIP.objects.get(id=kwargs['pk']).delete()
         except ObjectDoesNotExist:
             return Response(response.HOSTIP_NOT_EXISTS)
 
         return Response(response.HOST_DEL_SUCCESS)
 
-    @method_decorator(request_log(level="DEBUG"))
+    @method_decorator(request_log(level='DEBUG'))
     def all(self, request, **kwargs):
         """
         get all config
         """
         pk = kwargs["pk"]
 
-        queryset = self.get_queryset().filter(project__id=pk).order_by("-update_time").values("id", "name")
+        queryset = self.get_queryset().filter(project__id=pk). \
+            order_by('-update_time').values("id", "name")
 
         return Response(queryset)

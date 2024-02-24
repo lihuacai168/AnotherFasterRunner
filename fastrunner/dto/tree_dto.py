@@ -1,4 +1,5 @@
 # !/usr/bin/python3
+# -*- coding: utf-8 -*-
 
 # @Author: 花菜
 # @File: tree_dto.py
@@ -14,7 +15,7 @@ class TreeUniqueIn(BaseModel):
 
 
 class TreeUpdateIn(BaseModel):
-    tree: list[dict] = Field(alias="body")
+    tree: list[dict] = Field(alias='body')
 
 
 class TreeOut(BaseModel):

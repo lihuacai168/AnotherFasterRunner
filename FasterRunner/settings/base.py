@@ -57,7 +57,7 @@ INSTALLED_APPS = [
     "rest_framework_swagger",
     "drf_yasg",
     "system",
-    "django_auth_ldap",
+    "django_auth_ldap"
 ]
 
 MIDDLEWARE = [
@@ -77,13 +77,9 @@ MIDDLEWARE = [
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 STATIC_URL = "/static/"
 
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, "static")
-]  # 指定static文件的路径，缺少这个配置，collect static 无法加载extent.js
+STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]  # 指定static文件的路径，缺少这个配置，collect static 无法加载extent.js
 
-STATIC_ROOT = os.path.join(
-    BASE_DIR, "static_root"
-)  # collect static 之后的文件存放路径
+STATIC_ROOT = os.path.join(BASE_DIR, "static_root")  # collect static 之后的文件存放路径
 
 ROOT_URLCONF = "FasterRunner.urls"
 
@@ -250,7 +246,7 @@ LOGGING = {
                 "ERROR": "red",
                 "CRITICAL": "bold_red",
             },
-        },
+        }
         # 日志格式
     },
     "filters": {
@@ -291,10 +287,10 @@ LOGGING = {
             "formatter": "color",
             "filters": ["request_id"],
         },
-        "db": {
-            "level": "INFO",
+        'db': {
+            'level': 'INFO',
             "formatter": "standard",
-            "class": "FasterRunner.log.DatabaseLogHandler",  # 指向你的自定义处理器
+            'class': 'FasterRunner.log.DatabaseLogHandler',  # 指向你的自定义处理器
         },
     },
     "loggers": {
@@ -336,33 +332,34 @@ DJANGO_CELERY_BEAT_TZ_AWARE = False
 
 # 邮箱配置
 EMAIL_USE_SSL = True
-EMAIL_HOST = os.environ.get(
-    "EMAIL_HOST", "smtp.qq.com"
-)  # 如果是 163 改成 smtp.163.com
+EMAIL_HOST = os.environ.get("EMAIL_HOST", "smtp.qq.com")  # 如果是 163 改成 smtp.163.com
 EMAIL_PORT = os.environ.get("EMAIL_PORT", 465)  # 默认是qq邮箱端口
 EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER")  # 配置邮箱
 EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD")  # 对应的授权码
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 
+
 # LDAP配置
 import ldap
 from django_auth_ldap.config import LDAPSearch
 
-USE_LDAP = False  # 如果需要开启LDAP认证，就设置位True
+USE_LDAP = False # 如果需要开启LDAP认证，就设置位True
 
 if USE_LDAP:
-    AUTHENTICATION_BACKENDS = ("django_auth_ldap.backend.LDAPBackend",)
+    AUTHENTICATION_BACKENDS = (
+    'django_auth_ldap.backend.LDAPBackend',
+    )
 
-AUTH_LDAP_SERVER_URI = "ldap://localhost:389"  # LDAP服务器地址，默认端口389
+AUTH_LDAP_SERVER_URI = "ldap://localhost:389" # LDAP服务器地址，默认端口389
 
-AUTH_LDAP_BIND_DN = "cn=admin,dc=myorg,dc=com"  # LDAP管理员账号
-AUTH_LDAP_BIND_PASSWORD = "admin"  # LDAP管理员密码
+AUTH_LDAP_BIND_DN = "cn=admin,dc=myorg,dc=com" # LDAP管理员账号
+AUTH_LDAP_BIND_PASSWORD = "admin" # LDAP管理员密码
 AUTH_LDAP_USER_SEARCH = LDAPSearch(
     "ou=Tester,dc=myorg,dc=com",
     ldap.SCOPE_SUBTREE,
     "(uid=%(user)s)",
-)  # LDAP搜索账号，ou可以理解为组织单位或者部门，不填写也是ok，dc可以理解为域名
+) # LDAP搜索账号，ou可以理解为组织单位或者部门，不填写也是ok，dc可以理解为域名
 
 AUTH_LDAP_USER_ATTR_MAP = {
     "username": "uid",
@@ -372,4 +369,4 @@ AUTH_LDAP_USER_ATTR_MAP = {
 }
 
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
-DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'

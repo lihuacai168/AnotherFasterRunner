@@ -1,3 +1,5 @@
+# encoding: utf-8
+
 import io
 import logging
 import os
@@ -5,7 +7,7 @@ import platform
 import time
 import unittest
 from base64 import b64encode
-from collections.abc import Iterable
+from typing import Iterable
 from datetime import datetime
 
 from jinja2 import Template, escape
@@ -13,13 +15,15 @@ from jinja2 import Template, escape
 from httprunner.__about__ import __version__
 from httprunner.compat import basestring, bytes, json, numeric_types
 
-logger = logging.getLogger("httprunner")
+logger = logging.getLogger('httprunner')
 
 
 def get_platform():
     return {
         "httprunner_version": __version__,
-        "python_version": "{} {}".format(platform.python_implementation(), platform.python_version()),
+        "python_version": "{} {}".format(
+            platform.python_implementation(), platform.python_version()
+        ),
         "platform": platform.platform(),
     }
 
@@ -58,7 +62,7 @@ def get_summary(result):
         summary["records"] = []
 
     if getattr(result, "vars_trace", None):
-        summary["vars_trace"]: list[dict] = result.vars_trace
+        summary["vars_trace"]: list[dict] =  result.vars_trace
     return summary
 
 
@@ -93,41 +97,45 @@ def render_html_report(summary, html_report_name=None, html_report_template=None
         )
         logger.debug("No html report template specified, use default.")
     else:
-        logger.info(f"render with html report template: {html_report_template}")
+        logger.info("render with html report template: {}".format(html_report_template))
 
     logger.info("Start to render Html report ...")
-    logger.debug(f"render data: {summary}")
+    logger.debug("render data: {}".format(summary))
 
     report_dir_path = os.path.join(os.getcwd(), "reports")
     start_at_timestamp = int(summary["time"]["start_at"])
-    summary["time"]["start_datetime"] = datetime.fromtimestamp(start_at_timestamp).strftime("%Y-%m-%d %H:%M:%S")
+    summary["time"]["start_datetime"] = datetime.fromtimestamp(
+        start_at_timestamp
+    ).strftime("%Y-%m-%d %H:%M:%S")
     if html_report_name:
         summary["html_report_name"] = html_report_name
         report_dir_path = os.path.join(report_dir_path, html_report_name)
-        html_report_name += f"-{start_at_timestamp}.html"
+        html_report_name += "-{}.html".format(start_at_timestamp)
     else:
         summary["html_report_name"] = ""
-        html_report_name = f"{start_at_timestamp}.html"
+        html_report_name = "{}.html".format(start_at_timestamp)
 
     if not os.path.isdir(report_dir_path):
         os.makedirs(report_dir_path)
 
     for index, suite_summary in enumerate(summary["details"]):
         if not suite_summary.get("name"):
-            suite_summary["name"] = f"test suite {index}"
+            suite_summary["name"] = "test suite {}".format(index)
         for record in suite_summary.get("records"):
             meta_data = record["meta_data"]
             stringify_data(meta_data, "request")
             stringify_data(meta_data, "response")
 
-    with open(html_report_template, encoding="utf-8") as fp_r:
+    with io.open(html_report_template, "r", encoding="utf-8") as fp_r:
         template_content = fp_r.read()
         report_path = os.path.join(report_dir_path, html_report_name)
-        with open(report_path, "w", encoding="utf-8") as fp_w:
-            rendered_content = Template(template_content, extensions=["jinja2.ext.loopcontrols"]).render(summary)
+        with io.open(report_path, "w", encoding="utf-8") as fp_w:
+            rendered_content = Template(
+                template_content, extensions=["jinja2.ext.loopcontrols"]
+            ).render(summary)
             fp_w.write(rendered_content)
 
-    logger.info(f"Generated Html report: {report_path}")
+    logger.info("Generated Html report: {}".format(report_path))
 
     return report_path
 
@@ -143,6 +151,7 @@ def stringify_data(meta_data, request_or_response):
     request_or_response_dict = meta_data[request_or_response]
 
     for key, value in request_or_response_dict.items():
+
         if isinstance(value, list):
             value = json.dumps(value, indent=2, ensure_ascii=False)
 
@@ -247,7 +256,11 @@ class HtmlTestResult(unittest.TextTestResult):
             if isinstance(elapsed_ms, (int, float)):
                 case_elapsed += record["meta_data"]["response"]["elapsed_ms"]
         # 毫秒转秒级，保留三位
-        total_duration = case_elapsed / 1000 + self.setup_hooks_duration + self.teardown_hooks_duration
+        total_duration = (
+            case_elapsed / 1000
+            + self.setup_hooks_duration
+            + self.teardown_hooks_duration
+        )
         return round(total_duration, 3)
 
     @property
@@ -255,7 +268,9 @@ class HtmlTestResult(unittest.TextTestResult):
         # 整个case的前置函数消耗时间
         res = 0
         for record in self.records:
-            setup_hooks_duration = record["meta_data"]["request"].get("setup_hooks_duration")
+            setup_hooks_duration = record["meta_data"]["request"].get(
+                "setup_hooks_duration"
+            )
             if setup_hooks_duration:
                 res += setup_hooks_duration
         return res
@@ -265,7 +280,9 @@ class HtmlTestResult(unittest.TextTestResult):
         # 整个case的后置函数消耗时间
         res = 0
         for record in self.records:
-            teardown_hooks_duration = record["meta_data"]["response"].get("teardown_hooks_duration")
+            teardown_hooks_duration = record["meta_data"]["response"].get(
+                "teardown_hooks_duration"
+            )
             if teardown_hooks_duration:
                 res += teardown_hooks_duration
         return res

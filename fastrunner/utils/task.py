@@ -1,22 +1,22 @@
 import json
 import logging
-
 # from loguru import logger
 from django_celery_beat import models as celery_models
-
 from fastrunner.utils import response
 from fastrunner.utils.parser import format_json
 
 logger = logging.getLogger(__name__)
 
 
-class Task:
+class Task(object):
     """
     定时任务操作
     """
 
     def __init__(self, **kwargs):
-        logger.info(f"before process task data:\n {format_json(kwargs)}")
+        logger.info(
+            "before process task data:\n {kwargs}".format(kwargs=format_json(kwargs))
+        )
         self.__name = kwargs["name"]
         self.__data = kwargs["data"]
         self.__crontab = kwargs["crontab"]
@@ -64,8 +64,11 @@ class Task:
         """
         add tasks
         """
-        if celery_models.PeriodicTask.objects.filter(name__exact=self.__name).count() > 0:
-            logger.info(f"{self.__name} tasks exist")
+        if (
+            celery_models.PeriodicTask.objects.filter(name__exact=self.__name).count()
+            > 0
+        ):
+            logger.info("{name} tasks exist".format(name=self.__name))
             return response.TASK_HAS_EXISTS
 
         if self.__email["strategy"] == "始终发送" or self.__email["strategy"] == "仅失败发送":
@@ -75,9 +78,13 @@ class Task:
 
         resp = self.format_crontab()
         if resp["success"]:
-            crontab = celery_models.CrontabSchedule.objects.filter(**self.__crontab_time).first()
+            crontab = celery_models.CrontabSchedule.objects.filter(
+                **self.__crontab_time
+            ).first()
             if crontab is None:
-                crontab = celery_models.CrontabSchedule.objects.create(**self.__crontab_time)
+                crontab = celery_models.CrontabSchedule.objects.create(
+                    **self.__crontab_time
+                )
             task, created = celery_models.PeriodicTask.objects.get_or_create(
                 name=self.__name, task=self.__task, crontab=crontab
             )
@@ -87,7 +94,7 @@ class Task:
             task.kwargs = json.dumps(self.__email, ensure_ascii=False)
             task.description = self.__project
             task.save()
-            logger.info(f"{self.__name} tasks save success")
+            logger.info("{name} tasks save success".format(name=self.__name))
             return response.TASK_ADD_SUCCESS
         else:
             return resp
@@ -96,9 +103,13 @@ class Task:
         resp = self.format_crontab()
         if resp["success"]:
             task = celery_models.PeriodicTask.objects.get(id=pk)
-            crontab = celery_models.CrontabSchedule.objects.filter(**self.__crontab_time).first()
+            crontab = celery_models.CrontabSchedule.objects.filter(
+                **self.__crontab_time
+            ).first()
             if crontab is None:
-                crontab = celery_models.CrontabSchedule.objects.create(**self.__crontab_time)
+                crontab = celery_models.CrontabSchedule.objects.create(
+                    **self.__crontab_time
+                )
             task.crontab = crontab
             task.enabled = self.__switch
             task.args = json.dumps(self.__data, ensure_ascii=False)
@@ -106,7 +117,7 @@ class Task:
             task.description = self.__project
             task.name = self.__name
             task.save()
-            logger.info(f"{self.__name} tasks save success")
+            logger.info("{name} tasks save success".format(name=self.__name))
             return response.TASK_UPDATE_SUCCESS
         else:
             return resp

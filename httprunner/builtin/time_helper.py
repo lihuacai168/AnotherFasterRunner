@@ -1,4 +1,5 @@
 # !/usr/bin/python3
+# -*- coding: utf-8 -*-
 
 # @Author: 花菜
 # @File: time_helper.py
@@ -35,8 +36,8 @@ def get_day(days: int = 0, **kwargs):
     """
     d = datetime.timedelta(days)
     n = datetime.datetime.now()
-    sep: str = kwargs.get("sep", "")
-    fmt = sep.join(["%Y", "%m", "%d"])
+    sep: str = kwargs.get('sep', '')
+    fmt = sep.join(['%Y', '%m', '%d'])
     if kwargs:
         h = kwargs.get("h", "00")
         m = kwargs.get("m", "00")
@@ -45,7 +46,7 @@ def get_day(days: int = 0, **kwargs):
     return (n + d).strftime(fmt)
 
 
-def get_day_fmt(fmt_type="sec", **kwargs):
+def get_day_fmt(fmt_type='sec', **kwargs):
     """获取日期
 
     fmt_type : str
@@ -66,8 +67,8 @@ def get_day_fmt(fmt_type="sec", **kwargs):
     >>> get_day_fmt('day', days=-1)
     2021-08-06
     """
-    fmt = "%Y-%m-%d %H:%m:%S"
-    if fmt_type == "day":
+    fmt = '%Y-%m-%d %H:%m:%S'
+    if fmt_type == 'day':
         fmt = "%Y-%m-%d"
 
     day = datetime.timedelta(**kwargs)
@@ -82,10 +83,10 @@ def get_day_h(days: int = 0, **kwargs):
     """
     d = datetime.timedelta(days)
     n = datetime.datetime.now()
-    time_str = "%Y%m%d"
+    time_str = f"%Y%m%d"
     if kwargs:
         h = str(kwargs.get("h"))
-        h = h.rjust(2, "0")
+        h = h.rjust(2, '0')
         time_str = f"{time_str}{h}"
     return (n + d).strftime(time_str)
 
@@ -133,7 +134,7 @@ def get_hour_ts(interval: int = 0) -> str:
 
 def get_hour() -> str:
     # 获取当前的小时，不足两位补0
-    return str(datetime.datetime.now().hour).rjust(2, "0")
+    return str(datetime.datetime.now().hour).rjust(2, '0')
 
 
 def get_hour_ts_int(interval: int = 0) -> int:
