@@ -4,35 +4,33 @@ import copy
 import io
 import itertools
 import json
-import os.path
-import string
-from datetime import datetime
 import logging
+import os.path
+from collections import OrderedDict
+from datetime import datetime
 
 from httprunner import exceptions
-from httprunner.compat import OrderedDict, basestring, is_py2
+from httprunner.compat import basestring, is_py2
 
-logger = logging.getLogger('httprunner')
+logger = logging.getLogger("httprunner")
 
 
 def remove_prefix(text, prefix):
-    """ remove prefix from text
-    """
+    """remove prefix from text"""
     if text.startswith(prefix):
-        return text[len(prefix):]
+        return text[len(prefix) :]
     return text
 
 
 def set_os_environ(variables_mapping):
-    """ set variables mapping to os.environ
-    """
+    """set variables mapping to os.environ"""
     for variable in variables_mapping:
         os.environ[variable] = variables_mapping[variable]
         logger.debug("Loaded variable: {}".format(variable))
 
 
-def query_json(json_content, query, delimiter='.'):
-    """ Do an xpath-like query with json_content.
+def query_json(json_content, query, delimiter="."):
+    """Do an xpath-like query with json_content.
     @param (dict/list/string) json_content
         json_content = {
             "ids": [1, 2, 3, 4],
@@ -52,7 +50,7 @@ def query_json(json_content, query, delimiter='.'):
     @return queried result
     """
     raise_flag = False
-    response_body = u"response body: {}\n".format(json_content)
+    response_body = "response body: {}\n".format(json_content)
     try:
         for key in query.split(delimiter):
             if isinstance(json_content, (list, basestring)):
@@ -60,14 +58,13 @@ def query_json(json_content, query, delimiter='.'):
             elif isinstance(json_content, dict):
                 json_content = json_content[key]
             else:
-                logger.error(
-                    "invalid type value: {}({})".format(json_content, type(json_content)))
+                logger.error("invalid type value: {}({})".format(json_content, type(json_content)))
                 raise_flag = True
     except (KeyError, ValueError, IndexError):
         raise_flag = True
 
     if raise_flag:
-        err_msg = u"Failed to extract! => {}\n".format(query)
+        err_msg = "Failed to extract! => {}\n".format(query)
         err_msg += response_body
         logger.error(err_msg)
         raise exceptions.ExtractFailure(err_msg)
@@ -76,8 +73,7 @@ def query_json(json_content, query, delimiter='.'):
 
 
 def get_uniform_comparator(comparator):
-    """ convert comparator alias to uniform name
-    """
+    """convert comparator alias to uniform name"""
     if comparator in ["eq", "equals", "==", "is"]:
         return "equals"
     elif comparator in ["lt", "less_than"]:
@@ -96,19 +92,18 @@ def get_uniform_comparator(comparator):
         return "length_equals"
     elif comparator in ["len_gt", "count_gt", "length_greater_than", "count_greater_than"]:
         return "length_greater_than"
-    elif comparator in ["len_ge", "count_ge", "length_greater_than_or_equals", \
-        "count_greater_than_or_equals"]:
+    elif comparator in ["len_ge", "count_ge", "length_greater_than_or_equals", "count_greater_than_or_equals"]:
         return "length_greater_than_or_equals"
     elif comparator in ["len_lt", "count_lt", "length_less_than", "count_less_than"]:
         return "length_less_than"
-    elif comparator in ["len_le", "count_le", "length_less_than_or_equals", \
-        "count_less_than_or_equals"]:
+    elif comparator in ["len_le", "count_le", "length_less_than_or_equals", "count_less_than_or_equals"]:
         return "length_less_than_or_equals"
     else:
         return comparator
 
+
 def deep_update_dict(origin_dict, override_dict):
-    """ update origin dict with override dict recursively
+    """update origin dict with override dict recursively
     e.g. origin_dict = {'a': 1, 'b': {'c': 2, 'd': 4}}
          override_dict = {'b': {'c': 3}}
     return: {'a': 1, 'b': {'c': 3, 'd': 4}}
@@ -128,8 +123,9 @@ def deep_update_dict(origin_dict, override_dict):
 
     return origin_dict
 
+
 def lower_dict_keys(origin_dict):
-    """ convert keys in dict to lower case
+    """convert keys in dict to lower case
 
     Args:
         origin_dict (dict): mapping data structure
@@ -160,15 +156,13 @@ def lower_dict_keys(origin_dict):
     if not origin_dict or not isinstance(origin_dict, dict):
         return origin_dict
 
-    return {
-        key.lower(): value
-        for key, value in origin_dict.items()
-    }
+    return {key.lower(): value for key, value in origin_dict.items()}
+
 
 def lower_test_dict_keys(test_dict):
-    """ convert keys in test_dict to lower case, convertion will occur in two places:
-        1, all keys in test_dict;
-        2, all keys in test_dict["request"]
+    """convert keys in test_dict to lower case, convertion will occur in two places:
+    1, all keys in test_dict;
+    2, all keys in test_dict["request"]
     """
     # convert keys in test_dict
     test_dict = lower_dict_keys(test_dict)
@@ -179,8 +173,9 @@ def lower_test_dict_keys(test_dict):
 
     return test_dict
 
+
 def convert_mappinglist_to_orderdict(mapping_list):
-    """ convert mapping list to ordered dict
+    """convert mapping list to ordered dict
 
     Args:
         mapping_list (list):
@@ -207,7 +202,7 @@ def convert_mappinglist_to_orderdict(mapping_list):
 
 
 def deepcopy_dict(data):
-    """ deepcopy dict data, ignore file object (_io.BufferedReader)
+    """deepcopy dict data, ignore file object (_io.BufferedReader)
 
     Args:
         data (dict): dict data structure
@@ -243,7 +238,7 @@ def deepcopy_dict(data):
 
 
 def update_ordered_dict(ordered_dict, override_mapping):
-    """ override ordered_dict with new mapping.
+    """override ordered_dict with new mapping.
 
     Args:
         ordered_dict (OrderDict): original ordered dict
@@ -267,7 +262,7 @@ def update_ordered_dict(ordered_dict, override_mapping):
 
 
 def override_mapping_list(variables, new_mapping):
-    """ override variables with new mapping.
+    """override variables with new mapping.
 
     Args:
         variables (list): variables list
@@ -307,14 +302,11 @@ def override_mapping_list(variables, new_mapping):
     else:
         raise exceptions.ParamsError("variables error!")
 
-    return update_ordered_dict(
-        variables_ordered_dict,
-        new_mapping
-    )
+    return update_ordered_dict(variables_ordered_dict, new_mapping)
 
 
 def get_testcase_io(testcase):
-    """ get testcase input(variables) and output.
+    """get testcase input(variables) and output.
 
     Args:
         testcase (unittest.suite.TestSuite): corresponding to one YAML/JSON file, it has been set two attributes:
@@ -329,14 +321,11 @@ def get_testcase_io(testcase):
     variables = testcase.config.get("variables", [])
     output_list = testcase.config.get("output", [])
 
-    return {
-        "in": dict(variables),
-        "out": runner.extract_output(output_list)
-    }
+    return {"in": dict(variables), "out": runner.extract_output(output_list)}
 
 
 def print_io(in_out):
-    """ print input(variables) and output.
+    """print input(variables) and output.
 
     Args:
         in_out (dict): input(variables) and output mapping.
@@ -381,7 +370,7 @@ def print_io(in_out):
                 if isinstance(value, unicode):
                     value = value.encode("utf-8")
             if value is None:
-                value = 'None'
+                value = "None"
             content += content_format.format(var_type, variable, value)
 
         return content
@@ -398,10 +387,9 @@ def print_io(in_out):
 
 
 def create_scaffold(project_name):
-    """ create scaffold with specified project name.
-    """
+    """create scaffold with specified project name."""
     if os.path.isdir(project_name):
-        logger.warning(u"Folder {} exists, please specify a new folder name.".format(project_name))
+        logger.warning("Folder {} exists, please specify a new folder name.".format(project_name))
         return
 
     logger.info("Start to create new project: {}".format(project_name), "GREEN")
@@ -411,7 +399,7 @@ def create_scaffold(project_name):
         if ptype == "folder":
             os.makedirs(path)
         elif ptype == "file":
-            open(path, 'w').close()
+            open(path, "w").close()
 
         msg = "created {}: {}".format(ptype, path)
         logger.info(msg, "BLUE")
@@ -423,13 +411,13 @@ def create_scaffold(project_name):
         (os.path.join(project_name, "testsuites"), "folder"),
         (os.path.join(project_name, "reports"), "folder"),
         (os.path.join(project_name, "debugtalk.py"), "file"),
-        (os.path.join(project_name, ".env"), "file")
+        (os.path.join(project_name, ".env"), "file"),
     ]
     [create_path(p[0], p[1]) for p in path_list]
 
 
 def gen_cartesian_product(*args):
-    """ generate cartesian product for lists
+    """generate cartesian product for lists
     @param
         (list) args
             [{"a": 1}, {"a": 2}],
@@ -463,8 +451,7 @@ def gen_cartesian_product(*args):
 
 
 def validate_json_file(file_list):
-    """ validate JSON testcase format
-    """
+    """validate JSON testcase format"""
     for json_file in set(file_list):
         if not json_file.endswith(".json"):
             logger.warning("Only JSON file format can be validated, skip: {}".format(json_file))
@@ -482,8 +469,7 @@ def validate_json_file(file_list):
 
 
 def prettify_json_file(file_list):
-    """ prettify JSON testcase format
-    """
+    """prettify JSON testcase format"""
     for json_file in set(file_list):
         if not json_file.endswith(".json"):
             logger.warning("Only JSON file format can be prettified, skip: {}".format(json_file))
@@ -495,15 +481,15 @@ def prettify_json_file(file_list):
         file_name, file_suffix = os.path.splitext(os.path.basename(json_file))
         outfile = os.path.join(dir_path, "{}.pretty.json".format(file_name))
 
-        with io.open(json_file, 'r', encoding='utf-8') as stream:
+        with io.open(json_file, "r", encoding="utf-8") as stream:
             try:
                 obj = json.load(stream)
             except ValueError as e:
                 raise SystemExit(e)
 
-        with io.open(outfile, 'w', encoding='utf-8') as out:
-            json.dump(obj, out, indent=4, separators=(',', ': '))
-            out.write('\n')
+        with io.open(outfile, "w", encoding="utf-8") as out:
+            json.dump(obj, out, indent=4, separators=(",", ": "))
+            out.write("\n")
 
         print("success: {}".format(outfile))
 

@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('fastrunner', '0016_auto_20201017_1624'),
+        ("fastrunner", "0016_auto_20201017_1624"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='visit',
-            name='project',
-            field=models.CharField(db_index=True, default=0, max_length=4, verbose_name='项目id'),
+            model_name="visit",
+            name="project",
+            field=models.CharField(db_index=True, default=0, max_length=4, verbose_name="项目id"),
         ),
     ]

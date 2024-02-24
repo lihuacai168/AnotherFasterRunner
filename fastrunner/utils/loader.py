@@ -18,15 +18,16 @@ from threading import Thread
 import requests
 import yaml
 from bs4 import BeautifulSoup
+
 # from loguru import logger
 from requests.cookies import RequestsCookieJar
-from requests_toolbelt import MultipartEncoder
 
 from FasterRunner.settings.base import BASE_DIR
 from fastrunner import models
 from fastrunner.utils.parser import Format
 from fastrunner.views.report import ConvertRequest
-from httprunner import HttpRunner, parser
+from httprunner import parser
+from httprunner.api import HttpRunner
 from httprunner.exceptions import FunctionNotFound, VariableNotFound
 
 logger = logging.getLogger(__name__)
@@ -77,9 +78,7 @@ class FileLoader(object):
     def dump_json_file(json_file, data):
         """dump json file"""
         with io.open(json_file, "w", encoding="utf-8") as stream:
-            json.dump(
-                data, stream, indent=4, separators=(",", ": "), ensure_ascii=False
-            )
+            json.dump(data, stream, indent=4, separators=(",", ": "), ensure_ascii=False)
 
     @staticmethod
     def dump_python_file(python_file, data):
@@ -133,9 +132,7 @@ class FileLoader(object):
         return debugtalk_module
 
 
-def parse_validate_and_extract(
-    list_of_dict: list, variables_mapping: dict, functions_mapping, api_variables: list
-):
+def parse_validate_and_extract(list_of_dict: list, variables_mapping: dict, functions_mapping, api_variables: list):
     """
     Args:
         list_of_dict (list)
@@ -157,7 +154,6 @@ def parse_validate_and_extract(
         # validate: d是{'equals': ['v1', 'v2']}， v类型是list
         v = list(d.values())[0]
         try:
-
             # validate,extract 的值包含了api variable的key中，不需要替换
             for key in api_variables_key:
                 if isinstance(v, str):
@@ -206,12 +202,8 @@ def parse_tests(testcases, debugtalk, name=None, config=None, project=None):
         testset["config"]["name"] = name
 
     # 获取当前项目的全局变量
-    global_variables = (
-        models.Variables.objects.filter(project=project).all().values("key", "value")
-    )
-    all_config_variables_keys = set().union(
-        *(d.keys() for d in testset["config"].setdefault("variables", []))
-    )
+    global_variables = models.Variables.objects.filter(project=project).all().values("key", "value")
+    all_config_variables_keys = set().union(*(d.keys() for d in testset["config"].setdefault("variables", [])))
     global_variables_list_of_dict = []
     for item in global_variables:
         if item["key"] not in all_config_variables_keys:
@@ -236,12 +228,8 @@ def parse_tests(testcases, debugtalk, name=None, config=None, project=None):
         extract: list = testcase.get("extract", [])
         validate: list = testcase.get("validate", [])
         api_variables: list = testcase.get("variables", [])
-        parse_validate_and_extract(
-            extract, variables_mapping, functions_mapping, api_variables
-        )
-        parse_validate_and_extract(
-            validate, variables_mapping, functions_mapping, api_variables
-        )
+        parse_validate_and_extract(extract, variables_mapping, functions_mapping, api_variables)
+        parse_validate_and_extract(validate, variables_mapping, functions_mapping, api_variables)
 
     return testset
 
@@ -254,9 +242,7 @@ def load_debugtalk(project):
     code = models.Debugtalk.objects.get(project__id=project).code
 
     # file_path = os.path.join(tempfile.mkdtemp(prefix='FasterRunner'), "debugtalk.py")
-    tempfile_path = tempfile.mkdtemp(
-        prefix="FasterRunner", dir=os.path.join(BASE_DIR, "tempWorkDir")
-    )
+    tempfile_path = tempfile.mkdtemp(prefix="FasterRunner", dir=os.path.join(BASE_DIR, "tempWorkDir"))
     file_path = os.path.join(tempfile_path, "debugtalk.py")
     os.chdir(tempfile_path)
     try:
@@ -264,7 +250,7 @@ def load_debugtalk(project):
         debugtalk = FileLoader.load_python_module(os.path.dirname(file_path))
         return debugtalk, file_path
 
-    except Exception as e:
+    except Exception:
         os.chdir(BASE_DIR)
         shutil.rmtree(os.path.dirname(file_path))
 
@@ -307,9 +293,7 @@ def debug_suite_parallel(test_sets: list):
     workers = min(len(test_sets), 10)
     with ThreadPoolExecutor(max_workers=workers) as executor:
         futures = {executor.submit(run_test, t): t for t in test_sets}
-        results = [
-            future.result() for future in concurrent.futures.as_completed(futures)
-        ]
+        results = [future.result() for future in concurrent.futures.as_completed(futures)]
 
     duration = time.time() - start
     return merge_parallel_result(results, duration)
@@ -375,9 +359,7 @@ def debug_suite(
                 failure_case_config.update(obj[index])
                 failure_case_config_mapping_list.append(failure_case_config)
         case_count = len(test_sets)
-        case_fail_rate = "{:.2%}".format(
-            len(failure_case_config_mapping_list) / case_count
-        )
+        case_fail_rate = "{:.2%}".format(len(failure_case_config_mapping_list) / case_count)
         summary["stat"].update(
             {
                 "failure_case_config_mapping_list": failure_case_config_mapping_list,
@@ -450,11 +432,7 @@ def debug_api(api, project, name=None, config=None, save=True, user=""):
     os.chdir(os.path.dirname(debugtalk_path))
     try:
         # testcase_list = [parse_tests(api, load_debugtalk(project), name=name, config=config)]
-        testcase_list = [
-            parse_tests(
-                api, debugtalk_content, name=name, config=config, project=project
-            )
-        ]
+        testcase_list = [parse_tests(api, debugtalk_content, name=name, config=config, project=project)]
 
         kwargs = {"failfast": False}
 
@@ -472,9 +450,7 @@ def debug_api(api, project, name=None, config=None, save=True, user=""):
                 json_data = record["meta_data"]["response"].pop("json", {})
                 if json_data:
                     record["meta_data"]["response"]["jsonCopy"] = json_data
-        ConvertRequest.generate_curl(
-            summary["details"], convert_type=("curl", "boomer")
-        )
+        ConvertRequest.generate_curl(summary["details"], convert_type=("curl", "boomer"))
         return summary
     except Exception as e:
         logger.error(f"debug_api error: {e}")
@@ -497,16 +473,12 @@ def load_test(test, project=None):
     except KeyError:
         if "case" in test.keys():
             if test["body"]["method"] == "config":
-                case_step = models.Config.objects.get(
-                    name=test["body"]["name"], project=project
-                )
+                case_step = models.Config.objects.get(name=test["body"]["name"], project=project)
             else:
                 case_step = models.CaseStep.objects.get(id=test["id"])
         else:
             if test["body"]["method"] == "config":
-                case_step = models.Config.objects.get(
-                    name=test["body"]["name"], project=project
-                )
+                case_step = models.Config.objects.get(name=test["body"]["name"], project=project)
             else:
                 case_step = models.API.objects.get(id=test["id"])
 
@@ -533,24 +505,18 @@ def back_async(func):
 def parse_summary(summary):
     """序列化summary"""
     for detail in summary["details"]:
-
         for record in detail["records"]:
-
             for key, value in record["meta_data"]["request"].items():
                 if isinstance(value, bytes):
                     record["meta_data"]["request"][key] = value.decode("utf-8")
                 if isinstance(value, RequestsCookieJar):
-                    record["meta_data"]["request"][
-                        key
-                    ] = requests.utils.dict_from_cookiejar(value)
+                    record["meta_data"]["request"][key] = requests.utils.dict_from_cookiejar(value)
 
             for key, value in record["meta_data"]["response"].items():
                 if isinstance(value, bytes):
                     record["meta_data"]["response"][key] = value.decode("utf-8")
                 if isinstance(value, RequestsCookieJar):
-                    record["meta_data"]["response"][
-                        key
-                    ] = requests.utils.dict_from_cookiejar(value)
+                    record["meta_data"]["response"][key] = requests.utils.dict_from_cookiejar(value)
 
             if "text/html" in record["meta_data"]["response"]["content_type"]:
                 record["meta_data"]["response"]["content"] = BeautifulSoup(

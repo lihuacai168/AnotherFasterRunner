@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('fastrunner', '0021_auto_20210525_2113'),
+        ("fastrunner", "0021_auto_20210525_2113"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='report',
-            name='ci_project_id',
-            field=models.IntegerField(db_index=True, default=0, null=True, verbose_name='gitlab的项目id'),
+            model_name="report",
+            name="ci_project_id",
+            field=models.IntegerField(db_index=True, default=0, null=True, verbose_name="gitlab的项目id"),
         ),
     ]

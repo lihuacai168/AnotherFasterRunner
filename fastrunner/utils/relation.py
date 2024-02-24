@@ -2,32 +2,33 @@
 # -*- coding: utf-8 -*-
 
 # @Author:梨花菜
-# @File: relation.py 
+# @File: relation.py
 # @Time : 2019/5/27 10:16
 # @Email: lihuacai168@gmail.com
 # @Software: PyCharm
 # api模块和数据库api表relation对应关系
-API_RELATION = {"default": 66,
-                "energy.ball": 67,
-                "manage": 68,
-                "app_manage": 68,
-                "artisan": 69,
-                "goods": 70,
-                "member": 71,
-                "order": 72,
-                "seller": 73,
-                "payment": 74,
-                "martketing": 75,
-                "promotion": 76,
-                "purchase": 77,
-                "security": 78,
-                "logistics": 79,
-                "recycle": 80,
-                "image-search": 81,
-                "content": 82,
-                "bmpm": 83,
-                "bi": 84
-                }
+API_RELATION = {
+    "default": 66,
+    "energy.ball": 67,
+    "manage": 68,
+    "app_manage": 68,
+    "artisan": 69,
+    "goods": 70,
+    "member": 71,
+    "order": 72,
+    "seller": 73,
+    "payment": 74,
+    "martketing": 75,
+    "promotion": 76,
+    "purchase": 77,
+    "security": 78,
+    "logistics": 79,
+    "recycle": 80,
+    "image-search": 81,
+    "content": 82,
+    "bmpm": 83,
+    "bi": 84,
+}
 
 # Java同学项目分组
 API_AUTHOR = {
@@ -37,15 +38,15 @@ API_AUTHOR = {
     "zhanghengjian": 87,
     "fengzhenwen": 88,
     "lingyunlong": 89,
-    "chencanzhang": 90
+    "chencanzhang": 90,
 }
 
-NIL = '无参数'
-SIGN = 'time,rode,sign'
-SIGN_OR_TOKEN = SIGN + '(wb-token可选)'
-SIGN_AND_TOKEN = SIGN + ',wb-token'
-SESSION = 'cookie: wb_sess:xxxxxx'
-COOKIE = 'cookie: wbiao.securityservice.tokenid:xxxx'
+NIL = "无参数"
+SIGN = "time,rode,sign"
+SIGN_OR_TOKEN = SIGN + "(wb-token可选)"
+SIGN_AND_TOKEN = SIGN + ",wb-token"
+SESSION = "cookie: wb_sess:xxxxxx"
+COOKIE = "cookie: wbiao.securityservice.tokenid:xxxx"
 
 API_AUTH = {
     "0": ["NIL", NIL],

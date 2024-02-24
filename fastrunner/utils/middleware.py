@@ -18,7 +18,6 @@ class VisitTimesMiddleware(MiddlewareMixin):
         request._body = request.body
 
     def process_response(self, request, response):
-
         body = request._body
         if body == b"":
             body = ""
@@ -54,7 +53,7 @@ class VisitTimesMiddleware(MiddlewareMixin):
             url=url,
             request_method=request.method,
             request_body=body,
-            ip=ip.split(',')[0], # 有时候会有多个ip，取第一个
+            ip=ip.split(",")[0],  # 有时候会有多个ip，取第一个
             path=request.path,
             request_params=query_params[1:-1],
             project=project,
@@ -88,26 +87,19 @@ class ExceptionMiddleware(MiddlewareMixin):
     def process_exception(self, request, exception):
         logger.error(traceback.format_exc())
 
-        if (
-            settings.EMAIL_HOST_USER
-            and settings.EMAIL_HOST_PASSWORD
-            and settings.EMAIL_HOST
-            and settings.EMAIL_PORT
-        ):
+        if settings.EMAIL_HOST_USER and settings.EMAIL_HOST_PASSWORD and settings.EMAIL_HOST and settings.EMAIL_PORT:
             try:
                 email_helper.send_mail(
-                    subject=f"测试平台异常告警",
-                    html_message=self.build_html_message(
-                        request=request, exception=exception
-                    ),
+                    subject="测试平台异常告警",
+                    html_message=self.build_html_message(request=request, exception=exception),
                     from_email=settings.EMAIL_HOST_USER,
                     recipient_list=[settings.EMAIL_HOST_USER],
                 )
             except smtplib.SMTPAuthenticationError as e:
-                logger.error(f'邮件发送失败 {traceback.format_exception(e)}')
+                logger.error(f"邮件发送失败 {traceback.format_exception(e)}")
                 return
             except Exception:
-                logger.error(f'邮件发送失败 {traceback.format_exc()}')
+                logger.error(f"邮件发送失败 {traceback.format_exc()}")
                 return
 
             logger.info("邮件发送成功")

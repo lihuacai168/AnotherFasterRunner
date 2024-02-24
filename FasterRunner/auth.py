@@ -18,11 +18,7 @@ from fastuser import models
 def is_admin(token):
     is_permission = models.MyUser.objects.filter(is_superuser=1).first()
     if not is_permission:
-        raise exceptions.PermissionDenied({
-            "code": "9996",
-            "msg": "权限不足,请联系管理员",
-            "success": False
-        })
+        raise exceptions.PermissionDenied({"code": "9996", "msg": "权限不足,请联系管理员", "success": False})
     else:
         return True
 
@@ -33,12 +29,12 @@ class OnlyGetAuthenticator(BaseAuthentication):
     """
 
     def authenticate(self, request):
-        if request.method != 'GET':
+        if request.method != "GET":
             token = request.query_params.get("token", None)
             is_admin(token)
 
     def authenticate_header(self, request):
-        return 'PermissionDenied'
+        return "PermissionDenied"
 
 
 class Authenticator(BaseAuthentication):
@@ -47,26 +43,17 @@ class Authenticator(BaseAuthentication):
     """
 
     def authenticate(self, request):
-
         token = request.query_params.get("token", None)
         obj = models.UserToken.objects.filter(token=token).first()
 
         if not obj:
-            raise exceptions.AuthenticationFailed({
-                "code": "9998",
-                "msg": "用户未认证",
-                "success": False
-            })
+            raise exceptions.AuthenticationFailed({"code": "9998", "msg": "用户未认证", "success": False})
 
         update_time = int(obj.update_time.timestamp())
         current_time = int(time.time())
 
         if current_time - update_time >= INVALID_TIME:
-            raise exceptions.AuthenticationFailed({
-                "code": "9997",
-                "msg": "登陆超时，请重新登陆",
-                "success": False
-            })
+            raise exceptions.AuthenticationFailed({"code": "9997", "msg": "登陆超时，请重新登陆", "success": False})
 
         # valid update valid time
         obj.token = token
@@ -75,7 +62,7 @@ class Authenticator(BaseAuthentication):
         return obj.user, obj
 
     def authenticate_header(self, request):
-        return 'Auth Failed'
+        return "Auth Failed"
 
 
 class DeleteAuthenticator(BaseAuthentication):
@@ -84,30 +71,29 @@ class DeleteAuthenticator(BaseAuthentication):
     """
 
     def authenticate(self, request):
-        if request.method == 'DELETE':
+        if request.method == "DELETE":
             token = request.query_params.get("token", None)
             is_admin(token)
 
     def authenticate_header(self, request):
-        return 'PermissionDenied'
+        return "PermissionDenied"
 
 
 class MyJWTAuthentication(JSONWebTokenAuthentication):
-
     def authenticate(self, request):
         """
         Returns a two-tuple of `User` and token if a valid signature has been
         supplied using JWT-based authentication.  Otherwise returns `None`.
         """
         # jwt_value = request.query_params.get("token", None)
-        jwt_value = request.headers.get('authorization', None)
+        jwt_value = request.headers.get("authorization", None)
         try:
             payload = jwt_decode_handler(jwt_value)
         except jwt.ExpiredSignature:
-            msg = '签名过期'
+            msg = "签名过期"
             raise exceptions.AuthenticationFailed(msg)
         except jwt.DecodeError:
-            msg = '签名解析失败'
+            msg = "签名解析失败"
             raise exceptions.AuthenticationFailed(msg)
         except jwt.InvalidTokenError:
             raise exceptions.AuthenticationFailed()
@@ -124,17 +110,17 @@ class MyJWTAuthentication(JSONWebTokenAuthentication):
         username = jwt_get_username_from_payload(payload)
 
         if not username:
-            msg = _('Invalid payload.')
+            msg = _("Invalid payload.")
             raise exceptions.AuthenticationFailed(msg)
 
         try:
             user = User.objects.get_by_natural_key(username)
         except User.DoesNotExist:
-            msg = '用户不存在'
+            msg = "用户不存在"
             raise exceptions.AuthenticationFailed(msg)
 
         if not user.is_active:
-            msg = '用户已禁用'
+            msg = "用户已禁用"
             raise exceptions.AuthenticationFailed(msg)
 
         return user

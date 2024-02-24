@@ -4,20 +4,19 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('fastrunner', '0018_auto_20210410_1950'),
+        ("fastrunner", "0018_auto_20210410_1950"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='project',
-            name='yapi_base_url',
-            field=models.CharField(default='', max_length=100, verbose_name='yapi的openapi url'),
+            model_name="project",
+            name="yapi_base_url",
+            field=models.CharField(default="", max_length=100, verbose_name="yapi的openapi url"),
         ),
         migrations.AddField(
-            model_name='project',
-            name='yapi_openapi_token',
-            field=models.CharField(default='', max_length=128, verbose_name='yapi openapi的token'),
+            model_name="project",
+            name="yapi_openapi_token",
+            field=models.CharField(default="", max_length=128, verbose_name="yapi openapi的token"),
         ),
     ]

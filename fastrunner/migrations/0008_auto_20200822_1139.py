@@ -4,19 +4,18 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('fastrunner', '0007_auto_20200822_1119'),
+        ("fastrunner", "0007_auto_20200822_1119"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='api',
-            name='case_id',
+            model_name="api",
+            name="case_id",
         ),
         migrations.AddField(
-            model_name='api',
-            name='case_id',
-            field=models.ManyToManyField(db_table='api_case', to='fastrunner.Case'),
+            model_name="api",
+            name="case_id",
+            field=models.ManyToManyField(db_table="api_case", to="fastrunner.Case"),
         ),
     ]

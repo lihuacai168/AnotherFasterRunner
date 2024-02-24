@@ -4,20 +4,19 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('fastrunner', '0014_auto_20201013_1505'),
+        ("fastrunner", "0014_auto_20201013_1505"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='visit',
-            name='path',
-            field=models.CharField(default='', max_length=100, verbose_name='被访问的接口路径'),
+            model_name="visit",
+            name="path",
+            field=models.CharField(default="", max_length=100, verbose_name="被访问的接口路径"),
         ),
         migrations.AddField(
-            model_name='visit',
-            name='request_params',
-            field=models.CharField(default='', max_length=255, verbose_name='请求参数'),
+            model_name="visit",
+            name="request_params",
+            field=models.CharField(default="", max_length=255, verbose_name="请求参数"),
         ),
     ]

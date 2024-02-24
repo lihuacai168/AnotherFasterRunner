@@ -92,6 +92,10 @@ line-length = 120
 # overlap with the use of a formatter, like Black, but we can override this behavior by
 # explicitly adding the rule.
 extend-select = ["E501"]
+select = [
+    # isort
+    "I"
+]
 
 [tool.ruff.lint.pydocstyle]
 convention = "google"

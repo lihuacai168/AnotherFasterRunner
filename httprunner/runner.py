@@ -1,14 +1,14 @@
 # encoding: utf-8
-import threading
 import logging
+import threading
+import time
+from collections import OrderedDict
+from unittest.case import SkipTest
 
 import pydash
-import time
-from unittest.case import SkipTest
 
 from httprunner import exceptions, response, utils
 from httprunner.client import HttpSession
-from httprunner.compat import OrderedDict
 from httprunner.context import Context
 
 logger = logging.getLogger("httprunner")
@@ -47,11 +47,7 @@ def _transform_to_list_of_dict(extractors: list[dict], extracted_variables_mappi
         for key, value in extractor.items():
             extract_expr = value
             actual_value = extracted_variables_mapping[key]
-            result.append({
-                'output_variable_name': key,
-                'extract_expr': extract_expr,
-                'actual_value': actual_value
-            })
+            result.append({"output_variable_name": key, "extract_expr": extract_expr, "actual_value": actual_value})
     return result
 
 
@@ -127,9 +123,7 @@ class Runner(object):
         test_dict = utils.lower_test_dict_keys(test_dict)
 
         self.context.init_context_variables(level)
-        variables = test_dict.get("variables") or test_dict.get(
-            "variable_binds", OrderedDict()
-        )
+        variables = test_dict.get("variables") or test_dict.get("variable_binds", OrderedDict())
         self.context.update_context_variables(variables, level)
 
         request_config = test_dict.get("request", {})
@@ -222,12 +216,8 @@ class Runner(object):
             self._handle_skip_feature(teststep_dict)
 
             # prepare
-            extractors = teststep_dict.get("extract", []) or teststep_dict.get(
-                "extractors", []
-            )
-            validators = teststep_dict.get("validate", []) or teststep_dict.get(
-                "validators", []
-            )
+            extractors = teststep_dict.get("extract", []) or teststep_dict.get("extractors", [])
+            validators = teststep_dict.get("validate", []) or teststep_dict.get("validators", [])
             parsed_request = self.init_test(teststep_dict, level="teststep")
             self.context.update_teststep_variables_mapping("request", parsed_request)
 
@@ -240,14 +230,10 @@ class Runner(object):
             logger.info("execute setup hooks end")
             # 计算前置setup_hooks消耗的时间
             setup_hooks_duration = 0
-            self.http_client_session.meta_data["request"][
-                "setup_hooks_start"
-            ] = setup_hooks_start
+            self.http_client_session.meta_data["request"]["setup_hooks_start"] = setup_hooks_start
             if len(setup_hooks) > 1:
                 setup_hooks_duration = time.time() - setup_hooks_start
-            self.http_client_session.meta_data["request"][
-                "setup_hooks_duration"
-            ] = setup_hooks_duration
+            self.http_client_session.meta_data["request"]["setup_hooks_duration"] = setup_hooks_duration
 
             try:
                 url = parsed_request.pop("url")
@@ -272,9 +258,7 @@ class Runner(object):
                 parsed_request["timeout"] = int(user_timeout)
 
             # request
-            resp = self.http_client_session.request(
-                method, url, name=group_name, **parsed_request
-            )
+            resp = self.http_client_session.request(method, url, name=group_name, **parsed_request)
             resp_obj = response.ResponseObject(resp)
 
             # teardown hooks
@@ -291,39 +275,28 @@ class Runner(object):
                 self.context.update_teststep_variables_mapping("response", resp_obj)
                 self.do_hook_actions(teardown_hooks)
                 teardown_hooks_duration = time.time() - teardown_hooks_start
-                logger.info(
-                    "run teardown hooks end, duration: %s", teardown_hooks_duration
-                )
-            self.http_client_session.meta_data["response"][
-                "teardown_hooks_start"
-            ] = teardown_hooks_start
-            self.http_client_session.meta_data["response"][
-                "teardown_hooks_duration"
-            ] = teardown_hooks_duration
+                logger.info("run teardown hooks end, duration: %s", teardown_hooks_duration)
+            self.http_client_session.meta_data["response"]["teardown_hooks_start"] = teardown_hooks_start
+            self.http_client_session.meta_data["response"]["teardown_hooks_duration"] = teardown_hooks_duration
 
             # extract
-            extracted_variables_mapping = resp_obj.extract_response(
-                extractors, self.context
-            )
+            extracted_variables_mapping = resp_obj.extract_response(extractors, self.context)
             self.context.extractors = _transform_to_list_of_dict(extractors, extracted_variables_mapping)
             logger.info(
                 "source testcase_runtime_variables_mapping: %s",
                 dict(self.context.testcase_runtime_variables_mapping),
             )
-            logger.info(
-                "source testcase_runtime_variables_mapping update with: %s",
-                dict(extracted_variables_mapping)
-            )
-            self.context.update_testcase_runtime_variables_mapping(
-                extracted_variables_mapping
-            )
+            logger.info("source testcase_runtime_variables_mapping update with: %s", dict(extracted_variables_mapping))
+            self.context.update_testcase_runtime_variables_mapping(extracted_variables_mapping)
 
             # validate
             try:
                 is_validate_passed, self.evaluated_validators = self.context.validate(validators, resp_obj)
                 if not is_validate_passed:
-                    fail_validators: list[dict] = [v['validate_msg'] for v in self.evaluated_validators if v['validate_msg'] != 'ok']
-                    raise exceptions.ValidationFailure('\n'.join(fail_validators))
+                    fail_validators: list[dict] = [
+                        v["validate_msg"] for v in self.evaluated_validators if v["validate_msg"] != "ok"
+                    ]
+                    raise exceptions.ValidationFailure("\n".join(fail_validators))
             except (
                 exceptions.ParamsError,
                 exceptions.ExtractFailure,
@@ -354,9 +327,7 @@ class Runner(object):
         for variable in output_variables_list:
             if variable not in variables_mapping:
                 logger.warning(
-                    "variable '{}' can not be found in variables mapping, failed to output!".format(
-                        variable
-                    )
+                    "variable '{}' can not be found in variables mapping, failed to output!".format(variable)
                 )
                 continue
 
@@ -389,9 +360,7 @@ class Hrun(object):
         # 在运行时修改配置中请求头的信息
         # 比如: 用例中需要切换账号，实现同时请求头中token和userId
         current_context = Hrun.get_current_context()
-        pydash.set_(
-            current_context.TESTCASE_SHARED_REQUEST_MAPPING, f"headers.{name}", value
-        )
+        pydash.set_(current_context.TESTCASE_SHARED_REQUEST_MAPPING, f"headers.{name}", value)
 
     @staticmethod
     def set_step_var(name, value):

@@ -8,27 +8,26 @@
 # from loguru import logger
 import logging
 
-from rest_framework.views import APIView
-from rest_framework.response import Response
 from django_bulk_update.helper import bulk_update
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
-from fastrunner.utils.parser import Yapi
-from fastrunner.utils import response
 from fastrunner import models
+from fastrunner.utils import response
+from fastrunner.utils.parser import Yapi
 
 logger = logging.getLogger(__name__)
 
 
 class YAPIView(APIView):
-
     def post(self, request, **kwargs):
         logger.info("开始批量导入yapi接口...")
-        faster_project_id = kwargs['pk']
+        faster_project_id = kwargs["pk"]
         obj = models.Project.objects.get(pk=faster_project_id)
         token = obj.yapi_openapi_token
         yapi_base_url = obj.yapi_base_url
         yapi = Yapi(yapi_base_url=yapi_base_url, token=token, faster_project_id=faster_project_id)
-        imported_apis = models.API.objects.filter(project_id=faster_project_id, creator='yapi', delete=0)
+        imported_apis = models.API.objects.filter(project_id=faster_project_id, creator="yapi", delete=0)
         imported_apis_mapping = {api.yapi_id: api.ypai_up_time for api in imported_apis}
         create_ids, update_ids = yapi.get_create_or_update_apis(imported_apis_mapping)
         try:
@@ -42,7 +41,7 @@ class YAPIView(APIView):
                 return Response(response.YAPI_NOT_NEED_CREATE_OR_UPDATE)
             api_info = yapi.get_batch_api_detail(create_ids)
         except Exception as e:
-            logger.error(f'导入yapi失败： {e}')
+            logger.error(f"导入yapi失败： {e}")
             return Response(response.YAPI_ADD_FAILED)
 
         # 把yapi解析成符合faster的api格式
@@ -54,8 +53,8 @@ class YAPIView(APIView):
         created_apis_count = len(created_objs)
         updated_apis_count = len(update_apis)
         resp = {
-                "createdCount": created_apis_count,
-                "updatedCount": updated_apis_count,
+            "createdCount": created_apis_count,
+            "updatedCount": updated_apis_count,
         }
         logger.info(f"导入完成， {created_apis_count=}, {updated_apis_count=}")
         resp.update(response.YAPI_ADD_SUCCESS)

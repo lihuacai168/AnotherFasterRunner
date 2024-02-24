@@ -4,11 +4,9 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('fastuser', '0002_auto_20200509_1122'),
-        ('fastuser', '0002_auto_20200428_0124'),
+        ("fastuser", "0002_auto_20200509_1122"),
+        ("fastuser", "0002_auto_20200428_0124"),
     ]
 
-    operations = [
-    ]
+    operations = []
