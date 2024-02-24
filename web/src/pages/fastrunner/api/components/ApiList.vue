@@ -338,8 +338,11 @@
 
 <script>
 import Report from '../../../reports/DebugReport'
+import apiListMixin from '@/mixins/apiListMixin';
+
 
 export default {
+    mixins: [apiListMixin],
     components: {
         Report
     },
@@ -653,27 +656,6 @@ export default {
         toggleClear() {
             this.$refs.multipleTable.clearSelection();
         },
-        // 查询api列表
-        getAPIList() {
-            // debugger
-            this.$nextTick(() => {
-                this.$api.apiList({
-                    params: {
-                        page: this.listCurrentPage,
-                        node: this.node,
-                        project: this.project,
-                        search: this.search,
-                        tag: this.visibleTag,
-                        rigEnv: this.rigEnv,
-                        onlyMe: this.onlyMe,
-                        showYAPI: this.showYAPI
-                    }
-                }).then(res => {
-                    this.apiData = res;
-                })
-            })
-        },
-
 
         handleCurrentChange(val) {
             this.$api.getPaginationBypage({
