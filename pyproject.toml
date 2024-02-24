@@ -71,6 +71,27 @@ django-auth-ldap = "2.3.0"
 pymysql = "1.1.0"
 
 
+[tool.poetry.group.dev.dependencies]
+ruff = "^0.2.2"
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+
+[project]
+# Support Python 3.11+.
+requires-python = ">=3.11"
+
+[tool.ruff]
+# Set the maximum line length to 120.
+line-length = 120
+
+[tool.ruff.lint]
+# Add the `line-too-long` rule to the enforced rule set. By default, Ruff omits rules that
+# overlap with the use of a formatter, like Black, but we can override this behavior by
+# explicitly adding the rule.
+extend-select = ["E501"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
