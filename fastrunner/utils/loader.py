@@ -18,6 +18,7 @@ from threading import Thread
 import requests
 import yaml
 from bs4 import BeautifulSoup
+
 # from loguru import logger
 from requests.cookies import RequestsCookieJar
 
@@ -31,7 +32,11 @@ from httprunner.exceptions import FunctionNotFound, VariableNotFound
 logger = logging.getLogger(__name__)
 
 
-TEST_NOT_EXISTS = {"code": "0102", "status": False, "msg": "节点下没有接口或者用例集"}
+TEST_NOT_EXISTS = {
+    "code": "0102",
+    "status": False,
+    "msg": "节点下没有接口或者用例集",
+}
 
 
 def is_function(tup):
@@ -77,7 +82,11 @@ class FileLoader(object):
         """dump json file"""
         with io.open(json_file, "w", encoding="utf-8") as stream:
             json.dump(
-                data, stream, indent=4, separators=(",", ": "), ensure_ascii=False
+                data,
+                stream,
+                indent=4,
+                separators=(",", ": "),
+                ensure_ascii=False,
             )
 
     @staticmethod
@@ -133,7 +142,10 @@ class FileLoader(object):
 
 
 def parse_validate_and_extract(
-    list_of_dict: list, variables_mapping: dict, functions_mapping, api_variables: list
+    list_of_dict: list,
+    variables_mapping: dict,
+    functions_mapping,
+    api_variables: list,
 ):
     """
     Args:
@@ -156,7 +168,6 @@ def parse_validate_and_extract(
         # validate: d是{'equals': ['v1', 'v2']}， v类型是list
         v = list(d.values())[0]
         try:
-
             # validate,extract 的值包含了api variable的key中，不需要替换
             for key in api_variables_key:
                 if isinstance(v, str):
@@ -191,7 +202,12 @@ def parse_tests(testcases, debugtalk, name=None, config=None, project=None):
     config: none or dict
     debugtalk: dict
     """
-    refs = {"env": {}, "def-api": {}, "def-testcase": {}, "debugtalk": debugtalk}
+    refs = {
+        "env": {},
+        "def-api": {},
+        "def-testcase": {},
+        "debugtalk": debugtalk,
+    }
 
     testset = {
         "config": {"name": testcases[-1]["name"], "variables": []},
@@ -206,7 +222,9 @@ def parse_tests(testcases, debugtalk, name=None, config=None, project=None):
 
     # 获取当前项目的全局变量
     global_variables = (
-        models.Variables.objects.filter(project=project).all().values("key", "value")
+        models.Variables.objects.filter(project=project)
+        .all()
+        .values("key", "value")
     )
     all_config_variables_keys = set().union(
         *(d.keys() for d in testset["config"].setdefault("variables", []))
@@ -218,7 +236,9 @@ def parse_tests(testcases, debugtalk, name=None, config=None, project=None):
 
     # 有variables就直接extend,没有就加一个[],再extend
     # 配置的variables和全局变量重叠,优先使用配置中的variables
-    testset["config"].setdefault("variables", []).extend(global_variables_list_of_dict)
+    testset["config"].setdefault("variables", []).extend(
+        global_variables_list_of_dict
+    )
     testset["config"]["refs"] = refs
 
     # 配置中的变量和全局变量合并
@@ -307,7 +327,8 @@ def debug_suite_parallel(test_sets: list):
     with ThreadPoolExecutor(max_workers=workers) as executor:
         futures = {executor.submit(run_test, t): t for t in test_sets}
         results = [
-            future.result() for future in concurrent.futures.as_completed(futures)
+            future.result()
+            for future in concurrent.futures.as_completed(futures)
         ]
 
     duration = time.time() - start
@@ -428,7 +449,9 @@ def debug_api(api, project, name=None, config=None, save=True, user=""):
     if config and config.get("parameters"):
         api_params = []
         for item in api:
-            params = item["request"].get("params") or item["request"].get("json")
+            params = item["request"].get("params") or item["request"].get(
+                "json"
+            )
             for v in params.values():
                 if type(v) == list:
                     api_params.extend(v)
@@ -451,7 +474,11 @@ def debug_api(api, project, name=None, config=None, save=True, user=""):
         # testcase_list = [parse_tests(api, load_debugtalk(project), name=name, config=config)]
         testcase_list = [
             parse_tests(
-                api, debugtalk_content, name=name, config=config, project=project
+                api,
+                debugtalk_content,
+                name=name,
+                config=config,
+                project=project,
             )
         ]
 
@@ -532,9 +559,7 @@ def back_async(func):
 def parse_summary(summary):
     """序列化summary"""
     for detail in summary["details"]:
-
         for record in detail["records"]:
-
             for key, value in record["meta_data"]["request"].items():
                 if isinstance(value, bytes):
                     record["meta_data"]["request"][key] = value.decode("utf-8")
@@ -545,7 +570,9 @@ def parse_summary(summary):
 
             for key, value in record["meta_data"]["response"].items():
                 if isinstance(value, bytes):
-                    record["meta_data"]["response"][key] = value.decode("utf-8")
+                    record["meta_data"]["response"][key] = value.decode(
+                        "utf-8"
+                    )
                 if isinstance(value, RequestsCookieJar):
                     record["meta_data"]["response"][
                         key
@@ -553,7 +580,8 @@ def parse_summary(summary):
 
             if "text/html" in record["meta_data"]["response"]["content_type"]:
                 record["meta_data"]["response"]["content"] = BeautifulSoup(
-                    record["meta_data"]["response"]["content"], features="html.parser"
+                    record["meta_data"]["response"]["content"],
+                    features="html.parser",
                 ).prettify()
 
     return summary
@@ -583,7 +611,9 @@ def save_summary(name, summary, project, type=2, user="", ci_metadata={}):
         }
     )
 
-    models.ReportDetail.objects.create(summary_detail=summary_detail, report=report)
+    models.ReportDetail.objects.create(
+        summary_detail=summary_detail, report=report
+    )
     return report.id
 
 

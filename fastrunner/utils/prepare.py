@@ -183,7 +183,11 @@ def aggregate_reports_or_case_bydate(date_type, model):
 def get_daily_count(project_id, model_name, start, end):
     # 生成日期list, ['08-12', '08-13', ...]
     recent_days = [get_day(n)[5:] for n in range(start, end)]
-    models_mapping = {"api": models.API, "case": models.Case, "report": models.Report}
+    models_mapping = {
+        "api": models.API,
+        "case": models.Case,
+        "report": models.Report,
+    }
     model = models_mapping[model_name]
     query = model.objects
     if model_name == "api":
@@ -192,7 +196,8 @@ def get_daily_count(project_id, model_name, start, end):
     # 统计给定日期范围内，每天创建的条数
     count_data: list = (
         query.filter(
-            project_id=project_id, create_time__range=[get_day(start), get_day(end)]
+            project_id=project_id,
+            create_time__range=[get_day(start), get_day(end)],
         )
         .extra(select={"create_time": "DATE_FORMAT(create_time,'%%m-%%d')"})
         .values("create_time")
@@ -231,7 +236,10 @@ def get_project_detail_v2(pk):
             "count": api_create_type_count,
         },
         "case_count_by_tag": {"tag": case_tag, "count": case_tag_count},
-        "report_count_by_type": {"type": report_type, "count": report_type_count},
+        "report_count_by_type": {
+            "type": report_type,
+            "count": report_type_count,
+        },
         "daily_create_count": daily_create_count,
     }
     return res
@@ -240,7 +248,10 @@ def get_project_detail_v2(pk):
 def get_jira_core_case_cover_rate(pk) -> dict:
     project_obj = models.Project.objects.get(pk=pk)
     jira_cases = []
-    if project_obj.jira_bearer_token == "" or project_obj.jira_project_key == "":
+    if (
+        project_obj.jira_bearer_token == ""
+        or project_obj.jira_project_key == ""
+    ):
         logger.info("jira token或者jira project key没配置")
     else:
         base_url = "https://jira.xxx.com/rest/api/latest/search"
@@ -362,7 +373,9 @@ def tree_end(params, project):
 
     # remove node testcase
     elif type == 2:
-        case = models.Case.objects.filter(relation=node, project=project).values("id")
+        case = models.Case.objects.filter(
+            relation=node, project=project
+        ).values("id")
 
         for case_id in case:
             models.CaseStep.objects.filter(case__id=case_id["id"]).delete()
@@ -373,7 +386,6 @@ def update_casestep(body, case, username):
     step_list = list(models.CaseStep.objects.filter(case=case).values("id"))
 
     for index in range(len(body)):
-
         test = body[index]
         try:
             format_http = Format(test["newBody"])
@@ -387,7 +399,9 @@ def update_casestep(body, case, username):
             if "case" in test.keys():
                 case_step = models.CaseStep.objects.get(id=test["id"])
             elif test["body"]["method"] == "config":
-                case_step = models.Config.objects.get(name=test["body"]["name"])
+                case_step = models.Config.objects.get(
+                    name=test["body"]["name"]
+                )
             else:
                 case_step = models.API.objects.get(id=test["id"])
 
@@ -448,7 +462,6 @@ def generate_casestep(body, case, username):
     #  index也是case step的执行顺序
     case_steps: list = []
     for index in range(len(body)):
-
         test = body[index]
         try:
             format_http = Format(test["newBody"])

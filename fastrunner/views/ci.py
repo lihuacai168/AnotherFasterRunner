@@ -48,15 +48,21 @@ def summary2junit(summary: dict) -> dict:
     time_info = summary.get("time")
     res["testsuites"]["testsuite"]["time"] = time_info.get("duration")
     start_at: str = time_info.get("start_at")
-    datetime_str = datetime.datetime.fromtimestamp(int(float(start_at))).strftime(
-        "%Y-%m-%dT%H:%M:%S.%f"
-    )
+    datetime_str = datetime.datetime.fromtimestamp(
+        int(float(start_at))
+    ).strftime("%Y-%m-%dT%H:%M:%S.%f")
     res["testsuites"]["testsuite"]["timestamp"] = datetime_str
 
     details = summary.get("details", [])
     res["testsuites"]["testsuite"]["tests"] = len(details)
     for detail in details:
-        test_case = {"classname": "", "file": "", "line": "", "name": "", "time": ""}
+        test_case = {
+            "classname": "",
+            "file": "",
+            "line": "",
+            "name": "",
+            "time": "",
+        }
         name = detail.get("name")
         test_case["classname"] = name  # 对应junit的Suite
         records = detail.get("records")
@@ -91,7 +97,10 @@ def summary2junit(summary: dict) -> dict:
                 else:
                     res["testsuites"]["testsuite"]["failures"] += 1
 
-            failure = {"message": "断言或者抽取失败", "#text": "\n".join(failure_details)}
+            failure = {
+                "message": "断言或者抽取失败",
+                "#text": "\n".join(failure_details),
+            }
             test_case["failure"] = failure
         res["testsuites"]["testsuite"]["testcase"].append(test_case)
     return res
@@ -122,7 +131,9 @@ class CIView(GenericViewSet):
             for pk_kwargs in pk_kwargs_list:
                 pk: int = pk_kwargs["pk"]
                 kwargs: dict = json.loads(pk_kwargs["kwargs"])
-                ci_project_ids: list = eval(kwargs.get("ci_project_ids") or "[]")
+                ci_project_ids: list = eval(
+                    kwargs.get("ci_project_ids") or "[]"
+                )
                 if isinstance(ci_project_ids, int):
                     ci_project_ids = [ci_project_ids]
 
@@ -207,7 +218,9 @@ class CIView(GenericViewSet):
                         body = eval(case_step["body"])
                         if body["request"].get("url"):
                             testcase_list.append(parse_host(host, body))
-                        elif config is None and body["request"].get("base_url"):
+                        elif config is None and body["request"].get(
+                            "base_url"
+                        ):
                             # 当前步骤是配置
                             # 如果task中存在重载配置，就覆盖用例中的配置
                             if override_config_body:
@@ -230,7 +243,9 @@ class CIView(GenericViewSet):
             ci_project_namespace = ser.validated_data["ci_project_namespace"]
             ci_project_name = ser.validated_data["ci_project_name"]
             ci_job_id = ser.validated_data["ci_job_id"]
-            summary["name"] = f"{ci_project_namespace}_{ci_project_name}_job{ci_job_id}"
+            summary[
+                "name"
+            ] = f"{ci_project_namespace}_{ci_project_name}_job{ci_job_id}"
 
             report_id = save_summary(
                 summary.get("name"),
@@ -250,24 +265,31 @@ class CIView(GenericViewSet):
                     webhook=webhook,
                     ci_job_url=ser.validated_data["ci_job_url"],
                     ci_pipeline_url=ser.validated_data["ci_pipeline_url"],
-                    case_count=junit_results["testsuites"]["testsuite"]["tests"],
+                    case_count=junit_results["testsuites"]["testsuite"][
+                        "tests"
+                    ],
                 )
             return HttpResponse(xml_data, content_type="text/xml")
         else:
             return Response(ser.errors, status=status.HTTP_400_BAD_REQUEST)
 
     @swagger_auto_schema(
-        query_serializer=CIReportSerializer, operation_summary="获取gitlab-ci运行的报告url"
+        query_serializer=CIReportSerializer,
+        operation_summary="获取gitlab-ci运行的报告url",
     )
     def get_ci_report_url(self, request):
         ser = CIReportSerializer(data=request.query_params)
         if ser.is_valid():
             ci_job_id = ser.validated_data["ci_job_id"]
-            report_obj = models.Report.objects.filter(ci_job_id=ci_job_id).first()
+            report_obj = models.Report.objects.filter(
+                ci_job_id=ci_job_id
+            ).first()
             if report_obj:
                 report_url = f"{settings.BASE_REPORT_URL}/{report_obj.id}/"
             else:
                 return Response(data=f"查找的ci_job_id: {ci_job_id}不存在")
             return Response(data=report_url)
         else:
-            return Response(data=ser.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                data=ser.errors, status=status.HTTP_400_BAD_REQUEST
+            )

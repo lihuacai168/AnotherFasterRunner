@@ -28,7 +28,9 @@ class ListHandler(logging.Handler):
         self.log_list.append(log_entry)
 
 
-def _transform_to_list_of_dict(extractors: list[dict], extracted_variables_mapping: dict) -> list[dict]:
+def _transform_to_list_of_dict(
+    extractors: list[dict], extracted_variables_mapping: dict
+) -> list[dict]:
     """transform extractors to list of dict.
 
     Args:
@@ -47,11 +49,13 @@ def _transform_to_list_of_dict(extractors: list[dict], extracted_variables_mappi
         for key, value in extractor.items():
             extract_expr = value
             actual_value = extracted_variables_mapping[key]
-            result.append({
-                'output_variable_name': key,
-                'extract_expr': extract_expr,
-                'actual_value': actual_value
-            })
+            result.append(
+                {
+                    "output_variable_name": key,
+                    "extract_expr": extract_expr,
+                    "actual_value": actual_value,
+                }
+            )
     return result
 
 
@@ -136,7 +140,9 @@ class Runner(object):
         parsed_request = self.context.get_parsed_request(request_config, level)
 
         base_url = parsed_request.pop("base_url", None)
-        self.http_client_session = self.http_client_session or HttpSession(base_url)
+        self.http_client_session = self.http_client_session or HttpSession(
+            base_url
+        )
 
         return parsed_request
 
@@ -167,7 +173,9 @@ class Runner(object):
         elif "skipUnless" in teststep_dict:
             skip_unless_condition = teststep_dict["skipUnless"]
             if not self.context.eval_content(skip_unless_condition):
-                skip_reason = "{} evaluate to False".format(skip_unless_condition)
+                skip_reason = "{} evaluate to False".format(
+                    skip_unless_condition
+                )
 
         if skip_reason:
             raise SkipTest(skip_reason)
@@ -225,11 +233,13 @@ class Runner(object):
             extractors = teststep_dict.get("extract", []) or teststep_dict.get(
                 "extractors", []
             )
-            validators = teststep_dict.get("validate", []) or teststep_dict.get(
-                "validators", []
-            )
+            validators = teststep_dict.get(
+                "validate", []
+            ) or teststep_dict.get("validators", [])
             parsed_request = self.init_test(teststep_dict, level="teststep")
-            self.context.update_teststep_variables_mapping("request", parsed_request)
+            self.context.update_teststep_variables_mapping(
+                "request", parsed_request
+            )
 
             # setup hooks
             setup_hooks = teststep_dict.get("setup_hooks", [])
@@ -257,17 +267,31 @@ class Runner(object):
                 raise exceptions.ParamsError("URL or METHOD missed!")
 
             # TODO: move method validation to json schema
-            valid_methods = ["GET", "HEAD", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"]
+            valid_methods = [
+                "GET",
+                "HEAD",
+                "POST",
+                "PUT",
+                "PATCH",
+                "DELETE",
+                "OPTIONS",
+            ]
             if method.upper() not in valid_methods:
                 err_msg = "Invalid HTTP method! => {}\n".format(method)
-                err_msg += "Available HTTP methods: {}".format("/".join(valid_methods))
+                err_msg += "Available HTTP methods: {}".format(
+                    "/".join(valid_methods)
+                )
                 logger.error(err_msg)
                 raise exceptions.ParamsError(err_msg)
 
             logger.info("{method} {url}".format(method=method, url=url))
-            logger.debug("request kwargs(raw): {kwargs}".format(kwargs=parsed_request))
+            logger.debug(
+                "request kwargs(raw): {kwargs}".format(kwargs=parsed_request)
+            )
 
-            user_timeout: str = str(pydash.get(parsed_request, "headers.timeout"))
+            user_timeout: str = str(
+                pydash.get(parsed_request, "headers.timeout")
+            )
             if user_timeout and user_timeout.isdigit():
                 parsed_request["timeout"] = int(user_timeout)
 
@@ -288,11 +312,14 @@ class Runner(object):
                     "update_teststep_variables_mapping, response: %s",
                     resp_obj.resp_obj.text,
                 )
-                self.context.update_teststep_variables_mapping("response", resp_obj)
+                self.context.update_teststep_variables_mapping(
+                    "response", resp_obj
+                )
                 self.do_hook_actions(teardown_hooks)
                 teardown_hooks_duration = time.time() - teardown_hooks_start
                 logger.info(
-                    "run teardown hooks end, duration: %s", teardown_hooks_duration
+                    "run teardown hooks end, duration: %s",
+                    teardown_hooks_duration,
                 )
             self.http_client_session.meta_data["response"][
                 "teardown_hooks_start"
@@ -305,14 +332,16 @@ class Runner(object):
             extracted_variables_mapping = resp_obj.extract_response(
                 extractors, self.context
             )
-            self.context.extractors = _transform_to_list_of_dict(extractors, extracted_variables_mapping)
+            self.context.extractors = _transform_to_list_of_dict(
+                extractors, extracted_variables_mapping
+            )
             logger.info(
                 "source testcase_runtime_variables_mapping: %s",
                 dict(self.context.testcase_runtime_variables_mapping),
             )
             logger.info(
                 "source testcase_runtime_variables_mapping update with: %s",
-                dict(extracted_variables_mapping)
+                dict(extracted_variables_mapping),
             )
             self.context.update_testcase_runtime_variables_mapping(
                 extracted_variables_mapping
@@ -320,24 +349,37 @@ class Runner(object):
 
             # validate
             try:
-                is_validate_passed, self.evaluated_validators = self.context.validate(validators, resp_obj)
+                (
+                    is_validate_passed,
+                    self.evaluated_validators,
+                ) = self.context.validate(validators, resp_obj)
                 if not is_validate_passed:
-                    fail_validators: list[dict] = [v['validate_msg'] for v in self.evaluated_validators if v['validate_msg'] != 'ok']
-                    raise exceptions.ValidationFailure('\n'.join(fail_validators))
+                    fail_validators: list[dict] = [
+                        v["validate_msg"]
+                        for v in self.evaluated_validators
+                        if v["validate_msg"] != "ok"
+                    ]
+                    raise exceptions.ValidationFailure(
+                        "\n".join(fail_validators)
+                    )
             except (
                 exceptions.ParamsError,
                 exceptions.ExtractFailure,
             ):
                 # log request
                 err_req_msg = "request: \n"
-                err_req_msg += "headers: {}\n".format(parsed_request.pop("headers", {}))
+                err_req_msg += "headers: {}\n".format(
+                    parsed_request.pop("headers", {})
+                )
                 for k, v in parsed_request.items():
                     err_req_msg += "{}: {}\n".format(k, repr(v))
                 logger.error("❌❌❌ err_req_msg: %s", err_req_msg)
 
                 # log response
                 err_resp_msg = "response: \n"
-                err_resp_msg += "status_code: {}\n".format(resp_obj.status_code)
+                err_resp_msg += "status_code: {}\n".format(
+                    resp_obj.status_code
+                )
                 err_resp_msg += "headers: {}\n".format(resp_obj.headers)
                 err_resp_msg += "body: {}\n".format(repr(resp_obj.text))
                 logger.error("❌❌❌ err_resp_msg: %s", err_resp_msg)
@@ -390,7 +432,9 @@ class Hrun(object):
         # 比如: 用例中需要切换账号，实现同时请求头中token和userId
         current_context = Hrun.get_current_context()
         pydash.set_(
-            current_context.TESTCASE_SHARED_REQUEST_MAPPING, f"headers.{name}", value
+            current_context.TESTCASE_SHARED_REQUEST_MAPPING,
+            f"headers.{name}",
+            value,
         )
 
     @staticmethod

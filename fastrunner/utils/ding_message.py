@@ -23,6 +23,7 @@ from fastrunner.utils.parser import format_summary_to_ding
 
 log = logging.getLogger(__name__)
 
+
 class DingMessage:
     """
     调用钉钉机器人发送测试结果
@@ -64,7 +65,9 @@ class DingMessage:
 if __name__ == "__main__":
     import os
 
-    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "FasterRunner.settings.dev")
+    os.environ.setdefault(
+        "DJANGO_SETTINGS_MODULE", "FasterRunner.settings.dev"
+    )
 
     import django
 

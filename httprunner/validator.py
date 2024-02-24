@@ -7,8 +7,9 @@ import types
 TODO: refactor with JSON schema validate
 """
 
+
 def is_testcase(data_structure):
-    """ check if data_structure is a testcase.
+    """check if data_structure is a testcase.
 
     Args:
         data_structure (dict): testcase should always be in the following data structure:
@@ -50,7 +51,7 @@ def is_testcase(data_structure):
 
 
 def is_testcases(data_structure):
-    """ check if data_structure is testcase or testcases list.
+    """check if data_structure is testcase or testcases list.
 
     Args:
         data_structure (dict): testcase(s) should always be in the following data structure:
@@ -76,7 +77,7 @@ def is_testcases(data_structure):
 
 
 def is_testcase_path(path):
-    """ check if path is testcase path or path list.
+    """check if path is testcase path or path list.
 
     Args:
         path (str/list): file path or file path list.
@@ -106,15 +107,13 @@ def is_testcase_path(path):
 
 
 def is_function(tup):
-    """ Takes (name, object) tuple, returns True if it is a function.
-    """
+    """Takes (name, object) tuple, returns True if it is a function."""
     name, item = tup
     return isinstance(item, types.FunctionType)
 
 
 def is_variable(tup):
-    """ Takes (name, object) tuple, returns True if it is a variable.
-    """
+    """Takes (name, object) tuple, returns True if it is a variable."""
     name, item = tup
     if callable(item):
         # function or class

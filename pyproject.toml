@@ -84,8 +84,9 @@ build-backend = "poetry.core.masonry.api"
 requires-python = ">=3.11"
 
 [tool.ruff]
-# Set the maximum line length to 120.
-line-length = 120
+# Set the maximum line length to 79.
+line-length = 79
+exclude = ["web/*", "**/migrations/**"]
 
 [tool.ruff.lint]
 # Add the `line-too-long` rule to the enforced rule set. By default, Ruff omits rules that

@@ -11,6 +11,7 @@ from fastrunner.utils import lark_message
 
 log = logging.getLogger(__name__)
 
+
 def update_task_total_run_count(task_id):
     if task_id:
         task = PeriodicTask.objects.get(id=task_id)
@@ -43,7 +44,9 @@ def async_debug_api(api, project, name, config=None):
 def async_debug_suite(suite, project, obj, report, config, user=""):
     """异步执行suite"""
     summary, _ = debug_suite(suite, project, obj, config=config, save=False)
-    save_summary(name=report, summary=summary, project=project, type=2, user=user)
+    save_summary(
+        name=report, summary=summary, project=project, type=2, user=user
+    )
 
 
 @shared_task(base=MyBaseTask)
@@ -64,7 +67,9 @@ def schedule_debug_suite(*args, **kwargs):
     override_config_body = None
     if override_config and override_config != "请选择":
         override_config_body = eval(
-            models.Config.objects.get(name=override_config, project__id=project).body
+            models.Config.objects.get(
+                name=override_config, project__id=project
+            ).body
         )
 
     for content in suite:
@@ -94,7 +99,12 @@ def schedule_debug_suite(*args, **kwargs):
 
     is_parallel = kwargs.get("is_parallel", False)
     summary, _ = debug_suite(
-        test_sets, project, suite, config_list, save=False, allow_parallel=is_parallel
+        test_sets,
+        project,
+        suite,
+        config_list,
+        save=False,
+        allow_parallel=is_parallel,
     )
     task_name = kwargs["task_name"]
 
@@ -105,18 +115,26 @@ def schedule_debug_suite(*args, **kwargs):
         report_type = 3
 
     report_id = save_summary(
-        task_name, summary, project, type=report_type, user=kwargs.get("user", "")
+        task_name,
+        summary,
+        project,
+        type=report_type,
+        user=kwargs.get("user", ""),
     )
 
     strategy = kwargs["strategy"]
-    if strategy == "始终发送" or (strategy == "仅失败发送" and summary["stat"]["failures"] > 0):
+    if strategy == "始终发送" or (
+        strategy == "仅失败发送" and summary["stat"]["failures"] > 0
+    ):
         webhook = kwargs.get("webhook", "")
         log.info(f"开始发送消息, {webhook=}")
         DING_OPEN_API: str = "https://oapi.dingtalk.com"
         FEISHU_OPEN_API: str = "https://open.feishu.cn"
 
-
-        if webhook.startswith(DING_OPEN_API) is False and webhook.startswith(FEISHU_OPEN_API) is False:
+        if (
+            webhook.startswith(DING_OPEN_API) is False
+            and webhook.startswith(FEISHU_OPEN_API) is False
+        ):
             log.warning(f"{webhook=}还不支持, 目前仅支持钉钉和飞书")
 
         if webhook.startswith(DING_OPEN_API):
@@ -134,4 +152,3 @@ def schedule_debug_suite(*args, **kwargs):
                 summary=summary, webhook=webhook, case_count=len(args)
             )
             log.info("发送飞书消息完成")
-

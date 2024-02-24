@@ -23,7 +23,11 @@ class ProjectView(GenericViewSet):
     项目增删改查
     """
 
-    queryset = models.Project.objects.filter(is_deleted=0).all().order_by("-update_time")
+    queryset = (
+        models.Project.objects.filter(is_deleted=0)
+        .all()
+        .order_by("-update_time")
+    )
     serializer_class = serializers.ProjectSerializer
     pagination_class = pagination.MyCursorPagination
 
@@ -72,7 +76,9 @@ class ProjectView(GenericViewSet):
             return Response(response.SYSTEM_ERROR)
 
         if request.data["name"] != project.name:
-            if models.Project.objects.filter(name=request.data["name"]).first():
+            if models.Project.objects.filter(
+                name=request.data["name"]
+            ).first():
                 return Response(response.PROJECT_EXISTS)
 
         # 调用save方法update_time字段才会自动更新
@@ -98,7 +104,7 @@ class ProjectView(GenericViewSet):
             project = models.Project.objects.get(id=request.data["id"])
             # 改完软删除
             project.is_deleted = 1
-            project.save(update_fields=['is_deleted'])
+            project.save(update_fields=["is_deleted"])
             # prepare.project_end(project)
 
             return Response(response.PROJECT_DELETE_SUCCESS)
@@ -120,7 +126,9 @@ class ProjectView(GenericViewSet):
         serializer = self.get_serializer(queryset, many=False)
 
         project_info = prepare.get_project_detail_v2(pk)
-        jira_core_case_cover_rate: dict = prepare.get_jira_core_case_cover_rate(pk)
+        jira_core_case_cover_rate: dict = (
+            prepare.get_jira_core_case_cover_rate(pk)
+        )
         project_info.update(jira_core_case_cover_rate)
         project_info.update(serializer.data)
 
@@ -142,9 +150,15 @@ class DashBoardView(GenericViewSet):
     def get(self, request):
         _, report_status = prepare.aggregate_reports_by_status(0)
         _, report_type = prepare.aggregate_reports_by_type(0)
-        report_day = prepare.aggregate_reports_or_case_bydate("day", models.Report)
-        report_week = prepare.aggregate_reports_or_case_bydate("week", models.Report)
-        report_month = prepare.aggregate_reports_or_case_bydate("month", models.Report)
+        report_day = prepare.aggregate_reports_or_case_bydate(
+            "day", models.Report
+        )
+        report_week = prepare.aggregate_reports_or_case_bydate(
+            "week", models.Report
+        )
+        report_month = prepare.aggregate_reports_or_case_bydate(
+            "month", models.Report
+        )
 
         api_day = prepare.aggregate_apis_bydate("day")
         api_week = prepare.aggregate_apis_bydate("week")
@@ -155,8 +169,12 @@ class DashBoardView(GenericViewSet):
         yapi_month = prepare.aggregate_apis_bydate("month", True)
 
         case_day = prepare.aggregate_reports_or_case_bydate("day", models.Case)
-        case_week = prepare.aggregate_reports_or_case_bydate("week", models.Case)
-        case_month = prepare.aggregate_reports_or_case_bydate("month", models.Case)
+        case_week = prepare.aggregate_reports_or_case_bydate(
+            "week", models.Case
+        )
+        case_month = prepare.aggregate_reports_or_case_bydate(
+            "month", models.Case
+        )
 
         res = {
             "report": {
@@ -243,7 +261,9 @@ class TreeView(APIView):
         """
 
         resp: StandResponse[TreeOut] = tree_service.get_or_create(
-            TreeUniqueIn(project_id=kwargs.pop("pk"), type=request.query_params["type"])
+            TreeUniqueIn(
+                project_id=kwargs.pop("pk"), type=request.query_params["type"]
+            )
         )
         return Response(resp.dict())
 
@@ -252,7 +272,9 @@ class TreeView(APIView):
         """
         修改树形结构，ID不能重复
         """
-        res = tree_service.patch(pk=kwargs["pk"], payload=TreeUpdateIn(**request.data))
+        res = tree_service.patch(
+            pk=kwargs["pk"], payload=TreeUpdateIn(**request.data)
+        )
         return Response(res.dict())
         try:
             body = request.data["body"]
@@ -291,9 +313,12 @@ class VisitView(GenericViewSet):
         count_data = (
             self.get_queryset()
             .filter(
-                project=project, create_time__range=(day.get_day(-5), day.get_day())
+                project=project,
+                create_time__range=(day.get_day(-5), day.get_day()),
             )
-            .extra(select={"create_time": "DATE_FORMAT(create_time,'%%m-%%d')"})
+            .extra(
+                select={"create_time": "DATE_FORMAT(create_time,'%%m-%%d')"}
+            )
             .values("create_time")
             .annotate(counts=Count("id"))
             .values("create_time", "counts")
@@ -304,7 +329,9 @@ class VisitView(GenericViewSet):
         }
         report_count = [create_time_report_map.get(d, 0) for d in recent7days]
 
-        return Response({"recent7days": recent7days, "report_count": report_count})
+        return Response(
+            {"recent7days": recent7days, "report_count": report_count}
+        )
 
 
 #

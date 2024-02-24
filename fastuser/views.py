@@ -32,7 +32,6 @@ class RegisterView(APIView):
     """
 
     def post(self, request):
-
         try:
             username = request.data["username"]
             password = request.data["password"]
@@ -59,7 +58,10 @@ class RegisterView(APIView):
 
 def ldap_auth(username: str, password: str) -> Optional[User]:
     ldap_user = authenticate(username=username, password=password)
-    if ldap_user and ldap_user.backend == "django_auth_ldap.backend.LDAPBackend":
+    if (
+        ldap_user
+        and ldap_user.backend == "django_auth_ldap.backend.LDAPBackend"
+    ):
         logger.info(f"LDAP authentication successful for {username}")
         local_user: User = User.objects.filter(username=username).first()
         if local_user:
@@ -112,8 +114,12 @@ class LoginView(APIView):
         if serializer.is_valid():
             username: str = serializer.validated_data["username"]
             password: str = serializer.validated_data["password"]
-            masked_password = f"{password[0]}{'*' * (len(password) - 2)}{password[-1]}"
-            logger.info(f"Received login request for {username=}, password={masked_password}")
+            masked_password = (
+                f"{password[0]}{'*' * (len(password) - 2)}{password[-1]}"
+            )
+            logger.info(
+                f"Received login request for {username=}, password={masked_password}"
+            )
 
             local_user = None
             if settings.USE_LDAP:
@@ -122,7 +128,8 @@ class LoginView(APIView):
 
             if not local_user:
                 logger.info(
-                    f"LDAP authentication failed or not enabled, falling back to local authentication for {username=}")
+                    f"LDAP authentication failed or not enabled, falling back to local authentication for {username=}"
+                )
                 local_user = local_auth(username, password)
 
             if local_user:
@@ -133,6 +140,7 @@ class LoginView(APIView):
                 return Response(response.LOGIN_FAILED)
         else:
             return Response(serializer.errors)
+
 
 class UserView(APIView):
     def get(self, request):

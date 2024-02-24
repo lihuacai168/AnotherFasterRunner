@@ -99,7 +99,9 @@ def _get_expression(item, expression, expect_value, jsonpath):
         if isinstance(item_value, (int, float, list, dict, bool, type(None))):
             parsed_expression = f"{item_value} {expression} {expect_value}"
         else:
-            parsed_expression = f"'{pydash.get(item, jsonpath)}' {expression} '{expect_value}'"
+            parsed_expression = (
+                f"'{pydash.get(item, jsonpath)}' {expression} '{expect_value}'"
+            )
 
     if isinstance(item, str):
         parsed_expression = f"{item} {expression} {expect_value}"
@@ -112,10 +114,14 @@ def _get_expression(item, expression, expect_value, jsonpath):
 
 def list_any_item_contains(check_value: list, jsonpath_expression_value):
     assert isinstance(check_value, list)
-    jsonpath, expression, expect_value = jsonpath_expression_value.split(' ')
+    jsonpath, expression, expect_value = jsonpath_expression_value.split(" ")
     for item in check_value:
-        parsed_expression = _get_expression(item=item, expression=expression, expect_value=expect_value,
-                                            jsonpath=jsonpath)
+        parsed_expression = _get_expression(
+            item=item,
+            expression=expression,
+            expect_value=expect_value,
+            jsonpath=jsonpath,
+        )
         try:
             if eval(parsed_expression) is True:
                 break
@@ -127,13 +133,19 @@ def list_any_item_contains(check_value: list, jsonpath_expression_value):
 
 def list_all_item_contains(check_value: list, jsonpath_expression_value):
     assert isinstance(check_value, list)
-    jsonpath, expression, expect_value = jsonpath_expression_value.split(' ')
+    jsonpath, expression, expect_value = jsonpath_expression_value.split(" ")
     for item in check_value:
-        parsed_expression = _get_expression(item=item, expression=expression, expect_value=expect_value,
-                                            jsonpath=jsonpath)
+        parsed_expression = _get_expression(
+            item=item,
+            expression=expression,
+            expect_value=expect_value,
+            jsonpath=jsonpath,
+        )
         try:
             if eval(parsed_expression) is False:
-                raise AssertionError(f"{check_value} {expression} {expect_value}")
+                raise AssertionError(
+                    f"{check_value} {expression} {expect_value}"
+                )
         except Exception as e:
             raise e
 

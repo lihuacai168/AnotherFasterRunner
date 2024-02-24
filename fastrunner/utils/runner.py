@@ -8,23 +8,22 @@ import subprocess
 import tempfile
 from fastrunner.utils import loader
 from FasterRunner.settings.base import BASE_DIR
+
 EXEC = sys.executable
 
-if 'uwsgi' in EXEC:
+if "uwsgi" in EXEC:
     # 修复虚拟环境下，用uwsgi执行时，PYTHONPATH还是用了系统默认的
-    EXEC = EXEC.replace("uwsgi", 'python')
+    EXEC = EXEC.replace("uwsgi", "python")
 
 
 class DebugCode(object):
-
     def __init__(self, code):
         self.__code = code
         self.resp = None
-        self.temp = tempfile.mkdtemp(prefix='FasterRunner')
+        self.temp = tempfile.mkdtemp(prefix="FasterRunner")
 
     def run(self):
-        """ dumps debugtalk.py and run
-        """
+        """dumps debugtalk.py and run"""
         try:
             os.chdir(self.temp)
             file_path = os.path.join(self.temp, "debugtalk.py")
@@ -32,21 +31,28 @@ class DebugCode(object):
             # 修复驱动代码运行时，找不到内置httprunner包
             run_path = [BASE_DIR]
             run_path.extend(sys.path)
-            env = {'PYTHONPATH': ':'.join(run_path)}
-            self.resp = decode(subprocess.check_output([EXEC, file_path], stderr=subprocess.STDOUT, timeout=60, env=env))
+            env = {"PYTHONPATH": ":".join(run_path)}
+            self.resp = decode(
+                subprocess.check_output(
+                    [EXEC, file_path],
+                    stderr=subprocess.STDOUT,
+                    timeout=60,
+                    env=env,
+                )
+            )
 
         except subprocess.CalledProcessError as e:
             self.resp = decode(e.output)
 
         except subprocess.TimeoutExpired:
-            self.resp = 'RunnerTimeOut'
+            self.resp = "RunnerTimeOut"
         os.chdir(BASE_DIR)
         shutil.rmtree(self.temp)
 
 
 def decode(s):
     try:
-        return s.decode('utf-8')
+        return s.decode("utf-8")
 
     except UnicodeDecodeError:
-        return s.decode('gbk')
+        return s.decode("gbk")

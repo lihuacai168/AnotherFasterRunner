@@ -23,7 +23,7 @@ class WebPageTasks(TaskSet):
                     request_type=teststep.get("request", {}).get("method"),
                     name=teststep.get("name"),
                     response_time=0,
-                    exception=ex
+                    exception=ex,
                 )
                 break
             gevent.sleep(1)

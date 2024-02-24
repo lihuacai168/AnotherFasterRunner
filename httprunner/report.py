@@ -15,7 +15,7 @@ from jinja2 import Template, escape
 from httprunner.__about__ import __version__
 from httprunner.compat import basestring, bytes, json, numeric_types
 
-logger = logging.getLogger('httprunner')
+logger = logging.getLogger("httprunner")
 
 
 def get_platform():
@@ -62,7 +62,7 @@ def get_summary(result):
         summary["records"] = []
 
     if getattr(result, "vars_trace", None):
-        summary["vars_trace"]: list[dict] =  result.vars_trace
+        summary["vars_trace"]: list[dict] = result.vars_trace
     return summary
 
 
@@ -84,7 +84,9 @@ def aggregate_stat(origin_stat, new_stat):
             origin_stat[key] += new_stat[key]
 
 
-def render_html_report(summary, html_report_name=None, html_report_template=None):
+def render_html_report(
+    summary, html_report_name=None, html_report_template=None
+):
     """render html report with specified report name and template
     if html_report_name is not specified, use current datetime
     if html_report_template is not specified, use default report template
@@ -97,7 +99,9 @@ def render_html_report(summary, html_report_name=None, html_report_template=None
         )
         logger.debug("No html report template specified, use default.")
     else:
-        logger.info("render with html report template: {}".format(html_report_template))
+        logger.info(
+            "render with html report template: {}".format(html_report_template)
+        )
 
     logger.info("Start to render Html report ...")
     logger.debug("render data: {}".format(summary))
@@ -151,7 +155,6 @@ def stringify_data(meta_data, request_or_response):
     request_or_response_dict = meta_data[request_or_response]
 
     for key, value in request_or_response_dict.items():
-
         if isinstance(value, list):
             value = json.dumps(value, indent=2, ensure_ascii=False)
 
@@ -240,7 +243,9 @@ class HtmlTestResult(unittest.TextTestResult):
 
     def addExpectedFailure(self, test, err):
         super(HtmlTestResult, self).addExpectedFailure(test, err)
-        self._record_test(test, "ExpectedFailure", self._exc_info_to_string(err, test))
+        self._record_test(
+            test, "ExpectedFailure", self._exc_info_to_string(err, test)
+        )
         print("")
 
     def addUnexpectedSuccess(self, test):

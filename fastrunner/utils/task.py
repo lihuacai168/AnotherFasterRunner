@@ -1,5 +1,6 @@
 import json
 import logging
+
 # from loguru import logger
 from django_celery_beat import models as celery_models
 from fastrunner.utils import response
@@ -15,7 +16,9 @@ class Task(object):
 
     def __init__(self, **kwargs):
         logger.info(
-            "before process task data:\n {kwargs}".format(kwargs=format_json(kwargs))
+            "before process task data:\n {kwargs}".format(
+                kwargs=format_json(kwargs)
+            )
         )
         self.__name = kwargs["name"]
         self.__data = kwargs["data"]
@@ -65,13 +68,18 @@ class Task(object):
         add tasks
         """
         if (
-            celery_models.PeriodicTask.objects.filter(name__exact=self.__name).count()
+            celery_models.PeriodicTask.objects.filter(
+                name__exact=self.__name
+            ).count()
             > 0
         ):
             logger.info("{name} tasks exist".format(name=self.__name))
             return response.TASK_HAS_EXISTS
 
-        if self.__email["strategy"] == "始终发送" or self.__email["strategy"] == "仅失败发送":
+        if (
+            self.__email["strategy"] == "始终发送"
+            or self.__email["strategy"] == "仅失败发送"
+        ):
             if self.__email["receiver"] == "":
                 # return response.TASK_EMAIL_ILLEGAL
                 pass

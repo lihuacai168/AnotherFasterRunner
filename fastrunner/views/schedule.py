@@ -28,7 +28,11 @@ class ScheduleView(GenericViewSet):
         try:
             # check crontab
             croniter.croniter(expr)
-        except (croniter.CroniterNotAlphaError, croniter.CroniterBadCronError, croniter.CroniterBadDateError):
+        except (
+            croniter.CroniterNotAlphaError,
+            croniter.CroniterBadCronError,
+            croniter.CroniterBadDateError,
+        ):
             return False
         return True
 
@@ -41,12 +45,16 @@ class ScheduleView(GenericViewSet):
         task_name = request.query_params.get("task_name")
         creator = request.query_params.get("creator")
         schedule = (
-            self.get_queryset().filter(description=project).order_by("-date_changed")
+            self.get_queryset()
+            .filter(description=project)
+            .order_by("-date_changed")
         )
         if task_name:
             schedule = schedule.filter(name__contains=task_name)
         if creator:
-            schedule = schedule.filter(kwargs__contains=f'"creator": "{creator}"')
+            schedule = schedule.filter(
+                kwargs__contains=f'"creator": "{creator}"'
+            )
         page_schedule = self.paginate_queryset(schedule)
         serializer = self.get_serializer(page_schedule, many=True)
         return self.get_paginated_response(serializer.data)
@@ -63,17 +71,25 @@ class ScheduleView(GenericViewSet):
             copy: str
             project: int
         }
-    """
+        """
         ser = serializers.ScheduleDeSerializer(data=request.data)
         if ser.is_valid():
             if not self.check_crontab_expr(request.data.get("crontab")):
-                return Response({"code": "0101", "success": False, "msg": f"{request.data.get('crontab')}, 不合法的定时任务表达式"})
+                return Response(
+                    {
+                        "code": "0101",
+                        "success": False,
+                        "msg": f"{request.data.get('crontab')}, 不合法的定时任务表达式",
+                    }
+                )
             request.data.update({"creator": request.user.username})
             task = Task(**request.data)
             resp = task.add_task()
             return Response(resp)
         else:
-            return Response({"code": "0101", "success": False, "msg": "参数校验失败"})
+            return Response(
+                {"code": "0101", "success": False, "msg": "参数校验失败"}
+            )
 
     @method_decorator(request_log(level="INFO"))
     def copy(self, request, **kwargs):
@@ -101,7 +117,13 @@ class ScheduleView(GenericViewSet):
         ser = serializers.ScheduleDeSerializer(data=request.data)
         if ser.is_valid():
             if not self.check_crontab_expr(request.data.get("crontab")):
-                return Response({"code": "0101", "success": False, "msg": f"{request.data.get('crontab')}, 不合法的定时任务表达式"})
+                return Response(
+                    {
+                        "code": "0101",
+                        "success": False,
+                        "msg": f"{request.data.get('crontab')}, 不合法的定时任务表达式",
+                    }
+                )
             task = Task(**request.data)
             resp = task.update_task(kwargs["pk"])
             return Response(resp)

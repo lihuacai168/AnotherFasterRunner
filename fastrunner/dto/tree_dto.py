@@ -15,7 +15,7 @@ class TreeUniqueIn(BaseModel):
 
 
 class TreeUpdateIn(BaseModel):
-    tree: list[dict] = Field(alias='body')
+    tree: list[dict] = Field(alias="body")
 
 
 class TreeOut(BaseModel):

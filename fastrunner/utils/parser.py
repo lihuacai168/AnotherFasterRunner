@@ -11,8 +11,11 @@ import requests
 from loguru import logger
 
 from fastrunner import models
-from fastrunner.utils.tree import (get_all_ycatid, get_tree_max_id,
-                                   get_tree_ycatid_mapping)
+from fastrunner.utils.tree import (
+    get_all_ycatid,
+    get_tree_max_id,
+    get_tree_ycatid_mapping,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -62,9 +65,13 @@ class Format(object):
             self.__params = (
                 body.get("request", {}).get("params", {}).pop("params", None)
             )
-            self.__data = body.get("request", {}).get("form", {}).pop("data", None)
+            self.__data = (
+                body.get("request", {}).get("form", {}).pop("data", None)
+            )
             self.__json = body.get("request", {}).pop("json", None)
-            self.__files = body.get("request", {}).get("files", {}).pop("files", None)
+            self.__files = (
+                body.get("request", {}).get("files", {}).pop("files", None)
+            )
         else:
             self.__params = {}
             self.__data = {}
@@ -72,14 +79,22 @@ class Format(object):
             self.__files = {}
         self.__variables = body.get("variables", {}).pop("variables", None)
         self.__setup_hooks = body.get("hooks", {}).pop("setup_hooks", None)
-        self.__teardown_hooks = body.get("hooks", {}).pop("teardown_hooks", None)
+        self.__teardown_hooks = body.get("hooks", {}).pop(
+            "teardown_hooks", None
+        )
 
         if level == "test":
             self.__desc = {
                 "header": body.get("header", {}).pop("desc", None),
-                "data": body.get("request", {}).get("form", {}).pop("desc", None),
-                "files": body.get("request", {}).get("files", {}).pop("desc", None),
-                "params": body.get("request", {}).get("params", {}).pop("desc", None),
+                "data": body.get("request", {})
+                .get("form", {})
+                .pop("desc", None),
+                "files": body.get("request", {})
+                .get("files", {})
+                .pop("desc", None),
+                "params": body.get("request", {})
+                .get("params", {})
+                .pop("desc", None),
                 "variables": body.get("variables", {}).pop("desc", None),
             }
             self.url = body.pop("url", None)
@@ -98,8 +113,12 @@ class Format(object):
 
             self.base_url = body.pop("base_url", None)
             self.is_default = body.pop("is_default", None)
-            self.__parameters = body.get("parameters", {}).pop("parameters", None)
-            self.__desc["parameters"] = body.get("parameters", {}).pop("desc", None)
+            self.__parameters = body.get("parameters", {}).pop(
+                "parameters", None
+            )
+            self.__desc["parameters"] = body.get("parameters", {}).pop(
+                "desc", None
+            )
 
         self.__level = level
         self.testcase = None
@@ -120,7 +139,11 @@ class Format(object):
                 "name": self.name,
                 "rig_id": self.rig_id,
                 "times": self.__times,
-                "request": {"url": self.url, "method": self.method, "verify": False},
+                "request": {
+                    "url": self.url,
+                    "method": self.method,
+                    "verify": False,
+                },
                 "desc": self.__desc,
             }
 
@@ -245,7 +268,11 @@ class Parse(object):
 
         if self.__extract:
             test["extract"] = [
-                {"key": key, "value": value, "desc": self.__desc["extract"][key]}
+                {
+                    "key": key,
+                    "value": value,
+                    "desc": self.__desc["extract"][key],
+                }
                 for content in self.__extract
                 for key, value in content.items()
             ]
@@ -284,7 +311,11 @@ class Parse(object):
     def parse_request(self, test):
         if self.__request.get("headers"):
             test["header"] = [
-                {"key": key, "value": value, "desc": self.__desc["header"][key]}
+                {
+                    "key": key,
+                    "value": value,
+                    "desc": self.__desc["header"][key],
+                }
                 for key, value in self.__request.pop("headers").items()
             ]
 
@@ -342,7 +373,10 @@ class Parse(object):
                         else ""
                     )
                     test["hooks"].append(
-                        {"setup": self.__setup_hooks[index], "teardown": teardown}
+                        {
+                            "setup": self.__setup_hooks[index],
+                            "teardown": teardown,
+                        }
                     )
             else:
                 for index in range(0, len(self.__teardown_hooks)):
@@ -352,13 +386,18 @@ class Parse(object):
                         else ""
                     )
                     test["hooks"].append(
-                        {"setup": setup, "teardown": self.__teardown_hooks[index]}
+                        {
+                            "setup": setup,
+                            "teardown": self.__teardown_hooks[index],
+                        }
                     )
 
 
 def format_json(value):
     try:
-        return json.dumps(value, indent=4, separators=(",", ": "), ensure_ascii=False)
+        return json.dumps(
+            value, indent=4, separators=(",", ": "), ensure_ascii=False
+        )
     except BaseException:
         return value
 
@@ -422,12 +461,12 @@ def format_summary_to_ding(msg_type, summary, report_name=None):
                 if record["status"] != "failure":
                     continue
                 else:
-                    response_message = record["meta_data"]["response"]["json"]["info"][
-                        "message"
-                    ]
-                    response_error = record["meta_data"]["response"]["json"]["info"][
-                        "error"
-                    ]
+                    response_message = record["meta_data"]["response"]["json"][
+                        "info"
+                    ]["message"]
+                    response_error = record["meta_data"]["response"]["json"][
+                        "info"
+                    ]["error"]
                     request_url = record["meta_data"]["request"]["url"]
                     case_name = record["name"]
                     expect = []
@@ -445,7 +484,9 @@ def format_summary_to_ding(msg_type, summary, report_name=None):
 
         fail_detail = "失败的接口是:\n"
         for i in fail_count_list:
-            s = "用例名:{0}\n PATH:{1}\n  \n".format(i["case_name"], i["fail_message"])
+            s = "用例名:{0}\n PATH:{1}\n  \n".format(
+                i["case_name"], i["fail_message"]
+            )
             fail_detail += s
 
     if msg_type == "markdown":
@@ -540,7 +581,9 @@ class Yapi:
         # api详情，包含详细的请求报文
         self.api_detail_url = self.__yapi_base_url + "/api/interface/get"
         # api所有分组目录, 也包含了api的基础信息
-        self.category_info_url = self.__yapi_base_url + "/api/interface/list_menu"
+        self.category_info_url = (
+            self.__yapi_base_url + "/api/interface/list_menu"
+        )
 
     def get_category_info(self):
         try:
@@ -770,7 +813,9 @@ class Yapi:
         category_id_name_mapping: dict = self.get_category_id_name_mapping()
         obj = models.Relation.objects.get(project_id=project_id, type=1)
         eval_tree: list = eval(obj.tree)
-        yapi_catids: list = [yapi_catid for yapi_catid in get_all_ycatid(eval_tree, [])]
+        yapi_catids: list = [
+            yapi_catid for yapi_catid in get_all_ycatid(eval_tree, [])
+        ]
         if category_id_name_mapping is None:
             return
         for cat_id, cat_name in category_id_name_mapping.items():
@@ -814,7 +859,9 @@ class Yapi:
         default_validator = {"equals": ["status_code", 200]}
         api_info_template["validate"]["validate"].append(default_validator)
         # 限制api的名称最大长度，避免溢出
-        api_info_template["name"] = source_api_info.get("title", "默认api名称")[:100]
+        api_info_template["name"] = source_api_info.get(
+            "title", "默认api名称"
+        )[:100]
         # path中{var}替换成$var格式
         api_info_template["url"] = (
             source_api_info.get("path", "").replace("{", "$").replace("}", "")
@@ -825,10 +872,14 @@ class Yapi:
         api_info_template["yapi_catid"] = source_api_info["catid"]
         api_info_template["yapi_id"] = source_api_info["_id"]
         # 十位时间戳
-        api_info_template["ypai_add_time"] = source_api_info.get("add_time", "")
+        api_info_template["ypai_add_time"] = source_api_info.get(
+            "add_time", ""
+        )
         api_info_template["ypai_up_time"] = source_api_info.get("up_time", "")
         # yapi原作者名
-        api_info_template["ypai_username"] = source_api_info.get("username", "")
+        api_info_template["ypai_username"] = source_api_info.get(
+            "username", ""
+        )
 
         req_body_type = source_api_info.get("req_body_type")
         req_body_other = source_api_info.get("req_body_other", "")
@@ -847,7 +898,10 @@ class Yapi:
                 if isinstance(req_body, dict):
                     req_body_properties = req_body.get("properties")
                     if isinstance(req_body_properties, dict):
-                        for field_name, field_value in req_body_properties.items():
+                        for (
+                            field_name,
+                            field_value,
+                        ) in req_body_properties.items():
                             if isinstance(field_value, dict) is False:
                                 continue
 
@@ -862,7 +916,9 @@ class Yapi:
                                     f'yapi: {source_api_info["_id"]}, req_body json type is unKnow'
                                 )
 
-                            if not (field_type == "array" or field_type == "object"):
+                            if not (
+                                field_type == "array" or field_type == "object"
+                            ):
                                 self.set_ordinary_variable(
                                     api_info_template,
                                     field_name,
@@ -874,10 +930,15 @@ class Yapi:
 
                                 # 特殊字段处理，通用的查询条件
                                 if field_name == "conditions":
-                                    set_customized_variable(api_info_template, items)
+                                    set_customized_variable(
+                                        api_info_template, items
+                                    )
                                 else:
                                     items_type: str = items.get("type")
-                                    if items_type != "array" and items_type != "object":
+                                    if (
+                                        items_type != "array"
+                                        and items_type != "object"
+                                    ):
                                         self.set_ordinary_variable(
                                             api_info_template,
                                             field_name,
@@ -885,7 +946,9 @@ class Yapi:
                                             field_value,
                                         )
                             if field_type == "object":
-                                properties: dict = field_value.get("properties")
+                                properties: dict = field_value.get(
+                                    "properties"
+                                )
                                 if properties and isinstance(properties, dict):
                                     for (
                                         property_name,
@@ -911,8 +974,12 @@ class Yapi:
                 api_info_template["request"]["params"]["params"][
                     param_name
                 ] = f"${param_name}"
-                api_info_template["request"]["params"]["desc"][param_name] = param_desc
-                api_info_template["variables"]["variables"].append({param_name: ""})
+                api_info_template["request"]["params"]["desc"][
+                    param_name
+                ] = param_desc
+                api_info_template["variables"]["variables"].append(
+                    {param_name: ""}
+                )
                 api_info_template["variables"]["desc"][param_name] = param_desc
 
         req_params: list = source_api_info.get("req_params", [])
@@ -939,7 +1006,11 @@ class Yapi:
     ):
         api_info_template["request"]["json"][field_name] = f"${field_name}"
         api_info_template["variables"]["variables"].append(
-            {field_name: self.get_variable_default_value(field_type, field_value)}
+            {
+                field_name: self.get_variable_default_value(
+                    field_type, field_value
+                )
+            }
         )
         api_info_template["variables"]["desc"][field_name] = field_value.get(
             "description", ""
@@ -951,10 +1022,14 @@ class Yapi:
         """
 
         apis = [
-            self.yapi2faster(api) for api in api_info if isinstance(api, dict) is True
+            self.yapi2faster(api)
+            for api in api_info
+            if isinstance(api, dict) is True
         ]
         proj = models.Project.objects.get(id=self.fast_project_id)
-        obj = models.Relation.objects.get(project_id=self.fast_project_id, type=1)
+        obj = models.Relation.objects.get(
+            project_id=self.fast_project_id, type=1
+        )
         eval_tree: list = eval(obj.tree)
         tree_ycatid_mapping = get_tree_ycatid_mapping(eval_tree)
         parsed_api = []
@@ -988,7 +1063,9 @@ class Yapi:
         1、parsed_api.yapi_id不存在测试平台
         2、yapi的id已经存在测试平台，新获取的parsed_api.ypai_up_time > imported_api.ypai_up_time
         """
-        imported_apis_mapping = {api.yapi_id: api.ypai_up_time for api in imported_apis}
+        imported_apis_mapping = {
+            api.yapi_id: api.ypai_up_time for api in imported_apis
+        }
         imported_apis_index = {
             api.yapi_id: index for index, api in enumerate(imported_apis)
         }

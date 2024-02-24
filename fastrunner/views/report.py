@@ -135,7 +135,9 @@ class ReportView(GenericViewSet):
         only_me = request.query_params["onlyMe"]
 
         queryset = (
-            self.get_queryset().filter(project__id=project).order_by("-update_time")
+            self.get_queryset()
+            .filter(project__id=project)
+            .order_by("-update_time")
         )
 
         # 前端传过来是小写的字符串，不是python的True
@@ -185,11 +187,15 @@ class ReportView(GenericViewSet):
         report_detail = models.ReportDetail.objects.get(report_id=pk)
         summary = json.loads(report.summary)
         summary["details"] = eval(report_detail.summary_detail)
-        ConvertRequest.generate_curl(summary["details"], convert_type=("curl",))
+        ConvertRequest.generate_curl(
+            summary["details"], convert_type=("curl",)
+        )
         summary["html_report_name"] = report.name
         # return render_to_response('report_template.html', summary)
 
-        return render(request, template_name="report_template.html", context=summary)
+        return render(
+            request, template_name="report_template.html", context=summary
+        )
 
     def download(self, request, **kwargs):
         """下载报告"""

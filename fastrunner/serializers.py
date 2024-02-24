@@ -57,13 +57,16 @@ class ProjectSerializer(serializers.ModelSerializer):
             .values("url", "method")
         )
         case_steps_unique = {
-            f'{case_step["url"]}_{case_step["method"]}' for case_step in case_steps
+            f'{case_step["url"]}_{case_step["method"]}'
+            for case_step in case_steps
         }
         if len(api_unique) == 0:
             return "0.00"
         if len(case_steps_unique) > len(api_unique):
             return "100.00"
-        return "%.2f" % (len(case_steps_unique & api_unique) / len(api_unique) * 100)
+        return "%.2f" % (
+            len(case_steps_unique & api_unique) / len(api_unique) * 100
+        )
 
 
 class VisitSerializer(serializers.ModelSerializer):
@@ -244,7 +247,9 @@ class APISerializer(serializers.ModelSerializer):
         return case_id.data
 
     def get_relation_name(self, obj):
-        relation_obj = models.Relation.objects.get(project_id=obj.project_id, type=1)
+        relation_obj = models.Relation.objects.get(
+            project_id=obj.project_id, type=1
+        )
         label = get_tree_relation_name(eval(relation_obj.tree), obj.relation)
         return label
 
@@ -326,7 +331,9 @@ class VariablesSerializer(serializers.ModelSerializer):
     变量信息序列化
     """
 
-    key = serializers.CharField(allow_null=False, max_length=100, required=True)
+    key = serializers.CharField(
+        allow_null=False, max_length=100, required=True
+    )
     value = serializers.CharField(allow_null=False, max_length=1024)
     description = serializers.CharField(required=False, allow_blank=True)
 
@@ -385,7 +392,9 @@ class PeriodicTaskSerializer(serializers.ModelSerializer):
     def get_kwargs(self, obj):
         kwargs = json.loads(obj.kwargs)
         if obj.enabled:
-            kwargs["next_execute_time"] = get_cron_next_execute_time(kwargs["crontab"])
+            kwargs["next_execute_time"] = get_cron_next_execute_time(
+                kwargs["crontab"]
+            )
         # ci_project_ids = eval(kwargs.get('ci_project_ids', '[]'))
         # kwargs['ci_project_ids'] = ','.join(map(lambda x: str(x), ci_project_ids))
         kwargs["ci_project_ids"] = kwargs.get("ci_project_ids", "")
@@ -399,7 +408,9 @@ class PeriodicTaskSerializer(serializers.ModelSerializer):
         case_id_list = json.loads(obj.args)
         # 数据格式,list of dict : [{"id":case_id,"name":case_name}]
         return list(
-            models.Case.objects.filter(pk__in=case_id_list).values("id", "name")
+            models.Case.objects.filter(pk__in=case_id_list).values(
+                "id", "name"
+            )
         )
 
     def get_last_run_at(self, obj) -> Union[str, int]:
@@ -415,21 +426,34 @@ class ScheduleDeSerializer(serializers.Serializer):
 
     switch = serializers.BooleanField(required=True, help_text="定时任务开关")
     crontab = serializers.CharField(
-        required=True, help_text="定时任务表达式", max_length=100, allow_blank=True
+        required=True,
+        help_text="定时任务表达式",
+        max_length=100,
+        allow_blank=True,
     )
     ci_project_ids = serializers.CharField(
         required=True,
         allow_blank=True,
         help_text="Gitlab的项目id，多个用逗号分开，一个项目id对应多个task，但只能在同一个项目中",
     )
-    strategy = serializers.CharField(required=True, help_text="发送通知策略", max_length=20)
+    strategy = serializers.CharField(
+        required=True, help_text="发送通知策略", max_length=20
+    )
     receiver = serializers.CharField(
-        required=True, help_text="邮件接收者，暂时用不上", allow_blank=True, max_length=100
+        required=True,
+        help_text="邮件接收者，暂时用不上",
+        allow_blank=True,
+        max_length=100,
     )
     mail_cc = serializers.CharField(
-        required=True, help_text="邮件抄送列表，暂时用不上", allow_blank=True, max_length=100
+        required=True,
+        help_text="邮件抄送列表，暂时用不上",
+        allow_blank=True,
+        max_length=100,
     )
-    name = serializers.CharField(required=True, help_text="定时任务的名字", max_length=100)
+    name = serializers.CharField(
+        required=True, help_text="定时任务的名字", max_length=100
+    )
     webhook = serializers.CharField(
         required=True,
         help_text="飞书webhook url",
@@ -467,7 +491,9 @@ class ScheduleDeSerializer(serializers.Serializer):
                     "ci_project_ids", ""
                 )
                 if not_allowed_project_id:
-                    not_allowed_project_ids.update(not_allowed_project_id.split(","))
+                    not_allowed_project_ids.update(
+                        not_allowed_project_id.split(",")
+                    )
 
             validation_errors = set()
             for ci_project_id in ci_project_ids.split(","):

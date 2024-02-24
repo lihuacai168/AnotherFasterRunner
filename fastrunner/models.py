@@ -18,14 +18,20 @@ class Project(BaseTable):
         verbose_name = "项目信息"
         db_table = "project"
 
-    name = models.CharField("项目名称", unique=True, null=False, max_length=100)
+    name = models.CharField(
+        "项目名称", unique=True, null=False, max_length=100
+    )
     desc = models.CharField("简要介绍", max_length=100, null=False)
     responsible = models.CharField("创建人", max_length=20, null=False)
     yapi_base_url = models.CharField(
         "yapi的openapi url", max_length=100, null=False, default="", blank=True
     )
     yapi_openapi_token = models.CharField(
-        "yapi openapi的token", max_length=128, null=False, default="", blank=True
+        "yapi openapi的token",
+        max_length=128,
+        null=False,
+        default="",
+        blank=True,
     )
     # jira相关的
     jira_project_key = models.CharField(
@@ -46,7 +52,9 @@ class Debugtalk(BaseTable):
         verbose_name = "驱动库"
         db_table = "debugtalk"
 
-    code = models.TextField("python代码", default="# write you code", null=False)
+    code = models.TextField(
+        "python代码", default="# write you code", null=False
+    )
     project = models.OneToOneField(
         to=Project, on_delete=models.CASCADE, db_constraint=False
     )
@@ -64,7 +72,9 @@ class Config(BaseTable):
     name = models.CharField("环境名称", null=False, max_length=100)
     body = models.TextField("主体信息", null=False)
     base_url = models.CharField("请求地址", null=False, max_length=100)
-    project = models.ForeignKey(Project, on_delete=models.CASCADE, db_constraint=False)
+    project = models.ForeignKey(
+        Project, on_delete=models.CASCADE, db_constraint=False
+    )
     is_default = models.BooleanField("默认配置", default=False)
 
 
@@ -85,11 +95,17 @@ class API(BaseTable):
         (3, "自动成功"),
         (4, "废弃"),
     )
-    name = models.CharField("接口名称", null=False, max_length=100, db_index=True)
+    name = models.CharField(
+        "接口名称", null=False, max_length=100, db_index=True
+    )
     body = models.TextField("主体信息", null=False)
-    url = models.CharField("请求地址", null=False, max_length=255, db_index=True)
+    url = models.CharField(
+        "请求地址", null=False, max_length=255, db_index=True
+    )
     method = models.CharField("请求方式", null=False, max_length=10)
-    project = models.ForeignKey(Project, on_delete=models.CASCADE, db_constraint=False)
+    project = models.ForeignKey(
+        Project, on_delete=models.CASCADE, db_constraint=False
+    )
     relation = models.IntegerField("节点id", null=False)
     delete = models.IntegerField("是否删除", null=True, default=0)
     rig_id = models.IntegerField("网关API_id", null=True, db_index=True)
@@ -98,9 +114,15 @@ class API(BaseTable):
     # yapi相关的
     yapi_catid = models.IntegerField("yapi的分组id", null=True, default=0)
     yapi_id = models.IntegerField("yapi的id", null=True, default=0)
-    ypai_add_time = models.CharField("yapi创建时间", null=True, default="", max_length=10)
-    ypai_up_time = models.CharField("yapi更新时间", null=True, default="", max_length=10)
-    ypai_username = models.CharField("yapi的原作者", null=True, default="", max_length=30)
+    ypai_add_time = models.CharField(
+        "yapi创建时间", null=True, default="", max_length=10
+    )
+    ypai_up_time = models.CharField(
+        "yapi更新时间", null=True, default="", max_length=10
+    )
+    ypai_username = models.CharField(
+        "yapi的原作者", null=True, default="", max_length=30
+    )
     # resp_sample = models.TextField("接口响应样例", default='{}', null=False)
 
 
@@ -120,7 +142,9 @@ class Case(BaseTable):
         (4, "核心用例"),
     )
     name = models.CharField("用例名称", null=False, max_length=100)
-    project = models.ForeignKey(Project, on_delete=models.CASCADE, db_constraint=False)
+    project = models.ForeignKey(
+        Project, on_delete=models.CASCADE, db_constraint=False
+    )
     relation = models.IntegerField("节点id", null=False)
     length = models.IntegerField("API个数", null=False)
     tag = models.IntegerField("用例标签", choices=tag, default=2)
@@ -128,10 +152,12 @@ class Case(BaseTable):
 
     @property
     def tasks(self):
-        task_objs = PeriodicTask.objects.filter(description=self.project.id).values(
-            "id", "name", "args"
+        task_objs = PeriodicTask.objects.filter(
+            description=self.project.id
+        ).values("id", "name", "args")
+        return filter(
+            lambda task: self.id in eval(task.pop("args")), task_objs
         )
-        return filter(lambda task: self.id in eval(task.pop("args")), task_objs)
 
 
 class CaseStep(BaseTable):
@@ -147,7 +173,9 @@ class CaseStep(BaseTable):
     body = models.TextField("主体信息", null=False)
     url = models.CharField("请求地址", null=False, max_length=255)
     method = models.CharField("请求方式", null=False, max_length=10)
-    case = models.ForeignKey(Case, on_delete=models.CASCADE, db_constraint=False)
+    case = models.ForeignKey(
+        Case, on_delete=models.CASCADE, db_constraint=False
+    )
     step = models.IntegerField("顺序", null=False)
     source_api_id = models.IntegerField("api来源", null=False)
 
@@ -163,7 +191,9 @@ class HostIP(BaseTable):
 
     name = models.CharField(null=False, max_length=100)
     value = models.TextField(null=False)
-    project = models.ForeignKey(Project, on_delete=models.CASCADE, db_constraint=False)
+    project = models.ForeignKey(
+        Project, on_delete=models.CASCADE, db_constraint=False
+    )
 
 
 class Variables(BaseTable):
@@ -177,7 +207,9 @@ class Variables(BaseTable):
 
     key = models.CharField(null=False, max_length=100)
     value = models.CharField(null=False, max_length=1024)
-    project = models.ForeignKey(Project, on_delete=models.CASCADE, db_constraint=False)
+    project = models.ForeignKey(
+        Project, on_delete=models.CASCADE, db_constraint=False
+    )
     description = models.CharField("全局变量描述", null=True, max_length=100)
 
 
@@ -205,7 +237,9 @@ class Report(BaseTable):
     type = models.IntegerField("报告类型", choices=report_type)
     status = models.BooleanField("报告状态", choices=report_status, blank=True)
     summary = models.TextField("报告基础信息", null=False)
-    project = models.ForeignKey(Project, on_delete=models.CASCADE, db_constraint=False)
+    project = models.ForeignKey(
+        Project, on_delete=models.CASCADE, db_constraint=False
+    )
     ci_metadata = jsonfield.JSONField()
     ci_project_id = models.IntegerField(
         "gitlab的项目id", default=0, null=True, db_index=True
@@ -246,7 +280,9 @@ class Relation(models.Model):
         verbose_name = "树形结构关系"
         db_table = "relation"
 
-    project = models.ForeignKey(Project, on_delete=models.CASCADE, db_constraint=False)
+    project = models.ForeignKey(
+        Project, on_delete=models.CASCADE, db_constraint=False
+    )
     tree = models.TextField("结构主题", null=False, default=[])
     type = models.IntegerField("树类型", default=1)
 
@@ -261,14 +297,23 @@ class Visit(models.Model):
         ("OPTION", "OPTION"),
     )
 
-    user = models.CharField(max_length=100, verbose_name="访问url的用户名", db_index=True)
-    ip = models.CharField(max_length=20, verbose_name="用户的ip", db_index=True)
+    user = models.CharField(
+        max_length=100, verbose_name="访问url的用户名", db_index=True
+    )
+    ip = models.CharField(
+        max_length=20, verbose_name="用户的ip", db_index=True
+    )
     project = models.CharField(
         max_length=4, verbose_name="项目id", db_index=True, default=0
     )
-    url = models.CharField(max_length=255, verbose_name="被访问的url", db_index=True)
+    url = models.CharField(
+        max_length=255, verbose_name="被访问的url", db_index=True
+    )
     path = models.CharField(
-        max_length=100, verbose_name="被访问的接口路径", default="", db_index=True
+        max_length=100,
+        verbose_name="被访问的接口路径",
+        default="",
+        db_index=True,
     )
     request_params = models.CharField(
         max_length=255, verbose_name="请求参数", default="", db_index=True
@@ -277,7 +322,9 @@ class Visit(models.Model):
         max_length=7, verbose_name="请求方法", choices=METHODS, db_index=True
     )
     request_body = models.TextField(verbose_name="请求体")
-    create_time = models.DateTimeField("创建时间", auto_now_add=True, db_index=True)
+    create_time = models.DateTimeField(
+        "创建时间", auto_now_add=True, db_index=True
+    )
 
     class Meta:
         db_table = "visit"
