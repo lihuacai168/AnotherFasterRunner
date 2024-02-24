@@ -1,31 +1,31 @@
-# encoding: utf-8
-
-import re
-
-import curlify
-import time
 import logging
+import re
+import time
 
 import requests
 import urllib3
+from requests import Request, Response
+from requests.exceptions import (
+    InvalidSchema,
+    InvalidURL,
+    MissingSchema,
+    RequestException,
+)
+
 # from httprunner import logger
 from httprunner.exceptions import ParamsError
-from requests import Request, Response
-from requests.exceptions import (InvalidSchema, InvalidURL, MissingSchema,
-                                 RequestException)
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 absolute_http_url_regexp = re.compile(r"^https?://", re.I)
 
 
-logger = logging.getLogger('httprunner')
+logger = logging.getLogger("httprunner")
 
 
 class ApiResponse(Response):
-
     def raise_for_status(self):
-        if hasattr(self, 'error') and self.error:
+        if hasattr(self, "error") and self.error:
             raise self.error
         Response.raise_for_status(self)
 
@@ -43,13 +43,14 @@ class HttpSession(requests.Session):
     part of the URL will be prepended with the HttpSession.base_url which is normally inherited
     from a HttpRunner class' host property.
     """
+
     def __init__(self, base_url=None, *args, **kwargs):
         super(HttpSession, self).__init__(*args, **kwargs)
         self.base_url = base_url if base_url else ""
         self.init_meta_data()
 
     def _build_url(self, path):
-        """ prepend url with hostname unless it's already an absolute URL """
+        """prepend url with hostname unless it's already an absolute URL"""
         if absolute_http_url_regexp.match(path):
             return path
         elif self.base_url:
@@ -58,14 +59,13 @@ class HttpSession(requests.Session):
             raise ParamsError("base url missed!")
 
     def init_meta_data(self):
-        """ initialize meta_data, it will store detail data of request and response
-        """
+        """initialize meta_data, it will store detail data of request and response"""
         self.meta_data = {
             "request": {
                 "url": "N/A",
                 "method": "N/A",
                 "headers": {},
-                "start_timestamp": None
+                "start_timestamp": None,
             },
             "response": {
                 "status_code": "N/A",
@@ -75,9 +75,9 @@ class HttpSession(requests.Session):
                 "elapsed_ms": "N/A",
                 "encoding": None,
                 "content": None,
-                "content_type": ""
+                "content_type": "",
             },
-            "validators":  [],
+            "validators": [],
             "logs": [],
             "extractors": [],
         }
@@ -121,10 +121,11 @@ class HttpSession(requests.Session):
         :param cert: (optional)
             if String, path to ssl client cert file (.pem). If Tuple, ('cert', 'key') pair.
         """
+
         def log_print(request_response):
             msg = "\n================== {} details ==================\n".format(request_response)
             for key, value in self.meta_data[request_response].items():
-                msg += "{:<16} : {}\n".format(key, repr(value))
+                msg += f"{key:<16} : {repr(value)}\n"
             logger.debug(msg)
 
         # record original request info
@@ -140,8 +141,10 @@ class HttpSession(requests.Session):
         response = self._send_request_safe_mode(method, url, **kwargs)
 
         # record the consumed time
-        self.meta_data["response"]["response_time_ms"] = \
-            round((time.time() - self.meta_data["request"]["start_timestamp"]) * 1000, 2)
+        self.meta_data["response"]["response_time_ms"] = round(
+            (time.time() - self.meta_data["request"]["start_timestamp"]) * 1000,
+            2,
+        )
         self.meta_data["response"]["elapsed_ms"] = response.elapsed.microseconds / 1000.0
 
         # record actual request info
@@ -172,7 +175,9 @@ class HttpSession(requests.Session):
         # get the length of the content, but if the argument stream is set to True, we take
         # the size from the content-length header, in order to not trigger fetching of the body
         if kwargs.get("stream", False):
-            self.meta_data["response"]["content_size"] = int(self.meta_data["response"]["headers"].get("content-length") or 0)
+            self.meta_data["response"]["content_size"] = int(
+                self.meta_data["response"]["headers"].get("content-length") or 0
+            )
         else:
             self.meta_data["response"]["content_size"] = len(response.content or "")
 
@@ -182,13 +187,13 @@ class HttpSession(requests.Session):
         try:
             response.raise_for_status()
         except RequestException as e:
-            logger.error(u"{exception}".format(exception=str(e)))
+            logger.error(f"{str(e)}")
         else:
             logger.info(
                 """status_code: {}, response_time(ms): {} ms, response_length: {} bytes""".format(
                     self.meta_data["response"]["status_code"],
                     self.meta_data["response"]["response_time_ms"],
-                    self.meta_data["response"]["content_size"]
+                    self.meta_data["response"]["content_size"],
                 )
             )
 
@@ -201,8 +206,8 @@ class HttpSession(requests.Session):
         """
         try:
             msg = "processed request:\n"
-            msg += "> {method} {url}\n".format(method=method, url=url)
-            msg += "> kwargs: {kwargs}".format(kwargs=kwargs)
+            msg += f"> {method} {url}\n"
+            msg += f"> kwargs: {kwargs}"
             logger.debug(msg)
             return requests.Session.request(self, method, url, **kwargs)
         except (MissingSchema, InvalidSchema, InvalidURL):

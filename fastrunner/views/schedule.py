@@ -1,17 +1,17 @@
 import json
 
 import croniter
-
 from django.utils.decorators import method_decorator
 from django_celery_beat import models
-from rest_framework.viewsets import GenericViewSet
 from rest_framework.response import Response
+from rest_framework.viewsets import GenericViewSet
+
 from FasterRunner import pagination
+from FasterRunner.mycelery import app
 from fastrunner import serializers
 from fastrunner.utils import response
 from fastrunner.utils.decorator import request_log
 from fastrunner.utils.task import Task
-from FasterRunner.mycelery import app
 
 
 class ScheduleView(GenericViewSet):
@@ -28,7 +28,11 @@ class ScheduleView(GenericViewSet):
         try:
             # check crontab
             croniter.croniter(expr)
-        except (croniter.CroniterNotAlphaError, croniter.CroniterBadCronError, croniter.CroniterBadDateError):
+        except (
+            croniter.CroniterNotAlphaError,
+            croniter.CroniterBadCronError,
+            croniter.CroniterBadDateError,
+        ):
             return False
         return True
 
@@ -40,9 +44,7 @@ class ScheduleView(GenericViewSet):
         project = request.query_params.get("project")
         task_name = request.query_params.get("task_name")
         creator = request.query_params.get("creator")
-        schedule = (
-            self.get_queryset().filter(description=project).order_by("-date_changed")
-        )
+        schedule = self.get_queryset().filter(description=project).order_by("-date_changed")
         if task_name:
             schedule = schedule.filter(name__contains=task_name)
         if creator:
@@ -63,11 +65,17 @@ class ScheduleView(GenericViewSet):
             copy: str
             project: int
         }
-    """
+        """
         ser = serializers.ScheduleDeSerializer(data=request.data)
         if ser.is_valid():
             if not self.check_crontab_expr(request.data.get("crontab")):
-                return Response({"code": "0101", "success": False, "msg": f"{request.data.get('crontab')}, 不合法的定时任务表达式"})
+                return Response(
+                    {
+                        "code": "0101",
+                        "success": False,
+                        "msg": f"{request.data.get('crontab')}, 不合法的定时任务表达式",
+                    }
+                )
             request.data.update({"creator": request.user.username})
             task = Task(**request.data)
             resp = task.add_task()
@@ -101,7 +109,13 @@ class ScheduleView(GenericViewSet):
         ser = serializers.ScheduleDeSerializer(data=request.data)
         if ser.is_valid():
             if not self.check_crontab_expr(request.data.get("crontab")):
-                return Response({"code": "0101", "success": False, "msg": f"{request.data.get('crontab')}, 不合法的定时任务表达式"})
+                return Response(
+                    {
+                        "code": "0101",
+                        "success": False,
+                        "msg": f"{request.data.get('crontab')}, 不合法的定时任务表达式",
+                    }
+                )
             task = Task(**request.data)
             resp = task.update_task(kwargs["pk"])
             return Response(resp)

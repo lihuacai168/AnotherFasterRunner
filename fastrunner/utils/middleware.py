@@ -18,7 +18,6 @@ class VisitTimesMiddleware(MiddlewareMixin):
         request._body = request.body
 
     def process_response(self, request, response):
-
         body = request._body
         if body == b"":
             body = ""
@@ -31,7 +30,9 @@ class VisitTimesMiddleware(MiddlewareMixin):
         else:
             user = request.user
 
-        ip: str = request.headers.get("x-forwarded-for", request.META.get("REMOTE_ADDR"))
+        ip: str = request.headers.get(
+            "x-forwarded-for", request.META.get("REMOTE_ADDR")
+        )
         # 前端请求头没传project，就默认为0
         project = request.headers.get("project", 0)
 
@@ -54,7 +55,7 @@ class VisitTimesMiddleware(MiddlewareMixin):
             url=url,
             request_method=request.method,
             request_body=body,
-            ip=ip.split(',')[0], # 有时候会有多个ip，取第一个
+            ip=ip.split(",")[0],  # 有时候会有多个ip，取第一个
             path=request.path,
             request_params=query_params[1:-1],
             project=project,
@@ -96,7 +97,7 @@ class ExceptionMiddleware(MiddlewareMixin):
         ):
             try:
                 email_helper.send_mail(
-                    subject=f"测试平台异常告警",
+                    subject="测试平台异常告警",
                     html_message=self.build_html_message(
                         request=request, exception=exception
                     ),
@@ -104,10 +105,10 @@ class ExceptionMiddleware(MiddlewareMixin):
                     recipient_list=[settings.EMAIL_HOST_USER],
                 )
             except smtplib.SMTPAuthenticationError as e:
-                logger.error(f'邮件发送失败 {traceback.format_exception(e)}')
+                logger.error(f"邮件发送失败 {traceback.format_exception(e)}")
                 return
             except Exception:
-                logger.error(f'邮件发送失败 {traceback.format_exc()}')
+                logger.error(f"邮件发送失败 {traceback.format_exc()}")
                 return
 
             logger.info("邮件发送成功")

@@ -1,29 +1,27 @@
 import json
 import os
+from collections.abc import Callable
 from enum import Enum
-from typing import Any
-from typing import Dict, Text, Union, Callable
-from typing import List
+from typing import Any, Dict, List, Text, Union
 from urllib.parse import urlparse
 
-from pydantic import BaseModel, Field
-from pydantic import HttpUrl
+from pydantic import BaseModel, Field, HttpUrl
 
-Name = Text
-Url = Text
-BaseUrl = Union[HttpUrl, Text]
-VariablesMapping = Dict[Text, Any]
-FunctionsMapping = Dict[Text, Callable]
-Headers = Dict[Text, Text]
-Cookies = Dict[Text, Text]
+Name = str
+Url = str
+BaseUrl = Union[HttpUrl, str]
+VariablesMapping = dict[str, Any]
+FunctionsMapping = dict[str, Callable]
+Headers = dict[str, str]
+Cookies = dict[str, str]
 Verify = bool
-Hooks = List[Union[Text, Dict[Text, Text]]]
-Export = List[Text]
-Validators = List[Dict]
-Env = Dict[Text, Any]
+Hooks = list[str | dict[str, str]]
+Export = list[str]
+Validators = list[dict]
+Env = dict[str, Any]
 
 
-class MethodEnum(Text, Enum):
+class MethodEnum(str, Enum):
     GET = "GET"
     POST = "POST"
     PUT = "PUT"
@@ -33,17 +31,18 @@ class MethodEnum(Text, Enum):
     PATCH = "PATCH"
     NA = "N/A"
 
+
 class TConfig(BaseModel):
     name: Name
     verify: Verify = False
     base_url: BaseUrl = ""
     # Text: prepare variables in debugtalk.py, ${gen_variables()}
-    variables: Union[VariablesMapping, Text] = {}
-    parameters: Union[VariablesMapping, Text] = {}
+    variables: VariablesMapping | str = {}
+    parameters: VariablesMapping | str = {}
     # setup_hooks: Hooks = []
     # teardown_hooks: Hooks = []
     export: Export = []
-    path: Text = None
+    path: str = None
     weight: int = 1
 
 
@@ -52,21 +51,21 @@ class TRequest(BaseModel):
 
     method: MethodEnum
     url: Url
-    params: Dict[Text, Text] = {}
+    params: dict[str, str] = {}
     headers: Headers = {}
-    req_json: Union[Dict, List, Text] = Field(None)
-    body: Union[Text, Dict[Text, Any]] = None
+    req_json: dict | list | str = Field(None)
+    body: str | dict[str, Any] = None
     cookies: Cookies = {}
     timeout: float = 120
     allow_redirects: bool = True
     verify: Verify = False
-    upload: Dict = {}  # used for upload files
+    upload: dict = {}  # used for upload files
 
 
 class TStep(BaseModel):
     name: Name
-    request: Union[TRequest, None] = None
-    testcase: Union[Text, Callable, None] = None
+    request: TRequest | None = None
+    testcase: str | Callable | None = None
     variables: VariablesMapping = {}
     setup_hooks: Hooks = []
     teardown_hooks: Hooks = []
@@ -75,37 +74,37 @@ class TStep(BaseModel):
     # used to export session variables from referenced testcase
     export: Export = []
     validators: Validators = Field([], alias="validate")
-    validate_script: List[Text] = []
+    validate_script: list[str] = []
 
 
 class TestCase(BaseModel):
     config: TConfig
-    teststeps: List[TStep]
+    teststeps: list[TStep]
 
 
 class ProjectMeta(BaseModel):
-    debugtalk_py: Text = ""  # debugtalk.py file content
-    debugtalk_path: Text = ""  # debugtalk.py file path
-    dot_env_path: Text = ""  # .env file path
+    debugtalk_py: str = ""  # debugtalk.py file content
+    debugtalk_path: str = ""  # debugtalk.py file path
+    dot_env_path: str = ""  # .env file path
     functions: FunctionsMapping = {}  # functions defined in debugtalk.py
     env: Env = {}
-    RootDir: Text = os.getcwd()  # project root directory (ensure absolute), the path debugtalk.py located
+    RootDir: str = os.getcwd()  # project root directory (ensure absolute), the path debugtalk.py located
 
 
 class TestsMapping(BaseModel):
     project_meta: ProjectMeta
-    testcases: List[TestCase]
+    testcases: list[TestCase]
 
 
 class TestCaseTime(BaseModel):
     start_at: float = 0
-    start_at_iso_format: Text = ""
+    start_at_iso_format: str = ""
     duration: float = 0
 
 
 class TestCaseInOut(BaseModel):
     config_vars: VariablesMapping = {}
-    export_vars: Dict = {}
+    export_vars: dict = {}
 
 
 class RequestStat(BaseModel):
@@ -115,9 +114,9 @@ class RequestStat(BaseModel):
 
 
 class AddressData(BaseModel):
-    client_ip: Text = "N/A"
+    client_ip: str = "N/A"
     client_port: int = 0
-    server_ip: Text = "N/A"
+    server_ip: str = "N/A"
     server_port: int = 0
 
 
@@ -126,16 +125,16 @@ class RequestData(BaseModel):
     url: Url
     headers: Headers = {}
     cookies: Cookies = {}
-    body: Union[Text, bytes, List, Dict, None] = {}
+    body: str | bytes | list | dict | None = {}
 
 
 class ResponseData(BaseModel):
     status_code: int
-    headers: Dict
+    headers: dict
     cookies: Cookies
-    encoding: Union[Text, None] = None
-    content_type: Text
-    body: Union[Text, bytes, List, Dict]
+    encoding: str | None = None
+    content_type: str
+    body: str | bytes | list | dict
 
 
 class ReqRespData(BaseModel):
@@ -149,18 +148,18 @@ class SessionData(BaseModel):
     success: bool = False
     # in most cases, req_resps only contains one request & response
     # while when 30X redirect occurs, req_resps will contain multiple request & response
-    req_resps: List[ReqRespData] = []
+    req_resps: list[ReqRespData] = []
     stat: RequestStat = RequestStat()
     address: AddressData = AddressData()
-    validators: Dict = {}
+    validators: dict = {}
 
 
 class StepData(BaseModel):
     """teststep data, each step maybe corresponding to one request or one testcase"""
 
     success: bool = False
-    name: Text = ""  # teststep name
-    data: Union[SessionData, List['StepData']] = None
+    name: str = ""  # teststep name
+    data: SessionData | list["StepData"] = None
     export_vars: VariablesMapping = {}
 
 
@@ -168,31 +167,31 @@ StepData.update_forward_refs()
 
 
 class TestCaseSummary(BaseModel):
-    name: Text
+    name: str
     success: bool
-    case_id: Text
+    case_id: str
     time: TestCaseTime
     in_out: TestCaseInOut = {}
-    log: Text = ""
-    step_datas: List[StepData] = []
+    log: str = ""
+    step_datas: list[StepData] = []
 
 
 class PlatformInfo(BaseModel):
-    httprunner_version: Text
-    python_version: Text
-    platform: Text
+    httprunner_version: str
+    python_version: str
+    platform: str
 
 
 class TestCaseRef(BaseModel):
-    name: Text
-    base_url: Text = ""
-    testcase: Text
+    name: str
+    base_url: str = ""
+    testcase: str
     variables: VariablesMapping = {}
 
 
 class TestSuite(BaseModel):
     config: TConfig
-    testcases: List[TestCaseRef]
+    testcases: list[TestCaseRef]
 
 
 class Stat(BaseModel):
@@ -206,35 +205,35 @@ class TestSuiteSummary(BaseModel):
     stat: Stat = Stat()
     time: TestCaseTime = TestCaseTime()
     platform: PlatformInfo
-    testcases: List[TestCaseSummary]
+    testcases: list[TestCaseSummary]
 
 
-class Hrp(object):
+class Hrp:
     def __init__(self, faster_req_json: dict):
         self.faster_req_json = faster_req_json
 
     def parse_url(self):
-        url = self.faster_req_json['url']
+        url = self.faster_req_json["url"]
         o = urlparse(url=url)
-        baseurl = o.scheme + '://' + o.netloc
+        baseurl = o.scheme + "://" + o.netloc
         return baseurl, o.path
 
     def get_headers(self):
-        headers: dict = self.faster_req_json.get('headers', {})
+        headers: dict = self.faster_req_json.get("headers", {})
         # Content-Length may be error
-        headers.pop('Content-Length', None)
+        headers.pop("Content-Length", None)
         return headers
 
     def get_request(self) -> TRequest:
         base_url, path = self.parse_url()
         req = TRequest(
-            method=self.faster_req_json['method'],
+            method=self.faster_req_json["method"],
             url=base_url + path,
-            params=self.faster_req_json.get('params', {}),
+            params=self.faster_req_json.get("params", {}),
             headers=self.get_headers(),
-            body=self.faster_req_json.get('body', {}),
-            req_json=self.faster_req_json.get('json', {}),
-            verify=self.faster_req_json.get('verify', False),
+            body=self.faster_req_json.get("body", {}),
+            req_json=self.faster_req_json.get("json", {}),
+            verify=self.faster_req_json.get("verify", False),
         )
         return req
 
@@ -261,7 +260,7 @@ class Hrp(object):
         )
 
 
-source_json = '''
+source_json = """
 {
   "url": "http://10.129.144.22:8081/post",
   "method": "POST",
@@ -318,8 +317,8 @@ source_json = '''
     ]
   }
 }
-'''
+"""
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     hrp = Hrp(json.loads(source_json))
     print(hrp.get_testcase().json())

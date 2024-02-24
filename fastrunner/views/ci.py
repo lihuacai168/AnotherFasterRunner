@@ -1,5 +1,4 @@
 # !/usr/bin/python3
-# -*- coding: utf-8 -*-
 
 # @Author: 花菜
 # @File: ci.py
@@ -11,19 +10,19 @@ import re
 import time
 
 import xmltodict
-from django.http import HttpResponse
 from django.conf import settings
+from django.http import HttpResponse
+from django.utils.decorators import method_decorator
 from django_celery_beat.models import PeriodicTask
 from drf_yasg.utils import swagger_auto_schema
-
-from fastrunner import models
-from fastrunner.utils import loader, lark_message
-from fastrunner.utils.decorator import request_log
-from django.utils.decorators import method_decorator
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
-from fastrunner.serializers import CISerializer, CIReportSerializer
+
+from fastrunner import models
+from fastrunner.serializers import CIReportSerializer, CISerializer
+from fastrunner.utils import lark_message, loader
+from fastrunner.utils.decorator import request_log
 from fastrunner.utils.host import parse_host
 from fastrunner.utils.loader import save_summary
 
@@ -48,15 +47,19 @@ def summary2junit(summary: dict) -> dict:
     time_info = summary.get("time")
     res["testsuites"]["testsuite"]["time"] = time_info.get("duration")
     start_at: str = time_info.get("start_at")
-    datetime_str = datetime.datetime.fromtimestamp(int(float(start_at))).strftime(
-        "%Y-%m-%dT%H:%M:%S.%f"
-    )
+    datetime_str = datetime.datetime.fromtimestamp(int(float(start_at))).strftime("%Y-%m-%dT%H:%M:%S.%f")
     res["testsuites"]["testsuite"]["timestamp"] = datetime_str
 
     details = summary.get("details", [])
     res["testsuites"]["testsuite"]["tests"] = len(details)
     for detail in details:
-        test_case = {"classname": "", "file": "", "line": "", "name": "", "time": ""}
+        test_case = {
+            "classname": "",
+            "file": "",
+            "line": "",
+            "name": "",
+            "time": "",
+        }
         name = detail.get("name")
         test_case["classname"] = name  # 对应junit的Suite
         records = detail.get("records")
@@ -76,11 +79,7 @@ def summary2junit(summary: dict) -> dict:
                 step_status = record.get("status")
                 if step_status == "failure":
                     failure_details.append(
-                        f"{index}-{record['name']}"
-                        + "\n"
-                        + record.get("attachment")
-                        + "\n"
-                        + "*" * 68
+                        f"{index}-{record['name']}" + "\n" + record.get("attachment") + "\n" + "*" * 68
                     )
                 elif step_status == "error":
                     case_error = True
@@ -91,7 +90,10 @@ def summary2junit(summary: dict) -> dict:
                 else:
                     res["testsuites"]["testsuite"]["failures"] += 1
 
-            failure = {"message": "断言或者抽取失败", "#text": "\n".join(failure_details)}
+            failure = {
+                "message": "断言或者抽取失败",
+                "#text": "\n".join(failure_details),
+            }
             test_case["failure"] = failure
         res["testsuites"]["testsuite"]["testcase"].append(test_case)
     return res
@@ -127,19 +129,13 @@ class CIView(GenericViewSet):
                     ci_project_ids = [ci_project_ids]
 
                 # 定时任务中的ci_project_id和ci_env同时匹配
-                if (
-                    ci_project_id in ci_project_ids
-                    and ci_env
-                    and ci_env == kwargs.get("ci_env")
-                ):
+                if ci_project_id in ci_project_ids and ci_env and ci_env == kwargs.get("ci_env"):
                     enabled_task_ids.append(pk)
                     project = pk_kwargs["description"]
 
             # 没有匹配用例，直接返回
             if not enabled_task_ids:
-                datetime_str = datetime.datetime.fromtimestamp(
-                    int(time.time())
-                ).strftime("%Y-%m-%dT%H:%M:%S.%f")
+                datetime_str = datetime.datetime.fromtimestamp(int(time.time())).strftime("%Y-%m-%dT%H:%M:%S.%f")
                 not_found_case_res = {
                     "testsuites": {
                         "testsuite": {
@@ -170,15 +166,9 @@ class CIView(GenericViewSet):
                 task_obj: str = query.filter(id=task_id).first()
                 # 如果task中存在重载配置，就覆盖用例中的配置
                 override_config = json.loads(task_obj.kwargs).get("config")
-                if (
-                    override_config_body is None
-                    and override_config
-                    and override_config != "请选择"
-                ):
+                if override_config_body is None and override_config and override_config != "请选择":
                     override_config_body = eval(
-                        models.Config.objects.get(
-                            name=override_config, project__id=project
-                        ).body
+                        models.Config.objects.get(name=override_config, project__id=project).body
                     )
 
                 if task_obj:
@@ -191,17 +181,9 @@ class CIView(GenericViewSet):
                 else:
                     continue
                 # 反查出一个task中包含的所有用例
-                suite = list(
-                    models.Case.objects.filter(pk__in=eval(case_ids))
-                    .order_by("id")
-                    .values("id", "name")
-                )
+                suite = list(models.Case.objects.filter(pk__in=eval(case_ids)).order_by("id").values("id", "name"))
                 for case in suite:
-                    case_step_list = (
-                        models.CaseStep.objects.filter(case__id=case["id"])
-                        .order_by("step")
-                        .values("body")
-                    )
+                    case_step_list = models.CaseStep.objects.filter(case__id=case["id"]).order_by("step").values("body")
                     testcase_list = []
                     for case_step in case_step_list:
                         body = eval(case_step["body"])
@@ -213,20 +195,14 @@ class CIView(GenericViewSet):
                             if override_config_body:
                                 config = override_config_body
                             else:
-                                config = eval(
-                                    models.Config.objects.get(
-                                        name=body["name"], project__id=project
-                                    ).body
-                                )
+                                config = eval(models.Config.objects.get(name=body["name"], project__id=project).body)
                     config_list.append(parse_host(host, config))
                     test_sets.append(testcase_list)
                     config = None
                 suite_list.extend(suite)
                 override_config_body = None
             # 同步运行用例
-            summary, _ = loader.debug_suite(
-                test_sets, project, suite_list, config_list, save=False
-            )
+            summary, _ = loader.debug_suite(test_sets, project, suite_list, config_list, save=False)
             ci_project_namespace = ser.validated_data["ci_project_namespace"]
             ci_project_name = ser.validated_data["ci_project_name"]
             ci_job_id = ser.validated_data["ci_job_id"]
@@ -257,7 +233,8 @@ class CIView(GenericViewSet):
             return Response(ser.errors, status=status.HTTP_400_BAD_REQUEST)
 
     @swagger_auto_schema(
-        query_serializer=CIReportSerializer, operation_summary="获取gitlab-ci运行的报告url"
+        query_serializer=CIReportSerializer,
+        operation_summary="获取gitlab-ci运行的报告url",
     )
     def get_ci_report_url(self, request):
         ser = CIReportSerializer(data=request.query_params)

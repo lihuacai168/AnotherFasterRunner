@@ -32,7 +32,6 @@ class RegisterView(APIView):
     """
 
     def post(self, request):
-
         try:
             username = request.data["username"]
             password = request.data["password"]
@@ -57,7 +56,7 @@ class RegisterView(APIView):
             return Response(response.SYSTEM_ERROR)
 
 
-def ldap_auth(username: str, password: str) -> Optional[User]:
+def ldap_auth(username: str, password: str) -> User | None:
     ldap_user = authenticate(username=username, password=password)
     if ldap_user and ldap_user.backend == "django_auth_ldap.backend.LDAPBackend":
         logger.info(f"LDAP authentication successful for {username}")
@@ -71,7 +70,7 @@ def ldap_auth(username: str, password: str) -> Optional[User]:
     return None
 
 
-def local_auth(username: str, password: str) -> Optional[User]:
+def local_auth(username: str, password: str) -> User | None:
     local_user = User.objects.filter(username=username).first()
     if not local_user:
         logger.warning(f"Local user does not exist: {username}")
@@ -122,7 +121,8 @@ class LoginView(APIView):
 
             if not local_user:
                 logger.info(
-                    f"LDAP authentication failed or not enabled, falling back to local authentication for {username=}")
+                    f"LDAP authentication failed or not enabled, falling back to local authentication for {username=}"
+                )
                 local_user = local_auth(username, password)
 
             if local_user:
@@ -133,6 +133,7 @@ class LoginView(APIView):
                 return Response(response.LOGIN_FAILED)
         else:
             return Response(serializer.errors)
+
 
 class UserView(APIView):
     def get(self, request):

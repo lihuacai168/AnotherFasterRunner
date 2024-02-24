@@ -1,15 +1,21 @@
-# encoding: utf-8
 import copy
 import logging
 import unittest
 
-from httprunner import (exceptions, loader, parser, report, runner, utils,
-                        validator)
+from httprunner import (
+    exceptions,
+    loader,
+    parser,
+    report,
+    runner,
+    utils,
+    validator,
+)
 
-logger = logging.getLogger('httprunner')
+logger = logging.getLogger("httprunner")
 
 
-class HttpRunner(object):
+class HttpRunner:
     def __init__(self, **kwargs):
         """initialize HttpRunner.
 
@@ -71,16 +77,22 @@ class HttpRunner(object):
                         update_vars_mapping: list[dict] = test_runner.context.extractors
                         after_vars_mapping: dict = test_runner.context.testcase_runtime_variables_mapping
                         # 'test_0000_000'
-                        _, case_step_index, run_times = self._testMethodName.split('_')
+                        (
+                            _,
+                            case_step_index,
+                            run_times,
+                        ) = self._testMethodName.split("_")
                         case_step_name: str = self._testMethodDoc
-                        test_runner.context.vars_trace.append({
-                            "before": dict(before_vars_mapping),
-                            "update": update_vars_mapping,
-                            "after": dict(after_vars_mapping),
-                            "step_name": case_step_name,
-                            "step_index": int(case_step_index),
-                            "run_times": int(run_times),
-                            })
+                        test_runner.context.vars_trace.append(
+                            {
+                                "before": dict(before_vars_mapping),
+                                "update": update_vars_mapping,
+                                "after": dict(after_vars_mapping),
+                                "step_name": case_step_name,
+                                "step_index": int(case_step_index),
+                                "run_times": int(run_times),
+                            }
+                        )
 
                         # 赋值完之后，需要重新输出化http_client_session的meta数据，否则下次就会共享
                         test_runner.http_client_session.init_meta_data()
@@ -108,7 +120,7 @@ class HttpRunner(object):
                 for times_index in range(int(teststep_dict.get("times", 0))):
                     # suppose one testcase should not have more than 9999 steps,
                     # and one step should not run more than 999 times.
-                    test_method_name = "test_{:04}_{:03}".format(index, times_index+1)
+                    test_method_name = f"test_{index:04}_{times_index + 1:03}"
                     test_method = _add_teststep(test_runner, config, teststep_dict)
                     setattr(TestSequense, test_method_name, test_method)
 
@@ -134,7 +146,7 @@ class HttpRunner(object):
 
         for testcase in test_suite:
             testcase_name = testcase.config.get("name")
-            logger.info("🚀🚀🚀 Start to run testcase: {}".format(testcase_name))
+            logger.info(f"🚀🚀🚀 Start to run testcase: {testcase_name}")
 
             result = self.unittest_runner.run(testcase)
             result.vars_trace = testcase.runner.context.vars_trace
@@ -163,9 +175,7 @@ class HttpRunner(object):
 
             self.summary["success"] &= testcase_summary["success"]
             testcase_summary["name"] = testcase.config.get("name")
-            testcase_summary["base_url"] = testcase.config.get("request", {}).get(
-                "base_url", ""
-            )
+            testcase_summary["base_url"] = testcase.config.get("request", {}).get("base_url", "")
 
             in_out = utils.get_testcase_io(testcase)
             utils.print_io(in_out)
@@ -271,11 +281,7 @@ class HttpRunner(object):
 
         """
         if not self.summary:
-            raise exceptions.MyBaseError(
-                "run method should be called before gen_html_report."
-            )
+            raise exceptions.MyBaseError("run method should be called before gen_html_report.")
 
         self.exception_stage = "generate report"
-        return report.render_html_report(
-            self.summary, html_report_name, html_report_template
-        )
+        return report.render_html_report(self.summary, html_report_name, html_report_template)

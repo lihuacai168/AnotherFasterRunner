@@ -1,5 +1,4 @@
 # !/usr/bin/python3
-# -*- coding: utf-8 -*-
 
 # @Author: 花菜
 # @File: day.py
@@ -23,7 +22,7 @@ def get_day(days: int = 0, **kwargs):
     """
     d = datetime.timedelta(days)
     n = datetime.datetime.now()
-    time_str = f"%Y-%m-%d"
+    time_str = "%Y-%m-%d"
     if kwargs:
         h = kwargs.get("h", "00")
         m = kwargs.get("m", "00")
@@ -83,12 +82,12 @@ def get_month(month_delta: int = 0, base_ts=get_ts_int):
             month_delta = -(abs(month_delta) % 12)
 
     # 月份差是正数，有两种情况
-        # 1.月份差和当前的月份相加 > 12, 年份+1, 月份等于超过的减去12
-        # 2.月份差和当前月份相加 <= 12, 直接相加
+    # 1.月份差和当前的月份相加 > 12, 年份+1, 月份等于超过的减去12
+    # 2.月份差和当前月份相加 <= 12, 直接相加
     if month_delta >= 0:
         if month + month_delta > 12:
             year += 1
-            month = (month + month_delta - 12)
+            month = month + month_delta - 12
         else:
             month += month_delta
     else:
@@ -101,7 +100,7 @@ def get_month(month_delta: int = 0, base_ts=get_ts_int):
             month = 12 + (month + month_delta)
         else:
             month += month_delta
-    month = str(month).rjust(2, '0')
+    month = str(month).rjust(2, "0")
 
     return f"{year}{month}"
 
@@ -116,7 +115,7 @@ def get_week_format(weeks):
     return f"{week[:4]}年{week[4:]}周"
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     import doctest
 
     doctest.testmod(verbose=True)

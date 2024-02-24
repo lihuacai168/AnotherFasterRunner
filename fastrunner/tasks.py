@@ -1,25 +1,23 @@
-import datetime
 import logging
 
-from celery import shared_task, Task
-from django_celery_beat.models import PeriodicTask
+from celery import Task, shared_task
 from django.core.exceptions import ObjectDoesNotExist
-from fastrunner import models
-from fastrunner.utils.loader import save_summary, debug_suite, debug_api
-from fastrunner.utils.ding_message import DingMessage
-from fastrunner.utils import lark_message
+from django_celery_beat.models import PeriodicTask
 
+from fastrunner import models
+from fastrunner.utils import lark_message
+from fastrunner.utils.ding_message import DingMessage
+from fastrunner.utils.loader import debug_api, debug_suite, save_summary
 
 log = logging.getLogger(__name__)
+
 
 def update_task_total_run_count(task_id):
     if task_id:
         task = PeriodicTask.objects.get(id=task_id)
         total_run_count = task.total_run_count + 1
         dt = task.date_changed
-        PeriodicTask.objects.filter(id=task_id).update(
-            date_changed=dt, total_run_count=total_run_count
-        )
+        PeriodicTask.objects.filter(id=task_id).update(date_changed=dt, total_run_count=total_run_count)
 
 
 class MyBaseTask(Task):
@@ -64,16 +62,10 @@ def schedule_debug_suite(*args, **kwargs):
     override_config = kwargs.get("config", "")
     override_config_body = None
     if override_config and override_config != "请选择":
-        override_config_body = eval(
-            models.Config.objects.get(name=override_config, project__id=project).body
-        )
+        override_config_body = eval(models.Config.objects.get(name=override_config, project__id=project).body)
 
     for content in suite:
-        test_list = (
-            models.CaseStep.objects.filter(case__id=content["id"])
-            .order_by("step")
-            .values("body")
-        )
+        test_list = models.CaseStep.objects.filter(case__id=content["id"]).order_by("step").values("body")
 
         testcase_list = []
         config = None
@@ -83,11 +75,7 @@ def schedule_debug_suite(*args, **kwargs):
                 if override_config_body:
                     config = override_config_body
                     continue
-                config = eval(
-                    models.Config.objects.get(
-                        name=body["name"], project__id=project
-                    ).body
-                )
+                config = eval(models.Config.objects.get(name=body["name"], project__id=project).body)
                 continue
             testcase_list.append(body)
         config_list.append(config)
@@ -95,7 +83,12 @@ def schedule_debug_suite(*args, **kwargs):
 
     is_parallel = kwargs.get("is_parallel", False)
     summary, _ = debug_suite(
-        test_sets, project, suite, config_list, save=False, allow_parallel=is_parallel
+        test_sets,
+        project,
+        suite,
+        config_list,
+        save=False,
+        allow_parallel=is_parallel,
     )
     task_name = kwargs["task_name"]
 
@@ -106,7 +99,11 @@ def schedule_debug_suite(*args, **kwargs):
         report_type = 3
 
     report_id = save_summary(
-        task_name, summary, project, type=report_type, user=kwargs.get("user", "")
+        task_name,
+        summary,
+        project,
+        type=report_type,
+        user=kwargs.get("user", ""),
     )
 
     strategy = kwargs["strategy"]
@@ -115,7 +112,6 @@ def schedule_debug_suite(*args, **kwargs):
         log.info(f"开始发送消息, {webhook=}")
         DING_OPEN_API: str = "https://oapi.dingtalk.com"
         FEISHU_OPEN_API: str = "https://open.feishu.cn"
-
 
         if webhook.startswith(DING_OPEN_API) is False and webhook.startswith(FEISHU_OPEN_API) is False:
             log.warning(f"{webhook=}还不支持, 目前仅支持钉钉和飞书")
@@ -131,8 +127,5 @@ def schedule_debug_suite(*args, **kwargs):
             log.info("开始发送飞书消息")
             summary["task_name"] = task_name
             summary["report_id"] = report_id
-            lark_message.send_message(
-                summary=summary, webhook=webhook, case_count=len(args)
-            )
+            lark_message.send_message(summary=summary, webhook=webhook, case_count=len(args))
             log.info("发送飞书消息完成")
-
