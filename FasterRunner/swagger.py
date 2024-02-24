@@ -1,4 +1,5 @@
 # !/usr/bin/python3
+# -*- coding: utf-8 -*-
 
 # @Author: 花菜
 # @File: swagger.py
@@ -14,8 +15,8 @@ class CustomSwaggerAutoSchema(SwaggerAutoSchema):
 
         if "api" in tags and len(operation_keys) >= 3:
             #  `operation_keys` 内容像这样 ['v1', 'prize_join_log', 'create']
-            if operation_keys[2].startswith("run"):
-                tags[0] = "run"
+            if operation_keys[2].startswith('run'):
+                tags[0] = 'run'
             else:
                 tags[0] = operation_keys[2]
 

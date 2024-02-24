@@ -1,4 +1,5 @@
 # !/usr/bin/python3
+# -*- coding: utf-8 -*-
 
 # @Author: 花菜
 # @File: faker_helper.py
@@ -6,7 +7,7 @@
 # @Email: lihuacai168@gmail.com
 from faker import Faker
 
-F = Faker(locale="zh_CN")
+F = Faker(locale='zh_CN')
 
 # 假名f_name()
 # 假地址f_addr()

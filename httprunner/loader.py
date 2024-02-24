@@ -3,53 +3,54 @@ import csv
 import importlib
 import io
 import json
-import logging
 import os
 import sys
+import logging
 
 import yaml
-
 from httprunner import builtin, exceptions, parser, utils, validator
 from httprunner.compat import OrderedDict
 
-logger = logging.getLogger("httprunner")
+logger = logging.getLogger('httprunner')
 
 ###############################################################################
 ##   file loader
 ###############################################################################
 
-
 def _check_format(file_path, content):
-    """check testcase format if valid"""
+    """ check testcase format if valid
+    """
     # TODO: replace with JSON schema validation
     if not content:
         # testcase file content is empty
-        err_msg = f"Testcase file content is empty: {file_path}"
+        err_msg = u"Testcase file content is empty: {}".format(file_path)
         logger.error(err_msg)
         raise exceptions.FileFormatError(err_msg)
 
     elif not isinstance(content, (list, dict)):
         # testcase file content does not match testcase format
-        err_msg = f"Testcase file content format invalid: {file_path}"
+        err_msg = u"Testcase file content format invalid: {}".format(file_path)
         logger.error(err_msg)
         raise exceptions.FileFormatError(err_msg)
 
 
 def load_yaml_file(yaml_file):
-    """load yaml file and check file content format"""
-    with open(yaml_file, encoding="utf-8") as stream:
+    """ load yaml file and check file content format
+    """
+    with io.open(yaml_file, 'r', encoding='utf-8') as stream:
         yaml_content = yaml.load(stream)
         _check_format(yaml_file, yaml_content)
         return yaml_content
 
 
 def load_json_file(json_file):
-    """load json file and check file content format"""
-    with open(json_file, encoding="utf-8") as data_file:
+    """ load json file and check file content format
+    """
+    with io.open(json_file, encoding='utf-8') as data_file:
         try:
             json_content = json.load(data_file)
         except exceptions.JSONDecodeError:
-            err_msg = f"JSONDecodeError: JSON file format error: {json_file}"
+            err_msg = u"JSONDecodeError: JSON file format error: {}".format(json_file)
             logger.error(err_msg)
             raise exceptions.FileFormatError(err_msg)
 
@@ -58,7 +59,7 @@ def load_json_file(json_file):
 
 
 def load_csv_file(csv_file):
-    """load csv file and check file content format
+    """ load csv file and check file content format
     @param
         csv_file: csv file path
         e.g. csv file content:
@@ -77,7 +78,7 @@ def load_csv_file(csv_file):
     """
     csv_content_list = []
 
-    with open(csv_file, encoding="utf-8") as csvfile:
+    with io.open(csv_file, encoding='utf-8') as csvfile:
         reader = csv.DictReader(csvfile)
         for row in reader:
             csv_content_list.append(row)
@@ -87,24 +88,24 @@ def load_csv_file(csv_file):
 
 def load_file(file_path):
     if not os.path.isfile(file_path):
-        raise exceptions.FileNotFound(f"{file_path} does not exist.")
+        raise exceptions.FileNotFound("{} does not exist.".format(file_path))
 
     file_suffix = os.path.splitext(file_path)[1].lower()
-    if file_suffix == ".json":
+    if file_suffix == '.json':
         return load_json_file(file_path)
-    elif file_suffix in [".yaml", ".yml"]:
+    elif file_suffix in ['.yaml', '.yml']:
         return load_yaml_file(file_path)
     elif file_suffix == ".csv":
         return load_csv_file(file_path)
     else:
         # '' or other suffix
-        err_msg = f"Unsupported file format: {file_path}"
+        err_msg = u"Unsupported file format: {}".format(file_path)
         logger.warning(err_msg)
         return []
 
 
 def load_folder_files(folder_path, recursive=True):
-    """load folder path, return all files endswith yml/yaml/json in list.
+    """ load folder path, return all files endswith yml/yaml/json in list.
 
     Args:
         folder_path (str): specified folder path to load
@@ -129,7 +130,7 @@ def load_folder_files(folder_path, recursive=True):
         filenames_list = []
 
         for filename in filenames:
-            if not filename.endswith((".yml", ".yaml", ".json")):
+            if not filename.endswith(('.yml', '.yaml', '.json')):
                 continue
 
             filenames_list.append(filename)
@@ -145,7 +146,7 @@ def load_folder_files(folder_path, recursive=True):
 
 
 def load_dot_env_file(dot_env_path):
-    """load .env file.
+    """ load .env file.
 
     Args:
         dot_env_path (str): .env file path
@@ -166,9 +167,9 @@ def load_dot_env_file(dot_env_path):
     if not os.path.isfile(dot_env_path):
         raise exceptions.FileNotFound(".env file path is not exist.")
 
-    logger.info(f"Loading environment variables from {dot_env_path}")
+    logger.info("Loading environment variables from {}".format(dot_env_path))
     env_variables_mapping = {}
-    with open(dot_env_path, encoding="utf-8") as fp:
+    with io.open(dot_env_path, 'r', encoding='utf-8') as fp:
         for line in fp:
             # maxsplit=1
             if "=" in line:
@@ -185,7 +186,7 @@ def load_dot_env_file(dot_env_path):
 
 
 def locate_file(start_path, file_name):
-    """locate filename and return file path.
+    """ locate filename and return file path.
         searching will be recursive upward until current working directory.
 
     Args:
@@ -203,18 +204,15 @@ def locate_file(start_path, file_name):
     elif os.path.isdir(start_path):
         start_dir_path = start_path
     else:
-        raise exceptions.FileNotFound(f"invalid path: {start_path}")
+        raise exceptions.FileNotFound("invalid path: {}".format(start_path))
 
     file_path = os.path.join(start_dir_path, file_name)
     if os.path.isfile(file_path):
         return file_path
 
     # current working directory
-    if os.path.abspath(start_dir_path) in [
-        os.getcwd(),
-        os.path.abspath(os.sep),
-    ]:
-        raise exceptions.FileNotFound(f"{file_name} not found in {start_path}")
+    if os.path.abspath(start_dir_path) in [os.getcwd(), os.path.abspath(os.sep)]:
+        raise exceptions.FileNotFound("{} not found in {}".format(file_name, start_path))
 
     # locate recursive upward
     return locate_file(os.path.dirname(start_dir_path), file_name)
@@ -224,9 +222,8 @@ def locate_file(start_path, file_name):
 ##   debugtalk.py module loader
 ###############################################################################
 
-
 def load_python_module(module):
-    """load python module.
+    """ load python module.
 
     Args:
         module: python module
@@ -240,7 +237,10 @@ def load_python_module(module):
             }
 
     """
-    debugtalk_module = {"variables": {}, "functions": {}}
+    debugtalk_module = {
+        "variables": {},
+        "functions": {}
+    }
 
     for name, item in vars(module).items():
         if validator.is_function((name, item)):
@@ -256,13 +256,14 @@ def load_python_module(module):
 
 
 def load_builtin_module():
-    """load built_in module"""
+    """ load built_in module
+    """
     built_in_module = load_python_module(builtin)
     return built_in_module
 
 
 def load_debugtalk_module():
-    """load project debugtalk.py module
+    """ load project debugtalk.py module
         debugtalk.py should be located in project working directory.
 
     Returns:
@@ -280,7 +281,7 @@ def load_debugtalk_module():
 
 
 def get_module_item(module_mapping, item_type, item_name):
-    """get expected function or variable from module mapping.
+    """ get expected function or variable from module mapping.
 
     Args:
         module_mapping(dict): module mapping with variables and functions.
@@ -304,8 +305,8 @@ def get_module_item(module_mapping, item_type, item_name):
     try:
         return module_mapping[item_type][item_name]
     except KeyError:
-        err_msg = f"{item_name} not found in debugtalk.py module!\n"
-        err_msg += f"module mapping: {module_mapping}"
+        err_msg = "{} not found in debugtalk.py module!\n".format(item_name)
+        err_msg += "module mapping: {}".format(module_mapping)
         if item_type == "functions":
             raise exceptions.FunctionNotFound(err_msg)
         else:
@@ -316,9 +317,8 @@ def get_module_item(module_mapping, item_type, item_name):
 ##   testcase loader
 ###############################################################################
 
-
 def _load_teststeps(test_block, project_mapping):
-    """load teststeps with api/testcase references
+    """ load teststeps with api/testcase references
 
     Args:
         test_block (dict): test block content, maybe in 3 formats.
@@ -345,7 +345,6 @@ def _load_teststeps(test_block, project_mapping):
         list: loaded teststeps list
 
     """
-
     def extend_api_definition(block):
         ref_call = block["api"]
         def_block = _get_block_by_name(ref_call, "def-api", project_mapping)
@@ -359,7 +358,7 @@ def _load_teststeps(test_block, project_mapping):
         teststeps.append(test_block)
 
     # reference testcase
-    elif "suite" in test_block:  # TODO: replace suite with testcase
+    elif "suite" in test_block: # TODO: replace suite with testcase
         ref_call = test_block["suite"]
         block = _get_block_by_name(ref_call, "def-testcase", project_mapping)
         # TODO: bugfix lost block config variables
@@ -376,7 +375,7 @@ def _load_teststeps(test_block, project_mapping):
 
 
 def _load_testcase(raw_testcase, project_mapping):
-    """load testcase/testsuite with api/testcase references
+    """ load testcase/testsuite with api/testcase references
 
     Args:
         raw_testcase (list): raw testcase content loaded from JSON/YAML file:
@@ -407,16 +406,19 @@ def _load_testcase(raw_testcase, project_mapping):
             }
 
     """
-    loaded_testcase = {"config": {}, "teststeps": []}
+    loaded_testcase = {
+        "config": {},
+        "teststeps": []
+    }
 
     for item in raw_testcase:
         # TODO: add json schema validation
         if not isinstance(item, dict) or len(item) != 1:
-            raise exceptions.FileFormatError(f"Testcase format error: {item}")
+            raise exceptions.FileFormatError("Testcase format error: {}".format(item))
 
         key, test_block = item.popitem()
         if not isinstance(test_block, dict):
-            raise exceptions.FileFormatError(f"Testcase format error: {item}")
+            raise exceptions.FileFormatError("Testcase format error: {}".format(item))
 
         if key == "config":
             loaded_testcase["config"].update(test_block)
@@ -425,13 +427,15 @@ def _load_testcase(raw_testcase, project_mapping):
             loaded_testcase["teststeps"].extend(_load_teststeps(test_block, project_mapping))
 
         else:
-            logger.warning(f"unexpected block key: {key}. block key should only be 'config' or 'test'.")
+            logger.warning(
+                "unexpected block key: {}. block key should only be 'config' or 'test'.".format(key)
+            )
 
     return loaded_testcase
 
 
 def _get_block_by_name(ref_call, ref_type, project_mapping):
-    """get test content by reference name.
+    """ get test content by reference name.
 
     Args:
         ref_call (str): call function.
@@ -454,8 +458,8 @@ def _get_block_by_name(ref_call, ref_type, project_mapping):
 
     if len(call_args) != len(def_args):
         err_msg = "{}: call args number is not equal to defined args number!\n".format(func_name)
-        err_msg += f"defined args: {def_args}\n"
-        err_msg += f"reference args: {call_args}"
+        err_msg += "defined args: {}\n".format(def_args)
+        err_msg += "reference args: {}".format(call_args)
         logger.error(err_msg)
         raise exceptions.ParamsError(err_msg)
 
@@ -473,7 +477,7 @@ def _get_block_by_name(ref_call, ref_type, project_mapping):
 
 
 def _get_test_definition(name, ref_type, project_mapping):
-    """get expected api or testcase.
+    """ get expected api or testcase.
 
     Args:
         name (str): api or testcase name
@@ -491,7 +495,7 @@ def _get_test_definition(name, ref_type, project_mapping):
     block = project_mapping.get(ref_type, {}).get(name)
 
     if not block:
-        err_msg = f"{name} not found!"
+        err_msg = "{} not found!".format(name)
         if ref_type == "def-api":
             raise exceptions.ApiNotFound(err_msg)
         else:
@@ -502,7 +506,7 @@ def _get_test_definition(name, ref_type, project_mapping):
 
 
 def _extend_block(ref_block, def_block):
-    """extend ref_block with def_block.
+    """ extend ref_block with def_block.
 
     Args:
         def_block (dict): api definition dict.
@@ -535,16 +539,26 @@ def _extend_block(ref_block, def_block):
     def_validators = def_block.get("validate") or def_block.get("validators", [])
     ref_validators = ref_block.get("validate") or ref_block.get("validators", [])
 
-    def_extrators = def_block.get("extract") or def_block.get("extractors") or def_block.get("extract_binds", [])
-    ref_extractors = ref_block.get("extract") or ref_block.get("extractors") or ref_block.get("extract_binds", [])
+    def_extrators = def_block.get("extract") \
+        or def_block.get("extractors") \
+        or def_block.get("extract_binds", [])
+    ref_extractors = ref_block.get("extract") \
+        or ref_block.get("extractors") \
+        or ref_block.get("extract_binds", [])
 
     ref_block.update(def_block)
-    ref_block["validate"] = _merge_validator(def_validators, ref_validators)
-    ref_block["extract"] = _merge_extractor(def_extrators, ref_extractors)
+    ref_block["validate"] = _merge_validator(
+        def_validators,
+        ref_validators
+    )
+    ref_block["extract"] = _merge_extractor(
+        def_extrators,
+        ref_extractors
+    )
 
 
 def _convert_validators_to_mapping(validators):
-    """convert validators list to mapping.
+    """ convert validators list to mapping.
 
     Args:
         validators (list): validators in list
@@ -581,7 +595,7 @@ def _convert_validators_to_mapping(validators):
 
 
 def _merge_validator(def_validators, ref_validators):
-    """merge def_validators with ref_validators.
+    """ merge def_validators with ref_validators.
 
     Args:
         def_validators (list):
@@ -616,7 +630,7 @@ def _merge_validator(def_validators, ref_validators):
 
 
 def _merge_extractor(def_extrators, ref_extractors):
-    """merge def_extrators with ref_extractors
+    """ merge def_extrators with ref_extractors
 
     Args:
         def_extrators (list): [{"var1": "val1"}, {"var2": "val2"}]
@@ -646,7 +660,7 @@ def _merge_extractor(def_extrators, ref_extractors):
         extractor_dict = OrderedDict()
         for api_extrator in def_extrators:
             if len(api_extrator) != 1:
-                logger.warning(f"incorrect extractor: {api_extrator}")
+                logger.warning("incorrect extractor: {}".format(api_extrator))
                 continue
 
             var_name = list(api_extrator.keys())[0]
@@ -654,7 +668,7 @@ def _merge_extractor(def_extrators, ref_extractors):
 
         for test_extrator in ref_extractors:
             if len(test_extrator) != 1:
-                logger.warning(f"incorrect extractor: {test_extrator}")
+                logger.warning("incorrect extractor: {}".format(test_extrator))
                 continue
 
             var_name = list(test_extrator.keys())[0]
@@ -668,7 +682,7 @@ def _merge_extractor(def_extrators, ref_extractors):
 
 
 def load_folder_content(folder_path):
-    """load api/testcases/testsuites definitions from folder.
+    """ load api/testcases/testsuites definitions from folder.
 
     Args:
         folder_path (str): api/testcases/testsuites files folder.
@@ -693,7 +707,7 @@ def load_folder_content(folder_path):
 
 
 def load_api_folder(api_folder_path):
-    """load api definitions from api folder.
+    """ load api definitions from api folder.
 
     Args:
         api_folder_path (str): api files folder.
@@ -745,7 +759,7 @@ def load_api_folder(api_folder_path):
             func_name = function_meta["func_name"]
 
             if func_name in api_definition_mapping:
-                logger.warning(f"API definition duplicated: {func_name}")
+                logger.warning("API definition duplicated: {}".format(func_name))
 
             api_dict["function_meta"] = function_meta
             api_definition_mapping[func_name] = api_dict
@@ -754,7 +768,7 @@ def load_api_folder(api_folder_path):
 
 
 def load_test_folder(test_folder_path):
-    """load testcases definitions from folder.
+    """ load testcases definitions from folder.
 
     Args:
         test_folder_path (str): testcases files folder.
@@ -800,7 +814,10 @@ def load_test_folder(test_folder_path):
     for test_file_path, items in test_items_mapping.items():
         # TODO: add JSON schema validation
 
-        testcase = {"config": {}, "teststeps": []}
+        testcase = {
+            "config": {},
+            "teststeps": []
+        }
         for item in items:
             key, block = item.popitem()
 
@@ -816,7 +833,7 @@ def load_test_folder(test_folder_path):
                 func_name = function_meta["func_name"]
 
                 if func_name in test_definition_mapping:
-                    logger.warning(f"API definition duplicated: {func_name}")
+                    logger.warning("API definition duplicated: {}".format(func_name))
 
                 testcase["function_meta"] = function_meta
                 test_definition_mapping[func_name] = testcase
@@ -828,7 +845,7 @@ def load_test_folder(test_folder_path):
 
 
 def locate_debugtalk_py(start_path):
-    """locate debugtalk.py file.
+    """ locate debugtalk.py file.
 
     Args:
         start_path (str): start locating path, maybe testcase file path or directory path
@@ -842,7 +859,7 @@ def locate_debugtalk_py(start_path):
 
 
 def load_project_tests(test_path, dot_env_path=None):
-    """load api, testcases, .env, builtin module and debugtalk.py.
+    """ load api, testcases, .env, builtin module and debugtalk.py.
         api/testcases folder is relative to project_working_directory
 
     Args:
@@ -878,7 +895,10 @@ def load_project_tests(test_path, dot_env_path=None):
     if debugtalk_path:
         project_mapping["debugtalk"] = load_debugtalk_module()
     else:
-        project_mapping["debugtalk"] = {"variables": {}, "functions": {}}
+        project_mapping["debugtalk"] = {
+            "variables": {},
+            "functions": {}
+        }
 
     project_mapping["def-api"] = load_api_folder(os.path.join(project_working_directory, "api"))
     # TODO: replace suite with testcases
@@ -888,7 +908,7 @@ def load_project_tests(test_path, dot_env_path=None):
 
 
 def load_tests(path, dot_env_path=None):
-    """load testcases from file path, extend and merge with api/testcase definitions.
+    """ load testcases from file path, extend and merge with api/testcase definitions.
 
     Args:
         path (str/list): testcase file/foler path.
@@ -946,7 +966,7 @@ def load_tests(path, dot_env_path=None):
         return testcases_list
 
     if not os.path.exists(path):
-        err_msg = f"path not exist: {path}"
+        err_msg = "path not exist: {}".format(path)
         logger.error(err_msg)
         raise exceptions.FileNotFound(err_msg)
 
@@ -972,7 +992,7 @@ def load_tests(path, dot_env_path=None):
 
 
 def load_locust_tests(path, dot_env_path=None):
-    """load locust testcases
+    """ load locust testcases
 
     Args:
         path (str): testcase/testsuite file path.
@@ -997,7 +1017,9 @@ def load_locust_tests(path, dot_env_path=None):
     raw_testcase = load_file(path)
     project_mapping = load_project_tests(path, dot_env_path)
 
-    config = {"refs": project_mapping}
+    config = {
+        "refs": project_mapping
+    }
     tests = []
     for item in raw_testcase:
         key, test_block = item.popitem()
@@ -1010,4 +1032,7 @@ def load_locust_tests(path, dot_env_path=None):
             for _ in range(weight):
                 tests.append(teststeps)
 
-    return {"config": config, "tests": tests}
+    return {
+        "config": config,
+        "tests": tests
+    }

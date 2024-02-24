@@ -1,4 +1,5 @@
 # !/usr/bin/python3
+# -*- coding: utf-8 -*-
 
 # @Author: 花菜
 # @File: request_helper.py
@@ -12,7 +13,7 @@ import pydash
 
 # from loguru import logger
 
-logger = logging.getLogger("httprunner")
+logger = logging.getLogger('httprunner')
 
 
 def _load_json(in_data):

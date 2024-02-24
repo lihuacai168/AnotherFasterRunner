@@ -10,11 +10,11 @@ def get_tree_max_id_old(value, list_id=[]):
 
     if isinstance(value, list):
         for content in value:  # content -> dict
-            children = content.get("children")
+            children = content.get('children')
             if children:
                 get_tree_max_id_old(children)
 
-            list_id.append(content["id"])
+            list_id.append(content['id'])
 
     return max(list_id)
 
@@ -29,8 +29,8 @@ def get_tree_max_id(tree: list):
     while len(queue) != 0:
         sub_tree: list = queue.popleft()
         for node in sub_tree:
-            children: list = node.get("children")
-            max_id = max(max_id, node["id"])
+            children: list = node.get('children')
+            max_id = max(max_id, node['id'])
             # 有子节点
             if len(children) > 0:
                 queue.append(children)
@@ -46,11 +46,11 @@ def get_all_ycatid(value, list_id=[]):
 
     if isinstance(value, list):
         for content in value:  # content -> dict
-            yapi_catid = content.get("yapi_catid")
+            yapi_catid = content.get('yapi_catid')
             if yapi_catid:
                 list_id.append(yapi_catid)
 
-            children = content.get("children")
+            children = content.get('children')
             if children:
                 get_all_ycatid(children)
     return list_id
@@ -66,9 +66,9 @@ def get_faster_id_by_ycatid(value, yapi_catid):
 
     if isinstance(value, list):
         for content in value:  # content -> dict
-            if content.get("yapi_catid") == yapi_catid:
-                return content["id"]
-            children = content.get("children")
+            if content.get('yapi_catid') == yapi_catid:
+                return content['id']
+            children = content.get('children')
             if children:
                 get_faster_id_by_ycatid(children, yapi_catid)
     return 0
@@ -84,24 +84,25 @@ def get_tree_ycatid_mapping(value, mapping={}):
 
     if isinstance(value, list):
         for content in value:  # content -> dict
-            yapi_catid = content.get("yapi_catid")
+            yapi_catid = content.get('yapi_catid')
             if yapi_catid:
-                mapping.update({yapi_catid: content.get("id")})
-            children = content.get("children")
+                mapping.update({yapi_catid: content.get('id')})
+            children = content.get('children')
             if children:
                 get_tree_ycatid_mapping(children, mapping)
     return mapping
 
 
 def get_file_size(size):
-    """计算大小"""
+    """计算大小
+    """
 
     if size >= 1048576:
-        size = str(round(size / 1048576, 2)) + "MB"
+        size = str(round(size / 1048576, 2)) + 'MB'
     elif size >= 1024:
-        size = str(round(size / 1024, 2)) + "KB"
+        size = str(round(size / 1024, 2)) + 'KB'
     else:
-        size = str(size) + "Byte"
+        size = str(size) + 'Byte'
 
     return size
 
@@ -123,15 +124,15 @@ def get_tree_label(value, search_label):
 
     if isinstance(value, list):
         for content in value:  # content -> dict
-            if content["label"] == search_label:
-                label_id = content["id"]
-            children = content.get("children")
+            if content['label'] == search_label:
+                label_id = content['id']
+            children = content.get('children')
             if children:
                 get_tree_label(children, search_label)
     return label_id
 
 
-label = ""
+label = ''
 
 
 def get_tree_relation_name(value, relation_id):
@@ -144,9 +145,9 @@ def get_tree_relation_name(value, relation_id):
 
     if isinstance(value, list):
         for content in value:  # content -> dict
-            if content["id"] == relation_id:
-                label = content["label"]
-            children = content.get("children")
+            if content['id'] == relation_id:
+                label = content['label']
+            children = content.get('children')
             if children:
                 get_tree_relation_name(children, relation_id)
     return label

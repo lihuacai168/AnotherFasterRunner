@@ -1,4 +1,5 @@
 # !/usr/bin/python3
+# -*- coding: utf-8 -*-
 
 # @Author:梨花菜
 # @File: run_all_auto_case.py
@@ -6,14 +7,15 @@
 # @Email: lihuacai168@gmail.com
 # @Software: PyCharm
 
+from django.http import HttpResponse, JsonResponse
+from django.conf import settings
 import json
 
-from django.conf import settings
-from django.http import HttpResponse, JsonResponse
 from django_celery_beat.models import PeriodicTask
 
-from FasterRunner.mycelery import app
 from fastrunner import models
+from FasterRunner.mycelery import app
+
 from fastrunner.utils.host import parse_host
 
 
@@ -44,7 +46,11 @@ def build_testsuite(project: int, config_id: int = 0, testcase_tag: int = 1):
     """
     组装可运行的用例
     """
-    cases = list(models.Case.objects.filter(project__id=project, tag=testcase_tag).order_by("id").values("id", "name"))
+    cases = list(
+        models.Case.objects.filter(project__id=project, tag=testcase_tag)
+        .order_by("id")
+        .values("id", "name")
+    )
     test_sets = []
     config_list = []
     host = "请选择"
@@ -53,7 +59,11 @@ def build_testsuite(project: int, config_id: int = 0, testcase_tag: int = 1):
         # 前端有指定config，会覆盖用例本身的config
         reload_config = eval(models.Config.objects.get(id=config_id).body)
     for case in cases:
-        test_list = models.CaseStep.objects.filter(case__id=case["id"]).order_by("step").values("body")
+        test_list = (
+            models.CaseStep.objects.filter(case__id=case["id"])
+            .order_by("step")
+            .values("body")
+        )
         testcase_list = []
         for content in test_list:
             body = eval(content["body"])
@@ -61,7 +71,11 @@ def build_testsuite(project: int, config_id: int = 0, testcase_tag: int = 1):
                 testcase_list.append(parse_host(host, body))
             elif body["request"].get("base_url"):
                 if reload_config is None:
-                    config = eval(models.Config.objects.get(name=body["name"], project__id=project).body)
+                    config = eval(
+                        models.Config.objects.get(
+                            name=body["name"], project__id=project
+                        ).body
+                    )
                 else:
                     config = reload_config
         config_list.append(parse_host(host, config))

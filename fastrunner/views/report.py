@@ -7,16 +7,15 @@ from django.shortcuts import render
 from django.utils.decorators import method_decorator
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
-
 from FasterRunner import pagination
 from fastrunner import models, serializers
-from fastrunner.utils import convert2hrp, response
-from fastrunner.utils.convert2boomer import Boomer, BoomerExtendCmd
+from fastrunner.utils import response, convert2hrp
 from fastrunner.utils.convert2hrp import Hrp
+from fastrunner.utils.convert2boomer import Boomer, BoomerExtendCmd
 from fastrunner.utils.decorator import request_log
 
 
-class ConvertRequest:
+class ConvertRequest(object):
     @classmethod
     def _to_curl(cls, request, compressed=False, verify=True):
         """
@@ -36,7 +35,7 @@ class ConvertRequest:
         ]
 
         for k, v in sorted(request.headers.items()):
-            parts += [("-H", f"{k}: {v}")]
+            parts += [("-H", "{0}: {1}".format(k, v))]
 
         if request.body:
             body = request.body
@@ -65,7 +64,7 @@ class ConvertRequest:
 
     @classmethod
     def _make_fake_req(cls, request_meta_dict):
-        class RequestMeta:
+        class RequestMeta(object):
             ...
 
         req = RequestMeta()
@@ -118,7 +117,10 @@ class ReportView(GenericViewSet):
         # 查看报告详情不需要鉴权
         # self.request.path = '/api/fastrunner/reports/3053/'
         pattern = re.compile(r"/api/fastrunner/reports/\d+/")
-        if self.request.method == "GET" and re.search(pattern, self.request.path) is not None:
+        if (
+            self.request.method == "GET"
+            and re.search(pattern, self.request.path) is not None
+        ):
             return []
         return super().get_authenticators()
 
@@ -132,7 +134,9 @@ class ReportView(GenericViewSet):
         report_status = request.query_params["reportStatus"]
         only_me = request.query_params["onlyMe"]
 
-        queryset = self.get_queryset().filter(project__id=project).order_by("-update_time")
+        queryset = (
+            self.get_queryset().filter(project__id=project).order_by("-update_time")
+        )
 
         # 前端传过来是小写的字符串，不是python的True
         if only_me == "true":

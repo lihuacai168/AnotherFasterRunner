@@ -1,11 +1,11 @@
 import random
 
-from locust import HttpLocust, TaskSet, task
-from locust.events import request_failure
-
+import zmq
 from httprunner.exceptions import MyBaseError, MyBaseFailure
 from httprunner.loader import load_locust_tests
 from httprunner.runner import Runner
+from locust import HttpLocust, TaskSet, task
+from locust.events import request_failure
 
 
 class WebPageTasks(TaskSet):
@@ -24,7 +24,7 @@ class WebPageTasks(TaskSet):
                     request_type=teststep.get("request", {}).get("method"),
                     name=teststep.get("name"),
                     response_time=0,
-                    exception=ex,
+                    exception=ex
                 )
                 break
             gevent.sleep(1)

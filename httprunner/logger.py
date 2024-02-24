@@ -1,13 +1,19 @@
-from colorama import init
+# encoding: utf-8
+
+import logging
+import sys
+
+from colorama import Fore, init
+from colorlog import ColoredFormatter
 
 init(autoreset=True)
 
 log_colors_config = {
-    "DEBUG": "cyan",
-    "INFO": "green",
-    "WARNING": "yellow",
-    "ERROR": "red",
-    "CRITICAL": "red",
+    'DEBUG':    'cyan',
+    'INFO':     'green',
+    'WARNING':  'yellow',
+    'ERROR':    'red',
+    'CRITICAL': 'red',
 }
 # logger = logging.getLogger("httprunner")
 
