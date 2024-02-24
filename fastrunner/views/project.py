@@ -7,7 +7,6 @@ from rest_framework.views import APIView
 from rest_framework.viewsets import GenericViewSet
 
 from FasterRunner import pagination
-from FasterRunner.auth import OnlyGetAuthenticator
 from fastrunner import models, serializers
 from fastrunner.dto.tree_dto import TreeOut, TreeUniqueIn, TreeUpdateIn
 from fastrunner.services.tree_service_impl import tree_service

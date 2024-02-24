@@ -48,7 +48,7 @@ class TreeService:
     ) -> StandResponse[Union[TreeOut, None]]:
         try:
             pk: int = self.curd.update_obj_by_pk(pk, None, payload.dict())
-        except Exception as e:
+        except Exception:
             err: str = traceback.format_exc()
             logger.warning(f"update tree {err=}")
             return StandResponse[None](code="9999", success=False, msg=err, data=None)

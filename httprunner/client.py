@@ -2,7 +2,6 @@
 
 import re
 
-import curlify
 import time
 import logging
 

@@ -7,7 +7,6 @@ import sys
 import logging
 
 # from httprunner.logger import color_print
-from httprunner import loader
 from locust.main import main
 
 logger = logging.getLogger('httprunner')

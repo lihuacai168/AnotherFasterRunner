@@ -1,4 +1,3 @@
-import datetime
 import logging
 
 from celery import shared_task, Task

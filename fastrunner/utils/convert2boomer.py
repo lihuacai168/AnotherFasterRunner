@@ -70,7 +70,7 @@ class Boomer(object):
             if k == 'master_port':
                 cmd += f'--master-port={v}'
             if k == 'disable-keepalive' and v:
-                cmd += f'--disable-keepalive 1'
+                cmd += '--disable-keepalive 1'
             if k == 'max_rps' and v is not None:
                 cmd += f'--max-rps={v}'
             if k == 'json_value_type':

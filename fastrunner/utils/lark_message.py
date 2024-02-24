@@ -10,10 +10,8 @@ import json
 
 # from loguru import logger
 
-from fastrunner import models
 from django.conf import settings
 
-from fastrunner.utils.loader import back_async
 
 import logging
 logger = logging.getLogger(__name__)

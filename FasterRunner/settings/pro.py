@@ -4,7 +4,6 @@
 from dotenv import load_dotenv, find_dotenv
 from os import environ
 from .base import *
-import os
 
 DEBUG = False
 

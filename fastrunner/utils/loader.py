@@ -20,7 +20,6 @@ import yaml
 from bs4 import BeautifulSoup
 # from loguru import logger
 from requests.cookies import RequestsCookieJar
-from requests_toolbelt import MultipartEncoder
 
 from FasterRunner.settings.base import BASE_DIR
 from fastrunner import models
@@ -264,7 +263,7 @@ def load_debugtalk(project):
         debugtalk = FileLoader.load_python_module(os.path.dirname(file_path))
         return debugtalk, file_path
 
-    except Exception as e:
+    except Exception:
         os.chdir(BASE_DIR)
         shutil.rmtree(os.path.dirname(file_path))
 

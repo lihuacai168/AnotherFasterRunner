@@ -83,7 +83,7 @@ def get_day_h(days: int = 0, **kwargs):
     """
     d = datetime.timedelta(days)
     n = datetime.datetime.now()
-    time_str = f"%Y%m%d"
+    time_str = "%Y%m%d"
     if kwargs:
         h = str(kwargs.get("h"))
         h = h.rjust(2, '0')

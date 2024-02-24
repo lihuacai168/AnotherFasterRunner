@@ -105,7 +105,7 @@ def _get_expression(item, expression, expect_value, jsonpath):
         parsed_expression = f"{item} {expression} {expect_value}"
 
     if parsed_expression is None:
-        raise AssertionError(f"list的元素只能是dict或者string")
+        raise AssertionError("list的元素只能是dict或者string")
 
     return parsed_expression
 

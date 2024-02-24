@@ -4,7 +4,6 @@ import argparse
 import multiprocessing
 import logging
 import sys
-import unittest
 
 # from httprunner import logger
 from httprunner.__about__ import __description__, __version__

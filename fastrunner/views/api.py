@@ -13,7 +13,7 @@ from fastrunner.utils.parser import Format, Parse
 from django.db import DataError
 from django.db.models import Q
 
-from rest_framework.schemas import AutoSchema, SchemaGenerator
+from rest_framework.schemas import AutoSchema
 import coreapi
 
 

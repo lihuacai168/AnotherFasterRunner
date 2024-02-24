@@ -96,7 +96,7 @@ class ExceptionMiddleware(MiddlewareMixin):
         ):
             try:
                 email_helper.send_mail(
-                    subject=f"测试平台异常告警",
+                    subject="测试平台异常告警",
                     html_message=self.build_html_message(
                         request=request, exception=exception
                     ),

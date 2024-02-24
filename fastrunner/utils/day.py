@@ -23,7 +23,7 @@ def get_day(days: int = 0, **kwargs):
     """
     d = datetime.timedelta(days)
     n = datetime.datetime.now()
-    time_str = f"%Y-%m-%d"
+    time_str = "%Y-%m-%d"
     if kwargs:
         h = kwargs.get("h", "00")
         m = kwargs.get("m", "00")

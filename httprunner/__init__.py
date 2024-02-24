@@ -7,4 +7,3 @@ try:
 except ImportError:
     pass
 
-from httprunner.api import HttpRunner

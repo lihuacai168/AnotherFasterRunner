@@ -1,10 +1,7 @@
 # encoding: utf-8
 
-import logging
-import sys
 
-from colorama import Fore, init
-from colorlog import ColoredFormatter
+from colorama import init
 
 init(autoreset=True)
 

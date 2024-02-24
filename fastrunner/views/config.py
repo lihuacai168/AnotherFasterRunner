@@ -9,7 +9,6 @@ from rest_framework.response import Response
 from fastrunner.utils import response
 from fastrunner.utils.decorator import request_log
 from fastrunner.utils.parser import Format
-from FasterRunner.auth import OnlyGetAuthenticator
 
 
 class ConfigView(GenericViewSet):

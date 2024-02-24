@@ -1,6 +1,5 @@
 import random
 
-import zmq
 from httprunner.exceptions import MyBaseError, MyBaseFailure
 from httprunner.loader import load_locust_tests
 from httprunner.runner import Runner
