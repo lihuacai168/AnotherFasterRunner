@@ -72,5 +72,5 @@ urlpatterns = [
     re_path(r"^swagger(?P<format>\.json|\.yaml)$", schema_view.without_ui(cache_timeout=0), name="schema-json"),
     path("swagger/", schema_view.with_ui("swagger", cache_timeout=0), name="schema-swagger-ui"),
     path("redoc/", schema_view.with_ui("redoc", cache_timeout=0), name="schema-redoc"),
-    path("mock/<str:project_id>/<str:path>/", MockAPIView.as_view()),
+    re_path(r'^mock/(?P<project_id>\w+)(?P<path>/.*)$', MockAPIView.as_view())
 ]

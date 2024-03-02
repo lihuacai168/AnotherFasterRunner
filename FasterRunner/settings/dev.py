@@ -6,6 +6,8 @@ from .base import *
 
 DEBUG = True
 
+# LOGGING["loggers"]["mock"]["level"] = "DEBUG"
+
 logger.remove()
 
 logger.add(
@@ -22,7 +24,7 @@ logger.add(
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.mysql",
-        "NAME": "fast_dev",  # 新建数据库
+        "NAME": "fast",  # 新建数据库
         # 'NAME': 'fast_mb4',  # 新建数据库名
         "HOST": "127.0.0.1",
         "USER": "root",  # 数据库登录名
@@ -39,7 +41,7 @@ DATABASES = {
 BROKER_URL = "amqp://username:password@localhost:5672//"
 # 需要先在RabbitMQ上创建fast_dev这个vhost
 
-broker_url = 'amqp://admin:111111@192.168.22.19:5672/fast_dev'
+broker_url = "amqp://admin:111111@192.168.22.19:5672/fast_dev"
 
 
 BASE_REPORT_URL = "http://localhost:8000/api/fastrunner/reports"

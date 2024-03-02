@@ -26,7 +26,6 @@ class MockAPISerializer(serializers.ModelSerializer):
             "api_id",
             "api_desc",
             "api_name",
-            "followers",
         ]
         read_only_fields = [
             "api_id",
