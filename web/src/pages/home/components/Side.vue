@@ -20,7 +20,7 @@
 
         <!--<el-menu-item-group>-->
         <el-menu-item v-for="item of side_menu" :index="item.url" :key="item.url"
-                      :disabled="$store.state.routerName === 'ProjectList'">
+                     :disabled="$store.state.routerName === 'ProjectList' || $route.path === '/fastrunner/project_list'">
             <span class="iconfont" v-html="item.code"></span>&nbsp;&nbsp;{{ item.name }}
         </el-menu-item>
         <!-- </el-menu-item-group>
@@ -46,7 +46,8 @@ export default {
                 {name: "全局变量", url: "GlobalEnv", code: "&#xe692;"},
                 {name: "驱动代码", url: "DebugTalk", code: "&#xe7ca;"},
                 {name: "定时任务", url: "Task", code: "&#xe61e;"},
-                {name: "历史报告", url: "Reports", code: "&#xe66e;"}
+                {name: "历史报告", url: "Reports", code: "&#xe66e;"},
+                {name: "Mock", url: "Reports", code: "&#xe66e;"}
             ],
         }
     },
