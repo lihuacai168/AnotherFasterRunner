@@ -1,5 +1,4 @@
 <template>
-
     <el-menu
         class="common-side-bar"
         :default-active="$store.state.routerName"
@@ -8,47 +7,42 @@
         active-text-color="#318DF1"
         @select="select"
     >
-        <el-menu-item index="ProjectList">
-            <i class="iconfont">&#xe631;</i>&nbsp;&nbsp;首 页
-        </el-menu-item>
-
-        <!-- <el-submenu index="ApiTest">
-             <template slot="title">
-                 <i class="el-icon-view"></i>
-                 <span slot="title">接口自动化</span>
-             </template>-->
-
-        <!--<el-menu-item-group>-->
-        <el-menu-item v-for="item of side_menu" :index="item.url" :key="item.url"
-                     :disabled="$store.state.routerName === 'ProjectList' || $route.path === '/fastrunner/project_list'">
-            <span class="iconfont" v-html="item.code"></span>&nbsp;&nbsp;{{ item.name }}
-        </el-menu-item>
-        <!-- </el-menu-item-group>
-     </el-submenu>-->
-        <!--  <el-menu-item index="Pressure" disabled>
-              &nbsp;<span class="iconfont">&#xe61f;</span>&nbsp;&nbsp;压力测试
-          </el-menu-item>-->
-
-
+        <sidebar-item
+            v-for="item in side_menu"
+            :key="item.url"
+            :item="item"
+        />
     </el-menu>
 </template>
 
 <script>
+import SidebarItem from "@/pages/home/components/SidebarItem.vue";
+
 export default {
     name: "Side",
+    components: {SidebarItem},
     data() {
         return {
             side_menu: [
-                {name: "项目概况", url: "ProjectDetail", code: "&#xe64a;"},
-                {name: "API 模板", url: "RecordApi", code: "&#xe74a;"},
-                {name: "测试用例", url: "AutoTest", code: "&#xe6da;"},
-                {name: "配置管理", url: "RecordConfig", code: "&#xee32;"},
-                {name: "全局变量", url: "GlobalEnv", code: "&#xe692;"},
-                {name: "驱动代码", url: "DebugTalk", code: "&#xe7ca;"},
-                {name: "定时任务", url: "Task", code: "&#xe61e;"},
-                {name: "历史报告", url: "Reports", code: "&#xe66e;"},
-                {name: "Mock", url: "Reports", code: "&#xe66e;"}
-            ],
+                {name: "首页", url: "ProjectList", icon: 'el-icon-s-home'},
+                {name: "项目概况", url: "ProjectDetail", icon: 'el-icon-s-cooperation'},
+                {name: "API 模板", url: "RecordApi", icon: 'el-icon-s-claim'},
+                {name: "测试用例", url: "AutoTest", icon: 'el-icon-s-operation'},
+                {name: "配置管理", url: "RecordConfig", icon: 'el-icon-s-tools'},
+                {name: "全局变量", url: "GlobalEnv", icon: 'el-icon-s-custom'},
+                {name: "驱动代码", url: "DebugTalk", icon: 'el-icon-s-platform'},
+                {name: "定时任务", url: "Task", icon: 'el-icon-timer'},
+                {name: "历史报告", url: "Reports", icon: 'el-icon-s-data'},
+                {
+                    name: "Mock",
+                    url: "MockServer",
+                    icon: 'el-icon-s-help',
+                    children: [ // 子菜单项
+                        {name: "Mock 项目", url: "MockProject", icon: 'el-icon-folder-opened'},
+                        {name: "Mock APIs", url: "MockAPIs", icon: 'el-icon-document-copy'}
+                    ]
+                }
+            ]
         }
     },
     methods: {
@@ -64,7 +58,7 @@ export default {
         }
     },
     mounted() {
-        if(this.$store.state.show_hosts){
+        if (this.$store.state.show_hosts) {
             this.side_menu.splice(5, 0, {name: "Hosts管理", url: "HostIP", code: "&#xe609;"})
         }
     }

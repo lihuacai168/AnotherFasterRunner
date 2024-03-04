@@ -13,6 +13,9 @@ import ReportList from '@/pages/reports/ReportList'
 import RecordConfig from '@/pages/fastrunner/config/RecordConfig'
 import Tasks from '@/pages/task/Tasks'
 import HostAddress from '@/pages/variables/HostAddress'
+import MockProject from "@/pages/mock_server/mock_project/index.vue";
+import CommonLayout from "@/pages/common/layout/CommonLayout.vue";
+
 
 Vue.use(Router);
 
@@ -32,7 +35,7 @@ export default new Router({
             path: '/',
             name: 'HomeRedirect',
             redirect: '/fastrunner/login'
-        },{
+        }, {
 
             path: '/fastrunner/login',
             name: 'Login',
@@ -137,7 +140,6 @@ export default new Router({
                         title: '定时任务',
                         requireAuth: true
                     }
-
                 },
                 {
                     name: 'HostIP',
@@ -147,7 +149,35 @@ export default new Router({
                         title: 'HOST配置',
                         requireAuth: true
                     }
-
+                },
+                {
+                    name: 'MockServer',
+                    path: '/mock_server',
+                    component: CommonLayout,
+                    meta: {
+                        title: 'MockServer',
+                        requireAuth: true
+                    },
+                    children: [
+                        {
+                            name: 'MockProject',
+                            path: 'mock_project/:id',
+                            component: MockProject,
+                            meta: {
+                                title: 'Mock Project',
+                                requireAuth: true
+                            }
+                        },
+                        {
+                            name: 'MockAPIs',
+                            path: 'mock_apis/:id',
+                            component: MockProject,
+                            meta: {
+                                title: 'Mock APIs',
+                                requireAuth: true
+                            }
+                        }
+                    ]
                 }
             ]
         },

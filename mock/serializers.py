@@ -26,13 +26,32 @@ class MockAPISerializer(serializers.ModelSerializer):
             "api_id",
             "api_desc",
             "api_name",
+            "creator",
+            "updater",
+            "create_time",
+            "update_time",
         ]
         read_only_fields = [
             "api_id",
+            "creator",
+            "updater",
+            "create_time",
+            "update_time",
         ]
 
 
 class MockProjectSerializer(serializers.ModelSerializer):
     class Meta:
         model = MockProject
-        fields = ["project_id", "project_name", "project_desc", "is_active"]
+        fields = [
+            "id",
+            "project_id",
+            "project_name",
+            "project_desc",
+            "is_active",
+            "creator",
+            "updater",
+            "create_time",
+            "update_time",
+        ]
+        read_only_fields = ["id", "creator", "updater", "create_time", "update_time", "project_id"]

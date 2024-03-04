@@ -407,3 +407,22 @@ export const getAllHost = url => {
     return axios.get('/api/fastrunner/host_ip/' + url + '/').then(res => res.data)
 };
 
+// create mock project, /api/mock/mock_project/'
+export const createMockProject = data => {
+    return axios.post('/api/mock/mock_project/', data).then(res => res.data)
+};
+
+// get mock project list
+export const getMockProject = params => {
+    return axios.get('/api/mock/mock_project/', params).then(res => res.data)
+};
+
+
+// updateMockProject
+export const updateMockProject = (project_id, data) => {
+    return axios.patch(`/api/mock/mock_project/${project_id}/`, data).then(res => res.data)
+};
+// deleteMockProject
+export const deleteMockProject = project_id => {
+    return axios.delete(`/api/mock/mock_project/${project_id}/`).then(res => res.data)
+};

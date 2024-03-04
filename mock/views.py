@@ -4,11 +4,15 @@ import traceback
 import types
 import uuid
 
+from django_filters import rest_framework as filters
+from django_filters.rest_framework import DjangoFilterBackend
+from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status, viewsets
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from FasterRunner.customer_swagger import CustomSwaggerAutoSchema
 from .models import MockAPI, MockAPILog, MockProject
 from .serializers import MockAPISerializer, MockProjectSerializer
 
@@ -32,6 +36,8 @@ def execute(req, resp):
 
 
 class MockAPIViewset(viewsets.ModelViewSet):
+    swagger_tag = '项目下的Mock API CRUD'
+    swagger_schema = CustomSwaggerAutoSchema
     queryset = MockAPI.objects.all()
     serializer_class = MockAPISerializer
     authentication_classes = []
@@ -104,7 +110,7 @@ def process(path, project_id, request: Request):
             "mock_server_full_path": request.get_full_path(),
             "body": request.data,
             "headers": request.headers._store,
-            "query_params": request.query_params
+            "query_params": request.query_params,
         }
         logger.debug(f"request_obj: {json.dumps(request_obj, indent=4)}")
         mock_api = MockAPI.objects.get(
@@ -151,15 +157,19 @@ def process(path, project_id, request: Request):
 class MockAPIView(APIView):
     authentication_classes = []
 
+    @swagger_auto_schema(tags=["外部调用的mockapi"])
     def get(self, request: Request, project_id: str, path: str) -> Response:
         return self.process_request(path, project_id, request)
 
+    @swagger_auto_schema(tags=["外部调用的mockapi"])
     def post(self, request: Request, project_id: str, path: str) -> Response:
         return self.process_request(path, project_id, request)
 
+    @swagger_auto_schema(tags=["外部调用的mockapi"])
     def put(self, request: Request, project_id: str, path: str) -> Response:
         return self.process_request(path, project_id, request)
 
+    @swagger_auto_schema(tags=["外部调用的mockapi"])
     def delete(self, request: Request, project_id: str, path: str) -> Response:
         return self.process_request(path, project_id, request)
 
@@ -167,12 +177,27 @@ class MockAPIView(APIView):
         return process(path, project_id, request)
 
 
+class MockProjectFilter(filters.FilterSet):
+    project_name = filters.CharFilter(lookup_expr="icontains")
+    project_desc = filters.CharFilter(lookup_expr="icontains")
+    creator = filters.CharFilter(lookup_expr="exact")
+    # page = filters.CharFilter(lookup_expr="page")
+
+    class Meta:
+        model = MockProject
+        fields = ["project_name", "project_desc", "creator"]
+
+
 class MockProjectViewSet(viewsets.ModelViewSet):
+    swagger_tag = 'Mock Project CRUD'
+    swagger_schema = CustomSwaggerAutoSchema
     queryset = MockProject.objects.all()
     serializer_class = MockProjectSerializer
     authentication_classes = []
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = MockProjectFilter
 
-    def create(self, request):
+    def create(self, request, *args, **kwargs):
         data = request.data.copy()
         data["project_id"] = str(uuid.uuid4().hex)
         serializer = MockProjectSerializer(data=data)
