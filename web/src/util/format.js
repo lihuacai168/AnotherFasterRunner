@@ -1,21 +1,18 @@
-export const datetimeObj2str = function (time, format = 'YY-MM-DD hh:mm:ss') {
+export const datetimeObj2str = function (time, format = 'YYYY-MM-DD hh:mm:ss') {
     let date = new Date(time);
     let year = date.getFullYear(),
-        month = date.getMonth() + 1,
-        day = date.getDate(),
-        hour = date.getHours(),
-        min = date.getMinutes(),
-        sec = date.getSeconds();
-    let preArr = Array.apply(null, Array(10)).map(function (elem, index) {
-        return '0' + index;
-    });
+        month = (date.getMonth() + 1).toString().padStart(2, '0'),
+        day = date.getDate().toString().padStart(2, '0'),
+        hour = date.getHours().toString().padStart(2, '0'),
+        min = date.getMinutes().toString().padStart(2, '0'),
+        sec = date.getSeconds().toString().padStart(2, '0');
 
-    let newTime = format.replace(/YY/g, year)
-        .replace(/MM/g, preArr[month] || month)
-        .replace(/DD/g, preArr[day] || day)
-        .replace(/hh/g, preArr[hour] || hour)
-        .replace(/mm/g, preArr[min] || min)
-        .replace(/ss/g, preArr[sec] || sec);
+    let newTime = format.replace(/YYYY/g, year)
+        .replace(/MM/g, month)
+        .replace(/DD/g, day)
+        .replace(/hh/g, hour)
+        .replace(/mm/g, min)
+        .replace(/ss/g, sec);
 
     return newTime;
 }

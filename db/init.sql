@@ -15,9 +15,88 @@
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
+DROP TABLE IF EXISTS `mock_api_log`;
+create table mock_api_log
+(
+    request_obj  longtext collate utf8mb4_bin not null
+        check (json_valid(`request_obj`)),
+    response_obj longtext collate utf8mb4_bin null
+        check (json_valid(`response_obj`)),
+    api_id       varchar(32)                  not null,
+    project_id   varchar(100)                 null,
+    request_id   varchar(100)                 null,
+    id           bigint auto_increment
+        primary key,
+    create_time  datetime(6)                  not null,
+    update_time  datetime(6)                  not null,
+    creator      varchar(20)                  null,
+    updater      varchar(20)                  null
+);
+
+create index mock_api_log_api_id_d69785e2
+    on mock_api_log (api_id);
+
+create index mock_api_log_project_id_e3b47bfd
+    on mock_api_log (project_id);
+
+create index mock_api_log_request_id_86906b7c
+    on mock_api_log (request_id);
+
+DROP TABLE IF EXISTS `mock_api_tab`;
+
+create table mock_api_tab
+(
+    id             bigint auto_increment
+        primary key,
+    request_path   varchar(100)                                       not null,
+    request_method varchar(10)                                        not null,
+    request_body   longtext collate utf8mb4_bin default json_object() null,
+    response_text  longtext                                           not null,
+    is_active      tinyint(1)                                         not null,
+    project_id     varchar(100)                                       null,
+    api_desc       varchar(100)                                       null,
+    api_id         varchar(32)                                        not null,
+    api_name       varchar(100)                                       null,
+    enabled        tinyint(1)                                         not null,
+    create_time    datetime(6)                                        not null,
+    update_time    datetime(6)                                        not null,
+    creator        varchar(20)                                        null,
+    updater        varchar(20)                                        null,
+    constraint api_id
+        unique (api_id),
+    constraint mock_api_tab_project_id_request_path__eeea3f07_uniq
+        unique (project_id, request_path, request_method)
+);
+
+create index mock_api_tab_project_id_9b708a91
+    on mock_api_tab (project_id);
+
+DROP TABLE IF EXISTS `mock_project_tab`;
+
+create table mock_project_tab
+(
+    id           bigint auto_increment
+        primary key,
+    project_id   varchar(100) not null,
+    project_name varchar(100) not null,
+    project_desc varchar(100) not null,
+    is_active    tinyint(1)   not null,
+    create_time  datetime(6)  not null,
+    update_time  datetime(6)  not null,
+    creator      varchar(20)  null,
+    updater      varchar(20)  null,
+    constraint mock_project_tab_project_id_446f3335_uniq
+        unique (project_id),
+    constraint project_id
+        unique (project_id)
+);
+
+
+
 --
 -- Table structure for table `api`
 --
+
 
 DROP TABLE IF EXISTS `api`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;

@@ -56,6 +56,7 @@ INSTALLED_APPS = [
     "drf_yasg",
     "system",
     "django_auth_ldap",
+    "mock",
 ]
 
 MIDDLEWARE = [
@@ -310,6 +311,11 @@ LOGGING = {
             "propagate": True,
         },
         "fastuser": {
+            "handlers": ["default", "console", "error", "db"],
+            "level": "INFO",
+            "propagate": True,
+        },
+        "mock": {
             "handlers": ["default", "console", "error", "db"],
             "level": "INFO",
             "propagate": True,
