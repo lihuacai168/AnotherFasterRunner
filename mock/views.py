@@ -35,13 +35,23 @@ def execute(req, resp):
     resp.data = response.json()
 
 
+class MockAPIFilter(filters.FilterSet):
+    project_name = filters.CharFilter(field_name='project__project_name', lookup_expr='icontains')
+    api_name = filters.CharFilter(lookup_expr="icontains")
+    request_path = filters.CharFilter(lookup_expr="icontains")
+    creator = filters.CharFilter(lookup_expr="exact")
+
+    class Meta:
+        model = MockAPI
+        fields = ["project__project_name", "api_name", "creator", "request_path"]
+
 class MockAPIViewset(viewsets.ModelViewSet):
     swagger_tag = '项目下的Mock API CRUD'
     swagger_schema = CustomSwaggerAutoSchema
     queryset = MockAPI.objects.all()
     serializer_class = MockAPISerializer
-    authentication_classes = []
-
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = MockAPIFilter
 
 class RequestObject:
     def __init__(self, request):
@@ -181,7 +191,6 @@ class MockProjectFilter(filters.FilterSet):
     project_name = filters.CharFilter(lookup_expr="icontains")
     project_desc = filters.CharFilter(lookup_expr="icontains")
     creator = filters.CharFilter(lookup_expr="exact")
-    # page = filters.CharFilter(lookup_expr="page")
 
     class Meta:
         model = MockProject
@@ -193,7 +202,6 @@ class MockProjectViewSet(viewsets.ModelViewSet):
     swagger_schema = CustomSwaggerAutoSchema
     queryset = MockProject.objects.all()
     serializer_class = MockProjectSerializer
-    authentication_classes = []
     filter_backends = [DjangoFilterBackend]
     filterset_class = MockProjectFilter
 

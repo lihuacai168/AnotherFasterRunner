@@ -10,6 +10,9 @@
     "build": "node build/build.js"
   },
   "dependencies": {
+    "@babel/runtime": "^7.24.0",
+    "@femessage/el-data-table": "^1.23.2",
+    "@femessage/el-form-renderer": "^1.24.0",
     "ajv": "^6.12.6",
     "apexcharts": "^3.27.3",
     "axios": "^0.18.0",

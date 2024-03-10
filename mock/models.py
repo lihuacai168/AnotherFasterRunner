@@ -54,13 +54,14 @@ class MockAPI(BaseTable):
     )
     request_path = models.CharField(max_length=100)
     request_method = models.CharField(max_length=10, choices=METHOD_CHOICES, default="POST")
+    request_body = models.JSONField(default=dict, blank=True, null=True)
     response_text = models.TextField(default=resp_text)
     is_active = models.BooleanField(default=True)
 
     api_name = models.CharField(max_length=100, null=True, blank=True)
     api_desc = models.CharField(max_length=100, null=True, blank=True)
     # uuid hex
-    api_id = models.CharField(max_length=32, default=uuid.uuid4().hex, unique=True)
+    api_id = models.CharField(max_length=32, default=lambda: uuid.uuid4().hex, unique=True)
     enabled = models.BooleanField(default=True)
 
     # TODO 改成many to many

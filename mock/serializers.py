@@ -17,10 +17,12 @@ class MockAPISerializer(serializers.ModelSerializer):
     class Meta:
         model = MockAPI
         fields = [
+            "id",
             "project",
             "project_name",
             "request_path",
             "request_method",
+            "request_body",
             "response_text",
             "is_active",
             "api_id",
@@ -32,6 +34,7 @@ class MockAPISerializer(serializers.ModelSerializer):
             "update_time",
         ]
         read_only_fields = [
+            "id",
             "api_id",
             "creator",
             "updater",
