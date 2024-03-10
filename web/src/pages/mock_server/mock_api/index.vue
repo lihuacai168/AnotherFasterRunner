@@ -335,7 +335,7 @@ def execute(req, resp):
             if (domain === "localhost"){
                 domain = domain + ":8000"
             }
-            this.fullDomain = domain
+            this.fullDomain =  window.location.protocol + '//' + domain
 
         },
         copyData(title, content) {
