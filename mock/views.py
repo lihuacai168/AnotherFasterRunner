@@ -204,12 +204,3 @@ class MockProjectViewSet(viewsets.ModelViewSet):
     serializer_class = MockProjectSerializer
     filter_backends = [DjangoFilterBackend]
     filterset_class = MockProjectFilter
-
-    def create(self, request, *args, **kwargs):
-        data = request.data.copy()
-        data["project_id"] = str(uuid.uuid4().hex)
-        serializer = MockProjectSerializer(data=data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
