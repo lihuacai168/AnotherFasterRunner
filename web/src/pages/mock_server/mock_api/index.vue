@@ -48,7 +48,7 @@
                                 <el-input v-model="row.request_path" placeholder="请输入请求路径">
                                     {{fullDomain}}}
                                     <template slot="prepend">{{fullDomain}}/mock/{{ row.project }}</template>
-                                    <el-button slot="append" type="success">Debug</el-button>
+<!--                                    <el-button slot="append" type="success">Debug</el-button>-->
                                 </el-input>
                             </el-form-item>
                         </el-col>
