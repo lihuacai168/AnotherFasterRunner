@@ -6,7 +6,7 @@ from fastuser.models import BaseTable
 
 
 class MockProject(BaseTable):
-    project_id = models.CharField(max_length=100, unique=True)
+    project_id = models.CharField(max_length=100, unique=True, default=lambda: uuid.uuid4().hex)
     project_name = models.CharField(max_length=100)
     project_desc = models.CharField(max_length=100)
     is_active = models.BooleanField(default=True)
@@ -88,7 +88,7 @@ class MockAPILog(BaseTable):
     )
     request_obj = models.JSONField(default=dict, blank=True)
     response_obj = models.JSONField(default=dict, null=True, blank=True)
-    request_id = models.CharField(max_length=100, default=uuid.uuid4().hex, db_index=True, null=True, blank=True)
+    request_id = models.CharField(max_length=100, default=lambda: uuid.uuid4().hex, db_index=True, null=True, blank=True)
 
     class Meta:
         verbose_name = "mock api log表"
