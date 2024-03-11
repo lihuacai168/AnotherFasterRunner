@@ -58,7 +58,7 @@ class MockAPI(BaseTable):
     response_text = models.TextField(default=resp_text)
     is_active = models.BooleanField(default=True)
 
-    api_name = models.CharField(max_length=100, null=True, blank=True)
+    api_name = models.CharField(max_length=100)
     api_desc = models.CharField(max_length=100, null=True, blank=True)
     # uuid hex
     api_id = models.CharField(max_length=32, default=lambda: uuid.uuid4().hex, unique=True)

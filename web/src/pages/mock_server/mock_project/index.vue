@@ -73,6 +73,28 @@ export default {
                     },
 
                 ],
+                onEdit: (data, row) => {
+                    return this.$axios.put(
+                        `${this.tableConfig.url}/${data.id}`,
+                        data
+                    ).catch(error => {
+                        if (error.response) {
+                            this.$message.error(`接口返回错误：${JSON.stringify(error.response.data)}`);
+                        }
+                        throw error;
+                    });
+                },
+                onNew: (data, row) => {
+                    return this.$axios.post(
+                        `${this.tableConfig.url}/`,
+                        data
+                    ).catch(error => {
+                        if (error.response) {
+                            this.$message.error(`接口返回错误：${JSON.stringify(error.response.data)}`);
+                        }
+                        throw error;
+                    });
+                },
             }
         }
     }
