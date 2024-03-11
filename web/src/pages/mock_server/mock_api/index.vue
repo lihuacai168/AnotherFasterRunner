@@ -301,19 +301,29 @@ def execute(req, resp):
                         edit: '编辑',
                         delete: '删除',
                     }[type]
-                    this.$message.success(`${oper} ${data.api_name} 成功`)
+                    this.$message.success(`${oper}成功`)
                 },
                 onEdit: (data, row) => {
                     return this.$axios.put(
                         `${this.tableConfig.url}/${data.id}`,
                         row
-                    )
+                    ).catch(error => {
+                        if (error.response) {
+                            this.$message.error(`接口返回错误：${JSON.stringify(error.response.data)}`);
+                        }
+                        throw error;
+                    });
                 },
                 onNew: (data, row) => {
                     return this.$axios.post(
                         `${this.tableConfig.url}/`,
                         this.form
-                    )
+                    ).catch(error => {
+                        if (error.response) {
+                            this.$message.error(`接口返回错误：${JSON.stringify(error.response.data)}`);
+                        }
+                        throw error;
+                    });
                 },
             }
         }
@@ -330,12 +340,25 @@ def execute(req, resp):
         }
     },
     methods: {
+        submitForm(formName) {
+            this.$refs[formName].validate((valid) => {
+                if (valid) {
+                    this.$message('submit!');
+                } else {
+                    console.log('error submit!!');
+                    return false;
+                }
+            });
+        },
+        resetForm(formName) {
+            this.$refs[formName].resetFields();
+        },
         setFullDomain() {
             let domain = window.location.hostname;
-            if (domain === "localhost"){
+            if (domain === "localhost") {
                 domain = domain + ":8000"
             }
-            this.fullDomain =  window.location.protocol + '//' + domain
+            this.fullDomain = window.location.protocol + '//' + domain
 
         },
         copyData(title, content) {
