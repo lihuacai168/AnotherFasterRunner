@@ -53,6 +53,37 @@ class MockAPIViewset(viewsets.ModelViewSet):
     filter_backends = [DjangoFilterBackend]
     filterset_class = MockAPIFilter
 
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+
+        # 获取传入的版本号
+        incoming_version = request.data.get('version')
+
+        # 如果数据库中的版本号比传入的版本号更大，阻止更新并返回错误
+        if incoming_version is not None and instance.version > int(incoming_version):
+            return Response({
+                'status': 'error',
+                'message': 'There is a newer version of this API already saved.'
+            }, status=status.HTTP_409_CONFLICT)
+
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+
+        # 序列化器保存了实例，但我们还没有更新版本号
+        self.perform_update(serializer)
+
+        # 保存成功后，递增版本号并更新实例
+        instance.version += 1
+        instance.save(update_fields=['version'])  # 只更新版本字段
+
+        if getattr(instance, '_prefetched_objects_cache', None):
+            # If 'prefetch_related' has been applied to a queryset, we need to
+            # forcibly invalidate the prefetch cache on the instance.
+            instance._prefetched_objects_cache = {}
+
+        return Response(serializer.data)
+
 class RequestObject:
     def __init__(self, request):
         self.method: str = request.method

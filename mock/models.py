@@ -64,6 +64,9 @@ class MockAPI(BaseTable):
     api_id = models.CharField(max_length=32, default=lambda: uuid.uuid4().hex, unique=True)
     enabled = models.BooleanField(default=True)
 
+    # 添加version字段用于乐观锁控制
+    version = models.IntegerField(default=1)  # 新增版本字段，默认值为1
+
     # TODO 改成many to many
     # followers: list = models.JSONField(null=True, blank=True, default=[], verbose_name="关注者")
 

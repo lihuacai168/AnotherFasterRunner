@@ -259,6 +259,7 @@ def execute(req, resp):
 
                 ],
                 paginationSize: 10,
+                operationButtonType: 'button',
                 searchForm: [
                     {
                         type: 'input',
