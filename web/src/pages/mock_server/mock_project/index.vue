@@ -10,6 +10,7 @@ export default {
                 dataPath: "results",
                 totalPath: "count",
                 paginationSize: 10,
+                operationButtonType: 'button',
                 canDelete: () => false,
                 form: [
                     {

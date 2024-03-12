@@ -25,6 +25,7 @@ class MockAPISerializer(serializers.ModelSerializer):
             "request_method",
             "request_body",
             "response_text",
+            "version",
             "is_active",
             "api_id",
             "api_desc",
