@@ -1,0 +1,38 @@
+name: Python application test with pytest and coverage
+on:
+  workflow_dispatch:
+  pull_request:
+    types: [opened, synchronize]
+    paths:
+      - '**.py'
+      - 'requirements.txt'
+      - '!./web/**'
+      - 'Dockerfile'
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Check out code
+        uses: actions/checkout@v2
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.11
+
+      - name: Install poetry
+        run: |
+          curl -sSL https://install.python-poetry.org | python3 -
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          poetry install
+
+      - name: Test with pytest and coverage
+        run: |
+          pytest tests/ --cov=tests/
+      - name: Upload coverage to Codecove
+        uses: codecov/codecov-action@v2
+        with:
+          fail_ci_if_error: true

@@ -1,12 +1,15 @@
 import uuid
 
 from django.db import models
-
 from fastuser.models import BaseTable
 
 
+def generate_uuid():
+    return uuid.uuid4().hex
+
+
 class MockProject(BaseTable):
-    project_id = models.CharField(max_length=100, unique=True, default=lambda: uuid.uuid4().hex)
+    project_id = models.CharField(max_length=100, unique=True, default=generate_uuid)
     project_name = models.CharField(max_length=100)
     project_desc = models.CharField(max_length=100)
     is_active = models.BooleanField(default=True)
@@ -53,7 +56,9 @@ class MockAPI(BaseTable):
         related_name="mock_apis",
     )
     request_path = models.CharField(max_length=100)
-    request_method = models.CharField(max_length=10, choices=METHOD_CHOICES, default="POST")
+    request_method = models.CharField(
+        max_length=10, choices=METHOD_CHOICES, default="POST"
+    )
     request_body = models.JSONField(default=dict, blank=True, null=True)
     response_text = models.TextField(default=resp_text)
     is_active = models.BooleanField(default=True)
@@ -61,7 +66,7 @@ class MockAPI(BaseTable):
     api_name = models.CharField(max_length=100)
     api_desc = models.CharField(max_length=100, null=True, blank=True)
     # uuid hex
-    api_id = models.CharField(max_length=32, default=lambda: uuid.uuid4().hex, unique=True)
+    api_id = models.CharField(max_length=32, default=generate_uuid, unique=True)
     enabled = models.BooleanField(default=True)
 
     # 添加version字段用于乐观锁控制
@@ -78,8 +83,13 @@ class MockAPI(BaseTable):
 
 
 class MockAPILog(BaseTable):
-    api = models.ForeignKey(MockAPI, on_delete=models.DO_NOTHING, db_constraint=False, to_field='api_id',
-                            related_name="logs")
+    api = models.ForeignKey(
+        MockAPI,
+        on_delete=models.DO_NOTHING,
+        db_constraint=False,
+        to_field="api_id",
+        related_name="logs",
+    )
     project = models.ForeignKey(
         MockProject,
         on_delete=models.DO_NOTHING,
@@ -91,7 +101,9 @@ class MockAPILog(BaseTable):
     )
     request_obj = models.JSONField(default=dict, blank=True)
     response_obj = models.JSONField(default=dict, null=True, blank=True)
-    request_id = models.CharField(max_length=100, default=lambda: uuid.uuid4().hex, db_index=True, null=True, blank=True)
+    request_id = models.CharField(
+        max_length=100, default=generate_uuid, db_index=True, null=True, blank=True
+    )
 
     class Meta:
         verbose_name = "mock api log表"

@@ -132,7 +132,7 @@ class LoginView(APIView):
                 logger.info(f"Authentication failed for {username=}")
                 return Response(response.LOGIN_FAILED)
         else:
-            return Response(serializer.errors)
+            return Response(serializer.errors, status=400)
 
 
 class UserView(APIView):
