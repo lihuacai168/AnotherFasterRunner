@@ -1,0 +1,82 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+  
+      {
+        "name": "Django debug",
+        "type": "debugpy",
+        "request": "launch",
+        "program": "${workspaceFolder}/manage.py",
+        "args": [
+          "runserver",
+          "--settings=FasterRunner.settings.dev"
+        ],
+        "django": true,
+        "justMyCode": true
+      },
+      {
+        "name": "Python: Current File",
+        "type": "debugpy",
+        "request": "launch",
+        "program": "${file}",
+        "console": "integratedTerminal",
+        "cwd": "${fileDirname}",
+        "env": {
+          "PYTHONPATH": "${workspaceFolder}${pathSeparator}${env:PYTHONPATH}"
+        }
+      },
+      {
+        "type": "node-terminal",
+        "name": "npm dev",
+        "request": "launch",
+        "command": "npm run dev",
+        "cwd": "${workspaceFolder}/web"
+      },
+      {
+        "type": "node-terminal",
+        "name": "npm build",
+        "request": "launch",
+        "command": "npm run build",
+        "cwd": "${workspaceFolder}/web"
+      },
+      {
+        "name": "Celery worker",
+        "type": "debugpy",
+        "module": "celery",
+        "request": "launch",
+        "args": [
+          "-A",
+          "FasterRunner.mycelery",
+          "worker",
+          "-l",
+          "info",
+          "-P",
+          "gevent"
+        ],
+        "env": {
+          "DJANGO_SETTINGS_MODULE": "FasterRunner.settings.dev",
+          "GEVENT_SUPPORT": "True"
+        },
+        "console": "integratedTerminal",
+        "justMyCode": true
+      },
+      {
+        "name": "Celery Beat",
+        "type": "debugpy",
+        "module": "celery",
+        "request": "launch",
+        "args": [
+          "-A",
+          "FasterRunner.mycelery",
+          "beat",
+          "-l",
+          "info",
+        ],
+        "env": {
+          "DJANGO_SETTINGS_MODULE": "FasterRunner.settings.dev"
+        },
+        "console": "integratedTerminal",
+        "justMyCode": true
+      }
+    ]
+  }
