@@ -57,6 +57,7 @@ create table mock_api_tab
     api_desc       varchar(100)                                       null,
     api_id         varchar(32)                                        not null,
     api_name       varchar(100)                                       null,
+    version        int                          default 1             null,
     enabled        tinyint(1)                                         not null,
     create_time    datetime(6)                                        not null,
     update_time    datetime(6)                                        not null,

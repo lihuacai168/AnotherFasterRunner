@@ -89,11 +89,18 @@ class RequestObject:
         self.method: str = request.method
         self.headers: dict = request.headers
         self.raw_body: bytes = request.body
-        # 将字节对象解码为字符串，然后使用 json.loads() 方法将其转换为字典
-        decoded_data = self.raw_body.decode("utf-8")
-        try:
-            self.body: dict = json.loads(decoded_data)
-        except Exception as e:
+        # body是json类型时
+        if request.content_type == "application/json":
+            # 将字节对象解码为字符串，然后使用 json.loads() 方法将其转换为字典
+            decoded_data = self.raw_body.decode("utf-8")
+            try:
+                self.body: dict = json.loads(decoded_data)
+            except Exception as e:
+                self.body = {}
+        elif request.content_type == "application/x-www-form-urlencoded":
+            # body是表单类型时
+            self.body: dict = request.data
+        else:
             self.body = {}
         self.query_params: dict = request.query_params
         self.path: str = request._request.path
@@ -153,7 +160,7 @@ def process(path, project_id, request: Request):
             "headers": request.headers._store,
             "query_params": request.query_params,
         }
-        logger.debug(f"request_obj: {json.dumps(request_obj, indent=4)}")
+        logger.info(f"request_obj: {json.dumps(request_obj, indent=4)}")
         mock_api = MockAPI.objects.get(
             project__project_id=project_id,
             request_path=path,
@@ -167,7 +174,7 @@ def process(path, project_id, request: Request):
             api_id=mock_api.api_id,
             project_id=mock_api.project,
         )
-        logger.debug(f"mock_api response_text\n{mock_api.response_text}")
+        logger.info(f"mock_api response_text\n{mock_api.response_text}")
         response = load_and_execute(
             "mock_api_module", mock_api.response_text, "execute", request
         )
@@ -177,7 +184,7 @@ def process(path, project_id, request: Request):
             "body": response.data,
             "headers": response.headers._store,
         }
-        logger.debug(f"response_obj: {json.dumps(response_obj, indent=4)}")
+        logger.info(f"response_obj: {json.dumps(response_obj, indent=4)}", exc_info=True)
         log_obj.response_obj = response_obj
         log_obj.save()
         if response is not None:
