@@ -174,7 +174,6 @@ def process(path, project_id, request: Request):
             api_id=mock_api.api_id,
             project_id=mock_api.project,
         )
-        logger.info(f"mock_api response_text\n{mock_api.response_text}")
         response = load_and_execute(
             "mock_api_module", mock_api.response_text, "execute", request
         )
