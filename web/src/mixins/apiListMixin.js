@@ -5,7 +5,7 @@ export default {
       this.$nextTick(() => {
         const defaultParams = {
           page: this.listCurrentPage || 1, // 提供默认值
-          node: this.node || this.currentNode, // 支持不同的命名
+          node: this.currentNode || this.node, // 支持不同的命名
           project: this.project,
           search: this.search,
           tag: this.visibleTag || this.tag,
