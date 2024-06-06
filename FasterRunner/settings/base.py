@@ -55,7 +55,7 @@ INSTALLED_APPS = [
     "rest_framework_swagger",
     "drf_yasg",
     "system",
-    "django_auth_ldap",
+    # "django_auth_ldap",
     "mock",
 ]
 
@@ -344,32 +344,35 @@ EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER")  # 配置邮箱
 EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD")  # 对应的授权码
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
-
-# LDAP配置
-import ldap
-from django_auth_ldap.config import LDAPSearch
-
 USE_LDAP = False  # 如果需要开启LDAP认证，就设置位True
 
-if USE_LDAP:
-    AUTHENTICATION_BACKENDS = ("django_auth_ldap.backend.LDAPBackend",)
+# LDAP配置
+try:
+    import ldap
+    from django_auth_ldap.config import LDAPSearch
+except (ModuleNotFoundError, NameError):
+    pass
+else:
 
-AUTH_LDAP_SERVER_URI = "ldap://localhost:389"  # LDAP服务器地址，默认端口389
+    if USE_LDAP:
+        AUTHENTICATION_BACKENDS = ("django_auth_ldap.backend.LDAPBackend",)
 
-AUTH_LDAP_BIND_DN = "cn=admin,dc=myorg,dc=com"  # LDAP管理员账号
-AUTH_LDAP_BIND_PASSWORD = "admin"  # LDAP管理员密码
-AUTH_LDAP_USER_SEARCH = LDAPSearch(
-    "ou=Tester,dc=myorg,dc=com",
-    ldap.SCOPE_SUBTREE,
-    "(uid=%(user)s)",
-)  # LDAP搜索账号，ou可以理解为组织单位或者部门，不填写也是ok，dc可以理解为域名
+    AUTH_LDAP_SERVER_URI = "ldap://localhost:389"  # LDAP服务器地址，默认端口389
 
-AUTH_LDAP_USER_ATTR_MAP = {
-    "username": "uid",
-    "first_name": "givenName",
-    "last_name": "sn",
-    "email": "mail",
-}
+    AUTH_LDAP_BIND_DN = "cn=admin,dc=myorg,dc=com"  # LDAP管理员账号
+    AUTH_LDAP_BIND_PASSWORD = "admin"  # LDAP管理员密码
+    AUTH_LDAP_USER_SEARCH = LDAPSearch(
+        "ou=Tester,dc=myorg,dc=com",
+        ldap.SCOPE_SUBTREE,
+        "(uid=%(user)s)",
+    )  # LDAP搜索账号，ou可以理解为组织单位或者部门，不填写也是ok，dc可以理解为域名
+
+    AUTH_LDAP_USER_ATTR_MAP = {
+        "username": "uid",
+        "first_name": "givenName",
+        "last_name": "sn",
+        "email": "mail",
+    }
 
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
