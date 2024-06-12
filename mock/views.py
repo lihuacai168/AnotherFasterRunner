@@ -11,6 +11,7 @@ from rest_framework import status, viewsets
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from django.conf import settings
 
 from FasterRunner.customer_swagger import CustomSwaggerAutoSchema
 from .models import MockAPI, MockAPILog, MockProject
@@ -44,6 +45,7 @@ class MockAPIFilter(filters.FilterSet):
     class Meta:
         model = MockAPI
         fields = ["project__project_name", "api_name", "creator", "request_path"]
+
 
 class MockAPIViewset(viewsets.ModelViewSet):
     swagger_tag = '项目下的Mock API CRUD'
@@ -83,6 +85,7 @@ class MockAPIViewset(viewsets.ModelViewSet):
             instance._prefetched_objects_cache = {}
 
         return Response(serializer.data)
+
 
 class RequestObject:
     def __init__(self, request):
@@ -150,7 +153,8 @@ def load_and_execute(module_name, code, method_name, request) -> Response:
 
 def process(path, project_id, request: Request):
     try:
-        logger.info(f"request path: {request.get_full_path()}")
+        if settings.IS_PERF == '0':
+            logger.info(f"request path: {request.get_full_path()}")
 
         request_obj: dict = {
             "method": request.method.upper(),
@@ -160,7 +164,9 @@ def process(path, project_id, request: Request):
             "headers": request.headers._store,
             "query_params": request.query_params,
         }
-        logger.info(f"request_obj: {json.dumps(request_obj, indent=4)}")
+        if settings.IS_PERF == '0':
+            logger.info(f"request_obj: {json.dumps(request_obj, indent=4)}")
+
         mock_api = MockAPI.objects.get(
             project__project_id=project_id,
             request_path=path,
@@ -168,12 +174,7 @@ def process(path, project_id, request: Request):
             is_active=True,
         )
         request_id: str = uuid.uuid4().hex
-        log_obj = MockAPILog.objects.create(
-            request_obj=request_obj,
-            request_id=request_id,
-            api_id=mock_api.api_id,
-            project_id=mock_api.project,
-        )
+
         response = load_and_execute(
             "mock_api_module", mock_api.response_text, "execute", request
         )
@@ -183,9 +184,16 @@ def process(path, project_id, request: Request):
             "body": response.data,
             "headers": response.headers._store,
         }
-        logger.info(f"response_obj: {json.dumps(response_obj, indent=4)}", exc_info=True)
-        log_obj.response_obj = response_obj
-        log_obj.save()
+        if settings.IS_PERF == '0':
+            logger.info(f"response_obj: {json.dumps(response_obj, indent=4)}", exc_info=True)
+            log_obj = MockAPILog.objects.create(
+                request_obj=request_obj,
+                request_id=request_id,
+                api_id=mock_api.api_id,
+                project_id=mock_api.project,
+            )
+            log_obj.response_obj = response_obj
+            log_obj.save()
         if response is not None:
             return response
         return Response({"error": "Execution failure"})

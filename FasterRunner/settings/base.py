@@ -376,3 +376,7 @@ else:
 
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
+
+
+# mock配置, 如果是性能测试环境，就设置为1，会关闭写日志, db
+IS_PERF = os.environ.get("IS_PERF", "0")
