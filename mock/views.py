@@ -145,10 +145,8 @@ def load_and_execute(module_name, code, method_name, request) -> Response:
                 data = {"error": f"Module should has {method_name} method"}
                 return Response(data=data)
         except Exception as e:
-            # Generic catch-all for other errors during execution
-            logger.error(
-                f"Error executing the method {method_name} from module {module_name}: {e}\n {traceback.format_exc()}"
-            )
+            raise e
+
 
 
 def process(path, project_id, request: Request):
@@ -185,7 +183,7 @@ def process(path, project_id, request: Request):
             "headers": response.headers._store,
         }
         if settings.IS_PERF == '0':
-            logger.info(f"response_obj: {json.dumps(response_obj, indent=4)}", exc_info=True)
+            logger.info(f"response_obj: {json.dumps(response_obj, indent=4)}")
             log_obj = MockAPILog.objects.create(
                 request_obj=request_obj,
                 request_id=request_id,
