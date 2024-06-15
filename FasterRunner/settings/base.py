@@ -30,7 +30,6 @@ SECRET_KEY = "e$od9f28jce8q47u3raik$(e%$@lff6r89ux+=f!e1a$e42+#7"
 
 DEBUG = False
 
-
 ALLOWED_HOSTS = ["*"]
 
 # Token Settings, 30天过期
@@ -130,9 +129,7 @@ TIME_ZONE = "Asia/Shanghai"
 
 USE_I18N = True
 
-
 USE_TZ = False
-
 
 REST_FRAMEWORK = {
     # 'DEFAULT_AUTHENTICATION_CLASSES': ['FasterRunner.auth.DeleteAuthenticator', 'FasterRunner.auth.Authenticator', ],
@@ -161,8 +158,12 @@ AUTH_USER_MODEL = "fastuser.MyUser"
 SWAGGER_SETTINGS = {
     "DEFAULT_AUTO_SCHEMA_CLASS": "FasterRunner.swagger.CustomSwaggerAutoSchema",
     # 基础样式
-    "SECURITY_DEFINITIONS": {
-        "basic": {"type": "basic"},
+    'SECURITY_DEFINITIONS': {
+        'Bearer': {
+            'type': 'apiKey',
+            'name': 'Authorization',
+            'in': 'header'
+        }
     },
     # 如果需要登录才能够查看接口文档, 登录的链接使用restframework自带的.
     # 'LOGIN_URL': 'rest_framework:login',
@@ -220,10 +221,10 @@ for level in ["INFO", "WARNING", "ERROR"]:
     logger.add(
         f"logs/{level.lower()}.log",
         format="{time:YYYY-MM-DD HH:mm:ss.SSS}"
-        " [pid:{process} -> thread:{thread.name}]"
-        " {level}"
-        " [{name}:{function}:{line}]"
-        " {message}",
+               " [pid:{process} -> thread:{thread.name}]"
+               " {level}"
+               " [{name}:{function}:{line}]"
+               " {message}",
         level=level,
         rotation="00:00",
         retention="14 days",
@@ -239,7 +240,7 @@ LOGGING = {
         "color": {
             "()": "colorlog.ColoredFormatter",
             "format": "%(green)s%(asctime)s [%(request_id)s] %(name)s %(log_color)s%(levelname)s [pid:%(process)d] "
-            "[%(filename)s->%(funcName)s:%(lineno)s] %(cyan)s%(message)s",
+                      "[%(filename)s->%(funcName)s:%(lineno)s] %(cyan)s%(message)s",
             "log_colors": {
                 "DEBUG": "black",
                 "INFO": "white",
@@ -300,6 +301,13 @@ LOGGING = {
             "level": "INFO",
             "propagate": True,
         },
+
+        'django.db.backends': {
+            'level': 'DEBUG',
+            'handlers': ['console'],
+            "propagate": False,
+        },
+
         "fastrunner": {
             "handlers": ["default", "console", "error", "db"],
             "level": "INFO",
@@ -331,10 +339,8 @@ LOG_REQUEST_ID_HEADER = "HTTP_X_REQUEST_ID"
 GENERATE_REQUEST_ID_IF_NOT_IN_HEADER = True
 REQUEST_ID_RESPONSE_HEADER = "TRACE-ID"
 
-
 # https://github.com/celery/celery/issues/4796
 DJANGO_CELERY_BEAT_TZ_AWARE = False
-
 
 # 邮箱配置
 EMAIL_USE_SSL = True
@@ -376,7 +382,6 @@ else:
 
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
-
 
 # mock配置, 如果是性能测试环境，就设置为1，会关闭写日志, db
 IS_PERF = os.environ.get("IS_PERF", "0")

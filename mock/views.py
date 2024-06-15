@@ -8,6 +8,7 @@ from django_filters import rest_framework as filters
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status, viewsets
+from rest_framework.filters import SearchFilter
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -15,7 +16,7 @@ from django.conf import settings
 
 from FasterRunner.customer_swagger import CustomSwaggerAutoSchema
 from .models import MockAPI, MockAPILog, MockProject
-from .serializers import MockAPISerializer, MockProjectSerializer
+from .serializers import MockAPISerializer, MockProjectSerializer, MockAPILogSerializer
 
 logger = logging.getLogger(__name__)
 
@@ -147,6 +148,7 @@ def load_and_execute(module_name, code, method_name, request) -> Response:
         except Exception as e:
             raise e
 
+
 def process(path, project_id, request: Request):
     try:
         if settings.IS_PERF == '0':
@@ -245,3 +247,25 @@ class MockProjectViewSet(viewsets.ModelViewSet):
     serializer_class = MockProjectSerializer
     filter_backends = [DjangoFilterBackend]
     filterset_class = MockProjectFilter
+
+
+class MockAPILogFilter(filters.FilterSet):
+    request_id = filters.CharFilter(lookup_expr="icontains")
+    request_path = filters.CharFilter(method="filter_by_request_path")
+
+    class Meta:
+        model = MockAPILog
+        fields = ["request_id", "request_path"]
+
+    def filter_by_request_path(self, queryset, name, value):
+        return queryset.filter(api__request_path__icontains=value)
+
+
+class MockAPILogViewSet(viewsets.ModelViewSet):
+    swagger_tag = 'Mock API Log CRUD'
+    swagger_schema = CustomSwaggerAutoSchema
+    queryset = MockAPILog.objects.select_related('api', 'project').all()
+    serializer_class = MockAPILogSerializer
+    filter_backends = [DjangoFilterBackend, SearchFilter]
+    filterset_class = MockAPILogFilter
+    search_fields = ['request_id', 'api__request_path']

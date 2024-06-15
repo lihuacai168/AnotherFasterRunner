@@ -9,7 +9,7 @@ import ast
 
 from rest_framework import serializers
 
-from .models import MockAPI, MockProject
+from .models import MockAPI, MockProject, MockAPILog
 
 
 class MockAPISerializer(serializers.ModelSerializer):
@@ -109,3 +109,12 @@ class MockProjectSerializer(serializers.ModelSerializer):
             "update_time",
         ]
         read_only_fields = ["id", "creator", "updater", "create_time", "update_time", "project_id"]
+
+
+class MockAPILogSerializer(serializers.ModelSerializer):
+    api = serializers.PrimaryKeyRelatedField(queryset=MockAPI.objects.all())
+    project = serializers.PrimaryKeyRelatedField(queryset=MockProject.objects.all())
+
+    class Meta:
+        model = MockAPILog
+        fields = '__all__'
