@@ -112,8 +112,8 @@ class MockProjectSerializer(serializers.ModelSerializer):
 
 
 class MockAPILogSerializer(serializers.ModelSerializer):
-    api = serializers.PrimaryKeyRelatedField(queryset=MockAPI.objects.all())
-    project = serializers.PrimaryKeyRelatedField(queryset=MockProject.objects.all())
+    api = MockAPISerializer()
+    project = MockProjectSerializer()
 
     class Meta:
         model = MockAPILog

@@ -3,6 +3,8 @@ import logging
 import traceback
 import types
 import uuid
+from datetime import datetime
+
 
 from django_filters import rest_framework as filters
 from django_filters.rest_framework import DjangoFilterBackend
@@ -149,8 +151,22 @@ def load_and_execute(module_name, code, method_name, request) -> Response:
             raise e
 
 
+def convert_to_kv(input_dict):
+    """
+    将包含元组值的字典转换为键值对字典。
+
+    参数:
+    input_dict (dict): 输入字典，其中值为包含两个元素的元组。
+
+    返回:
+    dict: 简单的键值对字典。
+    """
+    return {value[0]: value[1] for key, value in input_dict.items()}
+
+
 def process(path, project_id, request: Request):
     try:
+        req_time = datetime.now()
         if settings.IS_PERF == '0':
             logger.info(f"request path: {request.get_full_path()}")
 
@@ -159,7 +175,7 @@ def process(path, project_id, request: Request):
             "path": path,
             "mock_server_full_path": request.get_full_path(),
             "body": request.data,
-            "headers": request.headers._store,
+            "headers": convert_to_kv(request.headers._store),
             "query_params": request.query_params,
         }
         if settings.IS_PERF == '0':
@@ -180,7 +196,7 @@ def process(path, project_id, request: Request):
         response_obj = {
             "status": response.status_code,
             "body": response.data,
-            "headers": response.headers._store,
+            "headers": convert_to_kv(response.headers._store),
         }
         if settings.IS_PERF == '0':
             logger.info(f"response_obj: {json.dumps(response_obj, indent=4)}")
@@ -189,6 +205,7 @@ def process(path, project_id, request: Request):
                 request_id=request_id,
                 api_id=mock_api.api_id,
                 project_id=mock_api.project,
+                create_time=req_time
             )
             log_obj.response_obj = response_obj
             log_obj.save()

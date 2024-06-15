@@ -14,6 +14,7 @@ import RecordConfig from '@/pages/fastrunner/config/RecordConfig'
 import Tasks from '@/pages/task/Tasks'
 import HostAddress from '@/pages/variables/HostAddress'
 import MockProject from "@/pages/mock_server/mock_project/index.vue";
+import MockLog from "@/pages/mock_server/mock_log/index.vue";
 import MockAPI from "@/pages/mock_server/mock_api/index.vue";
 import CommonLayout from "@/pages/common/layout/CommonLayout.vue";
 
@@ -174,7 +175,16 @@ export default new Router({
                             path: 'mock_apis/:id',
                             component: MockAPI,
                             meta: {
-                                title: 'Mock APIs',
+                                title: 'Mock API',
+                                requireAuth: true
+                            }
+                        },
+                        {
+                            name: 'MockLog',
+                            path: 'mock_log/:id',
+                            component: MockLog,
+                            meta: {
+                                title: 'MockLog',
                                 requireAuth: true
                             }
                         }

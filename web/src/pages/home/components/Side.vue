@@ -39,7 +39,8 @@ export default {
                     icon: 'el-icon-s-help',
                     children: [ // 子菜单项
                         {name: "Mock 项目", url: "MockProject", icon: 'el-icon-folder-opened'},
-                        {name: "Mock APIs", url: "MockAPIs", icon: 'el-icon-document-copy'}
+                        {name: "Mock APIs", url: "MockAPIs", icon: 'el-icon-document-copy'},
+                        {name: "Mock Log", url: "MockLog", icon: 'el-icon-data-board'}
                     ]
                 }
             ]
