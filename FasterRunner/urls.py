@@ -22,7 +22,7 @@ from rest_framework.routers import DefaultRouter
 from rest_framework_jwt.views import obtain_jwt_token
 
 from fastrunner.views import run_all_auto_case
-from mock.views import MockAPIView, MockAPIViewset, MockProjectViewSet
+from mock.views import MockAPIView, MockAPIViewset, MockProjectViewSet, MockAPILogViewSet
 from system import views as system_views
 
 schema_view = get_schema_view(
@@ -35,7 +35,7 @@ schema_view = get_schema_view(
         license=openapi.License(name="BSD License"),
     ),
     public=True,
-    permission_classes=(permissions.AllowAny,),
+    permission_classes=[permissions.AllowAny,],
     authentication_classes=[],
 )
 system_router = DefaultRouter()
@@ -47,6 +47,7 @@ mock_api_router.register(r"mock_api", MockAPIViewset)
 
 mock_project_router = DefaultRouter()
 mock_project_router.register(r"mock_project", MockProjectViewSet)
+mock_project_router.register(r"mock_log", MockAPILogViewSet)
 
 urlpatterns = [
     path("api/mock/", include(mock_project_router.urls)),
@@ -70,7 +71,7 @@ urlpatterns = [
     path("get_report_url/", run_all_auto_case.get_report_url, name="get_report_url"),
     # swagger
     re_path(r"^swagger(?P<format>\.json|\.yaml)$", schema_view.without_ui(cache_timeout=0), name="schema-json"),
-    path("swagger/", schema_view.with_ui("swagger", cache_timeout=0), name="schema-swagger-ui"),
+    path("swagger/", schema_view.with_ui("swagger", cache_timeout=0), name="schema-swagger-ui",),
     path("redoc/", schema_view.with_ui("redoc", cache_timeout=0), name="schema-redoc"),
     re_path(r'^mock/(?P<project_id>\w+)(?P<path>/.*)$', MockAPIView.as_view())
 ]
