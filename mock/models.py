@@ -1,3 +1,6 @@
+import random
+import string
+import time
 import uuid
 
 from django.db import models
@@ -8,8 +11,14 @@ def generate_uuid():
     return uuid.uuid4().hex
 
 
+def generate_short_id():
+    timestamp = int(time.time() * 1000)
+    random_string = ''.join(random.choices(string.ascii_letters + string.digits, k=5))
+    return f'{timestamp}{random_string}'
+
+
 class MockProject(BaseTable):
-    project_id = models.CharField(max_length=100, unique=True, default=generate_uuid)
+    project_id = models.CharField(max_length=100, unique=True, default=generate_short_id)
     project_name = models.CharField(max_length=100)
     project_desc = models.CharField(max_length=100)
     is_active = models.BooleanField(default=True)
