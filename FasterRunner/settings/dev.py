@@ -41,7 +41,7 @@ DATABASES = {
 BROKER_URL = "amqp://username:password@localhost:5672//"
 # 需要先在RabbitMQ上创建fast_dev这个vhost
 
-broker_url = "amqp://admin:111111@192.168.22.19:5672/fast_dev"
+broker_url = "amqp://rabbitMQ_username:rabbitMQ_password@localhost:5672/fast_dev"
 
 
 BASE_REPORT_URL = "http://localhost:8000/api/fastrunner/reports"

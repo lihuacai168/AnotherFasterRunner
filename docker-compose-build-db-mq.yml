@@ -19,22 +19,22 @@ x-env: &env
   MQ_ADMIN_PORT: ${MQ_ADMIN_PORT}
 
 services:
-  db:
-    #image: mysql:8.0.21
-    image: mariadb:10.6.1
-    # privileged: true
-    environment:
-      # 设置默认数据库和root默认密码,如果宿主机中/var/lib/mysql已经存在,这两个设置都不会生效
-      <<: *env
-    volumes:
-#      - "/var/lib/mysql:/var/lib/mysql" # 挂载宿主机的mysql数据到docker中
-      - ./db/my.cnf:/etc/mysql/mysql.conf.d/mysqld.cnf
-      - ./db:/docker-entrypoint-initdb.d/:ro
-    # 端口映射,格式 宿主机端口:容器端口
-    ports:
-      - "${MYSQL_PORT_OUT}:3306"
-    restart: always
-    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+#  db:
+#    #image: mysql:8.0.21
+#    image: mariadb:10.6.1
+#    # privileged: true
+#    environment:
+#      # 设置默认数据库和root默认密码,如果宿主机中/var/lib/mysql已经存在,这两个设置都不会生效
+#      <<: *env
+#    volumes:
+##      - "/var/lib/mysql:/var/lib/mysql" # 挂载宿主机的mysql数据到docker中
+#      - ./db/my.cnf:/etc/mysql/mysql.conf.d/mysqld.cnf
+#      - ./db:/docker-entrypoint-initdb.d/:ro
+#    # 端口映射,格式 宿主机端口:容器端口
+#    ports:
+#      - "${MYSQL_PORT_OUT}:3306"
+#    restart: always
+#    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
 
 
   mq:

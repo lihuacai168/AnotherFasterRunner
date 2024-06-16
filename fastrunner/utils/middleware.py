@@ -18,6 +18,11 @@ class VisitTimesMiddleware(MiddlewareMixin):
         request._body = request.body
 
     def process_response(self, request, response):
+        url: str = request.path
+        # 去除测试报告页字体相关的访问
+        if "/fonts/roboto/" in url or url.startswith('/mock/'):
+            return response
+
         body = request._body
         if body == b"":
             body = ""
@@ -34,10 +39,7 @@ class VisitTimesMiddleware(MiddlewareMixin):
         # 前端请求头没传project，就默认为0
         project = request.headers.get("project", 0)
 
-        url: str = request.path
-        # 去除测试报告页字体相关的访问
-        if "/fonts/roboto/" in url:
-            return response
+
 
         if request.GET != {}:
             query_params = "?"

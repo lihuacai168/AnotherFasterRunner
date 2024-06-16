@@ -3,8 +3,8 @@ import logging
 import traceback
 import types
 import uuid
+from collections import defaultdict
 from datetime import datetime
-
 
 from django_filters import rest_framework as filters
 from django_filters.rest_framework import DjangoFilterBackend
@@ -19,8 +19,27 @@ from django.conf import settings
 from FasterRunner.customer_swagger import CustomSwaggerAutoSchema
 from .models import MockAPI, MockAPILog, MockProject
 from .serializers import MockAPISerializer, MockProjectSerializer, MockAPILogSerializer
+from .tasks import log_mock_api
 
 logger = logging.getLogger(__name__)
+
+# 全局字典用于缓存
+mock_api_cache = defaultdict(dict)
+
+
+def fetch_mock_api(project_id, path, method):
+    key = (project_id, path, method)
+    if key in mock_api_cache:
+        return mock_api_cache[key]
+    else:
+        mock_api = MockAPI.objects.get(
+            project__project_id=project_id,
+            request_path=path,
+            request_method=method,
+            is_active=True
+        )
+        mock_api_cache[key] = mock_api
+        return mock_api
 
 
 # mock function demo
@@ -86,7 +105,7 @@ class MockAPIViewset(viewsets.ModelViewSet):
             # If 'prefetch_related' has been applied to a queryset, we need to
             # forcibly invalidate the prefetch cache on the instance.
             instance._prefetched_objects_cache = {}
-
+        mock_api_cache.pop((instance.project.project_id, instance.request_path, instance.request_method), None)
         return Response(serializer.data)
 
 
@@ -164,6 +183,7 @@ def convert_to_kv(input_dict):
     return {value[0]: value[1] for key, value in input_dict.items()}
 
 
+
 def process(path, project_id, request: Request):
     try:
         req_time = datetime.now()
@@ -181,12 +201,16 @@ def process(path, project_id, request: Request):
         if settings.IS_PERF == '0':
             logger.info(f"request_obj: {json.dumps(request_obj, indent=4)}")
 
-        mock_api = MockAPI.objects.get(
-            project__project_id=project_id,
-            request_path=path,
-            request_method=request.method.upper(),
-            is_active=True,
-        )
+        if settings.IS_PERF == '1':
+            mock_api = fetch_mock_api(project_id, path, request.method.upper())
+        else:
+            mock_api = MockAPI.objects.get(
+                project__project_id=project_id,
+                request_path=path,
+                request_method=request.method.upper(),
+                is_active=True,
+            )
+
         request_id: str = uuid.uuid4().hex
 
         response = load_and_execute(
@@ -200,6 +224,14 @@ def process(path, project_id, request: Request):
         }
         if settings.IS_PERF == '0':
             logger.info(f"response_obj: {json.dumps(response_obj, indent=4)}")
+            # log_mock_api.delay(
+            #     request_obj=request_obj,
+            #     request_id=request_id,
+            #     api_id=mock_api.api_id,
+            #     project_id=mock_api.project.project_id,
+            #     req_time=req_time,
+            #     response_obj=response_obj
+            # )
             log_obj = MockAPILog.objects.create(
                 request_obj=request_obj,
                 request_id=request_id,
