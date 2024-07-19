@@ -229,13 +229,16 @@ for level in ["INFO", "WARNING", "ERROR"]:
         rotation="00:00",
         retention="14 days",
     )
-
+handlers = ["default", "console", "error", "db", "loki"]
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": True,
     "formatters": {
         "standard": {
             "format": "%(levelname)-2s [%(asctime)s] [%(request_id)s] %(name)s [%(filename)s->%(funcName)s:%(lineno)s]:  %(message)s",
+        },
+        "loki": {
+            "format": "%(levelname)-2s [%(request_id)s] %(name)s [%(filename)s->%(funcName)s:%(lineno)s]:  %(message)s",
         },
         "color": {
             "()": "colorlog.ColoredFormatter",
@@ -294,42 +297,49 @@ LOGGING = {
             "formatter": "standard",
             "class": "FasterRunner.log.DatabaseLogHandler",  # 指向你的自定义处理器
         },
+
+        'loki': {
+            'level': 'INFO',
+            'class': 'FasterRunner.log.LokiHandler',
+            "formatter": "loki",
+        },
+
     },
     "loggers": {
         "django": {
-            "handlers": ["default", "console", "error", "db"],
+            "handlers": handlers,
             "level": "INFO",
             "propagate": True,
         },
 
         'django.db.backends': {
             'level': 'DEBUG',
-            'handlers': ['console'],
+            'handlers': ['console', 'loki'],
             "propagate": False,
         },
 
         "fastrunner": {
-            "handlers": ["default", "console", "error", "db"],
+            "handlers": handlers,
             "level": "INFO",
             "propagate": True,
         },
         "httprunner": {
-            "handlers": ["default", "console", "error", "db"],
+            "handlers": handlers,
             "level": "INFO",
             "propagate": True,
         },
         "fastuser": {
-            "handlers": ["default", "console", "error", "db"],
+            "handlers": handlers,
             "level": "INFO",
             "propagate": True,
         },
         "mock": {
-            "handlers": ["default", "console", "error", "db"],
+            "handlers": handlers,
             "level": "INFO",
             "propagate": True,
         },
         "django_auth_ldap": {
-            "handlers": ["default", "console", "error", "db"],
+            "handlers": handlers,
             "level": "INFO",
             "propagate": True,
         },
@@ -385,3 +395,7 @@ DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
 
 # mock配置, 如果是性能测试环境，就设置为1，会关闭写日志, db
 IS_PERF = os.environ.get("IS_PERF", "0")
+
+LOKI_URL = os.environ.get("LOKI_URL") or "https://logs-prod3.grafana.net/loki/api/v1/push"
+LOKI_USERNAME = os.environ.get('LOKI_USERNAME', '')
+LOKI_PASSWORD = os.environ.get('LOKI_PASSWORD', '')
