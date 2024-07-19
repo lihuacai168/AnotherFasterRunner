@@ -3,44 +3,45 @@ version: '3.8'
 # 用来构建db和mq，因为这两个组件几乎不会有改动，所以单独抽离出来
 # db会默认初始化一些演示的数据, sql文件在db/init.sql
 
-x-env: &env
-  # db
-  MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+x-env-db: &env_db
   MYSQL_DATABASE: ${MYSQL_DATABASE}
   MYSQL_USER: ${MYSQL_USER}
   MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-  MYSQL_PORT_OUT: ${MYSQL_PORT_OUT:-3306}
+  MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+  MYSQL_HOST: ${MYSQL_HOST:-db}
+  MYSQL_PORT: ${MYSQL_PORT:-3306}
 
-  # mq
+x-env-mq: &env_mq
   RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
   RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
   MQ_PORT: ${MQ_PORT}
   MQ_HOST: ${MQ_HOST:-mq}
   MQ_ADMIN_PORT: ${MQ_ADMIN_PORT}
+  MQ_VHOST: ${MQ_VHOST:-/}
 
 services:
-#  db:
-#    #image: mysql:8.0.21
-#    image: mariadb:10.6.1
-#    # privileged: true
-#    environment:
-#      # 设置默认数据库和root默认密码,如果宿主机中/var/lib/mysql已经存在,这两个设置都不会生效
-#      <<: *env
-#    volumes:
-##      - "/var/lib/mysql:/var/lib/mysql" # 挂载宿主机的mysql数据到docker中
-#      - ./db/my.cnf:/etc/mysql/mysql.conf.d/mysqld.cnf
-#      - ./db:/docker-entrypoint-initdb.d/:ro
-#    # 端口映射,格式 宿主机端口:容器端口
-#    ports:
-#      - "${MYSQL_PORT_OUT}:3306"
-#    restart: always
-#    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+  db:
+    #image: mysql:8.0.21
+    image: mariadb:10.6.1
+    # privileged: true
+    environment:
+      # 设置默认数据库和root默认密码,如果宿主机中/var/lib/mysql已经存在,这两个设置都不会生效
+      <<: *env_db
+    volumes:
+#      - "/var/lib/mysql:/var/lib/mysql" # 挂载宿主机的mysql数据到docker中
+      - ./db/my.cnf:/etc/mysql/mysql.conf.d/mysqld.cnf
+      - ./db:/docker-entrypoint-initdb.d/:ro
+    # 端口映射,格式 宿主机端口:容器端口
+    ports:
+      - "${MYSQL_PORT_OUT}:3306"
+    restart: always
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
 
 
   mq:
     image: rabbitmq:management-alpine
     environment:
-      <<: *env
+      <<: *env_mq
     restart: always
     ports:
       - "${MQ_ADMIN_PORT}:15672"

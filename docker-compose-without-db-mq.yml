@@ -5,14 +5,9 @@ version: '3.8'
 # 可以搭配docker-compose-build-db—mq使用
 # 或者已有mq和db也是OK的
 
-x-env: &env
-  # db
-  MYSQL_DATABASE: ${MYSQL_DATABASE}
-  MYSQL_USER: ${MYSQL_USER}
-  MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-  MYSQL_HOST: ${MYSQL_HOST:-db}
-  MYSQL_PORT: ${MYSQL_PORT:-3306}
-  # mq
+
+
+x-env-mq: &env_mq
   RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
   RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
   MQ_PORT: ${MQ_PORT}
@@ -20,15 +15,18 @@ x-env: &env
   MQ_ADMIN_PORT: ${MQ_ADMIN_PORT}
   MQ_VHOST: ${MQ_VHOST:-/}
 
-  # celery-worker
+x-env-celery: &env_celery
   SERVER_IP: ${SERVER_IP}
   DJANGO_API_PORT: ${DJANGO_API_PORT}
 
-  # app
+x-env-app: &env_app
   EMAIL_HOST: ${EMAIL_HOST}
   EMAIL_PORT: ${EMAIL_PORT}
   EMAIL_HOST_USER: ${EMAIL_HOST_USER}
   EMAIL_HOST_PASSWORD: ${EMAIL_HOST_PASSWORD}
+  LOKI_USERNAME: ${LOKI_USERNAME}
+  LOKI_PASSWORD: ${LOKI_PASSWORD}
+  LOKI_URL: ${LOKI_URL}
 
 services:
   app:
@@ -40,7 +38,7 @@ services:
         PIP_INDEX_URL: ${PIP_INDEX_URL:-https://pypi.tuna.tsinghua.edu.cn/simple}
         DEBIAN_REPO: ${DEBIAN_REPO:-mirrors.aliyun.com}
     environment:
-      <<: *env
+      <<: [*env_celery, *env_app, *env_mq]
     entrypoint: /app/start.sh
     command: "app"
     restart: always
@@ -53,7 +51,7 @@ services:
         PIP_INDEX_URL: ${PIP_INDEX_URL:-https://pypi.tuna.tsinghua.edu.cn/simple}
         DEBIAN_REPO: ${DEBIAN_REPO:-mirrors.aliyun.com}
     environment:
-      <<: *env
+      <<: [*env_celery, *env_app, *env_mq]
     entrypoint: /app/start.sh
     command: "celery-worker"
     restart: always
@@ -66,8 +64,7 @@ services:
         PIP_INDEX_URL: ${PIP_INDEX_URL:-https://pypi.tuna.tsinghua.edu.cn/simple}
         DEBIAN_REPO: ${DEBIAN_REPO:-mirrors.aliyun.com}
     environment:
-      <<: *env
-    entrypoint: /app/start.sh
+      <<: [*env_celery, *env_app, *env_mq]
     command: "celery-beat"
     restart: always
 
@@ -80,7 +77,7 @@ services:
       - app
     restart: always
     environment:
-      <<: *env
+      <<: [*env_celery, *env_app, *env_mq]
   web:
     build:
       context: ./web

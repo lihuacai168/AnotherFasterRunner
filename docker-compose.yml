@@ -1,12 +1,14 @@
 version: '3.8'
 
-x-env: &env
-  # db
-  MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+x-env-db: &env_db
   MYSQL_DATABASE: ${MYSQL_DATABASE}
   MYSQL_USER: ${MYSQL_USER}
   MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-  # mq
+  MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+  MYSQL_HOST: ${MYSQL_HOST:-db}
+  MYSQL_PORT: ${MYSQL_PORT:-3306}
+
+x-env-mq: &env_mq
   RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
   RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
   MQ_PORT: ${MQ_PORT}
@@ -14,15 +16,18 @@ x-env: &env
   MQ_ADMIN_PORT: ${MQ_ADMIN_PORT}
   MQ_VHOST: ${MQ_VHOST:-/}
 
-  # celery-worker
+x-env-celery: &env_celery
   SERVER_IP: ${SERVER_IP}
   DJANGO_API_PORT: ${DJANGO_API_PORT}
 
-  # app
+x-env-app: &env_app
   EMAIL_HOST: ${EMAIL_HOST}
   EMAIL_PORT: ${EMAIL_PORT}
   EMAIL_HOST_USER: ${EMAIL_HOST_USER}
   EMAIL_HOST_PASSWORD: ${EMAIL_HOST_PASSWORD}
+  LOKI_USERNAME: ${LOKI_USERNAME}
+  LOKI_PASSWORD: ${LOKI_PASSWORD}
+  LOKI_URL: ${LOKI_URL}
 
 services:
   db:
@@ -31,7 +36,7 @@ services:
     # privileged: true
     environment:
       # 设置默认数据库和root默认密码,如果宿主机中/var/lib/mysql已经存在,这两个设置都不会生效
-      <<: *env
+      <<: *env_db
     volumes:
 #      - "/var/lib/mysql:/var/lib/mysql" # 挂载宿主机的mysql数据到docker中
       - ./db/my.cnf:/etc/mysql/mysql.conf.d/mysqld.cnf
@@ -52,7 +57,7 @@ services:
         PIP_INDEX_URL: ${PIP_INDEX_URL:-https://pypi.tuna.tsinghua.edu.cn/simple}
         DEBIAN_REPO: ${DEBIAN_REPO:-mirrors.aliyun.com}
     environment:
-      <<: *env
+      <<: [*env_db, *env_celery, *env_app, *env_mq]
     entrypoint: /app/start.sh
     command: "app"
     depends_on:
@@ -67,7 +72,7 @@ services:
         PIP_INDEX_URL: ${PIP_INDEX_URL:-https://pypi.tuna.tsinghua.edu.cn/simple}
         DEBIAN_REPO: ${DEBIAN_REPO:-mirrors.aliyun.com}
     environment:
-      <<: *env
+      <<: [*env_db, *env_celery, *env_app, *env_mq]
     entrypoint: /app/start.sh
     command: "celery-worker"
     restart: always
@@ -83,7 +88,7 @@ services:
         PIP_INDEX_URL: ${PIP_INDEX_URL:-https://pypi.tuna.tsinghua.edu.cn/simple}
         DEBIAN_REPO: ${DEBIAN_REPO:-mirrors.aliyun.com}
     environment:
-      <<: *env
+      <<: [*env_db, *env_celery, *env_app, *env_mq]
     entrypoint: /app/start.sh
     command: "celery-beat"
     restart: always
@@ -100,7 +105,7 @@ services:
       - app
     restart: always
     environment:
-      <<: *env
+      <<: [*env_db, *env_celery, *env_app, *env_mq]
   web:
     build:
       context: ./web
@@ -117,7 +122,7 @@ services:
   mq:
     image: rabbitmq:management-alpine
     environment:
-      <<: *env
+      <<: *env_mq
     restart: always
     ports:
       - "${MQ_ADMIN_PORT}:15672"

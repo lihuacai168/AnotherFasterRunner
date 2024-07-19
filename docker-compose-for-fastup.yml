@@ -4,8 +4,7 @@ version: '3.8'
 # 默认会拉取dockerhub最新的镜像，不会用到本地的代码构建
 # 仅适用想快速体验测试平台和一直使用最新版的用户，不适合二开
 
-x-env: &env
-  # db
+x-env-db: &env_db
   MYSQL_DATABASE: ${MYSQL_DATABASE}
   MYSQL_USER: ${MYSQL_USER}
   MYSQL_PASSWORD: ${MYSQL_PASSWORD}
@@ -13,7 +12,7 @@ x-env: &env
   MYSQL_HOST: ${MYSQL_HOST:-db}
   MYSQL_PORT: ${MYSQL_PORT:-3306}
 
-  # mq
+x-env-mq: &env_mq
   RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
   RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
   MQ_PORT: ${MQ_PORT}
@@ -21,21 +20,24 @@ x-env: &env
   MQ_ADMIN_PORT: ${MQ_ADMIN_PORT}
   MQ_VHOST: ${MQ_VHOST:-/}
 
-  # celery-worker
+x-env-celery: &env_celery
   SERVER_IP: ${SERVER_IP}
   DJANGO_API_PORT: ${DJANGO_API_PORT}
 
-  # app
+x-env-app: &env_app
   EMAIL_HOST: ${EMAIL_HOST}
   EMAIL_PORT: ${EMAIL_PORT}
   EMAIL_HOST_USER: ${EMAIL_HOST_USER}
   EMAIL_HOST_PASSWORD: ${EMAIL_HOST_PASSWORD}
+  LOKI_USERNAME: ${LOKI_USERNAME}
+  LOKI_PASSWORD: ${LOKI_PASSWORD}
+  LOKI_URL: ${LOKI_URL}
 
 services:
   app:
     image: rikasai/fast-runner-backend:latest
     environment:
-      <<: *env
+      <<: [*env_db, *env_celery, *env_app, *env_mq]
     entrypoint: /app/start.sh
     command: "app"
     restart: always
@@ -46,15 +48,18 @@ services:
   celery-worker:
     image: rikasai/fast-runner-backend:latest
     environment:
-      <<: *env
+      <<: [*env_db, *env_celery, *env_app, *env_mq]
     entrypoint: /app/start.sh
     command: "celery-worker"
     restart: always
+    depends_on:
+      - db
+      - mq
 
   celery-beat:
     image: rikasai/fast-runner-backend:latest
     environment:
-      <<: *env
+      <<: [*env_db, *env_celery, *env_app, *env_mq]
     entrypoint: /app/start.sh
     command: "celery-beat"
     restart: always
@@ -62,7 +67,6 @@ services:
       - db
       - mq
 
-# django-admin & app proxy
   nginx:
     build: ./nginx-remote
     ports:
@@ -71,7 +75,8 @@ services:
       - app
     restart: always
     environment:
-      <<: *env
+      <<: *env_app
+
   web:
     image: rikasai/fast-runner-frontend:latest
     ports:
@@ -80,17 +85,12 @@ services:
       - app
 
   db:
-    #image: mysql:8.0.21
     image: mariadb:10.6.1
-    # privileged: true
     environment:
-      # 设置默认数据库和root默认密码,如果宿主机中/var/lib/mysql已经存在,这两个设置都不会生效
-      <<: *env
+      <<: *env_db
     volumes:
-#      - "/var/lib/mysql:/var/lib/mysql" # 挂载宿主机的mysql数据到docker中
       - ./db/my.cnf:/etc/mysql/mysql.conf.d/mysqld.cnf
       - ./db:/docker-entrypoint-initdb.d/:ro
-    # 端口映射,格式 宿主机端口:容器端口
     ports:
       - "${MYSQL_PORT_OUT}:3306"
     restart: always
@@ -99,8 +99,8 @@ services:
   mq:
     image: rabbitmq:management-alpine
     environment:
-      <<: *env
-    restart: always
+      <<: *env_mq
     ports:
       - "${MQ_ADMIN_PORT}:15672"
       - "${MQ_PORT}:5672"
+    restart: always
