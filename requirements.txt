@@ -62,3 +62,4 @@ django-filter==2.4.0,<2.5.0
 pymysql==1.1.0
 pytest==8.1.1
 pytest-django==4.8.0
+django-db-connection-pool[mysql]==1.2.5

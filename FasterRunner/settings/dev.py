@@ -23,19 +23,31 @@ logger.add(
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.mysql",
+        "ENGINE": "dj_db_conn_pool.backends.mysql",
         "NAME": "fast",  # 新建数据库
         # 'NAME': 'fast_mb4',  # 新建数据库名
         "HOST": "127.0.0.1",
         "USER": "root",  # 数据库登录名
         "PASSWORD": "root",  # 数据库登录密码
-        "OPTIONS": {"charset": "utf8mb4"},
-        # 单元测试数据库
+        'OPTIONS': {
+            'charset': 'utf8mb4',
+        },
+        'POOL_OPTIONS': {
+            'POOL_SIZE': 20,
+            'MAX_OVERFLOW': 20,
+            'RECYCLE': 24 * 60 * 60,
+            'PRE_PING': True,
+            'ECHO': False,
+            'TIMEOUT': 30,
+        },
         "TEST": {
             "NAME": "test_fast_last",  # 测试过程中会生成名字为test的数据库,测试结束后Django会自动删除该数据库
         },
     }
 }
+
+
+
 # IM_REPORT_SETTING.update({'platform_name': '银河飞梭测试平台'})
 
 BROKER_URL = "amqp://username:password@localhost:5672//"
