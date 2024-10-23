@@ -132,7 +132,7 @@
                                 ref="tree"
                             >
                             <span class="custom-tree-node"
-                                  slot-scope="{ node, data }"
+                                  slot-scope="{ node, _ }"
                             >
                                 <span><i class="iconfont" v-html="expand"></i>&nbsp;&nbsp;{{ node.label }}</span>
                             </span>
@@ -174,7 +174,7 @@
                                 ref="tree"
                             >
                             <span class="custom-tree-node"
-                                  slot-scope="{ node, data }"
+                                  slot-scope="{ node, _ }"
                             >
                                 <span><i class="iconfont" v-html="expand"></i>&nbsp;&nbsp;{{ node.label }}</span>
                             </span>
@@ -211,7 +211,7 @@
                         <el-table-column
                             width="25"
                         >
-                            <template slot-scope="scope">
+                            <template slot-scope="_">
                                 <el-dropdown @command="dropdownMenuChangeHandle">
                                     <span><i class="el-icon-more"></i></span>
                                     <el-dropdown-menu slot="dropdown">
@@ -233,9 +233,12 @@
                             <template slot-scope="scope">
                                 <div class="block" :class="`block_${scope.row.method.toLowerCase()}`">
                                     <span class="block-method block_method_color"
-                                          :title="'API分组：' +scope.row.relation_name"
                                           :class="`block_method_${scope.row.method.toLowerCase()}`">
                                         {{ scope.row.method.toUpperCase() }}
+                                    </span>
+                                    <span class="block-method block_method_color block_method_group"
+                                          :title="'API分组：' + scope.row.relation_name">
+                                        {{ scope.row.relation_name }}
                                     </span>
                                     <div class="block">
                                        <span class="block-method block_method_color block_method_options"
@@ -244,14 +247,17 @@
                                             YAPI
                                        </span>
                                     </div>
-                                    <span class="block-method block_url">{{ scope.row.url }}</span>
-                                    <span class="block-summary-description">{{ scope.row.name }}</span>
-                                    <div>
-                                       <span class="el-icon-s-flag"
-                                             v-if="scope.row.cases.length > 0 "
-                                             :title="'API已经被用例引用,共计: '+scope.row.cases.length + '次'">
-                                       </span>
-                                    </div>
+                                    <el-tooltip :content="scope.row.url" placement="top" effect="light">
+                                        <span class="block-method block_url text-ellipsis">{{ scope.row.url }}</span>
+                                    </el-tooltip>
+                                    <el-tooltip :content="scope.row.name" placement="top" effect="light">
+                                        <span class="block-summary-description text-ellipsis">{{ scope.row.name }}</span>
+                                    </el-tooltip>
+                                    <span v-if="scope.row.cases.length > 0"
+                                          class="block-method block_method_color block_method_cases"
+                                          :title="`API已被用例引用,共计: ${scope.row.cases.length} 次`">
+                                        被引用: {{ scope.row.cases.length }} 次
+                                    </span>
                                 </div>
                             </template>
                         </el-table-column>
@@ -457,7 +463,7 @@ export default {
             this.currentPage = newValue
         },
 
-        // 监听只看自己按钮的状态
+        // 监只看自己按钮的状态
         onlyMe() {
             this.getAPIList()
         },
@@ -763,7 +769,7 @@ export default {
 
         cellMouseLeave(row) {
             this.currentRow = '';
-        }
+        },
     }
     ,
     mounted() {
@@ -785,4 +791,52 @@ export default {
 .recordapi__header--item {
     margin: 0 8px;
 }
+
+.block-method {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 24px; /* 设置一个固定高度 */
+    padding: 0 8px;
+    font-size: 12px;
+    border-radius: 4px;
+    margin-right: 5px;
+}
+
+.block_method_color {
+    color: white;
+}
+
+.block_method_group {
+    background-color: #67c23a;
+}
+
+.block_method_cases {
+    background-color: #409eff;
+}
+
+
+/* 如果需要调整间距 */
+.block > * {
+    margin-right: 5px;
+}
+
+/* 确保 YAPI 标签也保持一致的高度 */
+.block_method_options {
+    height: 24px;
+    line-height: 24px;
+}
+
+.text-ellipsis {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 200px; /* 根据需要调整 */
+  display: inline-block;
+}
+
+.block_url {
+  max-width: 250px; /* 根据需要调整 */
+}
 </style>
+
