@@ -59,12 +59,12 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
     "fastrunner.utils.middleware.ExceptionMiddleware",
     "django.middleware.gzip.GZipMiddleware",
     "log_request_id.middleware.RequestIDMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
-    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
@@ -309,7 +309,7 @@ LOGGING = {
         "django": {
             "handlers": handlers,
             "level": "INFO",
-            "propagate": True,
+            "propagate": False,
         },
 
         'django.db.backends': {
@@ -321,27 +321,32 @@ LOGGING = {
         "fastrunner": {
             "handlers": handlers,
             "level": "INFO",
-            "propagate": True,
+            "propagate": False,
         },
         "httprunner": {
             "handlers": handlers,
             "level": "INFO",
-            "propagate": True,
+            "propagate": False,
         },
         "fastuser": {
             "handlers": handlers,
             "level": "INFO",
-            "propagate": True,
+            "propagate": False,
         },
         "mock": {
             "handlers": handlers,
             "level": "INFO",
-            "propagate": True,
+            "propagate": False,
         },
         "django_auth_ldap": {
             "handlers": handlers,
             "level": "INFO",
-            "propagate": True,
+            "propagate": False,
+        },
+        "": {
+            "handlers": ["console"],
+            "level": "ERROR",
+            "propagate": False,
         },
     },
 }

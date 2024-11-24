@@ -2,7 +2,7 @@ import logging
 import os
 
 from celery import Celery
-from celery.signals import after_setup_logger
+from celery.signals import after_setup_logger, setup_logging
 
 # set the default Django settings module for the 'celery' program.
 from django.conf import settings
@@ -37,25 +37,13 @@ app.conf.update(
     CELERYD_MAX_TASKS_PER_CHILD=300,
     # 每个worker一次性拿的任务数
     CELERYD_PREFETCH_MULTIPLIER=1,
+    # 完全禁用 Celery 的日志配置
+    worker_hijack_root_logger=False,
+    worker_redirect_stdouts=False,
+    worker_redirect_stdouts_level='ERROR',  # 只记录错误级别
 )
 
-
-@after_setup_logger.connect
-def setup_loggers(logger, *args, **kwargs):
-    fh = logging.FileHandler("logs/celery.log", "a", encoding="utf-8")
-    fh.setLevel(logging.INFO)
-
-    # 再创建一个handler，用于输出到控制台
-    ch = logging.StreamHandler()
-    ch.setLevel(logging.INFO)
-
-    # 定义handler的输出格式
-    formatter = logging.Formatter(
-        "%(asctime)s  %(levelname)s  [pid:%(process)d] [%(name)s %(filename)s->%(funcName)s:%(lineno)s] %(message)s"
-    )
-    fh.setFormatter(formatter)
-    ch.setFormatter(formatter)
-
-    # 给logger添加handler
-    logger.addHandler(fh)
-    logger.addHandler(ch)
+# 禁用 Celery 的日志设置
+@setup_logging.connect
+def setup_loggers_without_celery(*args, **kwargs):
+    return True
