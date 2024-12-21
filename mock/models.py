@@ -117,4 +117,10 @@ class MockAPILog(BaseTable):
     class Meta:
         verbose_name = "mock api log表"
         db_table = "mock_api_log"
-        ordering = ["-create_time"]
+        indexes = [
+            models.Index(fields=['create_time']),
+            models.Index(fields=['request_id']),
+            models.Index(fields=['api_id']),
+            models.Index(fields=['project_id']),
+        ]
+        ordering = ['-create_time']

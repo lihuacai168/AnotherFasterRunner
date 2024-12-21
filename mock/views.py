@@ -15,6 +15,9 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from django.conf import settings
+from django.db.models import Prefetch
+from django.core.cache import cache
+from rest_framework.pagination import PageNumberPagination
 
 from FasterRunner.customer_swagger import CustomSwaggerAutoSchema
 from .models import MockAPI, MockAPILog, MockProject
@@ -301,20 +304,38 @@ class MockProjectViewSet(viewsets.ModelViewSet):
 class MockAPILogFilter(filters.FilterSet):
     request_id = filters.CharFilter(lookup_expr="icontains")
     request_path = filters.CharFilter(method="filter_by_request_path")
+    created_after = filters.DateTimeFilter(field_name="create_time", lookup_expr="gte")
+    created_before = filters.DateTimeFilter(field_name="create_time", lookup_expr="lte")
 
     class Meta:
         model = MockAPILog
-        fields = ["request_id", "request_path"]
+        fields = ["request_id", "request_path", "created_after", "created_before"]
 
     def filter_by_request_path(self, queryset, name, value):
         return queryset.filter(api__request_path__icontains=value)
 
 
+class MockAPILogPagination(PageNumberPagination):
+    page_size = 15
+    page_size_query_param = 'size'
+    max_page_size = 100
+
+
 class MockAPILogViewSet(viewsets.ModelViewSet):
     swagger_tag = 'Mock API Log CRUD'
     swagger_schema = CustomSwaggerAutoSchema
-    queryset = MockAPILog.objects.select_related('api', 'project').all()
+    # 修改 queryset,添加 prefetch_related 预加载相关数据
+    queryset = (MockAPILog.objects
+                .select_related('api', 'project')
+                .prefetch_related(
+                    Prefetch('project', 
+                            queryset=MockProject.objects.only(
+                                'project_id', 'project_name', 'project_desc'
+                            ))
+                )
+                .all())
     serializer_class = MockAPILogSerializer
     filter_backends = [DjangoFilterBackend, SearchFilter]
     filterset_class = MockAPILogFilter
     search_fields = ['request_id', 'api__request_path']
+    pagination_class = MockAPILogPagination
