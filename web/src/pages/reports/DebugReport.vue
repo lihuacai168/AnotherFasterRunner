@@ -76,7 +76,7 @@
                         <div class="json-editor">
                             <!-- 左侧标题 -->
                             <div class="section-title">
-                                <h3>初始变量，包含：配置变量，全局变量，驱动代码变量</h3>
+                                <h3>初始变量，包含：配置变量，全局变量，自定义函数变量</h3>
                             </div>
                             <v-jsoneditor
                                 ref="jsonEditor"

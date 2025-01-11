@@ -29,7 +29,7 @@ class DebugCode(object):
             os.chdir(self.temp)
             file_path = os.path.join(self.temp, "debugtalk.py")
             loader.FileLoader.dump_python_file(file_path, self.__code)
-            # 修复驱动代码运行时，找不到内置httprunner包
+            # 修复自定义函数运行时，找不到内置httprunner包
             run_path = [BASE_DIR]
             run_path.extend(sys.path)
             env = {"PYTHONPATH": ":".join(run_path)}

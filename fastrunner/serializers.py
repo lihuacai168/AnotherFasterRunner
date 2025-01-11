@@ -68,7 +68,7 @@ class VisitSerializer(serializers.ModelSerializer):
 
 class DebugTalkSerializer(serializers.ModelSerializer):
     """
-    驱动代码序列化
+    自定义函数序列化
     """
 
     class Meta:

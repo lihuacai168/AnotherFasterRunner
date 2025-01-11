@@ -220,7 +220,7 @@ def parse_tests(testcases, debugtalk, name=None, config=None, project=None):
         for variables in config["variables"]:
             variables_mapping.update(variables)
 
-    # 驱动代码中的所有函数
+    # 自定义函数中的所有函数
     functions_mapping = debugtalk.get("functions", {})
 
     # 替换extract,validate中的变量和函数，只对value有效，key无效
