@@ -2,7 +2,7 @@
 FROM python:3.11-buster as Base
 
 # 安装 Poetry
-RUN pip install poetry
+RUN pip install poetry==1.8.5
 
 # 复制 pyproject.toml 和 poetry.lock 文件
 COPY pyproject.toml poetry.lock ./
