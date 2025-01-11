@@ -30,7 +30,7 @@ export default {
                 {name: "测试用例", url: "AutoTest", icon: 'el-icon-s-operation'},
                 {name: "配置管理", url: "RecordConfig", icon: 'el-icon-s-tools'},
                 {name: "全局变量", url: "GlobalEnv", icon: 'el-icon-s-custom'},
-                {name: "驱动代码", url: "DebugTalk", icon: 'el-icon-s-platform'},
+                {name: "自定义函数", url: "DebugTalk", icon: 'el-icon-s-platform'},
                 {name: "定时任务", url: "Task", icon: 'el-icon-timer'},
                 {name: "历史报告", url: "Reports", icon: 'el-icon-s-data'},
                 {
