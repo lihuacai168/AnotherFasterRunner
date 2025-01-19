@@ -6,8 +6,11 @@ WORKDIR /app
 # copy both 'package.json' and 'package-lock.json' (if available)
 COPY package*.json ./
 
+# 设置 yarn 配置
+RUN yarn config set registry https://registry.npmmirror.com \
+    && yarn config set network-timeout 300000
+
 # install project dependencies
-# RUN yarn install --registry https://registry.npm.taobao.org/
 RUN yarn install
 
 # copy project files and folders to the current working directory (i.e. 'app' folder)
