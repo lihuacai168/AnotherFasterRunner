@@ -71,7 +71,7 @@ jobs:
         fi
 
   build_arm64:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04-arm
     env:
       DOCKERHUB_USERNAME: rikasai
       DOCKER_REPOSITORY_NAME: fast-runner-frontend
