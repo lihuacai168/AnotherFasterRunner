@@ -12,12 +12,13 @@ on:
       - 'requirements.txt'
       - '!./web/**'
 jobs:
-  build_app_image:
+  build_amd64:
     runs-on: ubuntu-latest
 
     env:
       DOCKERHUB_USERNAME: rikasai
       DOCKER_REPOSITORY_NAME: fast-runner-backend
+      ARCH: amd64
 
     steps:
     - name: Check out the repository
@@ -38,13 +39,77 @@ jobs:
         GIT_TAG=$(git describe --tags --exact-match ${{ github.sha }} 2> /dev/null || echo "")
         echo "GIT_TAG=$GIT_TAG" >> $GITHUB_ENV
 
-    - name: Build APP Image
+    - name: Build AMD64 Image
       uses: docker/build-push-action@v2
       with:
         context: .
         file: ./Dockerfile
-        platforms: linux/amd64,linux/arm64
+        platforms: linux/amd64
         push: true
         tags: |
-          ${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKER_REPOSITORY_NAME }}:latest
-          ${{ env.GIT_TAG != '' && format('{0}/{1}:{2}', env.DOCKERHUB_USERNAME, env.DOCKER_REPOSITORY_NAME, env.GIT_TAG) || '' }}
+          ${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKER_REPOSITORY_NAME }}:latest-amd64
+          ${{ env.GIT_TAG != '' && format('{0}/{1}:{2}-amd64', env.DOCKERHUB_USERNAME, env.DOCKER_REPOSITORY_NAME, env.GIT_TAG) || '' }}
+
+    - name: Create and push manifest
+      run: |
+        docker manifest create ${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKER_REPOSITORY_NAME }}:latest \
+          ${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKER_REPOSITORY_NAME }}:latest-amd64 \
+          ${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKER_REPOSITORY_NAME }}:latest-arm64 || true
+        docker manifest push ${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKER_REPOSITORY_NAME }}:latest || true
+        if [ ! -z "${{ env.GIT_TAG }}" ]; then
+          docker manifest create ${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKER_REPOSITORY_NAME }}:${{ env.GIT_TAG }} \
+            ${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKER_REPOSITORY_NAME }}:${{ env.GIT_TAG }}-amd64 \
+            ${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKER_REPOSITORY_NAME }}:${{ env.GIT_TAG }}-arm64 || true
+          docker manifest push ${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKER_REPOSITORY_NAME }}:${{ env.GIT_TAG }} || true
+        fi
+
+  build_arm64:
+    runs-on: ubuntu-latest
+
+    env:
+      DOCKERHUB_USERNAME: rikasai
+      DOCKER_REPOSITORY_NAME: fast-runner-backend
+      ARCH: arm64
+
+    steps:
+    - name: Check out the repository
+      uses: actions/checkout@v2
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v1
+
+    - name: Log in to Docker Hub
+      uses: docker/login-action@v2
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+    - name: Get Git tag if exists
+      id: get_tag
+      run: |
+        GIT_TAG=$(git describe --tags --exact-match ${{ github.sha }} 2> /dev/null || echo "")
+        echo "GIT_TAG=$GIT_TAG" >> $GITHUB_ENV
+
+    - name: Build ARM64 Image
+      uses: docker/build-push-action@v2
+      with:
+        context: .
+        file: ./Dockerfile
+        platforms: linux/arm64
+        push: true
+        tags: |
+          ${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKER_REPOSITORY_NAME }}:latest-arm64
+          ${{ env.GIT_TAG != '' && format('{0}/{1}:{2}-arm64', env.DOCKERHUB_USERNAME, env.DOCKER_REPOSITORY_NAME, env.GIT_TAG) || '' }}
+
+    - name: Create and push manifest
+      run: |
+        docker manifest create ${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKER_REPOSITORY_NAME }}:latest \
+          ${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKER_REPOSITORY_NAME }}:latest-amd64 \
+          ${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKER_REPOSITORY_NAME }}:latest-arm64 || true
+        docker manifest push ${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKER_REPOSITORY_NAME }}:latest || true
+        if [ ! -z "${{ env.GIT_TAG }}" ]; then
+          docker manifest create ${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKER_REPOSITORY_NAME }}:${{ env.GIT_TAG }} \
+            ${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKER_REPOSITORY_NAME }}:${{ env.GIT_TAG }}-amd64 \
+            ${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKER_REPOSITORY_NAME }}:${{ env.GIT_TAG }}-arm64 || true
+          docker manifest push ${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKER_REPOSITORY_NAME }}:${{ env.GIT_TAG }} || true
+        fi
