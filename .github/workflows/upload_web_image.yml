@@ -54,21 +54,10 @@ jobs:
         platforms: linux/amd64
         push: true
         tags: |
+          ${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKER_REPOSITORY_NAME }}:latest
           ${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKER_REPOSITORY_NAME }}:latest-amd64
+          ${{ env.GIT_TAG != '' && format('{0}/{1}:{2}', env.DOCKERHUB_USERNAME, env.DOCKER_REPOSITORY_NAME, env.GIT_TAG) || '' }}
           ${{ env.GIT_TAG != '' && format('{0}/{1}:{2}-amd64', env.DOCKERHUB_USERNAME, env.DOCKER_REPOSITORY_NAME, env.GIT_TAG) || '' }}
-
-    - name: Create and push manifest
-      run: |
-        docker manifest create ${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKER_REPOSITORY_NAME }}:latest \
-          ${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKER_REPOSITORY_NAME }}:latest-amd64 \
-          ${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKER_REPOSITORY_NAME }}:latest-arm64 || true
-        docker manifest push ${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKER_REPOSITORY_NAME }}:latest || true
-        if [ ! -z "${{ env.GIT_TAG }}" ]; then
-          docker manifest create ${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKER_REPOSITORY_NAME }}:${{ env.GIT_TAG }} \
-            ${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKER_REPOSITORY_NAME }}:${{ env.GIT_TAG }}-amd64 \
-            ${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKER_REPOSITORY_NAME }}:${{ env.GIT_TAG }}-arm64 || true
-          docker manifest push ${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKER_REPOSITORY_NAME }}:${{ env.GIT_TAG }} || true
-        fi
 
   build_arm64:
     runs-on: ubuntu-22.04-arm
@@ -112,18 +101,7 @@ jobs:
         platforms: linux/arm64
         push: true
         tags: |
+          ${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKER_REPOSITORY_NAME }}:latest
           ${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKER_REPOSITORY_NAME }}:latest-arm64
+          ${{ env.GIT_TAG != '' && format('{0}/{1}:{2}', env.DOCKERHUB_USERNAME, env.DOCKER_REPOSITORY_NAME, env.GIT_TAG) || '' }}
           ${{ env.GIT_TAG != '' && format('{0}/{1}:{2}-arm64', env.DOCKERHUB_USERNAME, env.DOCKER_REPOSITORY_NAME, env.GIT_TAG) || '' }}
-
-    - name: Create and push manifest
-      run: |
-        docker manifest create ${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKER_REPOSITORY_NAME }}:latest \
-          ${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKER_REPOSITORY_NAME }}:latest-amd64 \
-          ${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKER_REPOSITORY_NAME }}:latest-arm64 || true
-        docker manifest push ${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKER_REPOSITORY_NAME }}:latest || true
-        if [ ! -z "${{ env.GIT_TAG }}" ]; then
-          docker manifest create ${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKER_REPOSITORY_NAME }}:${{ env.GIT_TAG }} \
-            ${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKER_REPOSITORY_NAME }}:${{ env.GIT_TAG }}-amd64 \
-            ${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKER_REPOSITORY_NAME }}:${{ env.GIT_TAG }}-arm64 || true
-          docker manifest push ${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKER_REPOSITORY_NAME }}:${{ env.GIT_TAG }} || true
-        fi
