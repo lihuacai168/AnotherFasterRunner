@@ -117,23 +117,17 @@ jobs:
         export DOCKER_CLI_EXPERIMENTAL=enabled
         
         # 创建并推送 latest manifest
+        docker manifest rm ${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKER_REPOSITORY_NAME }}:latest || true
         docker manifest create ${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKER_REPOSITORY_NAME }}:latest \
-          ${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKER_REPOSITORY_NAME }}:latest-amd64 \
-          ${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKER_REPOSITORY_NAME }}:latest-arm64
-        docker manifest annotate ${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKER_REPOSITORY_NAME }}:latest \
-          ${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKER_REPOSITORY_NAME }}:latest-amd64 --os linux --arch amd64
-        docker manifest annotate ${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKER_REPOSITORY_NAME }}:latest \
-          ${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKER_REPOSITORY_NAME }}:latest-arm64 --os linux --arch arm64
+          --amend ${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKER_REPOSITORY_NAME }}:latest-amd64 \
+          --amend ${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKER_REPOSITORY_NAME }}:latest-arm64
         docker manifest push ${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKER_REPOSITORY_NAME }}:latest
         
         # 如果存在 tag，创建并推送 tag manifest
         if [ ! -z "${{ env.GIT_TAG }}" ]; then
+          docker manifest rm ${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKER_REPOSITORY_NAME }}:${{ env.GIT_TAG }} || true
           docker manifest create ${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKER_REPOSITORY_NAME }}:${{ env.GIT_TAG }} \
-            ${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKER_REPOSITORY_NAME }}:${{ env.GIT_TAG }}-amd64 \
-            ${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKER_REPOSITORY_NAME }}:${{ env.GIT_TAG }}-arm64
-          docker manifest annotate ${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKER_REPOSITORY_NAME }}:${{ env.GIT_TAG }} \
-            ${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKER_REPOSITORY_NAME }}:${{ env.GIT_TAG }}-amd64 --os linux --arch amd64
-          docker manifest annotate ${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKER_REPOSITORY_NAME }}:${{ env.GIT_TAG }} \
-            ${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKER_REPOSITORY_NAME }}:${{ env.GIT_TAG }}-arm64 --os linux --arch arm64
+            --amend ${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKER_REPOSITORY_NAME }}:${{ env.GIT_TAG }}-amd64 \
+            --amend ${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKER_REPOSITORY_NAME }}:${{ env.GIT_TAG }}-arm64
           docker manifest push ${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKER_REPOSITORY_NAME }}:${{ env.GIT_TAG }}
         fi
