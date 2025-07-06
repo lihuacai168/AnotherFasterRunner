@@ -378,13 +378,15 @@ class TestErrorHandling(TestCase):
             email='error@example.com',
             password='testpass123'
         )
-        self.user_info = UserInfo.objects.create(
-            username='erroruser',
-            email='error@example.com',
-            password='testpass123'
-        )
-        self.token = UserToken.objects.create(user=self.user_info, token='error-token-123')
-        self.client.credentials(HTTP_AUTHORIZATION=f'Token {self.token.token}')
+        
+        # Use JWT authentication as that's what the app actually uses
+        from rest_framework_jwt.settings import api_settings
+        jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
+        jwt_encode_handler = api_settings.JWT_ENCODE_HANDLER
+        payload = jwt_payload_handler(self.user)
+        token = jwt_encode_handler(payload)
+        
+        self.client.credentials(HTTP_AUTHORIZATION=token)
 
     def test_invalid_project_access(self):
         """Test accessing non-existent project"""
