@@ -256,16 +256,20 @@ class TestAPIWorkflowIntegration(TestCase):
             case=case,
             name="Login",
             step=1,
-            api=api,
-            body=api.body
+            source_api_id=api.id,
+            body=api.body,
+            url=api.url,
+            method=api.method
         )
         
         CaseStep.objects.create(
             case=case,
             name="Get User Info",
             step=2,
-            api=api2,
-            body=api2.body
+            source_api_id=api2.id,
+            body=api2.body,
+            url=api2.url,
+            method=api2.method
         )
         
         # Verify the setup

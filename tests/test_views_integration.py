@@ -120,8 +120,10 @@ class TestRunViews(TestCase):
             case=case,
             name="Step 1",
             step=1,
-            api=self.api,
-            body=self.api.body
+            source_api_id=self.api.id,
+            body=self.api.body,
+            url=self.api.url,
+            method=self.api.method
         )
         
         mock_run_api.return_value = {
