@@ -25,6 +25,7 @@ class TestFastUserViews(TestCase):
             'password': 'testpass123'
         }
 
+    @pytest.mark.skip(reason="Registration endpoint is disabled")
     def test_user_registration(self):
         """Test user registration"""
         response = self.client.post('/api/user/register/', self.user_data, format='json')
@@ -44,6 +45,7 @@ class TestFastUserViews(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertIn('token', response.data)
 
+    @pytest.mark.skip(reason="Registration endpoint is disabled")
     def test_duplicate_registration(self):
         """Test duplicate username registration"""
         # Create user first

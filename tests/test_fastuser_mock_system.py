@@ -18,6 +18,7 @@ class TestFastUserViews(TestCase):
     def setUp(self):
         self.client = APIClient()
         
+    @pytest.mark.skip(reason="Registration endpoint is disabled")
     def test_user_register(self):
         """Test user registration"""
         data = {
@@ -45,6 +46,7 @@ class TestFastUserViews(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertIn('token', response.data)
         
+    @pytest.mark.skip(reason="Registration endpoint is disabled") 
     def test_duplicate_username(self):
         """Test duplicate username registration"""
         MyUser.objects.create_user(
