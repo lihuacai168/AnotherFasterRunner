@@ -3,7 +3,6 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 from django.contrib.auth import get_user_model
-from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APIClient, APITestCase
 
@@ -32,7 +31,7 @@ class TestProjectAPIViews(APITestCase):
         
     def test_project_list_view(self):
         """Test project list endpoint"""
-        url = reverse('project-list')  # Adjust URL name based on your urls.py
+        url = '/api/fastrunner/project/'
         response = self.client.get(url)
         
         assert response.status_code == status.HTTP_200_OK
@@ -42,7 +41,7 @@ class TestProjectAPIViews(APITestCase):
         
     def test_project_create_view(self):
         """Test project creation endpoint"""
-        url = reverse('project-add')  # Adjust URL name based on your urls.py
+        url = '/api/fastrunner/project/'
         data = {
             'name': 'New Test Project',
             'desc': 'New project description',
@@ -57,7 +56,7 @@ class TestProjectAPIViews(APITestCase):
     @pytest.mark.django_db
     def test_project_create_duplicate_name(self):
         """Test creating project with duplicate name"""
-        url = reverse('project-add')
+        url = '/api/fastrunner/project/'
         data = {
             'name': 'Test Project',  # Same as existing project
             'desc': 'Duplicate project',

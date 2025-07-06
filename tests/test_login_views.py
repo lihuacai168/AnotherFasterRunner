@@ -1,11 +1,10 @@
 import pytest
 from django.contrib.auth import get_user_model
-from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APIClient
 
-# 假设LoginView用的Url名字是'login'
-login_url = reverse("login")
+# 使用实际的登录URL路径
+login_url = "/api/user/login/"
 
 
 @pytest.mark.django_db  # 如果你的测试需要数据库操作
