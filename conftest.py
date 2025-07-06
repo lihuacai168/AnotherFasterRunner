@@ -9,32 +9,25 @@ from django.conf import settings
 from django.test.utils import get_runner
 
 
-def pytest_configure():
-    """Configure Django settings for pytest"""
+def pytest_configure(config):
+    """Configure pytest settings"""
+    # Set up Django configuration first
+    import os
+    
     # Use CI settings if available, otherwise fall back to dev settings
     if 'DJANGO_SETTINGS_MODULE' in os.environ:
         pass  # Use existing setting
     else:
         os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'FasterRunner.settings.dev')
     
-    # Setup Django if not already configured
+    # Configure Django
+    import django
+    from django.conf import settings
+    
     if not settings.configured:
         django.setup()
 
 
-@pytest.fixture(scope='session')
-def django_db_setup():
-    """Set up test database"""
-    from django.core.management import call_command
-    
-    # Configure test database
-    settings.DATABASES['default'] = {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': ':memory:'
-    }
-    
-    # Create all tables by running migrations
-    call_command('migrate', verbosity=0, interactive=False, run_syncdb=True)
 
 
 @pytest.fixture
