@@ -84,9 +84,6 @@ requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
 
-[project]
-# Support Python 3.11+.
-requires-python = ">=3.11"
 
 [tool.ruff]
 # Set the maximum line length to 120.
