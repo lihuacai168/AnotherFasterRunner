@@ -3,10 +3,11 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 from django.contrib.auth import get_user_model
+from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APIClient, APITestCase
 
-from fastrunner.models import API, Config, Project
+from fastrunner.models import API, Config, Project, Relation
 from fastuser.models import MyUser
 
 
@@ -90,19 +91,26 @@ class TestAPITemplateViews(APITestCase):
             responsible="testuser"
         )
         
+        # Create relation for API tree
+        self.relation = Relation.objects.create(
+            project=self.project,
+            tree='[{"id": 1, "label": "Root", "children": []}]',
+            type=1
+        )
+        
         self.api = API.objects.create(
             name="Test API",
-            body='{"method": "GET", "url": "/test"}',
+            body='{"name": "Test API", "request": {"method": "GET", "url": "/test"}}',
             url="/api/test",
             method="GET",
             project=self.project,
             relation=1,
-            creator=self.user
+            creator=self.user.username
         )
         
     def test_api_list_view(self):
         """Test API list endpoint with project filter"""
-        url = reverse('api-list')  # Adjust URL name based on your urls.py
+        url = '/api/fastrunner/api/'
         response = self.client.get(url, {'project': self.project.id})
         
         assert response.status_code == status.HTTP_200_OK
@@ -120,7 +128,7 @@ class TestAPITemplateViews(APITestCase):
         
     def test_api_list_search_filter(self):
         """Test API list with search filter"""
-        url = reverse('api-list')
+        url = '/api/fastrunner/api/'
         response = self.client.get(url, {
             'project': self.project.id,
             'search': 'Test'
@@ -139,7 +147,7 @@ class TestAPITemplateViews(APITestCase):
         
     def test_api_list_search_no_results(self):
         """Test API list with search that returns no results"""
-        url = reverse('api-list')
+        url = '/api/fastrunner/api/'
         response = self.client.get(url, {
             'project': self.project.id,
             'search': 'NonExistentAPI'
@@ -177,14 +185,14 @@ class TestAPITemplateViews(APITestCase):
         url = f'/api/fastrunner/api/{self.api.id}/'
         data = {
             'name': 'Updated Test API',
-            'body': '{"method": "PUT", "url": "/updated-test"}',
+            'body': '{"name": "Updated Test API", "request": {"method": "PUT", "url": "/updated-test"}}',
             'url': '/api/updated-test',
             'method': 'PUT',
             'project': self.project.id,
             'nodeId': 1
         }
         
-        response = self.client.put(url, data, format='json')
+        response = self.client.patch(url, data, format='json')
         
         assert response.status_code in [status.HTTP_200_OK, status.HTTP_204_NO_CONTENT]
         
@@ -231,7 +239,7 @@ class TestConfigViews(APITestCase):
         
         self.config = Config.objects.create(
             name="Test Config",
-            body='{"headers": {"Content-Type": "application/json"}}',
+            body='{"name": "Test Config", "request": {"base_url": "https://api.example.com", "headers": {"Content-Type": "application/json"}}}',
             base_url="https://api.example.com",
             project=self.project,
             is_default=True
@@ -240,7 +248,7 @@ class TestConfigViews(APITestCase):
     def test_config_list_view(self):
         """Test config list endpoint"""
         url = '/api/fastrunner/config/'
-        response = self.client.get(url, {'project': self.project.id})
+        response = self.client.get(url, {'project': self.project.id, 'search': ''})
         
         assert response.status_code == status.HTTP_200_OK
         response_data = response.json()
