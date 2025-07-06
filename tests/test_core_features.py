@@ -246,7 +246,9 @@ class TestAPIWorkflowIntegration(TestCase):
         case = Case.objects.create(
             name="Login and Get User Info",
             project=self.project,
-            tag=1
+            tag=1,
+            relation=1,  # Required node id
+            length=2     # Required API count
         )
         
         # Add steps
@@ -446,7 +448,9 @@ class TestCIIntegration(TestCase):
         case = Case.objects.create(
             name="CI Test Case",
             project=self.project,
-            tag=1
+            tag=1,
+            relation=1,  # Required node id
+            length=1     # Required API count
         )
         
         mock_prepare_kwargs.return_value = ({}, {"config": {}})

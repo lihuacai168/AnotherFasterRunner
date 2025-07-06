@@ -110,7 +110,9 @@ class TestRunViews(TestCase):
         case = Case.objects.create(
             name="Test Case",
             project=self.project,
-            tag=1
+            tag=1,
+            relation=1,  # Required node id
+            length=1     # Required API count
         )
         
         # Create test step
@@ -217,7 +219,9 @@ class TestSuiteViews(TestCase):
         case = Case.objects.create(
             name="Step Test Case",
             project=self.project,
-            tag=1
+            tag=1,
+            relation=1,  # Required node id
+            length=1     # Required API count
         )
         
         # Create API for step
@@ -318,7 +322,9 @@ class TestProjectViews(TestCase):
             Case.objects.create(
                 name=f"Case {i}",
                 project=project,
-                tag=1
+                tag=1,
+                relation=1,  # Required node id
+                length=1     # Required API count
             )
         
         # Create reports
@@ -582,7 +588,9 @@ class TestScheduleViews(TestCase):
         case = Case.objects.create(
             name="Scheduled Test Case",
             project=self.project,
-            tag=1
+            tag=1,
+            relation=1,  # Required node id
+            length=1     # Required API count
         )
         
         # Create schedule

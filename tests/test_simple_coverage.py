@@ -124,7 +124,9 @@ class TestSimpleCoverage(TestCase):
         case = Case.objects.create(
             name="Test Case",
             project=self.project,
-            tag=1
+            tag=1,
+            relation=1,  # Required node id
+            length=1     # Required API count
         )
         self.assertEqual(str(case), "Test Case")
         

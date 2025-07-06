@@ -82,7 +82,9 @@ class TestSerializers(TestCase):
         case = Case.objects.create(
             name="Test Case",
             project=self.project,
-            tag=1
+            tag=1,
+            relation=1,  # Required node id
+            length=1     # Required API count
         )
         
         serializer = CaseSerializer(instance=case)
@@ -177,7 +179,9 @@ class TestModelMethods(TestCase):
         case = Case.objects.create(
             name="String Test Case",
             project=project,
-            tag=1
+            tag=1,
+            relation=1,  # Required node id
+            length=1     # Required API count
         )
         self.assertEqual(str(case), "String Test Case")
         
