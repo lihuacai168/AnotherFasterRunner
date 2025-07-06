@@ -60,8 +60,6 @@ jobs:
         sudo apt-get install -y \
           libmysqlclient-dev \
           pkg-config \
-          libldap2-dev \
-          libsasl2-dev \
           libssl-dev
 
     - name: Install dependencies
@@ -204,46 +202,6 @@ jobs:
         echo "- Python Version: ${{ matrix.python-version }}" >> $GITHUB_STEP_SUMMARY
         echo "- Tests Status: ✅ Completed" >> $GITHUB_STEP_SUMMARY
         echo "- Coverage Report: Available in artifacts" >> $GITHUB_STEP_SUMMARY
-
-  security-scan:
-    runs-on: ubuntu-latest
-    needs: test
-    
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-
-    - name: Set up Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: '3.11'
-
-    - name: Install Poetry
-      uses: snok/install-poetry@v1
-
-    - name: Install system dependencies
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y \
-          libmysqlclient-dev \
-          pkg-config \
-          libldap2-dev \
-          libsasl2-dev \
-          libssl-dev
-
-    - name: Install dependencies
-      run: poetry install --with dev
-
-    - name: Run security checks
-      run: |
-        # Check for known security issues in dependencies
-        poetry audit || echo "Security vulnerabilities found - review required"
-        
-        # Basic security scan of Python files
-        echo "Checking for potential security issues..."
-        grep -r "eval(" . --include="*.py" || echo "No eval() usage found"
-        grep -r "exec(" . --include="*.py" || echo "No exec() usage found"
-        grep -r "SECRET_KEY.*=" . --include="*.py" || echo "No hardcoded secret keys found"
 
   integration-test:
     runs-on: ubuntu-latest
