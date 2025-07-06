@@ -56,20 +56,6 @@ class RegisterView(APIView):
             return Response(response.SYSTEM_ERROR)
 
 
-def ldap_auth(username: str, password: str) -> Optional[User]:
-    ldap_user = authenticate(username=username, password=password)
-    if ldap_user and ldap_user.backend == "django_auth_ldap.backend.LDAPBackend":
-        logger.info(f"LDAP authentication successful for {username}")
-        local_user: User = User.objects.filter(username=username).first()
-        if local_user:
-            local_user.password = make_password(password)
-            local_user.save(update_fields=["password"])
-            logger.info(f"ldap认证通过，更新本地用户密码: {username}")
-        return local_user
-    logger.info(f"LDAP authentication failed for {username}")
-    return None
-
-
 def local_auth(username: str, password: str) -> Optional[User]:
     local_user = User.objects.filter(username=username).first()
     if not local_user:
@@ -114,16 +100,7 @@ class LoginView(APIView):
             masked_password = f"{password[0]}{'*' * (len(password) - 2)}{password[-1]}"
             logger.info(f"Received login request for {username=}, password={masked_password}")
 
-            local_user = None
-            if settings.USE_LDAP:
-                logger.info(f"Attempting LDAP authentication for {username=}")
-                local_user = ldap_auth(username, password)
-
-            if not local_user:
-                logger.info(
-                    f"LDAP authentication failed or not enabled, falling back to local authentication for {username=}"
-                )
-                local_user = local_auth(username, password)
+            local_user = local_auth(username, password)
 
             if local_user:
                 logger.info(f"Authentication successful for {username=}")
