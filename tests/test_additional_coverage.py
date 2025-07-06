@@ -182,7 +182,7 @@ class TestMockViews(TestCase):
             'is_active': True
         }
         project_resp = self.client.post('/api/mock/mock_project/', project_data, format='json')
-        project_id = project_resp.data['id']
+        project_id = project_resp.data['project_id']  # Use project_id not id
         
         # Create mock API
         api_data = {
