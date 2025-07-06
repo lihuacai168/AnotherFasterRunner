@@ -65,7 +65,8 @@ class TestRunViews(TestCase):
                     "url": "/api/test",
                     "method": "GET"
                 }
-            })
+            }),
+            relation=1
         )
 
     @patch('fastrunner.views.run.run_api')
@@ -231,7 +232,8 @@ class TestSuiteViews(TestCase):
                     "url": "/api/step",
                     "method": "GET"
                 }
-            })
+            }),
+            relation=1
         )
         
         # Add step
@@ -309,7 +311,8 @@ class TestProjectViews(TestCase):
                 project=project,
                 method="GET",
                 url=f"/api/test{i}",
-                body=json.dumps({"name": f"API {i}"})
+                body=json.dumps({"name": f"API {i}"}),
+                relation=1
             )
             
             Case.objects.create(

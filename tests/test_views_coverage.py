@@ -79,7 +79,8 @@ class TestAPIViews(TestCase):
             project=self.project,
             method="GET",
             url="/test",
-            body=json.dumps({"name": "test"})
+            body=json.dumps({"name": "test"}),
+            relation=1
         )
         
         view = api.APITemplateView()
@@ -98,7 +99,8 @@ class TestAPIViews(TestCase):
                 project=self.project,
                 method="GET",
                 url=f"/test{i}",
-                body=json.dumps({"name": f"test{i}"})
+                body=json.dumps({"name": f"test{i}"}),
+                relation=1
             )
             
         view = api.APITemplateView()
@@ -180,7 +182,8 @@ class TestRunViews(TestCase):
             project=self.project,
             method="GET",
             url="/run",
-            body=json.dumps({"name": "run"})
+            body=json.dumps({"name": "run"}),
+            relation=1
         )
         
         request = self.factory.get(f'/run_api_pk/{test_api.id}/')

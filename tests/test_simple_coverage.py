@@ -115,7 +115,8 @@ class TestSimpleCoverage(TestCase):
             project=self.project,
             method="GET",
             url="/test",
-            body="{}"
+            body="{}",
+            relation=1
         )
         self.assertEqual(str(api), "Test API")
         

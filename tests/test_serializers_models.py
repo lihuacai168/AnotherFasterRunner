@@ -67,7 +67,8 @@ class TestSerializers(TestCase):
                 },
                 "validate": [{"equals": ["status_code", 200]}],
                 "extract": [{"token": "content.token"}]
-            })
+            }),
+            relation=1
         )
         
         # Test serialization
@@ -165,7 +166,8 @@ class TestModelMethods(TestCase):
             project=project,
             method="GET",
             url="/test",
-            body="{}"
+            body="{}",
+            relation=1
         )
         self.assertEqual(str(api), "String Test API")
         
