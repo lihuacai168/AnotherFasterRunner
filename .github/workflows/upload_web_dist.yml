@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
     - name: Install Dependencies
       run: |
         cd web
@@ -26,7 +26,7 @@ jobs:
         cd web
         npm run build
     - name: Upload Files
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: dist
         path: web/dist
