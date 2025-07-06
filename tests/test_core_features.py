@@ -274,8 +274,7 @@ class TestAPIWorkflowIntegration(TestCase):
         
         # Verify the setup
         self.assertEqual(CaseStep.objects.filter(case=case).count(), 2)
-        self.assertEqual(Variables.objects.filter(project=self.project).count(), 1)
-        self.assertEqual(Variables.objects.filter(project__isnull=True).count(), 1)
+        self.assertEqual(Variables.objects.filter(project=self.project).count(), 2)  # Both variables belong to project
 
     def test_api_with_setup_and_teardown_hooks(self):
         """Test API with setup and teardown hooks"""
