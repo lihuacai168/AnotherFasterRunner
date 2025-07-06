@@ -212,7 +212,8 @@ class TestAPIWorkflowIntegration(TestCase):
             project=self.project,
             method="POST",
             url="/api/auth/login",
-            body=json.dumps(api_body)
+            body=json.dumps(api_body),
+            relation=1
         )
         
         # Step 5: Create API that uses extracted data
@@ -236,7 +237,8 @@ class TestAPIWorkflowIntegration(TestCase):
             project=self.project,
             method="GET",
             url="/api/users/$user_id",
-            body=json.dumps(api2_body)
+            body=json.dumps(api2_body),
+            relation=1
         )
         
         # Step 6: Create test case with both APIs
@@ -297,7 +299,8 @@ class TestAPIWorkflowIntegration(TestCase):
             project=self.project,
             method="GET",
             url="/api/data",
-            body=json.dumps(api_body)
+            body=json.dumps(api_body),
+            relation=1
         )
         
         # Verify hooks are stored correctly
@@ -346,7 +349,8 @@ class TestAPIWorkflowIntegration(TestCase):
             project=self.project,
             method="POST",
             url="/api/upload",
-            body=json.dumps(api_body)
+            body=json.dumps(api_body),
+            relation=1  # Required field for node id
         )
         
         # Verify file upload configuration
