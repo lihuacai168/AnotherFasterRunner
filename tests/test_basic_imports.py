@@ -176,12 +176,16 @@ class TestImportsAndBasics(TestCase):
 
     def test_day_utils(self):
         """Test day utility functions"""
-        from fastrunner.utils.day import get_day, get_week_start, get_week_end
-        from fastrunner.utils.day import get_month_start, get_month_end
+        from fastrunner.utils.day import get_day, get_week, get_month, get_month_format, get_week_format
         
         # Test functions are callable
         self.assertTrue(callable(get_day))
-        self.assertTrue(callable(get_week_start))
-        self.assertTrue(callable(get_week_end))
-        self.assertTrue(callable(get_month_start))
-        self.assertTrue(callable(get_month_end))
+        self.assertTrue(callable(get_week))
+        self.assertTrue(callable(get_month))
+        self.assertTrue(callable(get_month_format))
+        self.assertTrue(callable(get_week_format))
+        
+        # Test basic functionality
+        day_result = get_day()
+        self.assertIsInstance(day_result, str)
+        self.assertEqual(len(day_result), 10)  # YYYY-MM-DD format
