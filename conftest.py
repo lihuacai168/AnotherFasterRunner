@@ -1,9 +1,10 @@
 """
 Pytest configuration and fixtures for AnotherFasterRunner tests
 """
-import pytest
 import os
+
 import django
+import pytest
 from django.conf import settings
 from django.test.utils import get_runner
 
