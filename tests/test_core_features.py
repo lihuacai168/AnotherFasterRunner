@@ -113,7 +113,7 @@ class TestUtilsIntegration(TestCase):
         """Test response utility functions"""
         
         # Test success responses
-        self.assertEqual(resp_utils.SYSTEM_ERROR['msg'], '系统错误')
+        self.assertEqual(resp_utils.SYSTEM_ERROR['msg'], 'System Error')
         self.assertEqual(resp_utils.VALIDATE_ERROR['msg'], '参数校验错误')
         self.assertEqual(resp_utils.AUTH_FAIL['msg'], '请登录')
         
