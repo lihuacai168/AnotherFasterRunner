@@ -33,15 +33,31 @@ PROJECT_DELETE_SUCCESS = {"code": "0003", "success": True, "msg": "项目删除�
 
 SYSTEM_ERROR = {"code": "9999", "success": False, "msg": "System Error"}
 
+VALIDATE_ERROR = {"code": "9998", "success": False, "msg": "参数校验错误"}
+
+AUTH_FAIL = {"code": "9997", "success": False, "msg": "请登录"}
+
+SYSTEM_SUCCESS = {"code": "0000", "success": True, "msg": "成功"}
+
 TREE_ADD_SUCCESS = {"code": "0001", "success": True, "msg": "树形结构添加成功"}
 
 TREE_UPDATE_SUCCESS = {"code": "0002", "success": True, "msg": "树形结构更新成功"}
+
+TREE_DELETE_SUCCESS = {"code": "0003", "success": True, "msg": "树形结构删除成功"}
+
+TREE_NOT_EXISTS = {"code": "0102", "success": False, "msg": "节点不存在"}
 
 KEY_MISS = {"code": "0100", "success": False, "msg": "请求数据非法"}
 
 FILE_UPLOAD_SUCCESS = {"code": "0001", "success": True, "msg": "文件上传成功"}
 
 FILE_EXISTS = {"code": "0101", "success": False, "msg": "文件已存在,默认使用已有文件"}
+
+FILE_UPLOAD_ERROR = {"code": "0103", "success": False, "msg": "文件上传失败"}
+
+DEBUG_TALK_SUCCESS = {"code": "0001", "success": True, "msg": "Debugtalk更新成功"}
+
+CASE_STEP_NOT_EXIST = {"code": "0104", "success": False, "msg": "用例步骤不存在"}
 YAPI_ADD_SUCCESS = {"code": "0001", "success": True, "msg": "导入YAPI接口添加成功"}
 
 YAPI_ADD_FAILED = {"code": "0103", "success": False, "msg": "导入YAPI接口失败"}
@@ -60,7 +76,11 @@ API_NOT_FOUND = {"code": "0102", "success": False, "msg": "未查询到该API"}
 
 API_DEL_SUCCESS = {"code": "0003", "success": True, "msg": "API删除成功"}
 
+API_DELETE_SUCCESS = {"code": "0003", "success": True, "msg": "API删除成功"}
+
 REPORT_DEL_SUCCESS = {"code": "0003", "success": True, "msg": "报告删除成功"}
+
+REPORT_DELETE_SUCCESS = {"code": "0003", "success": True, "msg": "报告删除成功"}
 
 API_UPDATE_SUCCESS = {"code": "0002", "success": True, "msg": "API更新成功"}
 
@@ -101,7 +121,11 @@ VARIABLES_NOT_EXISTS = {"code": "0102", "success": False, "msg": "指定的全�
 
 CONFIG_UPDATE_SUCCESS = {"code": "0002", "success": True, "msg": "环境更新成功"}
 
+CONFIG_DELETE_SUCCESS = {"code": "0003", "success": True, "msg": "环境删除成功"}
+
 VARIABLES_UPDATE_SUCCESS = {"code": "0002", "success": True, "msg": "全局变量更新成功"}
+
+VARIABLES_DELETE_SUCCESS = {"code": "0003", "success": True, "msg": "全局变量删除成功"}
 
 TASK_ADD_SUCCESS = {"code": "0001", "success": True, "msg": "定时任务新增成功"}
 
@@ -127,6 +151,18 @@ TASK_DEL_SUCCESS = {"code": "0003", "success": True, "msg": "任务删除成功"
 
 TASK_RUN_SUCCESS = {"code": "0001", "success": True, "msg": "用例运行中，请稍后查看报告"}
 
+TASK_NOT_EXIST = {"code": "0005", "success": False, "msg": "任务不存在"}
+
+TASK_HAS_RUN = {"code": "0006", "success": False, "msg": "任务正在运行中"}
+
+SCHEDULE_ADD_SUCCESS = {"code": "0001", "success": True, "msg": "调度添加成功"}
+
+SCHEDULE_UPDATE_SUCCESS = {"code": "0002", "success": True, "msg": "调度更新成功"}
+
+SCHEDULE_DELETE_SUCCESS = {"code": "0003", "success": True, "msg": "调度删除成功"}
+
+SCHEDULE_NOT_EXISTS = {"code": "0102", "success": False, "msg": "调度不存在"}
+
 
 PLAN_DEL_SUCCESS = {"code": "0003", "success": True, "msg": "集成计划删除成功"}
 
@@ -147,4 +183,13 @@ HOSTIP_NOT_EXISTS = {"code": "0102", "success": False, "msg": "指定的域名�
 HOSTIP_EXISTS = {"code": "0101", "success": False, "msg": "此域名已存在，请重新命名"}
 
 HOSTIP_UPDATE_SUCCESS = {"code": "0002", "success": True, "msg": "域名更新成功"}
+
+HOST_ADD_SUCCESS = {"code": "0001", "success": True, "msg": "主机添加成功"}
+
+HOST_UPDATE_SUCCESS = {"code": "0002", "success": True, "msg": "主机更新成功"}
+
+HOST_DELETE_SUCCESS = {"code": "0003", "success": True, "msg": "主机删除成功"}
+
+HOST_NOT_EXISTS = {"code": "0102", "success": False, "msg": "主机不存在"}
+
 HOST_DEL_SUCCESS = {"code": "0003", "success": True, "msg": "域名删除成功"}

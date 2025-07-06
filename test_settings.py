@@ -1,4 +1,5 @@
 # Test settings for FasterRunner
+import datetime
 from FasterRunner.settings.base import *
 
 # Test database configuration
@@ -36,7 +37,7 @@ LOGGING = {
 }
 
 # Security settings for tests
-SECRET_KEY = 'test-secret-key-for-testing-only'
+SECRET_KEY = 'django-insecure-test-key-not-for-production-use-only'
 DEBUG = False
 ALLOWED_HOSTS = ['*']
 
