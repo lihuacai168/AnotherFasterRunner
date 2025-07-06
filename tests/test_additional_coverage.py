@@ -9,7 +9,7 @@ from rest_framework.test import APIClient
 from fastrunner.models import Project
 from fastrunner.utils import response as resp_utils
 from fastrunner.utils.parser import Format
-from fastuser.models import MyUser, UserToken
+from fastuser.models import MyUser, UserToken, UserInfo
 from fastuser.common import response as user_resp
 
 
@@ -71,8 +71,13 @@ class TestFastUserViews(TestCase):
 
     def test_get_user_info(self):
         """Test getting user info with authentication"""
-        user = MyUser.objects.create_user(**self.user_data)
-        token = UserToken.objects.create(user=user, token='test-token-123')
+        # Create UserInfo for the token system
+        user_info = UserInfo.objects.create(
+            username=self.user_data['username'],
+            email=self.user_data['email'],
+            password='hashed_password'  # This would normally be hashed
+        )
+        token = UserToken.objects.create(user=user_info, token='test-token-123')
         
         self.client.credentials(HTTP_AUTHORIZATION=f'Token {token.token}')
         response = self.client.get('/api/user/info/')
@@ -87,8 +92,13 @@ class TestFastUserViews(TestCase):
 
     def test_logout(self):
         """Test user logout"""
-        user = MyUser.objects.create_user(**self.user_data)
-        token = UserToken.objects.create(user=user, token='test-token-123')
+        # Create UserInfo for the token system
+        user_info = UserInfo.objects.create(
+            username=self.user_data['username'],
+            email=self.user_data['email'],
+            password='hashed_password'
+        )
+        token = UserToken.objects.create(user=user_info, token='test-token-123')
         
         self.client.credentials(HTTP_AUTHORIZATION=f'Token {token.token}')
         response = self.client.get('/api/user/logout/')
