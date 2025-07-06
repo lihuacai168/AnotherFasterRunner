@@ -22,13 +22,10 @@ def pytest_configure():
 @pytest.fixture(scope='session')
 def django_db_setup():
     """Set up test database"""
-    from django.core.management import call_command
     settings.DATABASES['default'] = {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': ':memory:'
     }
-    # Run migrations to create tables
-    call_command('migrate', '--run-syncdb', verbosity=0, interactive=False)
 
 
 @pytest.fixture
