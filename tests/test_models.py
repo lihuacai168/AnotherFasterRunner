@@ -57,7 +57,7 @@ class TestProjectModel(TestCase):
             responsible="testuser"
         )
         # Assuming there's a __str__ method that returns name
-        assert str(project) == "Test Project" or "Test Project" in str(project)
+        assert (str(project) == "Test Project") or ("Test Project" in str(project))
 
 
 @pytest.mark.django_db
