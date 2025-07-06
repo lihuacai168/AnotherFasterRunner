@@ -71,8 +71,8 @@
     "zip-webpack-plugin": "^2.0.0"
   },
   "engines": {
-    "node": ">= 6.0.0",
-    "npm": ">= 3.0.0"
+    "node": ">= 22.0.0",
+    "npm": ">= 10.0.0"
   },
   "browserslist": [
     "> 1%",
