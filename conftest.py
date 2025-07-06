@@ -11,7 +11,11 @@ from django.test.utils import get_runner
 def pytest_configure():
     """Configure Django settings for pytest"""
     import os
-    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'FasterRunner.settings.dev')
+    # Use CI settings if available, otherwise fall back to dev settings
+    if 'DJANGO_SETTINGS_MODULE' in os.environ:
+        pass  # Use existing setting
+    else:
+        os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'FasterRunner.settings.dev')
 
 
 @pytest.fixture(scope='session')
