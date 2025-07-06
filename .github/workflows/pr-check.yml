@@ -116,6 +116,9 @@ jobs:
         }
         EOF
         
+        # Run database migrations for in-memory database
+        poetry run python manage.py migrate --run-syncdb
+        
         # Run quick tests without coverage for fast feedback
         poetry run pytest tests/ -x --tb=short -q
 
@@ -123,6 +126,9 @@ jobs:
       id: coverage
       run: |
         export DJANGO_SETTINGS_MODULE=ci_settings
+        
+        # Ensure database is migrated for coverage tests
+        poetry run python manage.py migrate --run-syncdb
         
         # Run tests with coverage on changed files only
         poetry run pytest --cov=fastrunner --cov=fastuser --cov=mock --cov=system --cov-report=term --cov-report=json > coverage_output.txt 2>&1 || true
