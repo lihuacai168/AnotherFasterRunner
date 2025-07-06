@@ -157,7 +157,7 @@ class TestAPITemplateViews(APITestCase):
         
     def test_api_create_view(self):
         """Test API creation endpoint"""
-        url = reverse('api-add')  # Adjust URL name based on your urls.py
+        url = '/api/fastrunner/api/'
         data = {
             'name': 'New Test API',
             'body': '{"method": "POST", "url": "/new-test"}',
@@ -174,7 +174,7 @@ class TestAPITemplateViews(APITestCase):
         
     def test_api_update_view(self):
         """Test API update endpoint"""
-        url = reverse('api-update', kwargs={'pk': self.api.id})  # Adjust URL name
+        url = f'/api/fastrunner/api/{self.api.id}/'
         data = {
             'name': 'Updated Test API',
             'body': '{"method": "PUT", "url": "/updated-test"}',
@@ -195,7 +195,7 @@ class TestAPITemplateViews(APITestCase):
         
     def test_api_delete_view(self):
         """Test API deletion endpoint"""
-        url = reverse('api-delete', kwargs={'pk': self.api.id})  # Adjust URL name
+        url = f'/api/fastrunner/api/{self.api.id}/'
         
         response = self.client.delete(url)
         
@@ -239,7 +239,7 @@ class TestConfigViews(APITestCase):
         
     def test_config_list_view(self):
         """Test config list endpoint"""
-        url = reverse('config-list')  # Adjust URL name based on your urls.py
+        url = '/api/fastrunner/config/'
         response = self.client.get(url, {'project': self.project.id})
         
         assert response.status_code == status.HTTP_200_OK
@@ -256,7 +256,7 @@ class TestConfigViews(APITestCase):
         
     def test_config_create_view(self):
         """Test config creation endpoint"""
-        url = reverse('config-add')  # Adjust URL name
+        url = '/api/fastrunner/config/'
         data = {
             'name': 'New Test Config',
             'body': '{"timeout": 30}',
@@ -272,7 +272,7 @@ class TestConfigViews(APITestCase):
         
     def test_config_create_duplicate_name(self):
         """Test creating config with duplicate name in same project"""
-        url = reverse('config-add')
+        url = '/api/fastrunner/config/'
         data = {
             'name': 'Test Config',  # Same as existing config
             'body': '{"duplicate": true}',
@@ -303,7 +303,7 @@ class TestAuthenticationRequired(APITestCase):
         
     def test_unauthenticated_project_list(self):
         """Test that unauthenticated requests are rejected"""
-        url = reverse('project-list')
+        url = '/api/fastrunner/project/'
         response = self.client.get(url)
         
         # Should require authentication
@@ -311,7 +311,7 @@ class TestAuthenticationRequired(APITestCase):
         
     def test_unauthenticated_api_list(self):
         """Test that unauthenticated API requests are rejected"""
-        url = reverse('api-list')
+        url = '/api/fastrunner/api/'
         response = self.client.get(url, {'project': self.project.id})
         
         # Should require authentication
