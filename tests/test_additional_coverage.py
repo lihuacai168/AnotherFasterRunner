@@ -10,7 +10,7 @@ from fastrunner.models import Project
 from fastrunner.utils import response as resp_utils
 from fastrunner.utils.parser import Format
 from fastuser.models import MyUser, UserToken
-from fastuser.common.response import base_response, response_success, response_failed
+from fastuser.common import response as user_resp
 
 
 @pytest.mark.django_db
@@ -98,26 +98,19 @@ class TestFastUserViews(TestCase):
 
 @pytest.mark.django_db
 class TestFastUserCommon(TestCase):
-    """Test fastuser common utilities"""
+    """Test fastuser common response constants"""
 
-    def test_base_response(self):
-        """Test base response function"""
-        resp = base_response()
-        self.assertEqual(resp, {'success': True})
-
-    def test_response_success(self):
-        """Test success response function"""
-        resp = response_success(data={'test': 'data'}, msg='Success')
-        self.assertEqual(resp['success'], True)
-        self.assertEqual(resp['msg'], 'Success')
-        self.assertEqual(resp['data'], {'test': 'data'})
-
-    def test_response_failed(self):
-        """Test failed response function"""
-        resp = response_failed(msg='Failed', code='0001')
-        self.assertEqual(resp['success'], False)
-        self.assertEqual(resp['msg'], 'Failed')
-        self.assertEqual(resp['code'], '0001')
+    def test_response_constants(self):
+        """Test response constants"""
+        self.assertEqual(user_resp.KEY_MISS['code'], '0100')
+        self.assertEqual(user_resp.KEY_MISS['success'], False)
+        
+        self.assertEqual(user_resp.REGISTER_USERNAME_EXIST['code'], '0101')
+        self.assertEqual(user_resp.LOGIN_FAILED['code'], '0103')
+        self.assertEqual(user_resp.USER_NOT_EXISTS['code'], '0104')
+        
+        self.assertEqual(user_resp.REGISTER_SUCCESS['success'], True)
+        self.assertEqual(user_resp.LOGIN_SUCCESS['success'], True)
 
 
 @pytest.mark.django_db
