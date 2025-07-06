@@ -43,7 +43,7 @@ jobs:
 
     - name: Run quick linting
       run: |
-        poetry run ruff check . --format=github
+        poetry run ruff check . --output-format=github
 
     - name: Check for security issues
       run: |
