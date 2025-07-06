@@ -1,0 +1,45 @@
+[run]
+source = .
+omit = 
+    */migrations/*
+    */venv/*
+    */env/*
+    */.venv/*
+    */node_modules/*
+    */tests/*
+    */test_*
+    manage.py
+    */settings/*
+    */wsgi.py
+    */wsgi_docker.py
+    */asgi.py
+    */static/*
+    */static_root/*
+    */web/*
+    */tempWorkDir/*
+    */sql/*
+    */nginx/*
+    */playwright_demo/*
+    */start*.sh
+    */start*.bat
+
+[report]
+exclude_lines =
+    pragma: no cover
+    def __repr__
+    if self.debug:
+    if settings.DEBUG
+    raise AssertionError
+    raise NotImplementedError
+    if 0:
+    if __name__ == .__main__.:
+    class .*\bProtocol\):
+    @(abc\.)?abstractmethod
+
+[html]
+directory = htmlcov
+skip_covered = False
+show_contexts = True
+
+[xml]
+output = coverage.xml

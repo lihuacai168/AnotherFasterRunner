@@ -79,7 +79,9 @@ class ExceptionMiddleware(MiddlewareMixin):
     <p> 请求方法: {request.method} </p>
     <p> 请求path: {request.path} </p>
     <p> 请求ID: {request.id}</p>
-    <code style="background-color: #eee; border-radius: 3px; padding: 0 3px; lang: shell;"> {traceback.format_exc()}</code>
+    <code style="background-color: #eee; border-radius: 3px; padding: 0 3px; lang: shell;">
+        {traceback.format_exc()}
+    </code>
 </body>
 </html>
         """

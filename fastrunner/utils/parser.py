@@ -702,8 +702,34 @@ class Yapi:
         'add_time': 1560820025,
         'up_time': 1560820411,
         'req_body_form': [], 'req_params': [],
-        'req_headers': [{'required': '1', '_id': '5d083abb0bdee900010a98b3', 'value': 'application/x-www-form-urlencoded', 'name': 'Content-Type'}, {'required': '1', '_id': '5d083abb0bdee900010a98b2', 'desc': '', 'example': '', 'value': '88F13DF0B2AA4E1188B38E1A5E909AF1', 'name': 'clientId'}, {'required': '1', '_id': '5d083abb0bdee900010a98b1', 'desc': '', 'example': '', 'value': 'AF4649FFA4674ADB873F0C92E7B00227', 'name': 'accessToken'}, {'required': '1', '_id': '5d083abb0bdee900010a98b0', 'desc': '', 'example': '', 'value': 'V2', 'name': 'authen-type'}, {'required': '1', '_id': '5d083abb0bdee900010a98af', 'desc': '', 'example': '', 'value': '74BDB6DA54524D8BAE9C34C04A476019', 'name': 'userId'}],
-        'req_query': [{'required': '1', '_id': '5d083abb0bdee900010a98ae', 'desc': '客户编号', 'name': 'customerNo'}], '__v': 0, 'username': 'liucanwen'}
+        'req_headers': [
+            {
+                'required': '1', '_id': '5d083abb0bdee900010a98b3',
+                'value': 'application/x-www-form-urlencoded', 'name': 'Content-Type'
+            },
+            {
+                'required': '1', '_id': '5d083abb0bdee900010a98b2', 'desc': '', 'example': '',
+                'value': '88F13DF0B2AA4E1188B38E1A5E909AF1', 'name': 'clientId'
+            },
+            {
+                'required': '1', '_id': '5d083abb0bdee900010a98b1', 'desc': '', 'example': '',
+                'value': 'AF4649FFA4674ADB873F0C92E7B00227', 'name': 'accessToken'
+            },
+            {
+                'required': '1', '_id': '5d083abb0bdee900010a98b0', 'desc': '', 'example': '',
+                'value': 'V2', 'name': 'authen-type'
+            },
+            {
+                'required': '1', '_id': '5d083abb0bdee900010a98af', 'desc': '', 'example': '',
+                'value': '74BDB6DA54524D8BAE9C34C04A476019', 'name': 'userId'
+            }
+        ],
+        'req_query': [
+            {'required': '1', '_id': '5d083abb0bdee900010a98ae', 'desc': '客户编号', 'name': 'customerNo'}
+        ],
+        '__v': 0,
+        'username': 'liucanwen'
+    }
         """
         err_info = set()
 
@@ -807,7 +833,8 @@ class Yapi:
                 req_body = json5.loads(req_body_other, encoding="utf8")
             except Exception as e:
                 logger.error(
-                    f'yapi: {source_api_info["_id"]}, req_body json loads failed: {source_api_info.get("req_body_other", e)}'
+                    f'yapi: {source_api_info["_id"]}, req_body json loads failed: '
+                    f'{source_api_info.get("req_body_other", e)}'
                 )
             else:
                 # TODO: 递归遍历properties所有节点

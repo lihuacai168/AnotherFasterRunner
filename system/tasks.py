@@ -1,9 +1,8 @@
 import json
 
+import requests
 from celery import shared_task
 from requests.auth import HTTPBasicAuth
-
-import requests
 
 
 @shared_task

@@ -22,7 +22,7 @@ from rest_framework.routers import DefaultRouter
 from rest_framework_jwt.views import obtain_jwt_token
 
 from fastrunner.views import run_all_auto_case
-from mock.views import MockAPIView, MockAPIViewset, MockProjectViewSet, MockAPILogViewSet
+from mock.views import MockAPILogViewSet, MockAPIView, MockAPIViewset, MockProjectViewSet
 from system import views as system_views
 
 schema_view = get_schema_view(

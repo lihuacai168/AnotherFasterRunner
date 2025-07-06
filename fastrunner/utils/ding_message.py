@@ -166,13 +166,21 @@ if __name__ == "__main__":
                                 "response_time_ms": 143.51,
                                 "elapsed_ms": 140.834,
                                 "encoding": None,
-                                "content": '{"code":"0001","success":true,"msg":"login success","token":"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjo1LCJ1c2VybmFtZSI6InFhMSIsImV4cCI6MTcxMzU5ODQwNywiZW1haWwiOiJxYTFAcXEuY29tIiwib3JpZ19pYXQiOjE2ODIwNjI0MDd9.nFBrmUsariqGuZ3zZSao29yKjiOMmlhi3al6UoV2uCI","user":"qa1","is_superuser":false,"show_hosts":false}',
+                                "content": (
+                                    '{"code":"0001","success":true,"msg":"login success",'
+                                    '"token":"<EXAMPLE_JWT_TOKEN>",'
+                                    '"user":"qa1","is_superuser":false,"show_hosts":false}'
+                                ),
                                 "content_type": "application/json",
                                 "ok": True,
                                 "url": "http://localhost:8000/api/user/login/?s=d&sxx=dsx&sxx22=&sxx2=dsx&sx2x22=&d55555553d=sd&1s=d&2sxx=dsx&3sxx22=&4sxx2=dsx&4sx2x22=&5d55555553d=sd",
                                 "reason": "OK",
                                 "cookies": {},
-                                "text": '{"code":"0001","success":true,"msg":"login success","token":"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjo1LCJ1c2VybmFtZSI6InFhMSIsImV4cCI6MTcxMzU5ODQwNywiZW1haWwiOiJxYTFAcXEuY29tIiwib3JpZ19pYXQiOjE2ODIwNjI0MDd9.nFBrmUsariqGuZ3zZSao29yKjiOMmlhi3al6UoV2uCI","user":"qa1","is_superuser":false,"show_hosts":false}',
+                                "text": (
+                                    '{"code":"0001","success":true,"msg":"login success",'
+                                    '"token":"<EXAMPLE_JWT_TOKEN>",'
+                                    '"user":"qa1","is_superuser":false,"show_hosts":false}'
+                                ),
                                 "teardown_hooks_start": 1682062407.815586,
                                 "teardown_hooks_duration": 0.0005848407745361328,
                             },

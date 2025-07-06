@@ -2,7 +2,7 @@
   "image": "mcr.microsoft.com/vscode/devcontainers/python:3.9",
   "features": {
     "ghcr.io/devcontainers/features/node:1": {
-      "version": "16"
+      "version": "22"
     }
   }
 }

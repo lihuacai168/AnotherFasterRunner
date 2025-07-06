@@ -1,0 +1,73 @@
+# AnotherFasterRunner Test Commands Makefile
+
+# Variables
+POETRY_RUN = poetry run
+PYTHON = $(POETRY_RUN) python
+PYTEST = $(POETRY_RUN) pytest
+RUFF = $(POETRY_RUN) ruff
+
+# Colors for output
+GREEN = \033[0;32m
+YELLOW = \033[0;33m
+RED = \033[0;31m
+NC = \033[0m # No Color
+
+# Testing Commands
+test: ## Run all tests with coverage
+	@echo "$(GREEN)Running all tests...$(NC)"
+	$(PYTEST)
+
+test-fast: ## Run tests without coverage (faster)
+	@echo "$(GREEN)Running fast tests...$(NC)"
+	$(PYTEST) --no-cov
+
+test-unit: ## Run unit tests only
+	@echo "$(GREEN)Running unit tests...$(NC)"
+	$(PYTEST) -m unit
+
+test-integration: ## Run integration tests only
+	@echo "$(GREEN)Running integration tests...$(NC)"
+	$(PYTEST) -m integration
+
+test-coverage: ## Run tests with detailed coverage report
+	@echo "$(GREEN)Running tests with coverage...$(NC)"
+	$(PYTEST) --cov-report=html --cov-report=term
+
+test-watch: ## Run tests in watch mode
+	@echo "$(GREEN)Running tests in watch mode...$(NC)"
+	$(PYTEST) -f
+
+test-specific: ## Run specific test file (usage: make test-specific FILE=test_models.py)
+	@echo "$(GREEN)Running specific test: $(FILE)$(NC)"
+	$(PYTEST) tests/$(FILE)
+
+# Code Quality Commands
+lint: ## Run linting with ruff
+	@echo "$(GREEN)Running ruff linting...$(NC)"
+	$(RUFF) check .
+
+lint-fix: ## Fix linting issues automatically
+	@echo "$(GREEN)Fixing linting issues...$(NC)"
+	$(RUFF) check --fix .
+
+format: ## Format code with ruff
+	@echo "$(GREEN)Formatting code...$(NC)"
+	$(RUFF) format .
+
+quality: lint test-coverage ## Run all quality checks (lint + tests with coverage)
+
+# Setup Commands
+install-test-deps: ## Install testing dependencies
+	@echo "$(GREEN)Installing test dependencies...$(NC)"
+	poetry add --group dev pytest-cov pytest-mock coverage
+
+setup-test: ## Setup testing environment
+	@echo "$(GREEN)Setting up testing environment...$(NC)"
+	poetry install --with dev
+
+# CI Commands
+ci-test: ## Run tests for CI environment
+	@echo "$(GREEN)Running CI tests...$(NC)"
+	$(PYTEST) --cov-report=xml --cov-report=term --junitxml=test-results.xml
+
+.PHONY: test test-fast test-unit test-integration test-coverage test-watch test-specific lint lint-fix format quality install-test-deps setup-test ci-test

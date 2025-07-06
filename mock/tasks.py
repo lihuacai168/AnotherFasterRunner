@@ -1,5 +1,6 @@
 # tasks.py
 from celery import shared_task
+
 from mock.models import MockAPILog
 
 
