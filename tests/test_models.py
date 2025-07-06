@@ -105,17 +105,18 @@ class TestAPIModel(TestCase):
         
         assert api.tag == 1
         
-        # Test invalid tag value
-        with pytest.raises(ValueError):
-            API.objects.create(
-                name="Invalid API",
-                body='{"test": "data"}',
-                url="/api/invalid",
-                method="POST", 
-                project=self.project,
-                relation=1,
-                tag=99  # Invalid tag
-            )
+        # Django doesn't validate choices at model level, only at form/serializer level
+        # So we can create an API with invalid tag value
+        invalid_api = API.objects.create(
+            name="Invalid API",
+            body='{"test": "data"}',
+            url="/api/invalid",
+            method="POST", 
+            project=self.project,
+            relation=1,
+            tag=99  # Invalid tag value
+        )
+        assert invalid_api.tag == 99  # It saves without error
 
 
 @pytest.mark.django_db  
