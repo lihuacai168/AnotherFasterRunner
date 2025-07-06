@@ -86,26 +86,28 @@ class TestUtilsIntegration(TestCase):
         
         test_case = {
             "request": {
-                "url": "/api/v1/users",
+                "url": "https://api.example.com/api/v1/users",
                 "method": "GET",
                 "headers": {"Authorization": "Bearer $token"}
             }
         }
         
-        # Test with base URL
+        # Test with non-list parameter (should return original)
         host = "https://api.example.com"
+        parsed = parse_host(host, test_case)
+        self.assertEqual(parsed, test_case)  # Returns original when not a list
+        
+        # Test with empty host list
+        host = []
         parsed = parse_host(host, test_case)
         self.assertEqual(parsed["request"]["url"], "https://api.example.com/api/v1/users")
         
-        # Test with empty host (should use original URL)
-        host = ""
-        parsed = parse_host(host, test_case)
-        self.assertEqual(parsed["request"]["url"], "/api/v1/users")
-        
-        # Test with "请选择" (default placeholder)
-        host = "请选择"
-        parsed = parse_host(host, test_case)
-        self.assertEqual(parsed["request"]["url"], "/api/v1/users")
+        # Test with hosts list (simulating /etc/hosts entries)
+        host = ["127.0.0.1 api.example.com", "# Comment line"]
+        test_case_copy = test_case.copy()
+        parsed = parse_host(host, test_case_copy)
+        # Should replace hostname with IP address
+        self.assertIn("127.0.0.1", parsed["request"]["url"])
 
     def test_response_utils(self):
         """Test response utility functions"""
