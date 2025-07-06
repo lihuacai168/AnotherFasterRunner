@@ -1,4 +1,4 @@
-FROM node:16 as build-stage
+FROM node:22 as build-stage
 
 # make the 'app' folder the current working directory
 WORKDIR /app
