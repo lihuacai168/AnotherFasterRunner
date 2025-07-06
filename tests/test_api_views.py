@@ -164,7 +164,7 @@ class TestAPITemplateViews(APITestCase):
             'url': '/api/new-test',
             'method': 'POST',
             'project': self.project.id,
-            'relation': 1
+            'nodeId': 1
         }
         
         response = self.client.post(url, data, format='json')
@@ -181,7 +181,7 @@ class TestAPITemplateViews(APITestCase):
             'url': '/api/updated-test',
             'method': 'PUT',
             'project': self.project.id,
-            'relation': 1
+            'nodeId': 1
         }
         
         response = self.client.put(url, data, format='json')
