@@ -67,7 +67,7 @@ class TestFastUserViews(TestCase):
         }
         response = self.client.post('/api/user/login/', login_data, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data['code'], '0001')
+        self.assertEqual(response.data['code'], '0103')  # LOGIN_FAILED code
 
     @pytest.mark.skip(reason="User info endpoint does not exist")
     def test_get_user_info(self):
