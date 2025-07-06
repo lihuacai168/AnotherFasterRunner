@@ -53,6 +53,7 @@ class TestProjectAPIViews(APITestCase):
         assert response.status_code in [status.HTTP_200_OK, status.HTTP_201_CREATED]
         assert Project.objects.filter(name='New Test Project').exists()
         
+    @pytest.mark.django_db
     def test_project_create_duplicate_name(self):
         """Test creating project with duplicate name"""
         url = reverse('project-add')
