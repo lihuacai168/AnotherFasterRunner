@@ -159,13 +159,13 @@ class TestMockViews(TestCase):
     def test_create_mock_project(self):
         """Test creating a mock project"""
         data = {
-            'name': 'Mock Project',
-            'description': 'Test mock project',
-            'active': True
+            'project_name': 'Mock Project',
+            'project_desc': 'Test mock project',
+            'is_active': True
         }
         response = self.client.post('/api/mock/mock_project/', data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(response.data['name'], 'Mock Project')
+        self.assertEqual(response.data['project_name'], 'Mock Project')
 
     def test_list_mock_projects(self):
         """Test listing mock projects"""
@@ -177,9 +177,9 @@ class TestMockViews(TestCase):
         """Test creating a mock API"""
         # First create a mock project
         project_data = {
-            'name': 'Mock Project for API',
-            'description': 'Test project',
-            'active': True
+            'project_name': 'Mock Project for API',
+            'project_desc': 'Test project',
+            'is_active': True
         }
         project_resp = self.client.post('/api/mock/mock_project/', project_data, format='json')
         project_id = project_resp.data['id']
