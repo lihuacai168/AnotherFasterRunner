@@ -246,8 +246,8 @@ class TestUtilsAndHelpers(TestCase):
         self.assertEqual(resp_utils.AUTH_FAIL['code'], '9997')
         self.assertEqual(resp_utils.TASK_NOT_EXIST['code'], '0005')
         
-        self.assertEqual(resp_utils.PROJECT_ADD_SUCCESS['msg'], '项目创建成功')
-        self.assertEqual(resp_utils.API_ADD_SUCCESS['msg'], '接口创建成功')
+        self.assertEqual(resp_utils.PROJECT_ADD_SUCCESS['msg'], '项目添加成功')
+        self.assertEqual(resp_utils.API_ADD_SUCCESS['msg'], '接口添加成功')
         self.assertEqual(resp_utils.CASE_ADD_SUCCESS['msg'], '用例添加成功')
 
     def test_parser_format_basic(self):
