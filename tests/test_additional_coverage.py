@@ -187,16 +187,16 @@ class TestMockViews(TestCase):
         # Create mock API
         api_data = {
             'project': project_id,
-            'method': 'GET',
-            'url': '/api/test',
-            'response_data': json.dumps({'message': 'Hello World'}),
-            'status_code': 200,
-            'description': 'Test API'
+            'request_method': 'GET',
+            'request_path': '/api/test',
+            'response_text': 'def execute(req, resp):\n    resp.data = {"message": "Hello World"}',
+            'api_name': 'Test API',
+            'api_desc': 'Test API Description'
         }
         response = self.client.post('/api/mock/mock_api/', api_data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(response.data['method'], 'GET')
-        self.assertEqual(response.data['url'], '/api/test')
+        self.assertEqual(response.data['request_method'], 'GET')
+        self.assertEqual(response.data['request_path'], '/api/test')
 
 
 @pytest.mark.django_db
