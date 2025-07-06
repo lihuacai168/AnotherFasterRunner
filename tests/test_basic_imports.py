@@ -164,7 +164,7 @@ class TestImportsAndBasics(TestCase):
         from fastrunner.utils.parser import Format
         from fastrunner.utils.tree import get_tree_max_id
         from fastrunner.utils.host import parse_host
-        from fastrunner.utils.prepare import generate_testcase, get_counter
+        from fastrunner.utils.prepare import generate_casestep, get_counter
         
         # Just verify they're importable
         self.assertTrue(callable(save_summary))
@@ -172,7 +172,7 @@ class TestImportsAndBasics(TestCase):
         self.assertTrue(callable(load_test))
         self.assertTrue(callable(get_tree_max_id))
         self.assertTrue(callable(parse_host))
-        self.assertTrue(callable(generate_testcase))
+        self.assertTrue(callable(generate_casestep))
 
     def test_day_utils(self):
         """Test day utility functions"""
