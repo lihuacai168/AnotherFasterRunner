@@ -193,9 +193,11 @@ class TestModelMethods(TestCase):
         
     def test_variables_str(self):
         """Test Variables string representation"""
+        project = Project.objects.create(name="Test", desc="Test", responsible="test")
         var = Variables.objects.create(
             key="test_key",
-            value="test_value"
+            value="test_value",
+            project=project
         )
         self.assertEqual(str(var), "test_key")
         

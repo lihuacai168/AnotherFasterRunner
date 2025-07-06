@@ -155,7 +155,8 @@ class TestAPIWorkflowIntegration(TestCase):
         global_var = Variables.objects.create(
             key="base_url",
             value="https://api.test.com",
-            description="Base API URL"
+            description="Base API URL",
+            project=self.project
         )
         
         # Step 2: Create project variable
