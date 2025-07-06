@@ -141,27 +141,39 @@ class TestParserUtils:
         # Test that data is stored correctly
         assert hasattr(parser, 'testcase')
         
-    @patch('tests.test_utils.Format')
-    def test_format_mock_usage(self, mock_format):
-        """Test Format class with mocking"""
-        mock_instance = MagicMock()
-        mock_format.return_value = mock_instance
-        
+    def test_format_mock_usage(self):
+        """Test Format class mocking behavior"""
+        # Test that Format can be instantiated and mocked
         test_data = {"test": "data"}
-        formatter = mock_format(test_data)
         
-        mock_format.assert_called_once_with(test_data)
+        # Create a real instance first
+        real_formatter = Format(test_data)
+        assert hasattr(real_formatter, 'testcase')
         
-    @patch('tests.test_utils.Parse')
-    def test_parse_mock_usage(self, mock_parse):
-        """Test Parse class with mocking"""
-        mock_instance = MagicMock()
-        mock_parse.return_value = mock_instance
+        # Now test mocking
+        mock_formatter = MagicMock(spec=Format)
+        mock_formatter.testcase = test_data
         
+        # Verify mock behaves like Format
+        assert hasattr(mock_formatter, 'testcase')
+        assert mock_formatter.testcase == test_data
+        
+    def test_parse_mock_usage(self):
+        """Test Parse class mocking behavior"""
+        # Test that Parse can be instantiated and mocked
         test_data = {"request": {"method": "POST"}}
-        parser = mock_parse(test_data)
         
-        mock_parse.assert_called_once_with(test_data)
+        # Create a real instance first
+        real_parser = Parse(test_data)
+        assert hasattr(real_parser, 'testcase')
+        
+        # Now test mocking
+        mock_parser = MagicMock(spec=Parse)
+        mock_parser.testcase = test_data
+        
+        # Verify mock behaves like Parse
+        assert hasattr(mock_parser, 'testcase')
+        assert mock_parser.testcase == test_data
 
 
 class TestUtilityFunctionEdgeCases:
