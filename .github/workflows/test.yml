@@ -221,6 +221,16 @@ jobs:
     - name: Install Poetry
       uses: snok/install-poetry@v1
 
+    - name: Install system dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y \
+          libmysqlclient-dev \
+          pkg-config \
+          libldap2-dev \
+          libsasl2-dev \
+          libssl-dev
+
     - name: Install dependencies
       run: poetry install --with dev
 
