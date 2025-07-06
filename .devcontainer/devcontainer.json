@@ -4,5 +4,9 @@
     "ghcr.io/devcontainers/features/node:1": {
       "version": "22"
     }
+  },
+  "postCreateCommand": "bash .devcontainer/setup.sh",
+  "remoteEnv": {
+    "MAGIC_API_KEY": "${MAGIC_API_KEY}"
   }
 }
