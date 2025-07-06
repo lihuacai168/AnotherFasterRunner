@@ -134,12 +134,13 @@ class TestMockViews(TestCase):
 
     def setUp(self):
         self.client = APIClient()
-        self.user = MyUser.objects.create_user(
+        # Create UserInfo for the token system
+        self.user_info = UserInfo.objects.create(
             username='mockuser',
             email='mock@example.com',
-            password='testpass123'
+            password='hashed_password'
         )
-        self.token = UserToken.objects.create(user=self.user, token='mock-token-123')
+        self.token = UserToken.objects.create(user=self.user_info, token='mock-token-123')
         self.client.credentials(HTTP_AUTHORIZATION=f'Token {self.token.token}')
         
         self.project = Project.objects.create(
@@ -197,12 +198,13 @@ class TestSystemViews(TestCase):
 
     def setUp(self):
         self.client = APIClient()
-        self.user = MyUser.objects.create_user(
+        # Create UserInfo for the token system
+        self.user_info = UserInfo.objects.create(
             username='systemuser',
             email='system@example.com',
-            password='testpass123'
+            password='hashed_password'
         )
-        self.token = UserToken.objects.create(user=self.user, token='system-token-123')
+        self.token = UserToken.objects.create(user=self.user_info, token='system-token-123')
         self.client.credentials(HTTP_AUTHORIZATION=f'Token {self.token.token}')
 
     def test_log_records_list(self):
