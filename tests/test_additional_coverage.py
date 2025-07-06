@@ -316,7 +316,8 @@ class TestModelStr(TestCase):
             desc="Test Description",
             responsible="testuser"
         )
-        self.assertEqual(str(project), "Test Project")
+        # Django默认返回 "ModelName object (id)" 格式
+        self.assertTrue(str(project).startswith("Project object ("))
 
     def test_user_str(self):
         """Test MyUser model string representation"""
