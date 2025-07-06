@@ -1,10 +1,10 @@
 import pytest
-from django.test import TestCase
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError
+from django.test import TestCase
 
-from fastrunner.models import Project, API, Case, CaseStep, Config, Variables, HostIP
+from fastrunner.models import API, Case, CaseStep, Config, HostIP, Project, Variables
 from fastuser.models import MyUser
 
 

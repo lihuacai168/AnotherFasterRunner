@@ -1,8 +1,10 @@
-from mock.serializers import MockAPISerializer
-from django.test import TestCase
-from rest_framework import serializers
 import ast
 import textwrap
+
+from django.test import TestCase
+from rest_framework import serializers
+
+from mock.serializers import MockAPISerializer
 
 
 class TestMockAPISerializer(TestCase):

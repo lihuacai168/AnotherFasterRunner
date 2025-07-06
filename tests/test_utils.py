@@ -1,10 +1,11 @@
-import pytest
-from unittest.mock import patch, MagicMock
 import collections
+from unittest.mock import MagicMock, patch
 
-from fastrunner.utils.tree import get_tree_max_id, get_all_ycatid, get_tree_ycatid_mapping
-from fastrunner.utils.response import ErrorMsg, StandResponse
+import pytest
+
 from fastrunner.utils.parser import Format, Parse
+from fastrunner.utils.response import ErrorMsg, StandResponse
+from fastrunner.utils.tree import get_all_ycatid, get_tree_max_id, get_tree_ycatid_mapping
 
 
 class TestTreeUtils:

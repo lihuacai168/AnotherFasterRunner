@@ -116,11 +116,8 @@ jobs:
         }
         EOF
         
-        # Run database migrations for in-memory database
-        poetry run python manage.py migrate --run-syncdb
-        
-        # Run quick tests without coverage for fast feedback
-        poetry run pytest tests/ -x --tb=short -q --no-cov
+        # Run quick tests with proper database setup
+        poetry run pytest tests/ -x --tb=short -q --no-cov --create-db
 
     - name: Calculate test coverage delta
       id: coverage

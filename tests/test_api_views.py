@@ -1,12 +1,13 @@
-import pytest
 import json
-from django.urls import reverse
+from unittest.mock import MagicMock, patch
+
+import pytest
 from django.contrib.auth import get_user_model
+from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APIClient, APITestCase
-from unittest.mock import patch, MagicMock
 
-from fastrunner.models import Project, API, Config
+from fastrunner.models import API, Config, Project
 from fastuser.models import MyUser
 
 

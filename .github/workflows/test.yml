@@ -66,7 +66,13 @@ jobs:
 
     - name: Install dependencies
       if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
-      run: poetry install --no-interaction --with dev
+      run: |
+        # Try to install dependencies, handle Python 3.12 compilation issues
+        poetry install --no-interaction --with dev || {
+          echo "First installation failed, retrying with build isolation disabled"
+          pip install --no-build-isolation gevent>=23.7.0
+          poetry install --no-interaction --with dev
+        }
 
     - name: Install project
       run: poetry install --no-interaction

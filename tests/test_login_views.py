@@ -1,8 +1,8 @@
 import pytest
+from django.contrib.auth import get_user_model
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APIClient
-from django.contrib.auth import get_user_model
 
 # 假设LoginView用的Url名字是'login'
 login_url = reverse("login")
