@@ -239,7 +239,8 @@ class TestConfigViews(APITestCase):
         
         self.config = Config.objects.create(
             name="Test Config",
-            body='{"name": "Test Config", "request": {"base_url": "https://api.example.com", "headers": {"Content-Type": "application/json"}}}',
+            body=('{"name": "Test Config", "request": '
+                  '{"base_url": "https://api.example.com", "headers": {"Content-Type": "application/json"}}}'),
             base_url="https://api.example.com",
             project=self.project,
             is_default=True
