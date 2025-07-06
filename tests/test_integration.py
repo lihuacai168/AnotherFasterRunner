@@ -9,7 +9,7 @@ from rest_framework import status
 from rest_framework.test import APIClient
 
 from fastrunner.models import API, Case, CaseStep, Config, Project, Relation, Report, Variables
-from fastuser.models import MyUser, UserToken
+from fastuser.models import MyUser, UserToken, UserInfo
 
 
 @pytest.mark.integration
@@ -27,7 +27,12 @@ class TestFullWorkflow(TestCase):
             email='test@example.com',
             password='testpass123'
         )
-        self.token = UserToken.objects.create(user=self.user, token='test-token-123')
+        self.user_info = UserInfo.objects.create(
+            username='testuser',
+            email='test@example.com',
+            password='testpass123'
+        )
+        self.token = UserToken.objects.create(user=self.user_info, token='test-token-123')
         self.client.credentials(HTTP_AUTHORIZATION=f'Token {self.token.token}')
         
         # Create test project
@@ -143,7 +148,12 @@ class TestProjectManagement(TestCase):
             email='project@example.com',
             password='testpass123'
         )
-        self.token = UserToken.objects.create(user=self.user, token='project-token-123')
+        self.user_info = UserInfo.objects.create(
+            username='projectuser',
+            email='project@example.com',
+            password='testpass123'
+        )
+        self.token = UserToken.objects.create(user=self.user_info, token='project-token-123')
         self.client.credentials(HTTP_AUTHORIZATION=f'Token {self.token.token}')
 
     def test_project_crud_operations(self):
@@ -193,7 +203,12 @@ class TestVariablesAndConfig(TestCase):
             email='config@example.com',
             password='testpass123'
         )
-        self.token = UserToken.objects.create(user=self.user, token='config-token-123')
+        self.user_info = UserInfo.objects.create(
+            username='configuser',
+            email='config@example.com',
+            password='testpass123'
+        )
+        self.token = UserToken.objects.create(user=self.user_info, token='config-token-123')
         self.client.credentials(HTTP_AUTHORIZATION=f'Token {self.token.token}')
         
         self.project = Project.objects.create(
@@ -289,7 +304,12 @@ class TestReportGeneration(TestCase):
             email='report@example.com',
             password='testpass123'
         )
-        self.token = UserToken.objects.create(user=self.user, token='report-token-123')
+        self.user_info = UserInfo.objects.create(
+            username='reportuser',
+            email='report@example.com',
+            password='testpass123'
+        )
+        self.token = UserToken.objects.create(user=self.user_info, token='report-token-123')
         self.client.credentials(HTTP_AUTHORIZATION=f'Token {self.token.token}')
         
         self.project = Project.objects.create(
@@ -344,7 +364,12 @@ class TestAPITemplateFeatures(TestCase):
             email='api@example.com',
             password='testpass123'
         )
-        self.token = UserToken.objects.create(user=self.user, token='api-token-123')
+        self.user_info = UserInfo.objects.create(
+            username='apiuser',
+            email='api@example.com',
+            password='testpass123'
+        )
+        self.token = UserToken.objects.create(user=self.user_info, token='api-token-123')
         self.client.credentials(HTTP_AUTHORIZATION=f'Token {self.token.token}')
         
         self.project = Project.objects.create(
@@ -432,7 +457,12 @@ class TestHostIPConfiguration(TestCase):
             email='host@example.com',
             password='testpass123'
         )
-        self.token = UserToken.objects.create(user=self.user, token='host-token-123')
+        self.user_info = UserInfo.objects.create(
+            username='hostuser',
+            email='host@example.com',
+            password='testpass123'
+        )
+        self.token = UserToken.objects.create(user=self.user_info, token='host-token-123')
         self.client.credentials(HTTP_AUTHORIZATION=f'Token {self.token.token}')
 
     def test_host_ip_management(self):

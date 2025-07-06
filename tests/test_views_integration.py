@@ -14,7 +14,7 @@ from fastrunner.models import (
     Relation, Report, Variables, Visit
 )
 from fastrunner.views import run, schedule, suite, project, report as report_views
-from fastuser.models import MyUser, UserToken
+from fastuser.models import MyUser, UserToken, UserInfo
 
 
 @pytest.mark.integration
@@ -29,7 +29,12 @@ class TestRunViews(TestCase):
             email='run@example.com',
             password='testpass123'
         )
-        self.token = UserToken.objects.create(user=self.user, token='run-token-123')
+        self.user_info = UserInfo.objects.create(
+            username='runuser',
+            email='run@example.com',
+            password='testpass123'
+        )
+        self.token = UserToken.objects.create(user=self.user_info, token='run-token-123')
         self.client.credentials(HTTP_AUTHORIZATION=f'Token {self.token.token}')
         
         self.project = Project.objects.create(
@@ -144,7 +149,12 @@ class TestSuiteViews(TestCase):
             email='suite@example.com',
             password='testpass123'
         )
-        self.token = UserToken.objects.create(user=self.user, token='suite-token-123')
+        self.user_info = UserInfo.objects.create(
+            username='suiteuser',
+            email='suite@example.com',
+            password='testpass123'
+        )
+        self.token = UserToken.objects.create(user=self.user_info, token='suite-token-123')
         self.client.credentials(HTTP_AUTHORIZATION=f'Token {self.token.token}')
         
         self.project = Project.objects.create(
@@ -274,7 +284,12 @@ class TestProjectViews(TestCase):
             email='projectview@example.com',
             password='testpass123'
         )
-        self.token = UserToken.objects.create(user=self.user, token='projectview-token-123')
+        self.user_info = UserInfo.objects.create(
+            username='projectviewuser',
+            email='projectview@example.com',
+            password='testpass123'
+        )
+        self.token = UserToken.objects.create(user=self.user_info, token='projectview-token-123')
         self.client.credentials(HTTP_AUTHORIZATION=f'Token {self.token.token}')
 
     def test_dashboard_view(self):
@@ -419,7 +434,12 @@ class TestReportViews(TestCase):
             email='reportview@example.com',
             password='testpass123'
         )
-        self.token = UserToken.objects.create(user=self.user, token='reportview-token-123')
+        self.user_info = UserInfo.objects.create(
+            username='reportviewuser',
+            email='reportview@example.com',
+            password='testpass123'
+        )
+        self.token = UserToken.objects.create(user=self.user_info, token='reportview-token-123')
         self.client.credentials(HTTP_AUTHORIZATION=f'Token {self.token.token}')
         
         self.project = Project.objects.create(
@@ -534,7 +554,12 @@ class TestScheduleViews(TestCase):
             email='schedule@example.com',
             password='testpass123'
         )
-        self.token = UserToken.objects.create(user=self.user, token='schedule-token-123')
+        self.user_info = UserInfo.objects.create(
+            username='scheduleuser',
+            email='schedule@example.com',
+            password='testpass123'
+        )
+        self.token = UserToken.objects.create(user=self.user_info, token='schedule-token-123')
         self.client.credentials(HTTP_AUTHORIZATION=f'Token {self.token.token}')
         
         self.project = Project.objects.create(
@@ -603,7 +628,12 @@ class TestConfigViews(TestCase):
             email='configview@example.com',
             password='testpass123'
         )
-        self.token = UserToken.objects.create(user=self.user, token='configview-token-123')
+        self.user_info = UserInfo.objects.create(
+            username='configviewuser',
+            email='configview@example.com',
+            password='testpass123'
+        )
+        self.token = UserToken.objects.create(user=self.user_info, token='configview-token-123')
         self.client.credentials(HTTP_AUTHORIZATION=f'Token {self.token.token}')
         
         self.project = Project.objects.create(

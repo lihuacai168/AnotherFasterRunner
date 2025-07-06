@@ -13,7 +13,7 @@ from fastrunner.models import (
 from fastrunner.utils import loader, parser, response as resp_utils
 from fastrunner.utils.host import parse_host
 from fastrunner.utils.parser import Format
-from fastuser.models import MyUser, UserToken
+from fastuser.models import MyUser, UserToken, UserInfo
 
 
 @pytest.mark.integration
@@ -28,7 +28,12 @@ class TestUtilsIntegration(TestCase):
             email='util@example.com',
             password='testpass123'
         )
-        self.token = UserToken.objects.create(user=self.user, token='util-token-123')
+        self.user_info = UserInfo.objects.create(
+            username='utiluser',
+            email='util@example.com',
+            password='testpass123'
+        )
+        self.token = UserToken.objects.create(user=self.user_info, token='util-token-123')
         
         self.project = Project.objects.create(
             name="Utils Test Project",
@@ -127,7 +132,12 @@ class TestAPIWorkflowIntegration(TestCase):
             email='workflow@example.com',
             password='testpass123'
         )
-        self.token = UserToken.objects.create(user=self.user, token='workflow-token-123')
+        self.user_info = UserInfo.objects.create(
+            username='workflowuser',
+            email='workflow@example.com',
+            password='testpass123'
+        )
+        self.token = UserToken.objects.create(user=self.user_info, token='workflow-token-123')
         self.client.credentials(HTTP_AUTHORIZATION=f'Token {self.token.token}')
         
         self.project = Project.objects.create(
@@ -356,7 +366,12 @@ class TestErrorHandling(TestCase):
             email='error@example.com',
             password='testpass123'
         )
-        self.token = UserToken.objects.create(user=self.user, token='error-token-123')
+        self.user_info = UserInfo.objects.create(
+            username='erroruser',
+            email='error@example.com',
+            password='testpass123'
+        )
+        self.token = UserToken.objects.create(user=self.user_info, token='error-token-123')
         self.client.credentials(HTTP_AUTHORIZATION=f'Token {self.token.token}')
 
     def test_invalid_project_access(self):
@@ -401,7 +416,12 @@ class TestCIIntegration(TestCase):
             email='ci@example.com',
             password='testpass123'
         )
-        self.token = UserToken.objects.create(user=self.user, token='ci-token-123')
+        self.user_info = UserInfo.objects.create(
+            username='ciuser',
+            email='ci@example.com',
+            password='testpass123'
+        )
+        self.token = UserToken.objects.create(user=self.user_info, token='ci-token-123')
         self.client.credentials(HTTP_AUTHORIZATION=f'Token {self.token.token}')
         
         self.project = Project.objects.create(
