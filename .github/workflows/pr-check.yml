@@ -116,8 +116,8 @@ jobs:
         }
         EOF
         
-        # Run quick tests with proper database setup
-        poetry run pytest tests/ -x --tb=short -q --no-cov --create-db
+        # Run quick tests without coverage for fast feedback
+        poetry run pytest tests/ -x --tb=short -q --no-cov
 
     - name: Calculate test coverage delta
       id: coverage
