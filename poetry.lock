@@ -680,22 +680,6 @@ argon2 = ["argon2-cffi (>=19.1.0)"]
 bcrypt = ["bcrypt"]
 
 [[package]]
-name = "django-auth-ldap"
-version = "2.3.0"
-description = "Django LDAP authentication backend."
-optional = false
-python-versions = ">=3.6"
-groups = ["main"]
-files = [
-    {file = "django-auth-ldap-2.3.0.tar.gz", hash = "sha256:5894317122a086c9955ed366562869a81459cf6b663636b152857bb5d3a0a3b7"},
-    {file = "django_auth_ldap-2.3.0-py3-none-any.whl", hash = "sha256:cbbb476eff2504b5ab4fdf1fa92d93d2d3408fd9c8bc0c426169d987d0733153"},
-]
-
-[package.dependencies]
-Django = ">=2.2"
-python-ldap = ">=3.1"
-
-[[package]]
 name = "django-bulk-update"
 version = "2.2.0"
 description = "Bulk update using one query over Django ORM."
@@ -1502,33 +1486,6 @@ files = [
 wcwidth = "*"
 
 [[package]]
-name = "pyasn1"
-version = "0.5.1"
-description = "Pure-Python implementation of ASN.1 types and DER/BER/CER codecs (X.208)"
-optional = false
-python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,!=3.5.*,>=2.7"
-groups = ["main"]
-files = [
-    {file = "pyasn1-0.5.1-py2.py3-none-any.whl", hash = "sha256:4439847c58d40b1d0a573d07e3856e95333f1976294494c325775aeca506eb58"},
-    {file = "pyasn1-0.5.1.tar.gz", hash = "sha256:6d391a96e59b23130a5cfa74d6fd7f388dbbe26cc8f1edf39fdddf08d9d6676c"},
-]
-
-[[package]]
-name = "pyasn1-modules"
-version = "0.3.0"
-description = "A collection of ASN.1-based protocols modules"
-optional = false
-python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,!=3.5.*,>=2.7"
-groups = ["main"]
-files = [
-    {file = "pyasn1_modules-0.3.0-py2.py3-none-any.whl", hash = "sha256:d3ccd6ed470d9ffbc716be08bd90efbd44d0734bc9303818f7336070984a162d"},
-    {file = "pyasn1_modules-0.3.0.tar.gz", hash = "sha256:5bd01446b736eb9d31512a30d46c1ac3395d676c6f3cafa4c03eb54b9925631c"},
-]
-
-[package.dependencies]
-pyasn1 = ">=0.4.6,<0.6.0"
-
-[[package]]
 name = "pycparser"
 version = "2.21"
 description = "C parser in Python"
@@ -1786,21 +1743,6 @@ files = [
 
 [package.extras]
 cli = ["click (>=5.0)"]
-
-[[package]]
-name = "python-ldap"
-version = "3.4.4"
-description = "Python modules for implementing LDAP clients"
-optional = false
-python-versions = ">=3.6"
-groups = ["main"]
-files = [
-    {file = "python-ldap-3.4.4.tar.gz", hash = "sha256:7edb0accec4e037797705f3a05cbf36a9fde50d08c8f67f2aef99a2628fab828"},
-]
-
-[package.dependencies]
-pyasn1 = ">=0.3.7"
-pyasn1_modules = ">=0.1.5"
 
 [[package]]
 name = "pytz"
@@ -2316,4 +2258,4 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.11"
-content-hash = "5f88c77a3a67b169a74be0966cf904b62ad6f796700e8a65f1c87f7619918ee7"
+content-hash = "9a0d02c6f35b4b0dfd58defba5ceb29043c4c2ee1fff6dc3e53ccfb492ca82ab"

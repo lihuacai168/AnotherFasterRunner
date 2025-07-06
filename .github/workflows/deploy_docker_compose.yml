@@ -16,7 +16,7 @@ jobs:
       WORKFLOW_COUNT: 0
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
 
     - name: (nd) executing remote ssh commands using ssh key
       uses: appleboy/ssh-action@master
