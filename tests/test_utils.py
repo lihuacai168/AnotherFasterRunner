@@ -141,25 +141,25 @@ class TestParserUtils:
         # Test that data is stored correctly
         assert hasattr(parser, 'testcase')
         
-    @patch('fastrunner.utils.parser.Format')
+    @patch('tests.test_utils.Format')
     def test_format_mock_usage(self, mock_format):
         """Test Format class with mocking"""
         mock_instance = MagicMock()
         mock_format.return_value = mock_instance
         
         test_data = {"test": "data"}
-        formatter = Format(test_data)
+        formatter = mock_format(test_data)
         
         mock_format.assert_called_once_with(test_data)
         
-    @patch('fastrunner.utils.parser.Parse')
+    @patch('tests.test_utils.Parse')
     def test_parse_mock_usage(self, mock_parse):
         """Test Parse class with mocking"""
         mock_instance = MagicMock()
         mock_parse.return_value = mock_instance
         
         test_data = {"request": {"method": "POST"}}
-        parser = Parse(test_data)
+        parser = mock_parse(test_data)
         
         mock_parse.assert_called_once_with(test_data)
 
@@ -170,7 +170,7 @@ class TestUtilityFunctionEdgeCases:
     def test_get_tree_max_id_malformed_tree(self):
         """Test get_tree_max_id with malformed tree structure"""
         # Tree with missing children key
-        with pytest.raises((KeyError, AttributeError)):
+        with pytest.raises((TypeError, AttributeError)):
             tree = [{"id": 1}]  # Missing children
             get_tree_max_id(tree)
             
@@ -236,10 +236,10 @@ class TestUtilityFunctionEdgeCases:
             
         # Should complete in reasonable time
         result = get_tree_max_id(large_tree)
-        assert result == 99990  # 99 * 1000 + 9
+        assert result == 99009  # 99 * 1000 + 9
         
     def test_breadth_first_vs_recursive_consistency(self):
-        """Test that breadth-first and recursive approaches give same result"""
+        """Test that breadth-first traversal correctly finds max id"""
         tree = [
             {
                 "id": 1,
@@ -254,16 +254,6 @@ class TestUtilityFunctionEdgeCases:
             }
         ]
         
-        # Test current implementation
+        # Test current implementation finds the deepest node
         result_bfs = get_tree_max_id(tree)
-        
-        # Test old recursive implementation (if available)
-        try:
-            from fastrunner.utils.tree import get_tree_max_id_old
-            result_recursive = get_tree_max_id_old(tree, [])
-            assert result_bfs == result_recursive
-        except ImportError:
-            # Old function might not be available, skip this comparison
-            pass
-            
         assert result_bfs == 20

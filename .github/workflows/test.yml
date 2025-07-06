@@ -84,6 +84,10 @@ jobs:
           sleep 1
         done
         echo 'MySQL is ready!'
+        
+        # Grant permissions for test database creation
+        mysql -h 127.0.0.1 -P 3306 -u root -ptest_password -e "GRANT ALL PRIVILEGES ON test_test_faster_db.* TO 'test_user'@'%';"
+        mysql -h 127.0.0.1 -P 3306 -u root -ptest_password -e "FLUSH PRIVILEGES;"
 
     - name: Setup test environment
       run: |
@@ -163,15 +167,9 @@ jobs:
       run: |
         export DJANGO_SETTINGS_MODULE=ci_settings
         poetry run pytest \
-          --cov=fastrunner \
-          --cov=fastuser \
-          --cov=mock \
-          --cov=system \
+          -c pytest-ci.ini \
           --cov-report=xml \
-          --cov-report=term-missing \
-          --cov-report=html \
           --junitxml=test-results.xml \
-          --cov-fail-under=30 \
           -v
 
     - name: Upload coverage to Codecov

@@ -168,9 +168,7 @@ if __name__ == "__main__":
                                 "encoding": None,
                                 "content": (
                                     '{"code":"0001","success":true,"msg":"login success",'
-                                    '"token":"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjo1,'
-                                    'LCJ1c2VybmFtZSI6InFhMSIsImV4cCI6MTcxMzU5ODQwNywiZW1haWwiOiJxYTFAcXEuY29tIi'
-                                    'wib3JpZ19pYXQiOjE2ODIwNjI0MDd9.nFBrmUsariqGuZ3zZSao29yKjiOMmlhi3al6UoV2uCI",'
+                                    '"token":"<EXAMPLE_JWT_TOKEN>",'
                                     '"user":"qa1","is_superuser":false,"show_hosts":false}'
                                 ),
                                 "content_type": "application/json",
@@ -180,9 +178,7 @@ if __name__ == "__main__":
                                 "cookies": {},
                                 "text": (
                                     '{"code":"0001","success":true,"msg":"login success",'
-                                    '"token":"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjo1,'
-                                    'LCJ1c2VybmFtZSI6InFhMSIsImV4cCI6MTcxMzU5ODQwNywiZW1haWwiOiJxYTFAcXEuY29tIi'
-                                    'wib3JpZ19pYXQiOjE2ODIwNjI0MDd9.nFBrmUsariqGuZ3zZSao29yKjiOMmlhi3al6UoV2uCI",'
+                                    '"token":"<EXAMPLE_JWT_TOKEN>",'
                                     '"user":"qa1","is_superuser":false,"show_hosts":false}'
                                 ),
                                 "teardown_hooks_start": 1682062407.815586,
