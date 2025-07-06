@@ -39,7 +39,7 @@ jobs:
           libssl-dev
 
     - name: Install dependencies
-      run: poetry install --with dev
+      run: poetry install --with dev --no-root
 
     - name: Run quick linting
       run: |
@@ -209,7 +209,7 @@ jobs:
           libssl-dev
 
     - name: Install dependencies
-      run: poetry install --with dev
+      run: poetry install --with dev --no-root
 
     - name: Run comprehensive linting
       run: |
