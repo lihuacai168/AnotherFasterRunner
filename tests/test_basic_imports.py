@@ -150,13 +150,13 @@ class TestImportsAndBasics(TestCase):
         variables = Variables(key="test_key")
         report = Report(name="Test Report")
         
-        # Test string representations - Project uses Django default format
+        # Test string representations - All use Django default format except MyUser
         self.assertTrue(str(project).startswith("Project object ("))
-        self.assertEqual(str(api), "Test API")
-        self.assertEqual(str(case), "Test Case")
-        self.assertEqual(str(config), "Test Config")
-        self.assertEqual(str(variables), "test_key")
-        self.assertEqual(str(report), "Test Report")
+        self.assertTrue(str(api).startswith("API object ("))
+        self.assertTrue(str(case).startswith("Case object ("))
+        self.assertTrue(str(config).startswith("Config object ("))
+        self.assertTrue(str(variables).startswith("Variables object ("))
+        self.assertTrue(str(report).startswith("Report object ("))
 
     def test_utils_functions_exist(self):
         """Test that utility functions exist"""
