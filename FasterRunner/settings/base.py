@@ -235,7 +235,10 @@ LOGGING = {
     "disable_existing_loggers": True,
     "formatters": {
         "standard": {
-            "format": "%(levelname)-2s [%(asctime)s] [%(request_id)s] %(name)s [%(filename)s->%(funcName)s:%(lineno)s]:  %(message)s",
+            "format": (
+                "%(levelname)-2s [%(asctime)s] [%(request_id)s] %(name)s "
+                "[%(filename)s->%(funcName)s:%(lineno)s]: %(message)s"
+            ),
         },
         "loki": {
             "format": "%(levelname)-2s [%(request_id)s] %(name)s [%(filename)s->%(funcName)s:%(lineno)s]:  %(message)s",

@@ -60,7 +60,10 @@ def parse_message(summary: dict, msg_type: str, **kwargs):
             d[0].update({"tag": "text"})
         msg_template["content"]["post"]["zh_cn"]["content"] = content
         return msg_template
-    text = f" 任务名称: {task_name}\n 总共耗时: {duration}\n 成功接口: {pass_count}个\n 异常接口: {error_count}个\n 失败接口: {fail_count}个\n 失败比例: {fail_rate}\n 查看详情: {report_url}"
+    text = (
+        f" 任务名称: {task_name}\n 总共耗时: {duration}\n 成功接口: {pass_count}个\n"
+        f" 异常接口: {error_count}个\n 失败接口: {fail_count}个\n 失败比例: {fail_rate}\n 查看详情: {report_url}"
+    )
     return text
 
 

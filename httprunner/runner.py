@@ -19,7 +19,8 @@ class ListHandler(logging.Handler):
         super().__init__()
         self.log_list = log_list
         formatter = logging.Formatter(
-            "%(levelname)-2s [%(asctime)s] [%(request_id)s] %(name)s [%(filename)s->%(funcName)s:%(lineno)s]:  %(message)s"
+            "%(levelname)-2s [%(asctime)s] [%(request_id)s] %(name)s "
+            "[%(filename)s->%(funcName)s:%(lineno)s]: %(message)s"
         )
         self.setFormatter(formatter)
 

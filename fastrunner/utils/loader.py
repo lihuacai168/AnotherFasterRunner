@@ -330,7 +330,9 @@ def debug_suite(
     try:
         for index in range(len(suite)):
             # copy.deepcopy 修复引用bug
-            # testcases = copy.deepcopy(parse_tests(suite[index], debugtalk, name=obj[index]['name'], config=config[index]))
+            # testcases = copy.deepcopy(
+            #     parse_tests(suite[index], debugtalk, name=obj[index]['name'], config=config[index])
+            # )
             testcases = copy.deepcopy(
                 parse_tests(
                     suite[index],
