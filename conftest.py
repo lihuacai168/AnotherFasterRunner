@@ -11,10 +11,6 @@ from django.test.utils import get_runner
 
 def pytest_configure():
     """Configure Django settings for pytest"""
-    import os
-    import django
-    from django.conf import settings
-    
     # Use CI settings if available, otherwise fall back to dev settings
     if 'DJANGO_SETTINGS_MODULE' in os.environ:
         pass  # Use existing setting
