@@ -1,0 +1,253 @@
+name: Pull Request Checks
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches: [ main, master, develop ]
+
+permissions:
+  contents: read
+  pull-requests: write
+  checks: write
+
+jobs:
+  quick-checks:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+
+    - name: Install Poetry
+      uses: snok/install-poetry@v1
+
+    - name: Install dependencies
+      run: poetry install --with dev
+
+    - name: Run quick linting
+      run: |
+        poetry run ruff check . --format=github
+
+    - name: Check for security issues
+      run: |
+        echo "## Security Check Results" >> security_report.md
+        echo "" >> security_report.md
+        
+        # Check for hardcoded secrets
+        if grep -r "SECRET_KEY.*=" . --include="*.py" | grep -v "test" | grep -v "example"; then
+          echo "❌ **CRITICAL**: Hardcoded secret keys found!" >> security_report.md
+          echo "" >> security_report.md
+          grep -r "SECRET_KEY.*=" . --include="*.py" | grep -v "test" | grep -v "example" >> security_report.md
+          echo "" >> security_report.md
+        else
+          echo "✅ No hardcoded secret keys found" >> security_report.md
+        fi
+        
+        # Check for eval usage
+        if grep -r "eval(" . --include="*.py" | grep -v "test"; then
+          echo "⚠️ **HIGH**: eval() usage found - security risk!" >> security_report.md
+          echo "" >> security_report.md
+          grep -r "eval(" . --include="*.py" | grep -v "test" >> security_report.md
+          echo "" >> security_report.md
+        else
+          echo "✅ No dangerous eval() usage found" >> security_report.md
+        fi
+        
+        # Check for exec usage
+        if grep -r "exec(" . --include="*.py" | grep -v "test"; then
+          echo "⚠️ **HIGH**: exec() usage found - security risk!" >> security_report.md
+          echo "" >> security_report.md
+          grep -r "exec(" . --include="*.py" | grep -v "test" >> security_report.md
+          echo "" >> security_report.md
+        else
+          echo "✅ No dangerous exec() usage found" >> security_report.md
+        fi
+
+    - name: Run quick tests
+      run: |
+        export DJANGO_SETTINGS_MODULE=ci_settings
+        
+        # Create minimal CI settings
+        cat > ci_settings.py << EOF
+        from FasterRunner.settings.base import *
+        
+        DATABASES = {
+            'default': {
+                'ENGINE': 'django.db.backends.sqlite3',
+                'NAME': ':memory:',
+            }
+        }
+        
+        SECRET_KEY = 'test-secret-key-for-ci-only'
+        DEBUG = False
+        ALLOWED_HOSTS = ['*']
+        USE_LDAP = False
+        
+        LOGGING = {
+            'version': 1,
+            'disable_existing_loggers': False,
+            'handlers': {
+                'console': {
+                    'class': 'logging.StreamHandler',
+                },
+            },
+            'root': {
+                'handlers': ['console'],
+                'level': 'ERROR',
+            },
+        }
+        EOF
+        
+        # Run quick tests without coverage for fast feedback
+        poetry run pytest tests/ -x --tb=short -q
+
+    - name: Calculate test coverage delta
+      id: coverage
+      run: |
+        export DJANGO_SETTINGS_MODULE=ci_settings
+        
+        # Run tests with coverage on changed files only
+        poetry run pytest --cov=fastrunner --cov=fastuser --cov=mock --cov=system --cov-report=term --cov-report=json > coverage_output.txt 2>&1 || true
+        
+        # Extract coverage percentage
+        COVERAGE=$(python -c "
+        import json
+        try:
+            with open('coverage.json', 'r') as f:
+                data = json.load(f)
+                print(f'{data[\"totals\"][\"percent_covered\"]:.1f}')
+        except:
+            print('0.0')
+        ")
+        
+        echo "coverage=$COVERAGE" >> $GITHUB_OUTPUT
+        echo "Coverage: $COVERAGE%"
+
+    - name: Comment PR with results
+      uses: actions/github-script@v6
+      with:
+        script: |
+          const fs = require('fs');
+          
+          let comment = `## 🔍 Pull Request Quality Check\n\n`;
+          
+          // Add coverage info
+          const coverage = '${{ steps.coverage.outputs.coverage }}';
+          if (coverage && coverage !== '0.0') {
+            comment += `### 📊 Test Coverage\n`;
+            comment += `Current coverage: **${coverage}%**\n\n`;
+            
+            if (parseFloat(coverage) >= 60) {
+              comment += `✅ Coverage meets minimum requirement (60%)\n\n`;
+            } else {
+              comment += `⚠️ Coverage below minimum requirement (60%)\n\n`;
+            }
+          }
+          
+          // Add security check results
+          try {
+            const securityReport = fs.readFileSync('security_report.md', 'utf8');
+            comment += `### 🔒 Security Check\n\n${securityReport}\n\n`;
+          } catch (e) {
+            comment += `### 🔒 Security Check\n\n✅ No security issues detected\n\n`;
+          }
+          
+          comment += `### 📝 Next Steps\n`;
+          comment += `- [ ] Review any security warnings above\n`;
+          comment += `- [ ] Ensure test coverage meets requirements\n`;
+          comment += `- [ ] All CI checks must pass before merge\n\n`;
+          comment += `*Automated check by GitHub Actions*`;
+          
+          // Post comment
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: comment
+          });
+
+  lint-check:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+
+    - name: Install Poetry
+      uses: snok/install-poetry@v1
+
+    - name: Install dependencies
+      run: poetry install --with dev
+
+    - name: Run comprehensive linting
+      run: |
+        # Run ruff with detailed output
+        poetry run ruff check . --output-format=github --statistics
+        
+        # Check code formatting
+        poetry run ruff format --check .
+
+    - name: Check for common issues
+      run: |
+        echo "## Code Quality Issues" > quality_report.md
+        echo "" >> quality_report.md
+        
+        # Check for TODO/FIXME comments
+        TODO_COUNT=$(find . -name "*.py" -exec grep -l "TODO\|FIXME\|XXX\|HACK" {} \; | wc -l)
+        if [ $TODO_COUNT -gt 0 ]; then
+          echo "ℹ️ Found $TODO_COUNT files with TODO/FIXME comments" >> quality_report.md
+          echo "" >> quality_report.md
+        fi
+        
+        # Check for print statements (should use logging)
+        PRINT_COUNT=$(find . -name "*.py" -exec grep -l "print(" {} \; | grep -v test | wc -l)
+        if [ $PRINT_COUNT -gt 0 ]; then
+          echo "⚠️ Found $PRINT_COUNT files with print() statements - consider using logging" >> quality_report.md
+          echo "" >> quality_report.md
+        fi
+        
+        # Check for large files
+        LARGE_FILES=$(find . -name "*.py" -size +500k | wc -l)
+        if [ $LARGE_FILES -gt 0 ]; then
+          echo "⚠️ Found $LARGE_FILES large Python files (>500KB) - consider refactoring" >> quality_report.md
+          echo "" >> quality_report.md
+        fi
+
+  dependency-check:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+
+    - name: Install Poetry
+      uses: snok/install-poetry@v1
+
+    - name: Check dependencies
+      run: |
+        # Check for security vulnerabilities
+        poetry audit || echo "Dependency vulnerabilities found"
+        
+        # Check for outdated packages
+        poetry show --outdated || echo "Some packages are outdated"
+
+    - name: Validate Poetry configuration
+      run: |
+        poetry check

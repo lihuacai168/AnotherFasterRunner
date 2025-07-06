@@ -1,0 +1,297 @@
+name: Tests and Quality Checks
+
+on:
+  push:
+    branches: [ main, master, develop ]
+  pull_request:
+    branches: [ main, master, develop ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        python-version: ['3.11', '3.12']
+    
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: test_password
+          MYSQL_DATABASE: test_faster_db
+          MYSQL_USER: test_user
+          MYSQL_PASSWORD: test_password
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping --silent"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=3
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Install Poetry
+      uses: snok/install-poetry@v1
+      with:
+        version: latest
+        virtualenvs-create: true
+        virtualenvs-in-project: true
+        installer-parallel: true
+
+    - name: Load cached venv
+      id: cached-poetry-dependencies
+      uses: actions/cache@v3
+      with:
+        path: .venv
+        key: venv-${{ runner.os }}-${{ matrix.python-version }}-${{ hashFiles('**/poetry.lock') }}
+
+    - name: Install dependencies
+      if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
+      run: poetry install --no-interaction --no-root --with dev
+
+    - name: Install project
+      run: poetry install --no-interaction
+
+    - name: Wait for MySQL
+      run: |
+        while ! mysqladmin ping -h 127.0.0.1 -P 3306 -u root -ptest_password --silent; do
+          echo 'Waiting for MySQL...'
+          sleep 1
+        done
+        echo 'MySQL is ready!'
+
+    - name: Setup test environment
+      run: |
+        # Create test settings for CI
+        cat > ci_settings.py << EOF
+        from FasterRunner.settings.base import *
+        
+        # Test database configuration
+        DATABASES = {
+            'default': {
+                'ENGINE': 'django.db.backends.mysql',
+                'NAME': 'test_faster_db',
+                'USER': 'test_user',
+                'PASSWORD': 'test_password',
+                'HOST': '127.0.0.1',
+                'PORT': '3306',
+                'OPTIONS': {
+                    'charset': 'utf8mb4',
+                },
+                'TEST': {
+                    'CHARSET': 'utf8mb4',
+                },
+            }
+        }
+        
+        # Disable external services for testing
+        CELERY_TASK_ALWAYS_EAGER = True
+        CELERY_TASK_EAGER_PROPAGATES = True
+        
+        # Use in-memory cache for tests
+        CACHES = {
+            'default': {
+                'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+            }
+        }
+        
+        # Disable migrations for faster tests
+        class DisableMigrations(object):
+            def __contains__(self, item):
+                return True
+            def __getitem__(self, item):
+                return None
+        
+        MIGRATION_MODULES = DisableMigrations()
+        
+        # Test logging
+        LOGGING = {
+            'version': 1,
+            'disable_existing_loggers': False,
+            'handlers': {
+                'console': {
+                    'class': 'logging.StreamHandler',
+                },
+            },
+            'root': {
+                'handlers': ['console'],
+                'level': 'WARNING',
+            },
+        }
+        
+        # Security settings for tests
+        SECRET_KEY = 'test-secret-key-for-ci-only'
+        DEBUG = False
+        ALLOWED_HOSTS = ['*']
+        
+        # Disable external integrations
+        USE_LDAP = False
+        EOF
+        
+        # Set Django settings for CI
+        export DJANGO_SETTINGS_MODULE=ci_settings
+
+    - name: Run code quality checks
+      run: |
+        export DJANGO_SETTINGS_MODULE=ci_settings
+        poetry run ruff check .
+
+    - name: Run linting with auto-fix
+      run: |
+        export DJANGO_SETTINGS_MODULE=ci_settings
+        poetry run ruff check --fix .
+
+    - name: Run database migrations
+      run: |
+        export DJANGO_SETTINGS_MODULE=ci_settings
+        poetry run python manage.py migrate --run-syncdb
+
+    - name: Run tests with coverage
+      run: |
+        export DJANGO_SETTINGS_MODULE=ci_settings
+        poetry run pytest \
+          --cov=fastrunner \
+          --cov=fastuser \
+          --cov=mock \
+          --cov=system \
+          --cov-report=xml \
+          --cov-report=term-missing \
+          --cov-report=html \
+          --junitxml=test-results.xml \
+          --cov-fail-under=40 \
+          -v
+
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v3
+      if: matrix.python-version == '3.11'
+      with:
+        file: ./coverage.xml
+        flags: unittests
+        name: codecov-umbrella
+        fail_ci_if_error: false
+
+    - name: Upload test results
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: test-results-${{ matrix.python-version }}
+        path: |
+          test-results.xml
+          htmlcov/
+          coverage.xml
+
+    - name: Upload coverage report
+      uses: actions/upload-artifact@v3
+      if: always() && matrix.python-version == '3.11'
+      with:
+        name: coverage-report
+        path: htmlcov/
+
+    - name: Test summary
+      run: |
+        echo "## Test Results Summary" >> $GITHUB_STEP_SUMMARY
+        echo "- Python Version: ${{ matrix.python-version }}" >> $GITHUB_STEP_SUMMARY
+        echo "- Tests Status: ✅ Completed" >> $GITHUB_STEP_SUMMARY
+        echo "- Coverage Report: Available in artifacts" >> $GITHUB_STEP_SUMMARY
+
+  security-scan:
+    runs-on: ubuntu-latest
+    needs: test
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+
+    - name: Install Poetry
+      uses: snok/install-poetry@v1
+
+    - name: Install dependencies
+      run: poetry install --with dev
+
+    - name: Run security checks
+      run: |
+        # Check for known security issues in dependencies
+        poetry audit || echo "Security vulnerabilities found - review required"
+        
+        # Basic security scan of Python files
+        echo "Checking for potential security issues..."
+        grep -r "eval(" . --include="*.py" || echo "No eval() usage found"
+        grep -r "exec(" . --include="*.py" || echo "No exec() usage found"
+        grep -r "SECRET_KEY.*=" . --include="*.py" || echo "No hardcoded secret keys found"
+
+  integration-test:
+    runs-on: ubuntu-latest
+    needs: test
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
+    
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: test_password
+          MYSQL_DATABASE: test_faster_db
+          MYSQL_USER: test_user  
+          MYSQL_PASSWORD: test_password
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping --silent"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=3
+
+      redis:
+        image: redis:7
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd="redis-cli ping"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=3
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+
+    - name: Install Poetry
+      uses: snok/install-poetry@v1
+
+    - name: Install dependencies
+      run: poetry install --with dev
+
+    - name: Wait for services
+      run: |
+        while ! mysqladmin ping -h 127.0.0.1 -P 3306 -u root -ptest_password --silent; do
+          echo 'Waiting for MySQL...'
+          sleep 1
+        done
+        while ! redis-cli -h 127.0.0.1 -p 6379 ping; do
+          echo 'Waiting for Redis...'
+          sleep 1
+        done
+        echo 'Services are ready!'
+
+    - name: Run integration tests
+      run: |
+        export DJANGO_SETTINGS_MODULE=ci_settings
+        poetry run pytest -m integration -v
