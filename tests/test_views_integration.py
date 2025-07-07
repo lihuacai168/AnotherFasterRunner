@@ -9,12 +9,10 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APIClient
 
-from fastrunner.models import (
-    API, Case, CaseStep, Config, HostIP, Project, 
-    Relation, Report, Variables, Visit
-)
-from fastrunner.views import run, schedule, suite, project, report as report_views
-from fastuser.models import MyUser, UserToken, UserInfo
+from fastrunner.models import API, Case, CaseStep, Config, HostIP, Project, Relation, Report, Variables, Visit
+from fastrunner.views import project, run, schedule, suite
+from fastrunner.views import report as report_views
+from fastuser.models import MyUser, UserInfo, UserToken
 
 
 @pytest.mark.integration

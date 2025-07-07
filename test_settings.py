@@ -1,5 +1,6 @@
 # Test settings for FasterRunner
 import datetime
+
 from FasterRunner.settings.base import *
 
 # Test database configuration

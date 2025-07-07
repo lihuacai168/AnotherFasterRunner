@@ -12,19 +12,27 @@ class TestImportsAndBasics(TestCase):
     def test_fastrunner_imports(self):
         """Test importing fastrunner modules"""
         # Import views
-        from fastrunner.views import api, ci, config, project, report, run, schedule, suite, yapi
-        from fastrunner.views import timer_task
-        
-        # Import utils
-        from fastrunner.utils import response, runner, parser, loader, prepare
-        from fastrunner.utils import day, decorator, host, tree, relation
-        from fastrunner.utils import ding_message, lark_message, task
-        
         # Import serializers
-        from fastrunner import serializers
-        
         # Import models
-        from fastrunner import models
+        from fastrunner import models, serializers
+
+        # Import utils
+        from fastrunner.utils import (
+            day,
+            decorator,
+            ding_message,
+            host,
+            lark_message,
+            loader,
+            parser,
+            prepare,
+            relation,
+            response,
+            runner,
+            task,
+            tree,
+        )
+        from fastrunner.views import api, ci, config, project, report, run, schedule, suite, timer_task, yapi
         
         # Assert modules are imported
         self.assertIsNotNone(api)
@@ -33,7 +41,7 @@ class TestImportsAndBasics(TestCase):
 
     def test_fastuser_imports(self):
         """Test importing fastuser modules"""
-        from fastuser import views, models, serializers
+        from fastuser import models, serializers, views
         from fastuser.common import response
         
         self.assertIsNotNone(views)
@@ -42,14 +50,14 @@ class TestImportsAndBasics(TestCase):
 
     def test_mock_imports(self):
         """Test importing mock modules"""
-        from mock import views, models, serializers
+        from mock import models, serializers, views
         
         self.assertIsNotNone(views)
         self.assertIsNotNone(models)
 
     def test_system_imports(self):
         """Test importing system modules"""
-        from system import views, models
+        from system import models, views
         from system.serializers import log_record_serializer
         
         self.assertIsNotNone(views)
@@ -126,7 +134,7 @@ class TestImportsAndBasics(TestCase):
 
     def test_relation_constants(self):
         """Test relation constants"""
-        from fastrunner.utils.relation import API_RELATION, API_AUTHOR
+        from fastrunner.utils.relation import API_AUTHOR, API_RELATION
         
         # Test API_RELATION
         self.assertIn('default', API_RELATION)
@@ -138,9 +146,9 @@ class TestImportsAndBasics(TestCase):
 
     def test_model_string_representations(self):
         """Test model __str__ methods"""
-        from fastrunner.models import Project, API, Case, Config, Variables, Report
+        from fastrunner.models import API, Case, Config, Project, Report, Variables
         from fastuser.models import MyUser, UserToken
-        from mock.models import MockProject, MockAPI
+        from mock.models import MockAPI, MockProject
         
         # Create instances
         project = Project(name="Test Project")
@@ -160,11 +168,11 @@ class TestImportsAndBasics(TestCase):
 
     def test_utils_functions_exist(self):
         """Test that utility functions exist"""
-        from fastrunner.utils.loader import save_summary, debug_api, load_test
-        from fastrunner.utils.parser import Format
-        from fastrunner.utils.tree import get_tree_max_id
         from fastrunner.utils.host import parse_host
+        from fastrunner.utils.loader import debug_api, load_test, save_summary
+        from fastrunner.utils.parser import Format
         from fastrunner.utils.prepare import generate_casestep, get_counter
+        from fastrunner.utils.tree import get_tree_max_id
         
         # Just verify they're importable
         self.assertTrue(callable(save_summary))
@@ -176,7 +184,7 @@ class TestImportsAndBasics(TestCase):
 
     def test_day_utils(self):
         """Test day utility functions"""
-        from fastrunner.utils.day import get_day, get_week, get_month, get_month_format, get_week_format
+        from fastrunner.utils.day import get_day, get_month, get_month_format, get_week, get_week_format
         
         # Test functions are callable
         self.assertTrue(callable(get_day))

@@ -1,14 +1,20 @@
 """Test for serializers and models to improve coverage"""
 import json
-import pytest
-from django.test import TestCase
 from unittest.mock import MagicMock, patch
 
-from fastrunner.models import Project, API, Case, Config, Variables, Report, Relation
+import pytest
+from django.test import TestCase
+
+from fastrunner.models import API, Case, Config, Project, Relation, Report, Variables
 from fastrunner.serializers import (
-    ProjectSerializer, RelationSerializer, APISerializer,
-    CaseSerializer, CaseStepSerializer, ConfigSerializer,
-    VariablesSerializer, ReportSerializer
+    APISerializer,
+    CaseSerializer,
+    CaseStepSerializer,
+    ConfigSerializer,
+    ProjectSerializer,
+    RelationSerializer,
+    ReportSerializer,
+    VariablesSerializer,
 )
 from fastuser.models import MyUser
 

@@ -1,12 +1,14 @@
 """Test for fastrunner views to improve coverage"""
 import json
-import pytest
-from django.test import TestCase, RequestFactory
-from django.contrib.auth.models import AnonymousUser
-from unittest.mock import MagicMock, patch, Mock
+from unittest.mock import MagicMock, Mock, patch
 
-from fastrunner.models import Project, API, Case, Config, Variables, Report
-from fastrunner.views import project, api, config, run, report as report_views
+import pytest
+from django.contrib.auth.models import AnonymousUser
+from django.test import RequestFactory, TestCase
+
+from fastrunner.models import API, Case, Config, Project, Report, Variables
+from fastrunner.views import api, config, project, run
+from fastrunner.views import report as report_views
 from fastuser.models import MyUser, UserToken
 
 

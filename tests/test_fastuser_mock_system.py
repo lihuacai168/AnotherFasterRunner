@@ -1,13 +1,14 @@
 """Test fastuser and mock modules to improve coverage"""
 import json
+from unittest.mock import MagicMock, patch
+
 import pytest
 from django.test import TestCase
 from rest_framework.test import APIClient
-from unittest.mock import patch, MagicMock
 
-from fastuser.models import MyUser, UserToken
 from fastuser import views as fastuser_views
-from mock.models import MockProject, MockAPI
+from fastuser.models import MyUser, UserToken
+from mock.models import MockAPI, MockProject
 from system.models import LogRecord
 
 
@@ -152,7 +153,7 @@ class TestUtilsModules(TestCase):
         
     def test_relation_constants(self):
         """Test relation module constants"""
-        from fastrunner.utils.relation import API_RELATION, API_AUTHOR
+        from fastrunner.utils.relation import API_AUTHOR, API_RELATION
         
         self.assertIn('default', API_RELATION)
         self.assertIn('default', API_AUTHOR)

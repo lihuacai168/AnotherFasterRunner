@@ -1,12 +1,13 @@
 """Test for fastrunner utils modules to improve coverage"""
 import json
-import pytest
-from django.test import TestCase
 from unittest.mock import MagicMock, patch
 
-from fastrunner.utils import response, host, tree, runner, prepare
-from fastrunner.utils.parser import Format
+import pytest
+from django.test import TestCase
+
+from fastrunner.utils import host, prepare, response, runner, tree
 from fastrunner.utils.loader import save_summary
+from fastrunner.utils.parser import Format
 
 
 @pytest.mark.django_db

@@ -9,7 +9,7 @@ from rest_framework import status
 from rest_framework.test import APIClient
 
 from fastrunner.models import API, Case, CaseStep, Config, Project, Relation, Report, Variables
-from fastuser.models import MyUser, UserToken, UserInfo
+from fastuser.models import MyUser, UserInfo, UserToken
 
 
 @pytest.mark.integration

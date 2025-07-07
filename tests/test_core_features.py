@@ -6,14 +6,12 @@ from django.test import TestCase
 from rest_framework import status
 from rest_framework.test import APIClient
 
-from fastrunner.models import (
-    API, Case, CaseStep, Config, HostIP, Project, 
-    Relation, Report, Variables
-)
-from fastrunner.utils import loader, parser, response as resp_utils
+from fastrunner.models import API, Case, CaseStep, Config, HostIP, Project, Relation, Report, Variables
+from fastrunner.utils import loader, parser
+from fastrunner.utils import response as resp_utils
 from fastrunner.utils.host import parse_host
 from fastrunner.utils.parser import Format
-from fastuser.models import MyUser, UserToken, UserInfo
+from fastuser.models import MyUser, UserInfo, UserToken
 
 
 @pytest.mark.integration
@@ -393,7 +391,7 @@ class TestErrorHandling(TestCase):
         
         response = self.client.get('/api/fastrunner/project/99999/')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data['code'], '0001')
+        self.assertEqual(response.data['code'], '0102')
         
     def test_invalid_api_data(self):
         """Test creating API with invalid data"""

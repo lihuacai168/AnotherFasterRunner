@@ -9,8 +9,8 @@ from rest_framework.test import APIClient
 from fastrunner.models import Project
 from fastrunner.utils import response as resp_utils
 from fastrunner.utils.parser import Format
-from fastuser.models import MyUser, UserToken, UserInfo
 from fastuser.common import response as user_resp
+from fastuser.models import MyUser, UserInfo, UserToken
 
 
 @pytest.mark.django_db

@@ -1,20 +1,21 @@
 """Simple tests to boost coverage by testing basic functionality"""
 import json
+from unittest.mock import MagicMock, Mock, patch
+
 import pytest
 from django.test import TestCase
-from unittest.mock import MagicMock, patch, Mock
 
-from fastrunner.models import Project, API, Case, Config, Variables, Report, Relation, CaseStep
-from fastrunner.utils import response, tree, prepare, parser, loader, host, runner
-from fastrunner.views import project as project_views
+from fastrunner.models import API, Case, CaseStep, Config, Project, Relation, Report, Variables
+from fastrunner.utils import host, loader, parser, prepare, response, runner, tree
 from fastrunner.views import api as api_views
 from fastrunner.views import config as config_views
-from fastrunner.views import run as run_views
+from fastrunner.views import project as project_views
 from fastrunner.views import report as report_views
-from fastrunner.views import suite as suite_views
+from fastrunner.views import run as run_views
 from fastrunner.views import schedule as schedule_views
+from fastrunner.views import suite as suite_views
 from fastuser.models import MyUser
-from mock.models import MockProject, MockAPI
+from mock.models import MockAPI, MockProject
 from system.models import LogRecord
 
 
@@ -166,8 +167,7 @@ class TestSimpleCoverage(TestCase):
         
     def test_utils_imports(self):
         """Test that various utils can be imported"""
-        from fastrunner.utils import day, ding_message, lark_message, task
-        from fastrunner.utils import convert2hrp, convert2boomer, relation
+        from fastrunner.utils import convert2boomer, convert2hrp, day, ding_message, lark_message, relation, task
         
         # Just verify they can be imported
         self.assertIsNotNone(day)
