@@ -1,3 +1,0 @@
-[console_scripts]
-celery = celery.__main__:main
-

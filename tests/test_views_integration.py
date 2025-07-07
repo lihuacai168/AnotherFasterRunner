@@ -7,16 +7,17 @@ from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.urls import reverse
 from rest_framework import status
+from rest_framework.test import APIClient
+from rest_framework_jwt.settings import api_settings
 from test_constants import TEST_PASSWORD
 
 from fastrunner.models import API, Case, CaseStep, Config, HostIP, Project, Relation, Report, ReportDetail, Variables, Visit
 from fastrunner.views import project, run, schedule, suite
 from fastrunner.views import report as report_views
-from rest_framework_jwt.settings import api_settings
+from fastuser.models import MyUser, UserInfo, UserToken
 
 jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
 jwt_encode_handler = api_settings.JWT_ENCODE_HANDLER
-from fastuser.models import MyUser, UserInfo, UserToken
 
 
 @pytest.mark.integration
