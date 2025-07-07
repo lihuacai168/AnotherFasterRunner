@@ -10,6 +10,7 @@ from fastuser import views as fastuser_views
 from fastuser.models import MyUser, UserToken
 from mock.models import MockAPI, MockProject
 from system.models import LogRecord
+from tests.test_constants import TEST_PASSWORD
 
 
 @pytest.mark.django_db
@@ -25,7 +26,7 @@ class TestFastUserViews(TestCase):
         data = {
             'username': 'newuser',
             'email': 'new@example.com',
-            'password': 'password123'
+            'password': TEST_PASSWORD
         }
         response = self.client.post('/api/user/register/', data, format='json')
         self.assertEqual(response.status_code, 200)
@@ -36,12 +37,12 @@ class TestFastUserViews(TestCase):
         user = MyUser.objects.create_user(
             username='loginuser',
             email='login@example.com',
-            password='password123'
+            password=TEST_PASSWORD
         )
         
         data = {
             'username': 'loginuser',
-            'password': 'password123'
+            'password': TEST_PASSWORD
         }
         response = self.client.post('/api/user/login/', data, format='json')
         self.assertEqual(response.status_code, 200)
@@ -53,13 +54,13 @@ class TestFastUserViews(TestCase):
         MyUser.objects.create_user(
             username='existing',
             email='existing@example.com',
-            password='password123'
+            password=TEST_PASSWORD
         )
         
         data = {
             'username': 'existing',
             'email': 'new@example.com',
-            'password': 'password123'
+            'password': TEST_PASSWORD
         }
         response = self.client.post('/api/user/register/', data, format='json')
         self.assertEqual(response.status_code, 200)
@@ -134,9 +135,16 @@ class TestUtilsModules(TestCase):
         from fastrunner.utils.day import get_day
         
         # Test get_day function
-        days = get_day(3)
-        self.assertEqual(len(days), 3)
-        self.assertTrue(all(isinstance(d, str) for d in days))
+        today = get_day()
+        tomorrow = get_day(1)
+        yesterday = get_day(-1)
+        
+        self.assertIsInstance(today, str)
+        self.assertIsInstance(tomorrow, str)
+        self.assertIsInstance(yesterday, str)
+        
+        # Test date format
+        self.assertRegex(today, r'^\d{4}-\d{2}-\d{2}$')
         
     def test_ding_message_init(self):
         """Test DingMessage initialization"""
@@ -170,12 +178,13 @@ class TestDTOModules(TestCase):
         from fastrunner.dto.tree_dto import TreeOut, TreeUniqueIn
         
         # Test TreeOut
-        tree_out = TreeOut(id=1, label="Test", children=[])
+        tree_out = TreeOut(tree=[{"id": 1, "label": "Test"}], id=1, max=10)
         self.assertEqual(tree_out.id, 1)
-        self.assertEqual(tree_out.label, "Test")
+        self.assertEqual(tree_out.max, 10)
+        self.assertIsInstance(tree_out.tree, list)
         
         # Test TreeUniqueIn
-        tree_in = TreeUniqueIn(id=[1, 2, 3], project_id=1, type=1)
+        tree_in = TreeUniqueIn(project_id=1, type=1)
         self.assertEqual(tree_in.project_id, 1)
         self.assertEqual(tree_in.type, 1)
 
@@ -236,6 +245,6 @@ class TestFastUserCommon(TestCase):
         """Test token generation"""
         from fastuser.common.token import generate_token
         
-        token = generate_token()
+        token = generate_token('testuser')
         self.assertIsInstance(token, str)
         self.assertGreater(len(token), 20)

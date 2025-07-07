@@ -12,6 +12,7 @@ from fastrunner.utils import response as resp_utils
 from fastrunner.utils.host import parse_host
 from fastrunner.utils.parser import Format
 from fastuser.models import MyUser, UserInfo, UserToken
+from tests.test_constants import TEST_PASSWORD
 
 
 @pytest.mark.integration
@@ -24,12 +25,12 @@ class TestUtilsIntegration(TestCase):
         self.user = MyUser.objects.create_user(
             username='utiluser',
             email='util@example.com',
-            password='testpass123'
+            password=TEST_PASSWORD
         )
         self.user_info = UserInfo.objects.create(
             username='utiluser',
             email='util@example.com',
-            password='testpass123'
+            password=TEST_PASSWORD
         )
         self.token = UserToken.objects.create(user=self.user_info, token='util-token-123')
         
@@ -130,12 +131,12 @@ class TestAPIWorkflowIntegration(TestCase):
         self.user = MyUser.objects.create_user(
             username='workflowuser',
             email='workflow@example.com',
-            password='testpass123'
+            password=TEST_PASSWORD
         )
         self.user_info = UserInfo.objects.create(
             username='workflowuser',
             email='workflow@example.com',
-            password='testpass123'
+            password=TEST_PASSWORD
         )
         self.token = UserToken.objects.create(user=self.user_info, token='workflow-token-123')
         self.client.credentials(HTTP_AUTHORIZATION=f'Token {self.token.token}')
@@ -374,7 +375,7 @@ class TestErrorHandling(TestCase):
         self.user = MyUser.objects.create_user(
             username='erroruser',
             email='error@example.com',
-            password='testpass123'
+            password=TEST_PASSWORD
         )
         
         # Use JWT authentication as that's what the app actually uses
@@ -423,12 +424,12 @@ class TestCIIntegration(TestCase):
         self.user = MyUser.objects.create_user(
             username='ciuser',
             email='ci@example.com',
-            password='testpass123'
+            password=TEST_PASSWORD
         )
         self.user_info = UserInfo.objects.create(
             username='ciuser',
             email='ci@example.com',
-            password='testpass123'
+            password=TEST_PASSWORD
         )
         self.token = UserToken.objects.create(user=self.user_info, token='ci-token-123')
         self.client.credentials(HTTP_AUTHORIZATION=f'Token {self.token.token}')
@@ -439,9 +440,8 @@ class TestCIIntegration(TestCase):
             responsible="ciuser"
         )
 
-    @patch('fastrunner.views.ci.prepare_suite_kwargs')
-    @patch('fastrunner.views.ci.debug_suite')
-    def test_gitlab_ci_integration(self, mock_debug_suite, mock_prepare_kwargs):
+    @patch('fastrunner.utils.loader.debug_suite')
+    def test_gitlab_ci_integration(self, mock_debug_suite):
         """Test GitLab CI integration"""
         
         # Create test suite
@@ -453,22 +453,31 @@ class TestCIIntegration(TestCase):
             length=1     # Required API count
         )
         
-        mock_prepare_kwargs.return_value = ({}, {"config": {}})
-        mock_debug_suite.return_value = {
-            "success": True,
-            "report_id": 123
-        }
+        mock_debug_suite.return_value = (
+            {
+                "success": True,
+                "name": "Test Suite",
+                "time": {"duration": 1.0, "start_at": "1234567890"},
+                "details": []
+            },
+            "debugtalk_content"
+        )
         
         ci_data = {
-            "project": self.project.id,
-            "cases": [case.id],
-            "config": "",
-            "run_type": "deploy"
+            "ci_job_id": 123,
+            "ci_job_url": "http://gitlab.example.com/job/123",
+            "ci_pipeline_id": 456,
+            "ci_pipeline_url": "http://gitlab.example.com/pipeline/456",
+            "ci_project_id": 789,
+            "ci_project_name": "test-project",
+            "ci_project_namespace": "test-namespace",
+            "env": "test",
+            "start_job_user": "test_user"
         }
         
         response = self.client.post('/api/fastrunner/gitlab-ci/', ci_data, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         
         # Test get CI report URL
-        response = self.client.get('/api/fastrunner/gitlab-ci/', {'project': self.project.id})
+        response = self.client.get('/api/fastrunner/gitlab-ci/', {'ci_job_id': 123})
         self.assertEqual(response.status_code, status.HTTP_200_OK)

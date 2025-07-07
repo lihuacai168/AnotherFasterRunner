@@ -10,6 +10,7 @@ from rest_framework.test import APIClient
 
 from fastrunner.models import API, Case, CaseStep, Config, Project, Relation, Report, Variables
 from fastuser.models import MyUser, UserInfo, UserToken
+from tests.test_constants import TEST_PASSWORD
 
 
 @pytest.mark.integration
@@ -25,12 +26,12 @@ class TestFullWorkflow(TestCase):
         self.user = MyUser.objects.create_user(
             username='testuser',
             email='test@example.com',
-            password='testpass123'
+            password=TEST_PASSWORD
         )
         self.user_info = UserInfo.objects.create(
             username='testuser',
             email='test@example.com',
-            password='testpass123'
+            password=TEST_PASSWORD
         )
         self.token = UserToken.objects.create(user=self.user_info, token='test-token-123')
         self.client.credentials(HTTP_AUTHORIZATION=f'Token {self.token.token}')
@@ -146,12 +147,12 @@ class TestProjectManagement(TestCase):
         self.user = MyUser.objects.create_user(
             username='projectuser',
             email='project@example.com',
-            password='testpass123'
+            password=TEST_PASSWORD
         )
         self.user_info = UserInfo.objects.create(
             username='projectuser',
             email='project@example.com',
-            password='testpass123'
+            password=TEST_PASSWORD
         )
         self.token = UserToken.objects.create(user=self.user_info, token='project-token-123')
         self.client.credentials(HTTP_AUTHORIZATION=f'Token {self.token.token}')
@@ -201,12 +202,12 @@ class TestVariablesAndConfig(TestCase):
         self.user = MyUser.objects.create_user(
             username='configuser',
             email='config@example.com',
-            password='testpass123'
+            password=TEST_PASSWORD
         )
         self.user_info = UserInfo.objects.create(
             username='configuser',
             email='config@example.com',
-            password='testpass123'
+            password=TEST_PASSWORD
         )
         self.token = UserToken.objects.create(user=self.user_info, token='config-token-123')
         self.client.credentials(HTTP_AUTHORIZATION=f'Token {self.token.token}')
@@ -302,12 +303,12 @@ class TestReportGeneration(TestCase):
         self.user = MyUser.objects.create_user(
             username='reportuser',
             email='report@example.com',
-            password='testpass123'
+            password=TEST_PASSWORD
         )
         self.user_info = UserInfo.objects.create(
             username='reportuser',
             email='report@example.com',
-            password='testpass123'
+            password=TEST_PASSWORD
         )
         self.token = UserToken.objects.create(user=self.user_info, token='report-token-123')
         self.client.credentials(HTTP_AUTHORIZATION=f'Token {self.token.token}')
@@ -362,12 +363,12 @@ class TestAPITemplateFeatures(TestCase):
         self.user = MyUser.objects.create_user(
             username='apiuser',
             email='api@example.com',
-            password='testpass123'
+            password=TEST_PASSWORD
         )
         self.user_info = UserInfo.objects.create(
             username='apiuser',
             email='api@example.com',
-            password='testpass123'
+            password=TEST_PASSWORD
         )
         self.token = UserToken.objects.create(user=self.user_info, token='api-token-123')
         self.client.credentials(HTTP_AUTHORIZATION=f'Token {self.token.token}')
@@ -455,12 +456,12 @@ class TestHostIPConfiguration(TestCase):
         self.user = MyUser.objects.create_user(
             username='hostuser',
             email='host@example.com',
-            password='testpass123'
+            password=TEST_PASSWORD
         )
         self.user_info = UserInfo.objects.create(
             username='hostuser',
             email='host@example.com',
-            password='testpass123'
+            password=TEST_PASSWORD
         )
         self.token = UserToken.objects.create(user=self.user_info, token='host-token-123')
         self.client.credentials(HTTP_AUTHORIZATION=f'Token {self.token.token}')

@@ -10,6 +10,7 @@ DATABASES = {
 SECRET_KEY = 'test-secret-key-for-ci-only'
 DEBUG = False
 ALLOWED_HOSTS = ['*']
+USE_LDAP = False
 
 LOGGING = {
     'version': 1,
@@ -24,3 +25,4 @@ LOGGING = {
         'level': 'ERROR',
     },
 }
+EOF < /dev/null

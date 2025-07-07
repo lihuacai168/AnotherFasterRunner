@@ -13,6 +13,7 @@ from fastrunner.models import API, Case, CaseStep, Config, HostIP, Project, Rela
 from fastrunner.views import project, run, schedule, suite
 from fastrunner.views import report as report_views
 from fastuser.models import MyUser, UserInfo, UserToken
+from tests.test_constants import TEST_PASSWORD
 
 
 @pytest.mark.integration
@@ -25,12 +26,12 @@ class TestRunViews(TestCase):
         self.user = MyUser.objects.create_user(
             username='runuser',
             email='run@example.com',
-            password='testpass123'
+            password=TEST_PASSWORD
         )
         self.user_info = UserInfo.objects.create(
             username='runuser',
             email='run@example.com',
-            password='testpass123'
+            password=TEST_PASSWORD
         )
         self.token = UserToken.objects.create(user=self.user_info, token='run-token-123')
         self.client.credentials(HTTP_AUTHORIZATION=f'Token {self.token.token}')
@@ -150,12 +151,12 @@ class TestSuiteViews(TestCase):
         self.user = MyUser.objects.create_user(
             username='suiteuser',
             email='suite@example.com',
-            password='testpass123'
+            password=TEST_PASSWORD
         )
         self.user_info = UserInfo.objects.create(
             username='suiteuser',
             email='suite@example.com',
-            password='testpass123'
+            password=TEST_PASSWORD
         )
         self.token = UserToken.objects.create(user=self.user_info, token='suite-token-123')
         self.client.credentials(HTTP_AUTHORIZATION=f'Token {self.token.token}')
@@ -288,12 +289,12 @@ class TestProjectViews(TestCase):
         self.user = MyUser.objects.create_user(
             username='projectviewuser',
             email='projectview@example.com',
-            password='testpass123'
+            password=TEST_PASSWORD
         )
         self.user_info = UserInfo.objects.create(
             username='projectviewuser',
             email='projectview@example.com',
-            password='testpass123'
+            password=TEST_PASSWORD
         )
         self.token = UserToken.objects.create(user=self.user_info, token='projectview-token-123')
         self.client.credentials(HTTP_AUTHORIZATION=f'Token {self.token.token}')
@@ -441,12 +442,12 @@ class TestReportViews(TestCase):
         self.user = MyUser.objects.create_user(
             username='reportviewuser',
             email='reportview@example.com',
-            password='testpass123'
+            password=TEST_PASSWORD
         )
         self.user_info = UserInfo.objects.create(
             username='reportviewuser',
             email='reportview@example.com',
-            password='testpass123'
+            password=TEST_PASSWORD
         )
         self.token = UserToken.objects.create(user=self.user_info, token='reportview-token-123')
         self.client.credentials(HTTP_AUTHORIZATION=f'Token {self.token.token}')
@@ -561,12 +562,12 @@ class TestScheduleViews(TestCase):
         self.user = MyUser.objects.create_user(
             username='scheduleuser',
             email='schedule@example.com',
-            password='testpass123'
+            password=TEST_PASSWORD
         )
         self.user_info = UserInfo.objects.create(
             username='scheduleuser',
             email='schedule@example.com',
-            password='testpass123'
+            password=TEST_PASSWORD
         )
         self.token = UserToken.objects.create(user=self.user_info, token='schedule-token-123')
         self.client.credentials(HTTP_AUTHORIZATION=f'Token {self.token.token}')
@@ -637,12 +638,12 @@ class TestConfigViews(TestCase):
         self.user = MyUser.objects.create_user(
             username='configviewuser',
             email='configview@example.com',
-            password='testpass123'
+            password=TEST_PASSWORD
         )
         self.user_info = UserInfo.objects.create(
             username='configviewuser',
             email='configview@example.com',
-            password='testpass123'
+            password=TEST_PASSWORD
         )
         self.token = UserToken.objects.create(user=self.user_info, token='configview-token-123')
         self.client.credentials(HTTP_AUTHORIZATION=f'Token {self.token.token}')

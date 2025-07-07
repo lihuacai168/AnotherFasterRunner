@@ -9,6 +9,7 @@ from rest_framework.test import APIClient, APITestCase
 
 from fastrunner.models import API, Config, Project, Relation
 from fastuser.models import MyUser
+from tests.test_constants import TEST_PASSWORD
 
 
 @pytest.mark.django_db
@@ -20,7 +21,7 @@ class TestProjectAPIViews(APITestCase):
         self.user = MyUser.objects.create_user(
             username='testuser',
             email='test@example.com', 
-            password='testpass123'
+            password=TEST_PASSWORD
         )
         self.client.force_authenticate(user=self.user)
         
@@ -81,7 +82,7 @@ class TestAPITemplateViews(APITestCase):
         self.user = MyUser.objects.create_user(
             username='testuser',
             email='test@example.com',
-            password='testpass123'
+            password=TEST_PASSWORD
         )
         self.client.force_authenticate(user=self.user)
         
@@ -227,7 +228,7 @@ class TestConfigViews(APITestCase):
         self.user = MyUser.objects.create_user(
             username='testuser',
             email='test@example.com',
-            password='testpass123'
+            password=TEST_PASSWORD
         )
         self.client.force_authenticate(user=self.user)
         
@@ -337,7 +338,7 @@ class TestErrorHandling(APITestCase):
         self.user = MyUser.objects.create_user(
             username='testuser',
             email='test@example.com',
-            password='testpass123'
+            password=TEST_PASSWORD
         )
         self.client.force_authenticate(user=self.user)
         

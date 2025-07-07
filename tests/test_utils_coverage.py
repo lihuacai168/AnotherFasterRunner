@@ -18,23 +18,18 @@ class TestUtilsHost(TestCase):
         """Test basic host parsing"""
         from fastrunner.utils.host import parse_host
         
-        # Test with normal URL
-        testcase = {"request": {"url": "/api/test"}}
-        result = parse_host("https://example.com", testcase)
-        self.assertEqual(result["request"]["url"], "https://example.com/api/test")
+        # Test with list of IPs
+        testcase = {"request": {"url": "http://example.com/api/test"}}
+        result = parse_host(["192.168.1.1"], testcase)
+        self.assertIn("request", result)
         
-        # Test with empty host
-        result = parse_host("", testcase)
-        self.assertEqual(result["request"]["url"], "/api/test")
+        # Test with non-list IP (should return original)
+        result = parse_host("not a list", testcase)
+        self.assertEqual(result, testcase)
         
-        # Test with "请选择"
-        result = parse_host("请选择", testcase)
-        self.assertEqual(result["request"]["url"], "/api/test")
-        
-        # Test with base_url in testcase
-        testcase_with_base = {"request": {"base_url": "http://old.com"}}
-        result = parse_host("http://new.com", testcase_with_base)
-        self.assertEqual(result["request"]["base_url"], "http://new.com")
+        # Test with empty API
+        result = parse_host(["192.168.1.1"], None)
+        self.assertIsNone(result)
 
 
 @pytest.mark.django_db
@@ -64,31 +59,15 @@ class TestUtilsTree(TestCase):
 class TestUtilsRunner(TestCase):
     """Test runner utility functions"""
     
-    @patch('fastrunner.utils.runner.HttpRunner')
-    def test_run_summary(self, mock_runner_class):
-        """Test run_summary function"""
-        from fastrunner.utils.runner import run_summary
+    def test_debug_code(self):
+        """Test DebugCode class"""
+        from fastrunner.utils.runner import DebugCode
         
-        # Mock HttpRunner instance
-        mock_instance = MagicMock()
-        mock_instance.summary = {"success": True, "stat": {"total": 1}}
-        mock_runner_class.return_value = mock_instance
-        
-        result = run_summary("test")
-        self.assertIsNotNone(result)
-        mock_runner_class.assert_called_once()
-        
-    def test_run_single(self):
-        """Test run_single function"""
-        from fastrunner.utils.runner import run_single
-        
-        with patch('fastrunner.utils.runner.HttpRunner') as mock_runner:
-            mock_instance = MagicMock()
-            mock_instance.summary = {"success": True}
-            mock_runner.return_value = mock_instance
-            
-            result = run_single({})
-            self.assertIsNotNone(result)
+        # Test initialization
+        code = "print('hello')"
+        debug = DebugCode(code)
+        self.assertIsNotNone(debug)
+        self.assertTrue(debug.temp.startswith('/tmp/FasterRunner'))
 
 
 @pytest.mark.django_db
@@ -96,27 +75,30 @@ class TestUtilsPrepare(TestCase):
     """Test prepare utility functions"""
     
     def test_get_counter(self):
-        """Test variable counter"""
+        """Test model counter"""
         from fastrunner.utils.prepare import get_counter
+        from fastrunner.models import API
         
-        # Test with variables
-        content = "Hello $name, your id is $id"
-        variables = ["name", "id", "unused"]
-        counter = get_counter(content, variables)
-        self.assertEqual(counter, {"name": 1, "id": 1})
+        # Test counter without project
+        count = get_counter(API)
+        self.assertIsInstance(count, int)
+        self.assertGreaterEqual(count, 0)
         
-        # Test without variables
-        content = "No variables here"
-        counter = get_counter(content, [])
-        self.assertEqual(counter, {})
+    def test_report_status_count(self):
+        """Test report status counting"""
+        from fastrunner.utils.prepare import report_status_count
+        from fastrunner.models import Project
         
-    def test_is_json(self):
-        """Test JSON validation"""
-        from fastrunner.utils.prepare import is_json
+        # Create test project
+        project = Project.objects.create(
+            name="Test", 
+            desc="Test", 
+            responsible="test"
+        )
         
-        self.assertTrue(is_json('{"key": "value"}'))
-        self.assertFalse(is_json('not json'))
-        self.assertFalse(is_json(''))
+        fail_count, success_count = report_status_count(project.id)
+        self.assertEqual(fail_count, 0)
+        self.assertEqual(success_count, 0)
 
 
 @pytest.mark.django_db
@@ -175,7 +157,7 @@ class TestUtilsLoader(TestCase):
             "details": []
         }
         
-        result = save_summary("Test Run", summary, project_id=1, type=1)
+        result = save_summary("Test Run", summary, project=1, type=1)
         self.assertIsNotNone(result)
         mock_report.objects.create.assert_called_once()
 

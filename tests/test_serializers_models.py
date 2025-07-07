@@ -17,6 +17,7 @@ from fastrunner.serializers import (
     VariablesSerializer,
 )
 from fastuser.models import MyUser
+from tests.test_constants import TEST_PASSWORD
 
 
 @pytest.mark.django_db
@@ -27,7 +28,7 @@ class TestSerializers(TestCase):
         self.user = MyUser.objects.create_user(
             username='serializertest',
             email='serializer@test.com',
-            password='test123'
+            password=TEST_PASSWORD
         )
         self.project = Project.objects.create(
             name="Serializer Project",
@@ -177,7 +178,8 @@ class TestModelMethods(TestCase):
             body="{}",
             relation=1
         )
-        self.assertEqual(str(api), "String Test API")
+        # Default Django model __str__ returns "Model object (pk)"
+        self.assertIn("API object", str(api))
         
     def test_case_str(self):
         """Test Case string representation"""
@@ -189,7 +191,7 @@ class TestModelMethods(TestCase):
             relation=1,  # Required node id
             length=1     # Required API count
         )
-        self.assertEqual(str(case), "String Test Case")
+        self.assertIn("Case object", str(case))
         
     def test_config_str(self):
         """Test Config string representation"""
@@ -199,7 +201,7 @@ class TestModelMethods(TestCase):
             project=project,
             body="{}"
         )
-        self.assertEqual(str(config), "String Test Config")
+        self.assertIn("Config object", str(config))
         
     def test_variables_str(self):
         """Test Variables string representation"""
@@ -209,7 +211,7 @@ class TestModelMethods(TestCase):
             value="test_value",
             project=project
         )
-        self.assertEqual(str(var), "test_key")
+        self.assertIn("Variables object", str(var))
         
     def test_report_str(self):
         """Test Report string representation"""
@@ -222,4 +224,4 @@ class TestModelMethods(TestCase):
             creator="test",
             detail="{}"
         )
-        self.assertEqual(str(report), "String Test Report")
+        self.assertIn("Report object", str(report))

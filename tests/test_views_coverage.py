@@ -8,6 +8,7 @@ from django.test import RequestFactory, TestCase
 
 from fastrunner.models import API, Case, Config, Project, Report, Variables
 from fastrunner.views import api, config, project, run
+from tests.test_constants import TEST_PASSWORD
 from fastrunner.views import report as report_views
 from fastuser.models import MyUser, UserToken
 
@@ -21,7 +22,7 @@ class TestProjectViews(TestCase):
         self.user = MyUser.objects.create_user(
             username='testuser',
             email='test@example.com',
-            password='test123'
+            password=TEST_PASSWORD
         )
         self.project = Project.objects.create(
             name="Test Project",
@@ -66,7 +67,7 @@ class TestAPIViews(TestCase):
         self.user = MyUser.objects.create_user(
             username='apiuser',
             email='api@example.com',
-            password='test123'
+            password=TEST_PASSWORD
         )
         self.project = Project.objects.create(
             name="API Project",
@@ -132,7 +133,7 @@ class TestConfigViews(TestCase):
         self.user = MyUser.objects.create_user(
             username='configuser',
             email='config@example.com',
-            password='test123'
+            password=TEST_PASSWORD
         )
         self.project = Project.objects.create(
             name="Config Project",
@@ -166,7 +167,7 @@ class TestRunViews(TestCase):
         self.user = MyUser.objects.create_user(
             username='runuser',
             email='run@example.com',
-            password='test123'
+            password=TEST_PASSWORD
         )
         self.project = Project.objects.create(
             name="Run Project",
@@ -225,7 +226,7 @@ class TestReportViews(TestCase):
         self.user = MyUser.objects.create_user(
             username='reportuser',
             email='report@example.com',
-            password='test123'
+            password=TEST_PASSWORD
         )
         self.project = Project.objects.create(
             name="Report Project",

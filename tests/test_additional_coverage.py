@@ -11,6 +11,7 @@ from fastrunner.utils import response as resp_utils
 from fastrunner.utils.parser import Format
 from fastuser.common import response as user_resp
 from fastuser.models import MyUser, UserInfo, UserToken
+from tests.test_constants import TEST_PASSWORD
 
 
 @pytest.mark.django_db
@@ -22,7 +23,7 @@ class TestFastUserViews(TestCase):
         self.user_data = {
             'username': 'testuser',
             'email': 'test@example.com',
-            'password': 'testpass123'
+            'password': TEST_PASSWORD
         }
 
     @pytest.mark.skip(reason="Registration endpoint is disabled")
@@ -138,7 +139,7 @@ class TestMockViews(TestCase):
         self.user = MyUser.objects.create_user(
             username='mockuser',
             email='mock@example.com',
-            password='testpass123'
+            password=TEST_PASSWORD
         )
         
         # Use JWT authentication as that's what the app actually uses
@@ -209,7 +210,7 @@ class TestSystemViews(TestCase):
         self.user = MyUser.objects.create_user(
             username='systemuser',
             email='system@example.com',
-            password='testpass123'
+            password=TEST_PASSWORD
         )
         
         # Use JWT authentication as that's what the app actually uses
@@ -324,6 +325,6 @@ class TestModelStr(TestCase):
         user = MyUser.objects.create_user(
             username='testuser',
             email='test@example.com',
-            password='testpass123'
+            password=TEST_PASSWORD
         )
         self.assertEqual(str(user), 'testuser')

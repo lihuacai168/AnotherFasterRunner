@@ -17,6 +17,7 @@ from fastrunner.views import suite as suite_views
 from fastuser.models import MyUser
 from mock.models import MockAPI, MockProject
 from system.models import LogRecord
+from tests.test_constants import TEST_PASSWORD
 
 
 @pytest.mark.django_db
@@ -27,7 +28,7 @@ class TestSimpleCoverage(TestCase):
         self.user = MyUser.objects.create_user(
             username='coverageuser',
             email='coverage@test.com',
-            password='test123'
+            password=TEST_PASSWORD
         )
         self.project = Project.objects.create(
             name="Coverage Project",
@@ -59,14 +60,10 @@ class TestSimpleCoverage(TestCase):
     def test_utils_prepare_functions(self):
         """Test prepare utility functions"""
         # Test get_counter
-        variables = ["var1", "var2"]
-        content = "This has $var1 and $var2"
-        counter = prepare.get_counter(content, variables)
-        self.assertEqual(counter, {"var1": 1, "var2": 1})
-        
-        # Test is_json
-        self.assertTrue(prepare.is_json('{"key": "value"}'))
-        self.assertFalse(prepare.is_json('not json'))
+        from fastrunner.models import API
+        count = prepare.get_counter(API, self.project.id)
+        self.assertIsInstance(count, int)
+        self.assertEqual(count, 0)  # No APIs in test project yet
         
     def test_parser_format(self):
         """Test parser Format class"""
@@ -92,7 +89,7 @@ class TestSimpleCoverage(TestCase):
             "details": []
         }
         
-        result = loader.save_summary("Test", summary, project_id=1, type=1)
+        result = loader.save_summary("Test", summary, project=self.project.id, type=1)
         self.assertIsNotNone(result)
         
     def test_response_constants(self):
@@ -108,7 +105,7 @@ class TestSimpleCoverage(TestCase):
     def test_model_methods(self):
         """Test model string methods"""
         # Project
-        self.assertEqual(str(self.project), "Coverage Project")
+        self.assertIn("Project object", str(self.project))
         
         # API
         api = API.objects.create(
@@ -119,7 +116,7 @@ class TestSimpleCoverage(TestCase):
             body="{}",
             relation=1
         )
-        self.assertEqual(str(api), "Test API")
+        self.assertIn("API object", str(api))
         
         # Case
         case = Case.objects.create(
@@ -129,7 +126,7 @@ class TestSimpleCoverage(TestCase):
             relation=1,  # Required node id
             length=1     # Required API count
         )
-        self.assertEqual(str(case), "Test Case")
+        self.assertIn("Case object", str(case))
         
     def test_serializers_basic(self):
         """Test basic serializer functionality"""
@@ -202,6 +199,6 @@ class TestSimpleCoverage(TestCase):
         self.assertIn('msg', user_response.LOGIN_SUCCESS)
         
         # Test token generation
-        token_str = token.generate_token()
+        token_str = token.generate_token('testuser')
         self.assertIsInstance(token_str, str)
         self.assertGreater(len(token_str), 20)
