@@ -197,6 +197,7 @@ class TestServicesModules(TestCase):
     def test_tree_service(self, mock_filter):
         """Test tree service implementation"""
         from fastrunner.services.tree_service_impl import TreeService
+        from fastrunner.dto.tree_dto import TreeUniqueIn
         
         # Mock the queryset
         mock_queryset = MagicMock()
