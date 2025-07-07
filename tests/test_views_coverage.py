@@ -19,7 +19,7 @@ class TestProjectViews(TestCase):
     """Test project view methods"""
     
     def setUp(self):
-        self.factory = APIAPIRequestFactory()
+        self.factory = APIRequestFactory()
         self.user = MyUser.objects.create_user(
             username='testuser',
             email='test@example.com',
@@ -63,7 +63,7 @@ class TestAPIViews(TestCase):
     """Test API view methods"""
     
     def setUp(self):
-        self.factory = APIAPIRequestFactory()
+        self.factory = APIRequestFactory()
         self.user = MyUser.objects.create_user(
             username='apiuser',
             email='api@example.com',
