@@ -42,8 +42,18 @@ class TestSimpleCoverage(TestCase):
         tree_data = []
         self.assertEqual(tree.get_tree_max_id(tree_data), 0)
         
-        tree_data = [{"id": 5}, {"id": 3}]
+        tree_data = [{"id": 5, "children": []}, {"id": 3, "children": []}]
         self.assertEqual(tree.get_tree_max_id(tree_data), 5)
+        
+        # Test with nested children
+        tree_data = [
+            {"id": 1, "children": [
+                {"id": 10, "children": []},
+                {"id": 8, "children": []}
+            ]},
+            {"id": 3, "children": []}
+        ]
+        self.assertEqual(tree.get_tree_max_id(tree_data), 10)
         
     def test_utils_host_parse(self):
         """Test host parsing"""
