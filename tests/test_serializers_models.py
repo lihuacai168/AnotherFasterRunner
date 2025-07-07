@@ -224,7 +224,6 @@ class TestModelMethods(TestCase):
             name="String Test Report",
             type=1,
             status=True,
-            creator="test",
-            detail="{}"
+            creator="test"
         )
         self.assertIn("Report object", str(report))
