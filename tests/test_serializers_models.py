@@ -58,6 +58,14 @@ class TestSerializers(TestCase):
         
     def test_api_serializer_with_body_parsing(self):
         """Test APISerializer body parsing"""
+        # Create a relation first
+        from fastrunner.models import Relation
+        Relation.objects.create(
+            project=self.project,
+            tree=json.dumps([{"id": 1, "label": "Test API", "children": []}]),
+            type=1
+        )
+        
         api = API.objects.create(
             name="Test API",
             project=self.project,
