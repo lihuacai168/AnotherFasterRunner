@@ -9,7 +9,7 @@ from rest_framework import status
 from rest_framework.test import APIClient
 
 from fastrunner.models import API, Case, CaseStep, Config, Project, Relation, Report, Variables
-from fastuser.models import MyUser, UserInfo, UserToken
+from fastuser.models import MyUser
 from test_constants import TEST_PASSWORD
 
 
@@ -28,13 +28,7 @@ class TestFullWorkflow(TestCase):
             email='test@example.com',
             password=TEST_PASSWORD
         )
-        self.user_info = UserInfo.objects.create(
-            username='testuser',
-            email='test@example.com',
-            password=TEST_PASSWORD
-        )
-        self.token = UserToken.objects.create(user=self.user_info, token='test-token-123')
-        self.client.credentials(HTTP_AUTHORIZATION=f'Token {self.token.token}')
+        self.client.force_authenticate(user=self.user)
         
         # Create test project
         self.project = Project.objects.create(
