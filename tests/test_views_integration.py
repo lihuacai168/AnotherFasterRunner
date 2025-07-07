@@ -11,7 +11,19 @@ from rest_framework.test import APIClient
 from rest_framework_jwt.settings import api_settings
 from test_constants import TEST_PASSWORD
 
-from fastrunner.models import API, Case, CaseStep, Config, HostIP, Project, Relation, Report, ReportDetail, Variables, Visit
+from fastrunner.models import (
+    API,
+    Case,
+    CaseStep,
+    Config,
+    HostIP,
+    Project,
+    Relation,
+    Report,
+    ReportDetail,
+    Variables,
+    Visit,
+)
 from fastrunner.views import project, run, schedule, suite
 from fastrunner.views import report as report_views
 from fastuser.models import MyUser, UserInfo, UserToken

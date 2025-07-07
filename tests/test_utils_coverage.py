@@ -76,8 +76,8 @@ class TestUtilsPrepare(TestCase):
     
     def test_get_counter(self):
         """Test model counter"""
-        from fastrunner.utils.prepare import get_counter
         from fastrunner.models import API
+        from fastrunner.utils.prepare import get_counter
         
         # Test counter without project
         count = get_counter(API)
@@ -86,8 +86,8 @@ class TestUtilsPrepare(TestCase):
         
     def test_report_status_count(self):
         """Test report status counting"""
-        from fastrunner.utils.prepare import report_status_count
         from fastrunner.models import Project
+        from fastrunner.utils.prepare import report_status_count
         
         # Create test project
         project = Project.objects.create(

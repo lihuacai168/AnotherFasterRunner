@@ -6,10 +6,10 @@ import pytest
 from django.contrib.auth.models import AnonymousUser
 from django.test import TestCase
 from rest_framework.test import APIRequestFactory
+from test_constants import TEST_PASSWORD
 
 from fastrunner.models import API, Case, Config, Project, Report, Variables
 from fastrunner.views import api, config, project, run
-from test_constants import TEST_PASSWORD
 from fastrunner.views import report as report_views
 from fastuser.models import MyUser, UserToken
 
