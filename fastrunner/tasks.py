@@ -8,6 +8,7 @@ from fastrunner import models
 from fastrunner.utils import lark_message
 from fastrunner.utils.ding_message import DingMessage
 from fastrunner.utils.loader import debug_api, debug_suite, save_summary
+from fastrunner.utils.safe_json_parser import safe_json_loads
 
 log = logging.getLogger(__name__)
 
@@ -62,7 +63,7 @@ def schedule_debug_suite(*args, **kwargs):
     override_config = kwargs.get("config", "")
     override_config_body = None
     if override_config and override_config != "请选择":
-        override_config_body = eval(models.Config.objects.get(name=override_config, project__id=project).body)
+        override_config_body = safe_json_loads(models.Config.objects.get(name=override_config, project__id=project).body)
 
     for content in suite:
         test_list = models.CaseStep.objects.filter(case__id=content["id"]).order_by("step").values("body")
@@ -70,12 +71,12 @@ def schedule_debug_suite(*args, **kwargs):
         testcase_list = []
         config = None
         for content in test_list:
-            body = eval(content["body"])
+            body = safe_json_loads(content["body"])
             if "base_url" in body["request"].keys():
                 if override_config_body:
                     config = override_config_body
                     continue
-                config = eval(models.Config.objects.get(name=body["name"], project__id=project).body)
+                config = safe_json_loads(models.Config.objects.get(name=body["name"], project__id=project).body)
                 continue
             testcase_list.append(body)
         config_list.append(config)

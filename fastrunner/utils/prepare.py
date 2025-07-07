@@ -9,6 +9,7 @@ from django_celery_beat.models import PeriodicTask as celery_models
 
 # from loguru import logger
 from fastrunner import models
+from fastrunner.utils.safe_json_parser import safe_json_loads, safe_literal_eval
 from fastrunner.utils.day import get_day, get_month, get_week
 from fastrunner.utils.parser import Format
 
@@ -296,7 +297,7 @@ def get_project_detail(pk):
     case_id = []
     task_query_set = task_query_set.filter(enabled=1).values("args")
     for i in task_query_set:
-        case_id += eval(i.get("args"))
+        case_id += safe_literal_eval(i.get("args"))
     case_step_count = models.Case.objects.filter(pk__in=case_id).aggregate(Sum("length"))
 
     return {
@@ -380,7 +381,7 @@ def update_casestep(body, case, username):
             else:
                 case_step = models.API.objects.get(id=test["id"])
 
-            new_body = eval(case_step.body)
+            new_body = safe_literal_eval(case_step.body)
             name = test["body"]["name"]
 
             if case_step.name != name:
@@ -450,11 +451,11 @@ def generate_casestep(body, case, username):
                 method = test["body"]["method"]
                 config = models.Config.objects.get(name=name)
                 url = config.base_url
-                new_body = eval(config.body)
+                new_body = safe_literal_eval(config.body)
                 source_api_id = 0  # config没有api,默认为0
             else:
                 api = models.API.objects.get(id=test["id"])
-                new_body = eval(api.body)
+                new_body = safe_literal_eval(api.body)
                 name = test["body"]["name"]
 
                 if api.name != name:

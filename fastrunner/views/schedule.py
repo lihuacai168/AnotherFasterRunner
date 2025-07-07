@@ -11,6 +11,10 @@ from FasterRunner.mycelery import app
 from fastrunner import serializers
 from fastrunner.utils import response
 from fastrunner.utils.decorator import request_log
+from fastrunner.utils.safe_json_parser import safe_json_loads
+from fastrunner import serializers
+from fastrunner.utils import response
+from fastrunner.utils.decorator import request_log
 from fastrunner.utils.task import Task
 
 
@@ -137,7 +141,7 @@ class ScheduleView(GenericViewSet):
     def run(self, request, **kwargs):
         task = models.PeriodicTask.objects.get(id=kwargs["pk"])
         task_name = "fastrunner.tasks.schedule_debug_suite"
-        args = eval(task.args)
+        args = safe_json_loads(task.args)
         kwargs = json.loads(task.kwargs)
         kwargs["task_id"] = task.id
         app.send_task(name=task_name, args=args, kwargs=kwargs)

@@ -13,6 +13,7 @@ from fastrunner import models, serializers
 from fastrunner.utils import convert2hrp, response
 from fastrunner.utils.convert2boomer import Boomer, BoomerExtendCmd
 from fastrunner.utils.convert2hrp import Hrp
+from fastrunner.utils.safe_json_parser import safe_json_loads
 from fastrunner.utils.decorator import request_log
 
 
@@ -180,7 +181,7 @@ class ReportView(GenericViewSet):
         report = models.Report.objects.get(id=pk)
         report_detail = models.ReportDetail.objects.get(report_id=pk)
         summary = json.loads(report.summary)
-        summary["details"] = eval(report_detail.summary_detail)
+        summary["details"] = safe_json_loads(report_detail.summary_detail)
         ConvertRequest.generate_curl(summary["details"], convert_type=("curl",))
         summary["html_report_name"] = report.name
         # return render_to_response('report_template.html', summary)

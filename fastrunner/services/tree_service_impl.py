@@ -15,6 +15,7 @@ from fastrunner.dto.tree_dto import TreeOut, TreeUniqueIn, TreeUpdateIn
 from fastrunner.models import Relation
 from fastrunner.utils.response import TREE_ADD_SUCCESS, TREE_UPDATE_SUCCESS, StandResponse
 from fastrunner.utils.tree import get_tree_max_id
+from fastrunner.utils.safe_json_parser import safe_json_loads
 
 
 class TreeService:
@@ -33,7 +34,7 @@ class TreeService:
             body: list[dict] = tree_obj.tree
         else:
             logger.info(f"tree exist {query=}")
-            body: list[dict] = eval(tree_obj.tree)
+            body: list[dict] = safe_json_loads(tree_obj.tree)
         tree = {
             "tree": body,
             "id": tree_obj.id,
