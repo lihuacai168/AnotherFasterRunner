@@ -207,8 +207,9 @@ class TestServicesModules(TestCase):
         mock_filter.return_value = mock_queryset
         
         service = TreeService()
-        result = service.get_tree_by_project_id(project_id=1, type=1)
-        self.assertIsInstance(result, list)
+        query = TreeUniqueIn(project_id=1, type=1)
+        result = service.get_or_create(query)
+        self.assertIsNotNone(result)
 
 
 @pytest.mark.django_db
