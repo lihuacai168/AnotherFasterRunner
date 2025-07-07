@@ -7,6 +7,7 @@ import django
 import pytest
 from django.conf import settings
 from django.test.utils import get_runner
+from django.utils.crypto import get_random_string
 
 
 def pytest_configure(config):
@@ -44,7 +45,7 @@ def authenticated_user():
     user = MyUser.objects.create_user(
         username='testuser',
         email='test@example.com',
-        password='testpass123'
+        password=get_random_string(32)
     )
     return user
 
