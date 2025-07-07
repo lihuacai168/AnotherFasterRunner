@@ -166,31 +166,31 @@ class TestViewHelpers(TestCase):
     
     def test_project_view_debugtalk(self):
         """Test debugtalk retrieval"""
-        project = Project.objects.create(
+        test_project = Project.objects.create(
             name="Debug Project",
             desc="Test",
             responsible="test"
         )
         
-        view = project.DebugTalkView()
+        view = project.DebugTalkView()  # Use the project module, not the instance
         factory = APIRequestFactory()
-        request = factory.get(f'/debugtalk/{project.id}/')
+        request = factory.get(f'/debugtalk/{test_project.id}/')
         
-        response = view.debugtalk(request, pk=project.id)
+        response = view.debugtalk(request, pk=test_project.id)
         self.assertEqual(response.status_code, 200)
         
     def test_tree_view(self):
         """Test tree view"""
-        project = Project.objects.create(
+        test_project = Project.objects.create(
             name="Tree Project",
             desc="Test",
             responsible="test"
         )
         
-        view = project.TreeView()
+        view = project.TreeView()  # Use the project module, not the instance
         factory = APIRequestFactory()
-        request = factory.get(f'/tree/{project.id}/')
+        request = factory.get(f'/tree/{test_project.id}/')
         request.query_params = {'type': '1'}
         
-        response = view.get(request, pk=project.id)
+        response = view.get(request, pk=test_project.id)
         self.assertEqual(response.status_code, 200)
