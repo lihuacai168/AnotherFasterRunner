@@ -11,7 +11,7 @@ from fastrunner.utils import response as resp_utils
 from fastrunner.utils.parser import Format
 from fastuser.common import response as user_resp
 from fastuser.models import MyUser, UserInfo, UserToken
-from tests.test_constants import TEST_PASSWORD
+from .test_constants import TEST_PASSWORD
 
 
 @pytest.mark.django_db

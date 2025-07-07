@@ -6,7 +6,7 @@ from django.test import TestCase
 
 from fastrunner.models import API, Case, CaseStep, Config, HostIP, Project, Variables
 from fastuser.models import MyUser
-from tests.test_constants import TEST_PASSWORD
+from .test_constants import TEST_PASSWORD
 
 
 @pytest.mark.django_db

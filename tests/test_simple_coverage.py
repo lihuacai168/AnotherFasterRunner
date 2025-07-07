@@ -17,7 +17,7 @@ from fastrunner.views import suite as suite_views
 from fastuser.models import MyUser
 from mock.models import MockAPI, MockProject
 from system.models import LogRecord
-from tests.test_constants import TEST_PASSWORD
+from .test_constants import TEST_PASSWORD
 
 
 @pytest.mark.django_db

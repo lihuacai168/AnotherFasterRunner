@@ -10,7 +10,7 @@ from rest_framework.test import APIClient
 
 from fastrunner.models import API, Case, CaseStep, Config, Project, Relation, Report, Variables
 from fastuser.models import MyUser, UserInfo, UserToken
-from tests.test_constants import TEST_PASSWORD
+from .test_constants import TEST_PASSWORD
 
 
 @pytest.mark.integration
