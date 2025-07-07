@@ -180,7 +180,7 @@ class TestSerializers(TestCase):
         serializer = ReportSerializer(instance=report)
         data = serializer.data
         self.assertEqual(data['name'], "Test Report")
-        self.assertTrue(data['status'])
+        self.assertTrue(data['success'])  # ReportSerializer uses 'success' not 'status'
 
 
 @pytest.mark.django_db
