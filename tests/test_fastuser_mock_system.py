@@ -5,12 +5,12 @@ from unittest.mock import MagicMock, patch
 import pytest
 from django.test import TestCase
 from rest_framework.test import APIClient
+from test_constants import TEST_PASSWORD
 
 from fastuser import views as fastuser_views
 from fastuser.models import MyUser, UserToken
 from mock.models import MockAPI, MockProject
 from system.models import LogRecord
-from test_constants import TEST_PASSWORD
 
 
 @pytest.mark.django_db
@@ -196,8 +196,8 @@ class TestServicesModules(TestCase):
     @patch('fastrunner.models.Relation.objects.filter')
     def test_tree_service(self, mock_filter):
         """Test tree service implementation"""
-        from fastrunner.services.tree_service_impl import TreeService
         from fastrunner.dto.tree_dto import TreeUniqueIn
+        from fastrunner.services.tree_service_impl import TreeService
         
         # Mock the queryset
         mock_queryset = MagicMock()

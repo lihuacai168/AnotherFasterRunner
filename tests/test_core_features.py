@@ -5,6 +5,7 @@ import pytest
 from django.test import TestCase
 from rest_framework import status
 from rest_framework.test import APIClient
+from test_constants import TEST_PASSWORD
 
 from fastrunner.models import API, Case, CaseStep, Config, HostIP, Project, Relation, Report, Variables
 from fastrunner.utils import loader, parser
@@ -12,7 +13,6 @@ from fastrunner.utils import response as resp_utils
 from fastrunner.utils.host import parse_host
 from fastrunner.utils.parser import Format
 from fastuser.models import MyUser, UserInfo, UserToken
-from test_constants import TEST_PASSWORD
 
 
 @pytest.mark.integration

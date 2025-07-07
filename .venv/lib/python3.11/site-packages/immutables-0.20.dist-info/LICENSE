@@ -1,0 +1,7 @@
+The Immutables project is provided under the Apache 2.0 license.  See
+LICENSE-APACHE for the full text of the license.
+
+Additionally, this software contains the following code distributed a
+different license (refer to the specific files for details):
+
+  immutables/pythoncapi_compat.h  (0BSD License)

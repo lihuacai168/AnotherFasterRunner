@@ -7,13 +7,16 @@ from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.urls import reverse
 from rest_framework import status
-from rest_framework.test import APIClient
+from test_constants import TEST_PASSWORD
 
-from fastrunner.models import API, Case, CaseStep, Config, HostIP, Project, Relation, Report, Variables, Visit
+from fastrunner.models import API, Case, CaseStep, Config, HostIP, Project, Relation, Report, ReportDetail, Variables, Visit
 from fastrunner.views import project, run, schedule, suite
 from fastrunner.views import report as report_views
+from rest_framework_jwt.settings import api_settings
+
+jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
+jwt_encode_handler = api_settings.JWT_ENCODE_HANDLER
 from fastuser.models import MyUser, UserInfo, UserToken
-from test_constants import TEST_PASSWORD
 
 
 @pytest.mark.integration
@@ -28,13 +31,10 @@ class TestRunViews(TestCase):
             email='run@example.com',
             password=TEST_PASSWORD
         )
-        self.user_info = UserInfo.objects.create(
-            username='runuser',
-            email='run@example.com',
-            password=TEST_PASSWORD
-        )
-        self.token = UserToken.objects.create(user=self.user_info, token='run-token-123')
-        self.client.credentials(HTTP_AUTHORIZATION=f'Token {self.token.token}')
+        # Generate JWT token
+        payload = jwt_payload_handler(self.user)
+        token = jwt_encode_handler(payload)
+        self.client.credentials(HTTP_AUTHORIZATION=token)
         
         self.project = Project.objects.create(
             name="Run Test Project",
@@ -153,13 +153,10 @@ class TestSuiteViews(TestCase):
             email='suite@example.com',
             password=TEST_PASSWORD
         )
-        self.user_info = UserInfo.objects.create(
-            username='suiteuser',
-            email='suite@example.com',
-            password=TEST_PASSWORD
-        )
-        self.token = UserToken.objects.create(user=self.user_info, token='suite-token-123')
-        self.client.credentials(HTTP_AUTHORIZATION=f'Token {self.token.token}')
+        # Generate JWT token
+        payload = jwt_payload_handler(self.user)
+        token = jwt_encode_handler(payload)
+        self.client.credentials(HTTP_AUTHORIZATION=token)
         
         self.project = Project.objects.create(
             name="Suite Test Project",
@@ -169,8 +166,7 @@ class TestSuiteViews(TestCase):
         
         self.relation = Relation.objects.create(
             project=self.project,
-            tree=1,
-            name="Test Suite",
+            tree=json.dumps([{"id": 1, "name": "Test Suite", "children": []}]),
             type=2
         )
 
@@ -291,13 +287,10 @@ class TestProjectViews(TestCase):
             email='projectview@example.com',
             password=TEST_PASSWORD
         )
-        self.user_info = UserInfo.objects.create(
-            username='projectviewuser',
-            email='projectview@example.com',
-            password=TEST_PASSWORD
-        )
-        self.token = UserToken.objects.create(user=self.user_info, token='projectview-token-123')
-        self.client.credentials(HTTP_AUTHORIZATION=f'Token {self.token.token}')
+        # Generate JWT token
+        payload = jwt_payload_handler(self.user)
+        token = jwt_encode_handler(payload)
+        self.client.credentials(HTTP_AUTHORIZATION=token)
 
     def test_dashboard_view(self):
         """Test dashboard statistics"""
@@ -330,15 +323,20 @@ class TestProjectViews(TestCase):
         
         # Create reports
         for i in range(3):
-            Report.objects.create(
+            report = Report.objects.create(
                 project=project,
                 name=f"Report {i}",
                 type=1,
                 status=True,
-                creator=self.user.username,
-                detail=json.dumps({
+                summary=json.dumps({
                     "success": True,
                     "stat": {"testcases": {"total": 10, "success": 8, "fail": 2}}
+                })
+            )
+            ReportDetail.objects.create(
+                report=report,
+                summary_detail=json.dumps({
+                    "details": [{"name": "test", "success": True}]
                 })
             )
         
@@ -381,22 +379,19 @@ class TestProjectViews(TestCase):
         # Create tree structure
         root = Relation.objects.create(
             project=project,
-            tree=1,
-            name="Root",
+            tree=json.dumps([{"id": 1, "name": "Root", "children": []}]),
             type=1
         )
         
         child1 = Relation.objects.create(
             project=project,
-            tree=2,
-            name="Child 1",
+            tree=json.dumps([{"id": 2, "name": "Child 1", "children": []}]),
             type=1
         )
         
         child2 = Relation.objects.create(
             project=project,
-            tree=3,
-            name="Child 2",
+            tree=json.dumps([{"id": 3, "name": "Child 2", "children": []}]),
             type=2
         )
         
@@ -417,14 +412,13 @@ class TestProjectViews(TestCase):
         # Create some visits
         for i in range(3):
             Visit.objects.create(
-                project=project,
-                user=self.user,
+                project=str(project.id),
+                user=self.user.username,
+                ip="127.0.0.1",
                 url="/api/test",
+                path="/api/test",
                 request_method="GET",
-                request_body="{}",
-                response_code=200,
-                response_body=json.dumps({"success": True}),
-                response_header=json.dumps({"Content-Type": "application/json"})
+                request_body="{}"
             )
         
         response = self.client.get('/api/fastrunner/visit/', {'project': project.id})
@@ -444,13 +438,10 @@ class TestReportViews(TestCase):
             email='reportview@example.com',
             password=TEST_PASSWORD
         )
-        self.user_info = UserInfo.objects.create(
-            username='reportviewuser',
-            email='reportview@example.com',
-            password=TEST_PASSWORD
-        )
-        self.token = UserToken.objects.create(user=self.user_info, token='reportview-token-123')
-        self.client.credentials(HTTP_AUTHORIZATION=f'Token {self.token.token}')
+        # Generate JWT token
+        payload = jwt_payload_handler(self.user)
+        token = jwt_encode_handler(payload)
+        self.client.credentials(HTTP_AUTHORIZATION=token)
         
         self.project = Project.objects.create(
             name="Report View Test Project",
@@ -465,13 +456,12 @@ class TestReportViews(TestCase):
         report_types = [1, 2, 3, 4]  # 调试，定时，异步，部署
         for report_type in report_types:
             for i in range(2):
-                Report.objects.create(
+                report = Report.objects.create(
                     project=self.project,
                     name=f"Report Type {report_type} - {i}",
                     type=report_type,
                     status=i % 2 == 0,  # Alternate between success and failure
-                    creator=self.user.username,
-                    detail=json.dumps({
+                    summary=json.dumps({
                         "success": i % 2 == 0,
                         "stat": {
                             "testcases": {
@@ -484,6 +474,12 @@ class TestReportViews(TestCase):
                             "start_at": datetime.now().isoformat(),
                             "duration": 60
                         }
+                    })
+                )
+                ReportDetail.objects.create(
+                    report=report,
+                    summary_detail=json.dumps({
+                        "details": [{"name": "test", "success": True}]
                     })
                 )
         
@@ -542,8 +538,11 @@ class TestReportViews(TestCase):
             name="Detailed Report",
             type=1,
             status=True,
-            creator=self.user.username,
-            detail=json.dumps(report_detail)
+            summary=json.dumps(report_detail)
+        )
+        ReportDetail.objects.create(
+            report=report,
+            summary_detail=json.dumps(report_detail)
         )
         
         response = self.client.get(f'/api/fastrunner/reports/{report.id}/')
@@ -564,13 +563,10 @@ class TestScheduleViews(TestCase):
             email='schedule@example.com',
             password=TEST_PASSWORD
         )
-        self.user_info = UserInfo.objects.create(
-            username='scheduleuser',
-            email='schedule@example.com',
-            password=TEST_PASSWORD
-        )
-        self.token = UserToken.objects.create(user=self.user_info, token='schedule-token-123')
-        self.client.credentials(HTTP_AUTHORIZATION=f'Token {self.token.token}')
+        # Generate JWT token
+        payload = jwt_payload_handler(self.user)
+        token = jwt_encode_handler(payload)
+        self.client.credentials(HTTP_AUTHORIZATION=token)
         
         self.project = Project.objects.create(
             name="Schedule Test Project",
@@ -579,8 +575,7 @@ class TestScheduleViews(TestCase):
         )
 
     @patch('fastrunner.views.schedule.create_task')
-    @patch('fastrunner.views.schedule.delete_task')
-    def test_schedule_crud(self, mock_delete_task, mock_create_task):
+    def test_schedule_crud(self, mock_create_task):
         """Test CRUD operations for scheduled tasks"""
         
         mock_create_task.return_value = {"name": "test_task_1"}
@@ -640,13 +635,10 @@ class TestConfigViews(TestCase):
             email='configview@example.com',
             password=TEST_PASSWORD
         )
-        self.user_info = UserInfo.objects.create(
-            username='configviewuser',
-            email='configview@example.com',
-            password=TEST_PASSWORD
-        )
-        self.token = UserToken.objects.create(user=self.user_info, token='configview-token-123')
-        self.client.credentials(HTTP_AUTHORIZATION=f'Token {self.token.token}')
+        # Generate JWT token
+        payload = jwt_payload_handler(self.user)
+        token = jwt_encode_handler(payload)
+        self.client.credentials(HTTP_AUTHORIZATION=token)
         
         self.project = Project.objects.create(
             name="Config View Test Project",

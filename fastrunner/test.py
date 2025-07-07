@@ -22,7 +22,9 @@ class ModelTest(TestCase):
             "email": "1@1.com"
         }
         """
-        models.UserInfo.objects.create(username="rikasai", password=get_random_string(32), email="lihuacai168@gmail.com")
+        models.UserInfo.objects.create(
+            username="rikasai", password=get_random_string(32), email="lihuacai168@gmail.com"
+        )
 
     def test_user_register(self):
         res = models.UserInfo.objects.get(username="rikasai")

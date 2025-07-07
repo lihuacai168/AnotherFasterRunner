@@ -4,6 +4,7 @@ from unittest.mock import MagicMock, Mock, patch
 
 import pytest
 from django.test import TestCase
+from test_constants import TEST_PASSWORD
 
 from fastrunner.models import API, Case, CaseStep, Config, Project, Relation, Report, Variables
 from fastrunner.utils import host, loader, parser, prepare, response, runner, tree
@@ -17,7 +18,6 @@ from fastrunner.views import suite as suite_views
 from fastuser.models import MyUser
 from mock.models import MockAPI, MockProject
 from system.models import LogRecord
-from test_constants import TEST_PASSWORD
 
 
 @pytest.mark.django_db

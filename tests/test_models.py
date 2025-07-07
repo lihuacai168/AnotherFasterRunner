@@ -3,10 +3,10 @@ from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError
 from django.test import TestCase
+from test_constants import TEST_PASSWORD
 
 from fastrunner.models import API, Case, CaseStep, Config, HostIP, Project, Variables
 from fastuser.models import MyUser
-from test_constants import TEST_PASSWORD
 
 
 @pytest.mark.django_db

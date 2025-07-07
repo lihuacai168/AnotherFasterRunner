@@ -5,13 +5,13 @@ import pytest
 from django.test import TestCase
 from rest_framework import status
 from rest_framework.test import APIClient
+from test_constants import TEST_PASSWORD
 
 from fastrunner.models import Project
 from fastrunner.utils import response as resp_utils
 from fastrunner.utils.parser import Format
 from fastuser.common import response as user_resp
 from fastuser.models import MyUser, UserInfo, UserToken
-from test_constants import TEST_PASSWORD
 
 
 @pytest.mark.django_db

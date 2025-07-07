@@ -7,10 +7,10 @@ from django.test import TestCase
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APIClient
+from test_constants import TEST_PASSWORD
 
 from fastrunner.models import API, Case, CaseStep, Config, Project, Report, Variables
 from fastuser.models import MyUser
-from test_constants import TEST_PASSWORD
 
 
 @pytest.mark.skip(reason="Transaction error in CI environment")

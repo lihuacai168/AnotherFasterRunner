@@ -4,6 +4,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 from django.test import TestCase
+from test_constants import TEST_PASSWORD
 
 from fastrunner.models import API, Case, Config, Project, Relation, Report, Variables
 from fastrunner.serializers import (
@@ -17,7 +18,6 @@ from fastrunner.serializers import (
     VariablesSerializer,
 )
 from fastuser.models import MyUser
-from test_constants import TEST_PASSWORD
 
 
 @pytest.mark.django_db
