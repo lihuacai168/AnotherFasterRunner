@@ -125,7 +125,15 @@ class TestSerializers(TestCase):
                     "base_url": "http://test.com",
                     "headers": {"Authorization": "Bearer token"}
                 },
-                "variables": [{"env": "test"}]
+                "variables": [{"env": "test"}],
+                "desc": {
+                    "header": {"Authorization": "Bearer token for authentication"},
+                    "data": {},
+                    "extract": {},
+                    "files": {},
+                    "params": {},
+                    "variables": {"env": "Environment variable"}
+                }
             })
         )
         
