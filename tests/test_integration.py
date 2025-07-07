@@ -46,8 +46,7 @@ class TestFullWorkflow(TestCase):
         # Create relation/tree structure
         self.root_relation = Relation.objects.create(
             project=self.project,
-            tree=1,
-            name="Root",
+            tree=json.dumps([{"id": 1, "label": "Root", "children": []}]),
             type=1
         )
 
