@@ -77,7 +77,7 @@ class TestFastUserViews(TestCase):
         user_info = UserInfo.objects.create(
             username=self.user_data['username'],
             email=self.user_data['email'],
-            password='hashed_password'  # This would normally be hashed
+            password=TEST_PASSWORD  # Using test constant
         )
         token = UserToken.objects.create(user=user_info, token='test-token-123')
         
@@ -100,7 +100,7 @@ class TestFastUserViews(TestCase):
         user_info = UserInfo.objects.create(
             username=self.user_data['username'],
             email=self.user_data['email'],
-            password='hashed_password'
+            password=TEST_PASSWORD
         )
         token = UserToken.objects.create(user=user_info, token='test-token-123')
         
