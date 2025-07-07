@@ -21,7 +21,6 @@ from rest_framework import permissions
 from rest_framework.routers import DefaultRouter
 from rest_framework_jwt.views import obtain_jwt_token
 
-from fastrunner.views import run_all_auto_case
 from mock.views import MockAPILogViewSet, MockAPIView, MockAPIViewset, MockProjectViewSet
 from system import views as system_views
 
@@ -68,7 +67,7 @@ urlpatterns = [
     # 执行定时任务
     # TODO 需要增加触发检验，暂时关闭触发入口
     # re_path(r'^run_all_auto_case/$', run_all_auto_case.run_all_auto_case, name='run_all_auto_case'),
-    path("get_report_url/", run_all_auto_case.get_report_url, name="get_report_url"),
+    # path("get_report_url/", run_all_auto_case.get_report_url, name="get_report_url"),
     # swagger
     re_path(r"^swagger(?P<format>\.json|\.yaml)$", schema_view.without_ui(cache_timeout=0), name="schema-json"),
     path("swagger/", schema_view.with_ui("swagger", cache_timeout=0), name="schema-swagger-ui",),

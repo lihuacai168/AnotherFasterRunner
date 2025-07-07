@@ -3,6 +3,7 @@ from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError
 from django.test import TestCase
+from test_constants import TEST_PASSWORD
 
 from fastrunner.models import API, Case, CaseStep, Config, HostIP, Project, Variables
 from fastuser.models import MyUser
@@ -16,7 +17,7 @@ class TestProjectModel(TestCase):
         self.user = MyUser.objects.create_user(
             username='testuser',
             email='test@example.com',
-            password='testpass123'
+            password=TEST_PASSWORD
         )
         
     def test_project_creation(self):
