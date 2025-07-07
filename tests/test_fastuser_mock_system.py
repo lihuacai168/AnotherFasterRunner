@@ -193,7 +193,7 @@ class TestDTOModules(TestCase):
 class TestServicesModules(TestCase):
     """Test service modules"""
     
-    @patch('fastrunner.services.tree_service_impl.models.Relation.objects.filter')
+    @patch('fastrunner.models.Relation.objects.filter')
     def test_tree_service(self, mock_filter):
         """Test tree service implementation"""
         from fastrunner.services.tree_service_impl import TreeService
