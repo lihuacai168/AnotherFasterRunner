@@ -91,7 +91,8 @@ class TestRunViews(TestCase):
         
         response = self.client.get(f'/api/fastrunner/run_api_pk/{self.api.id}/', {
             'config': self.config.id,
-            'project': self.project.id
+            'project': self.project.id,
+            'host': 'http://localhost:8000'
         })
         
         self.assertEqual(response.status_code, status.HTTP_200_OK)
