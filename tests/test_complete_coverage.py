@@ -10,7 +10,7 @@ from test_constants import TEST_PASSWORD
 
 from fastrunner.models import API, Config, HostIP, Project, Variables
 from fastrunner.utils.parser import Format
-from fastrunner.utils.tree import get_file_contents, get_tree_max_id
+from fastrunner.utils.tree import get_tree_max_id
 from fastrunner.views.config import (
     ConfigView,
     HostIPView,
@@ -331,8 +331,10 @@ class TestTemplatetagsAndUtils(TestCase):
         self.assertEqual(show_type(4), '部署')
         self.assertEqual(show_type(5), '其他')
 
-    def test_get_file_contents(self):
-        """Test get_file_contents function"""
+    def test_get_tree_label(self):
+        """Test get_tree_label function"""
+        from fastrunner.utils.tree import get_tree_label
+        
         tree_lis = [
             {
                 "id": 1,
@@ -344,11 +346,14 @@ class TestTemplatetagsAndUtils(TestCase):
             }
         ]
         
-        result = get_file_contents(tree_lis, [])
-        self.assertEqual(len(result), 3)
-        self.assertIn({"id": 1, "label": "Parent", "children": []}, result)
-        self.assertIn({"id": 2, "label": "Child1", "children": []}, result)
-        self.assertIn({"id": 3, "label": "Child2", "children": []}, result)
+        result = get_tree_label(tree_lis, "Child1")
+        self.assertEqual(result, "Parent")
+        
+        result = get_tree_label(tree_lis, "Parent")
+        self.assertEqual(result, "Parent")
+        
+        result = get_tree_label(tree_lis, "NotFound")
+        self.assertEqual(result, "")
 
     def test_parser_edge_cases(self):
         """Test parser edge cases"""
