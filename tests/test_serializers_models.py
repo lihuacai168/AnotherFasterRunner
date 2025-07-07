@@ -53,8 +53,9 @@ class TestSerializers(TestCase):
         
         serializer = RelationSerializer(instance=relation)
         data = serializer.data
-        self.assertIn('label', data)
-        self.assertEqual(data['id'], f"{relation.tree}_{relation.type}")
+        self.assertIn('tree', data)
+        self.assertIn('type', data)
+        self.assertEqual(data['id'], relation.id)
         
     def test_api_serializer_with_body_parsing(self):
         """Test APISerializer body parsing"""
