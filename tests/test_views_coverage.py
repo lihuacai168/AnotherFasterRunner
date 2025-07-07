@@ -4,7 +4,8 @@ from unittest.mock import MagicMock, Mock, patch
 
 import pytest
 from django.contrib.auth.models import AnonymousUser
-from django.test import RequestFactory, TestCase
+from django.test import TestCase
+from rest_framework.test import APIRequestFactory
 
 from fastrunner.models import API, Case, Config, Project, Report, Variables
 from fastrunner.views import api, config, project, run
@@ -18,7 +19,7 @@ class TestProjectViews(TestCase):
     """Test project view methods"""
     
     def setUp(self):
-        self.factory = RequestFactory()
+        self.factory = APIAPIRequestFactory()
         self.user = MyUser.objects.create_user(
             username='testuser',
             email='test@example.com',
@@ -62,7 +63,7 @@ class TestAPIViews(TestCase):
     """Test API view methods"""
     
     def setUp(self):
-        self.factory = RequestFactory()
+        self.factory = APIAPIRequestFactory()
         self.user = MyUser.objects.create_user(
             username='apiuser',
             email='api@example.com',
@@ -128,7 +129,7 @@ class TestConfigViews(TestCase):
     """Test config view methods"""
     
     def setUp(self):
-        self.factory = RequestFactory()
+        self.factory = APIRequestFactory()
         self.user = MyUser.objects.create_user(
             username='configuser',
             email='config@example.com',
@@ -162,7 +163,7 @@ class TestRunViews(TestCase):
     """Test run view functions"""
     
     def setUp(self):
-        self.factory = RequestFactory()
+        self.factory = APIRequestFactory()
         self.user = MyUser.objects.create_user(
             username='runuser',
             email='run@example.com',
@@ -221,7 +222,7 @@ class TestReportViews(TestCase):
     """Test report view methods"""
     
     def setUp(self):
-        self.factory = RequestFactory()
+        self.factory = APIRequestFactory()
         self.user = MyUser.objects.create_user(
             username='reportuser',
             email='report@example.com',
@@ -269,7 +270,7 @@ class TestViewHelpers(TestCase):
         )
         
         view = project.DebugTalkView()
-        factory = RequestFactory()
+        factory = APIRequestFactory()
         request = factory.get(f'/debugtalk/{project.id}/')
         
         response = view.debugtalk(request, pk=project.id)
@@ -284,7 +285,7 @@ class TestViewHelpers(TestCase):
         )
         
         view = project.TreeView()
-        factory = RequestFactory()
+        factory = APIRequestFactory()
         request = factory.get(f'/tree/{project.id}/')
         request.query_params = {'type': '1'}
         
