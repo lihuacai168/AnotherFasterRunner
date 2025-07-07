@@ -165,7 +165,7 @@ class TestSerializers(TestCase):
             type=1,
             status=True,
             creator=self.user.username,
-            detail=json.dumps({
+            summary=json.dumps({
                 "success": True,
                 "stat": {"total": 10, "successes": 8, "failures": 2},
                 "time": {"start_at": "2023-01-01", "duration": 60}
