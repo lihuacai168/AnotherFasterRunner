@@ -43,7 +43,6 @@ class TestSerializers(TestCase):
         self.assertEqual(data['name'], "Serializer Project")
         self.assertIn('id', data)
         
-    @pytest.mark.skip(reason="RelationSerializer expects different tree structure")
     def test_relation_serializer(self):
         """Test RelationSerializer with tree structure"""
         relation = Relation.objects.create(
@@ -57,7 +56,6 @@ class TestSerializers(TestCase):
         self.assertIn('label', data)
         self.assertEqual(data['id'], f"{relation.tree}_{relation.type}")
         
-    @pytest.mark.skip(reason="Parser expects extract with description")
     def test_api_serializer_with_body_parsing(self):
         """Test APISerializer body parsing"""
         api = API.objects.create(
@@ -100,7 +98,6 @@ class TestSerializers(TestCase):
         self.assertEqual(data['name'], "Test Case")
         self.assertIn('id', data)
         
-    @pytest.mark.skip(reason="Parser expects specific format")
     def test_config_serializer_body_format(self):
         """Test ConfigSerializer body formatting"""
         config = Config.objects.create(
@@ -135,7 +132,6 @@ class TestSerializers(TestCase):
         self.assertEqual(data['key'], "test_var")
         self.assertEqual(data['value'], "test_value")
         
-    @pytest.mark.skip(reason="Report model doesn't have detail field")
     def test_report_serializer(self):
         """Test ReportSerializer"""
         report = Report.objects.create(
