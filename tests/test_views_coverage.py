@@ -42,12 +42,11 @@ class TestProjectViews(TestCase):
         response = view.single(request, pk=self.project.id)
         self.assertEqual(response.status_code, 200)
         
-    @patch('fastrunner.views.project.DashBoardView.get_week_new')
-    @patch('fastrunner.views.project.DashBoardView.get_month_new')
-    def test_dashboard_get(self, mock_month, mock_week):
+    @patch('fastrunner.utils.prepare.get_counter')
+    def test_dashboard_get(self, mock_counter):
         """Test dashboard statistics"""
-        mock_week.return_value = [1, 2, 3, 4, 5, 0, 0]
-        mock_month.return_value = [10] * 30
+        # Mock the counter function which is used by dashboard
+        mock_counter.return_value = 10
         
         view = project.DashBoardView()
         request = self.factory.get('/dashboard/')
