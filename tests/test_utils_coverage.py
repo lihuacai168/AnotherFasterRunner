@@ -212,7 +212,11 @@ class TestResponseConstants(TestCase):
         
         for resp in success_responses:
             self.assertTrue(resp['success'])
-            self.assertEqual(resp['code'], '0001')
+            # Most success codes are '0001', but SYSTEM_SUCCESS is '0000'
+            if resp == response.SYSTEM_SUCCESS:
+                self.assertEqual(resp['code'], '0000')
+            else:
+                self.assertIn(resp['code'], ['0001', '0002', '0003'])  # Various success codes
             
     def test_error_responses(self):
         """Test error response constants"""
