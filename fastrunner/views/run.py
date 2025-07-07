@@ -57,7 +57,9 @@ def run_api_pk(request, **kwargs):
     host = request.query_params["host"]
     api = models.API.objects.get(id=kwargs["pk"])
     name = request.query_params["config"]
-    config = None if name == "请选择" else safe_json_loads(models.Config.objects.get(name=name, project=api.project).body)
+    config = None if name == "请选择" else safe_json_loads(
+        models.Config.objects.get(name=name, project=api.project).body
+    )
 
     test_case = safe_json_loads(api.body)
     if host != "请选择":
@@ -152,7 +154,9 @@ def run_api_tree(request):
     name = request.data["name"]
     config = request.data["config"]
 
-    config = None if config == "请选择" else safe_json_loads(models.Config.objects.get(name=config, project__id=project).body)
+    config = None if config == "请选择" else safe_json_loads(
+        models.Config.objects.get(name=config, project__id=project).body
+    )
     test_case = []
 
     if host != "请选择":

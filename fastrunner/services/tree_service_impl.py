@@ -14,8 +14,8 @@ from curd.base_curd import GenericCURD
 from fastrunner.dto.tree_dto import TreeOut, TreeUniqueIn, TreeUpdateIn
 from fastrunner.models import Relation
 from fastrunner.utils.response import TREE_ADD_SUCCESS, TREE_UPDATE_SUCCESS, StandResponse
-from fastrunner.utils.tree import get_tree_max_id
 from fastrunner.utils.safe_json_parser import safe_json_loads
+from fastrunner.utils.tree import get_tree_max_id
 
 
 class TreeService:

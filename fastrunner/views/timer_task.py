@@ -5,15 +5,12 @@ from django.db import DataError
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
-from djcelery import models as celery_models
 from fastrunner import models, tasks
 from fastrunner.utils import loader, response
-from fastrunner.utils.host import parse_host
-from fastrunner.utils.safe_json_parser import safe_json_loads
-
-from fastrunner import models
 from fastrunner.utils.ding_message import DingMessage
+from fastrunner.utils.host import parse_host
 from fastrunner.utils.loader import debug_api, save_summary
+from fastrunner.utils.safe_json_parser import safe_json_loads
 
 
 # 单个用例组

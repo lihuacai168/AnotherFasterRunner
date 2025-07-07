@@ -11,8 +11,8 @@ import requests
 from loguru import logger
 
 from fastrunner import models
-from fastrunner.utils.tree import get_all_ycatid, get_tree_max_id, get_tree_ycatid_mapping
 from fastrunner.utils.safe_json_parser import safe_json_loads
+from fastrunner.utils.tree import get_all_ycatid, get_tree_max_id, get_tree_ycatid_mapping
 
 logger = logging.getLogger(__name__)
 

@@ -9,9 +9,9 @@ from django_celery_beat.models import PeriodicTask as celery_models
 
 # from loguru import logger
 from fastrunner import models
-from fastrunner.utils.safe_json_parser import safe_json_loads, safe_literal_eval
 from fastrunner.utils.day import get_day, get_month, get_week
 from fastrunner.utils.parser import Format
+from fastrunner.utils.safe_json_parser import safe_json_loads, safe_literal_eval
 
 logger = logging.getLogger(__name__)
 

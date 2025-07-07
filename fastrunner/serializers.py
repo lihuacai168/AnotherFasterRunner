@@ -10,8 +10,8 @@ from rest_framework import serializers
 
 from fastrunner import models
 from fastrunner.utils.parser import Parse
-from fastrunner.utils.tree import get_tree_relation_name
 from fastrunner.utils.safe_json_parser import safe_json_loads
+from fastrunner.utils.tree import get_tree_relation_name
 
 logger = logging.getLogger(__name__)
 

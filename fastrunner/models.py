@@ -5,8 +5,8 @@ from django_celery_beat.models import PeriodicTask
 # Create your models here.
 from model_utils import Choices
 
-from fastuser.models import BaseTable
 from fastrunner.utils.safe_json_parser import safe_literal_eval
+from fastuser.models import BaseTable
 
 
 class Project(BaseTable):

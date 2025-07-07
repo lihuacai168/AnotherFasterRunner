@@ -1,4 +1,5 @@
 import pytest
+
 from fastrunner.utils.safe_json_parser import safe_json_loads, safe_literal_eval
 
 

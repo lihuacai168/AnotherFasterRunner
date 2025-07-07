@@ -13,8 +13,8 @@ from fastrunner import models, serializers
 from fastrunner.utils import convert2hrp, response
 from fastrunner.utils.convert2boomer import Boomer, BoomerExtendCmd
 from fastrunner.utils.convert2hrp import Hrp
-from fastrunner.utils.safe_json_parser import safe_json_loads
 from fastrunner.utils.decorator import request_log
+from fastrunner.utils.safe_json_parser import safe_json_loads
 
 
 class ConvertRequest(object):

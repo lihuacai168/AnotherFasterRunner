@@ -12,9 +12,6 @@ from fastrunner import serializers
 from fastrunner.utils import response
 from fastrunner.utils.decorator import request_log
 from fastrunner.utils.safe_json_parser import safe_json_loads
-from fastrunner import serializers
-from fastrunner.utils import response
-from fastrunner.utils.decorator import request_log
 from fastrunner.utils.task import Task
 
 
