@@ -77,10 +77,13 @@ class TestSimpleCoverage(TestCase):
         self.assertEqual(fmt.name, "Test")
         self.assertEqual(fmt.method, "GET")
         
+    @patch('fastrunner.models.ReportDetail.objects.create')
     @patch('fastrunner.models.Report.objects.create')
-    def test_loader_save_summary(self, mock_create):
+    def test_loader_save_summary(self, mock_report_create, mock_detail_create):
         """Test save_summary function"""
-        mock_create.return_value = Mock(id=1)
+        mock_report = Mock(id=1)
+        mock_report_create.return_value = mock_report
+        mock_detail_create.return_value = Mock()
         
         summary = {
             "success": True,
@@ -91,6 +94,7 @@ class TestSimpleCoverage(TestCase):
         
         result = loader.save_summary("Test", summary, project=self.project.id, type=1)
         self.assertIsNotNone(result)
+        self.assertEqual(result, 1)
         
     def test_response_constants(self):
         """Test response constants are defined"""
