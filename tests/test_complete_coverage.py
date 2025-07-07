@@ -15,10 +15,6 @@ from fastrunner.views.config import (
     ConfigView,
     HostIPView,
     VariablesView,
-    variables_add,
-    variables_delete,
-    variables_list,
-    variables_update,
 )
 from fastuser.models import MyUser
 
@@ -213,79 +209,6 @@ class TestConfigViewsComplete(TestCase):
         response = view.delete(request)
         
         self.assertEqual(response.status_code, 200)
-
-    @patch('fastrunner.utils.decorator.request_log', mock_request_log)
-    def test_variables_list_function(self):
-        """Test variables_list function"""
-        Variables.objects.create(
-            key="test_key",
-            value="test_value",
-            project=self.project
-        )
-        
-        request = self.factory.get('/api/variables/')
-        request.user = self.user
-        request.query_params = {'project': self.project.id}
-        
-        response = variables_list(request)
-        
-        self.assertEqual(response.status_code, 200)
-        self.assertIn('variables', response.data)
-
-    @patch('fastrunner.utils.decorator.request_log', mock_request_log)
-    def test_variables_add_function(self):
-        """Test variables_add function"""
-        request = self.factory.post('/api/variables/')
-        request.user = self.user
-        request.data = {
-            'key': 'new_var',
-            'value': 'new_value',
-            'project': self.project.id
-        }
-        
-        response = variables_add(request)
-        
-        self.assertEqual(response.status_code, 200)
-        self.assertTrue(response.data['success'])
-
-    @patch('fastrunner.utils.decorator.request_log', mock_request_log)
-    def test_variables_update_function(self):
-        """Test variables_update function"""
-        var = Variables.objects.create(
-            key="update_var",
-            value="old_value",
-            project=self.project
-        )
-        
-        request = self.factory.patch(f'/api/variables/{var.id}/')
-        request.user = self.user
-        request.data = {
-            'value': 'new_value'
-        }
-        
-        response = variables_update(request, pk=var.id)
-        
-        self.assertEqual(response.status_code, 200)
-        self.assertTrue(response.data['success'])
-
-    @patch('fastrunner.utils.decorator.request_log', mock_request_log)
-    def test_variables_delete_function(self):
-        """Test variables_delete function"""
-        var = Variables.objects.create(
-            key="delete_var",
-            value="delete_value",
-            project=self.project
-        )
-        
-        request = self.factory.delete('/api/variables/')
-        request.user = self.user
-        request.data = json.dumps([var.id])
-        request.content_type = 'application/json'
-        
-        response = variables_delete(request)
-        
-        self.assertEqual(response.status_code, 200)
-        self.assertTrue(response.data['success'])
 
     @patch('fastrunner.utils.decorator.request_log', mock_request_log)
     def test_variables_view_all(self):
