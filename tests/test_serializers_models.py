@@ -168,7 +168,12 @@ class TestSerializers(TestCase):
             summary=json.dumps({
                 "success": True,
                 "stat": {"total": 10, "successes": 8, "failures": 2},
-                "time": {"start_at": "2023-01-01", "duration": 60}
+                "time": {"start_at": "2023-01-01", "duration": 60},
+                "platform": {
+                    "httprunner_version": "1.5.8",
+                    "python_version": "3.11.0",
+                    "platform": "linux"
+                }
             })
         )
         
