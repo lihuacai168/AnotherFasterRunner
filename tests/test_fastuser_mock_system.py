@@ -10,7 +10,7 @@ from fastuser import views as fastuser_views
 from fastuser.models import MyUser, UserToken
 from mock.models import MockAPI, MockProject
 from system.models import LogRecord
-from .test_constants import TEST_PASSWORD
+from test_constants import TEST_PASSWORD
 
 
 @pytest.mark.django_db

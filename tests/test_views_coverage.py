@@ -8,7 +8,7 @@ from django.test import RequestFactory, TestCase
 
 from fastrunner.models import API, Case, Config, Project, Report, Variables
 from fastrunner.views import api, config, project, run
-from .test_constants import TEST_PASSWORD
+from test_constants import TEST_PASSWORD
 from fastrunner.views import report as report_views
 from fastuser.models import MyUser, UserToken
 

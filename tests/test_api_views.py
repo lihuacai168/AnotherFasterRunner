@@ -9,7 +9,7 @@ from rest_framework.test import APIClient, APITestCase
 
 from fastrunner.models import API, Config, Project, Relation
 from fastuser.models import MyUser
-from .test_constants import TEST_PASSWORD
+from test_constants import TEST_PASSWORD
 
 
 @pytest.mark.django_db

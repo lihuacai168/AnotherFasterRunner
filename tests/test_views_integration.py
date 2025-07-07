@@ -13,7 +13,7 @@ from fastrunner.models import API, Case, CaseStep, Config, HostIP, Project, Rela
 from fastrunner.views import project, run, schedule, suite
 from fastrunner.views import report as report_views
 from fastuser.models import MyUser, UserInfo, UserToken
-from .test_constants import TEST_PASSWORD
+from test_constants import TEST_PASSWORD
 
 
 @pytest.mark.integration

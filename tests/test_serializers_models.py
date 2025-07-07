@@ -17,7 +17,7 @@ from fastrunner.serializers import (
     VariablesSerializer,
 )
 from fastuser.models import MyUser
-from .test_constants import TEST_PASSWORD
+from test_constants import TEST_PASSWORD
 
 
 @pytest.mark.django_db
