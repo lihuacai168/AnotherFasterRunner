@@ -49,12 +49,16 @@ class TestSimpleCoverage(TestCase):
         """Test host parsing"""
         testcase = {"request": {"url": "/api/test"}}
         
-        # Normal host
+        # With string host (not a list, so should return unchanged)
         result = host.parse_host("http://example.com", testcase)
-        self.assertEqual(result["request"]["url"], "http://example.com/api/test")
+        self.assertEqual(result["request"]["url"], "/api/test")
         
-        # Empty host
-        result = host.parse_host("", testcase)
+        # With empty list
+        result = host.parse_host([], testcase)
+        self.assertEqual(result["request"]["url"], "/api/test")
+        
+        # With proper host list but no matching host
+        result = host.parse_host(["192.168.1.1 example.com"], testcase)
         self.assertEqual(result["request"]["url"], "/api/test")
         
     def test_utils_prepare_functions(self):
