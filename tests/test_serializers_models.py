@@ -73,7 +73,7 @@ class TestSerializers(TestCase):
                     "json": {"test": "data"}
                 },
                 "validate": [{"equals": ["status_code", 200]}],
-                "extract": [{"token": "content.token"}]
+                "extract": {"token": "content.token"}
             }),
             relation=1
         )
