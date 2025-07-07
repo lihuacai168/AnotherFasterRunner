@@ -147,9 +147,19 @@ class TestUtilsParser(TestCase):
 class TestUtilsLoader(TestCase):
     """Test loader utility functions"""
     
-    @patch('fastrunner.models.Report')
-    def test_save_summary(self, mock_report):
+    @patch('fastrunner.models.ReportDetail.objects.create')
+    @patch('fastrunner.models.Report.objects.create')
+    @patch('fastrunner.models.Project.objects.get')
+    def test_save_summary(self, mock_project_get, mock_report_create, mock_detail_create):
         """Test save_summary function"""
+        # Mock project
+        mock_project = MagicMock()
+        mock_project_get.return_value = mock_project
+        
+        # Mock report creation
+        mock_report = MagicMock(id=1)
+        mock_report_create.return_value = mock_report
+        
         summary = {
             "success": True,
             "stat": {"total": 5, "successes": 4, "failures": 1},
@@ -158,8 +168,10 @@ class TestUtilsLoader(TestCase):
         }
         
         result = save_summary("Test Run", summary, project=1, type=1)
-        self.assertIsNotNone(result)
-        mock_report.objects.create.assert_called_once()
+        self.assertEqual(result, 1)
+        mock_project_get.assert_called_once_with(id=1)
+        mock_report_create.assert_called_once()
+        mock_detail_create.assert_called_once()
 
 
 @pytest.mark.django_db
