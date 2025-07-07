@@ -43,9 +43,13 @@ class TestProjectViews(TestCase):
         response = view.single(request, pk=self.project.id)
         self.assertEqual(response.status_code, 200)
         
+    @patch('fastrunner.utils.decorator.request_log')
     @patch('fastrunner.utils.prepare.get_counter')
-    def test_dashboard_get(self, mock_counter):
+    def test_dashboard_get(self, mock_counter, mock_request_log):
         """Test dashboard statistics"""
+        # Mock the request_log decorator to bypass it
+        mock_request_log.return_value = lambda f: f
+        
         # Mock the counter function which is used by dashboard
         mock_counter.return_value = 10
         
