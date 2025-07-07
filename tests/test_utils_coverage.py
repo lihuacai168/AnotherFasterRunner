@@ -43,14 +43,14 @@ class TestUtilsTree(TestCase):
         # Empty tree
         self.assertEqual(get_tree_max_id([]), 0)
         
-        # Single level tree
-        tree = [{"id": 1}, {"id": 3}, {"id": 2}]
+        # Single level tree - need children field
+        tree = [{"id": 1, "children": []}, {"id": 3, "children": []}, {"id": 2, "children": []}]
         self.assertEqual(get_tree_max_id(tree), 3)
         
-        # Nested tree
+        # Nested tree - all nodes need children field
         tree = [
-            {"id": 1, "children": [{"id": 5}, {"id": 4}]},
-            {"id": 2, "children": [{"id": 8, "children": [{"id": 10}]}]}
+            {"id": 1, "children": [{"id": 5, "children": []}, {"id": 4, "children": []}]},
+            {"id": 2, "children": [{"id": 8, "children": [{"id": 10, "children": []}]}]}
         ]
         self.assertEqual(get_tree_max_id(tree), 10)
 
