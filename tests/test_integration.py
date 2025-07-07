@@ -8,7 +8,7 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APIClient
 
-from fastrunner.models import API, Case, CaseStep, Config, Project, Relation, Report, Variables
+from fastrunner.models import API, Case, CaseStep, Config, Project, Report, Variables
 from fastuser.models import MyUser
 from test_constants import TEST_PASSWORD
 
@@ -36,13 +36,6 @@ class TestFullWorkflow(TestCase):
             desc="Project for integration testing",
             responsible="testuser"
         )
-        
-        # Create relation/tree structure
-        self.root_relation = Relation.objects.create(
-            project=self.project,
-            tree=json.dumps([{"id": 1, "label": "Root", "children": []}]),
-            type=1
-        )
 
     def test_complete_api_testing_workflow(self):
         """Test the complete workflow from API creation to test execution"""
@@ -69,7 +62,7 @@ class TestFullWorkflow(TestCase):
         api_data = {
             "name": "Test API",
             "project": self.project.id,
-            "relation": self.root_relation.id,
+            "relation": 1,  # Default relation id
             "method": "GET",
             "url": "/api/test",
             "body": json.dumps({
@@ -92,7 +85,7 @@ class TestFullWorkflow(TestCase):
         case_data = {
             "name": "Integration Test Case",
             "project": self.project.id,
-            "relation": self.root_relation.id,
+            "relation": 1,  # Default relation id
             "tag": 1  # 默认标签
         }
         response = self.client.post('/api/fastrunner/test/', case_data, format='json')
