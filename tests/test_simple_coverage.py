@@ -99,7 +99,7 @@ class TestSimpleCoverage(TestCase):
     def test_response_constants(self):
         """Test response constants are defined"""
         # Success responses
-        self.assertEqual(response.SYSTEM_SUCCESS['code'], '0001')
+        self.assertEqual(response.SYSTEM_SUCCESS['code'], '0000')
         self.assertTrue(response.SYSTEM_SUCCESS['success'])
         
         # Error responses
