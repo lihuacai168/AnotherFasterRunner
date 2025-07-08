@@ -34,14 +34,29 @@ class TestSafeJsonParser:
         assert safe_json_loads("{'key': 'value'}") == {"key": "value"}
         assert safe_json_loads("{'bool': True, 'none': None}") == {"bool": True, "none": None}
         assert safe_json_loads("[1, 2, 'three']") == [1, 2, "three"]
-    
-    def test_safe_json_loads_invalid_json(self):
-        """Test handling invalid JSON"""
-        with pytest.raises(ValueError, match="Invalid JSON data"):
-            safe_json_loads("{invalid json}")
         
-        with pytest.raises(ValueError, match="Invalid JSON data"):
-            safe_json_loads("not json at all")
+        # Test mixed quotes
+        assert safe_json_loads("{'name': \"don't\"}") == {"name": "don't"}
+    
+    def test_safe_json_loads_python_types(self):
+        """Test handling Python-specific types"""
+        # Tuples become lists
+        assert safe_json_loads("(1, 2, 3)") == [1, 2, 3]
+        
+        # Sets become lists (order may vary)
+        result = safe_json_loads("{1, 2, 3}")
+        assert sorted(result) == [1, 2, 3]
+    
+    def test_safe_json_loads_invalid_data(self):
+        """Test handling invalid data"""
+        with pytest.raises(ValueError, match="Invalid data format"):
+            safe_json_loads("__import__('os')")
+        
+        with pytest.raises(ValueError, match="Invalid data format"):
+            safe_json_loads("lambda x: x + 1")
+        
+        with pytest.raises(ValueError, match="Invalid data format"):
+            safe_json_loads("1 + 1")
     
     def test_safe_literal_eval_valid_literals(self):
         """Test evaluating valid Python literals"""
@@ -76,9 +91,35 @@ class TestSafeJsonParser:
         
         with pytest.raises(ValueError, match="Invalid literal"):
             safe_literal_eval("1 + 1")
+        
+        with pytest.raises(ValueError, match="Invalid literal"):
+            safe_literal_eval("eval('print(1)')")
     
     def test_safe_literal_eval_complex_literals(self):
         """Test evaluating complex nested literals"""
         complex_literal = "{'users': [{'name': 'John', 'age': 30}, {'name': 'Jane', 'age': 25}], 'count': 2}"
         expected = {'users': [{'name': 'John', 'age': 30}, {'name': 'Jane', 'age': 25}], 'count': 2}
         assert safe_literal_eval(complex_literal) == expected
+    
+    def test_equivalence_with_eval_for_safe_cases(self):
+        """Test that safe cases produce equivalent results to eval()"""
+        safe_cases = [
+            "{'a': 1, 'b': 2}",
+            "[1, 2, 3]",
+            "{'name': \"don't\"}",
+            "True",
+            "None",
+            "123",
+            "3.14",
+            "'string'",
+        ]
+        
+        for case in safe_cases:
+            eval_result = eval(case)
+            safe_result = safe_json_loads(case)
+            
+            # Handle type conversions
+            if isinstance(eval_result, (tuple, set)):
+                eval_result = list(eval_result)
+                
+            assert eval_result == safe_result, f"Results differ for {case}"

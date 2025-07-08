@@ -1,6 +1,7 @@
 """
 Safe JSON parser utility to replace eval() usage for security.
 """
+import ast
 import json
 from typing import Any, Dict, List, Union
 
@@ -23,17 +24,30 @@ def safe_json_loads(data: str) -> Union[Dict, List, Any]:
     
     if isinstance(data, (dict, list)):
         return data
-        
+    
+    # First try standard JSON parsing
     try:
         return json.loads(data)
-    except json.JSONDecodeError as e:
-        # Try to handle Python dict/list strings by converting quotes
-        try:
-            # Replace single quotes with double quotes for JSON compatibility
-            json_str = data.replace("'", '"').replace('True', 'true').replace('False', 'false').replace('None', 'null')
-            return json.loads(json_str)
-        except json.JSONDecodeError:
-            raise ValueError(f"Invalid JSON data: {e}")
+    except json.JSONDecodeError:
+        pass
+    
+    # If JSON parsing fails, try ast.literal_eval for Python literals
+    try:
+        result = ast.literal_eval(data)
+        # Ensure the result is JSON-serializable
+        if isinstance(result, (dict, list, str, int, float, bool, type(None))):
+            return result
+        else:
+            # Convert tuples to lists for JSON compatibility
+            if isinstance(result, tuple):
+                return list(result)
+            # Convert sets to lists
+            elif isinstance(result, set):
+                return list(result)
+            else:
+                raise ValueError(f"Unsupported type: {type(result)}")
+    except (ValueError, SyntaxError) as e:
+        raise ValueError(f"Invalid data format: {e}")
 
 
 def safe_literal_eval(data: str) -> Any:
