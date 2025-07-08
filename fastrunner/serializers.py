@@ -10,6 +10,7 @@ from rest_framework import serializers
 
 from fastrunner import models
 from fastrunner.utils.parser import Parse
+from fastrunner.utils.safe_json_parser import safe_json_loads
 from fastrunner.utils.tree import get_tree_relation_name
 
 logger = logging.getLogger(__name__)
@@ -149,11 +150,11 @@ class CaseStepSerializer(serializers.ModelSerializer):
         depth = 1
 
     def get_body(self, obj):
-        body = eval(obj.body)
+        body = safe_json_loads(obj.body)
         if "base_url" in body["request"].keys():
             return {"name": body["name"], "method": "config"}
         else:
-            parse = Parse(eval(obj.body))
+            parse = Parse(safe_json_loads(obj.body))
             parse.parse_http()
             return parse.testcase
 
@@ -218,7 +219,7 @@ class APISerializer(serializers.ModelSerializer):
         ]
 
     def get_body(self, obj):
-        parse = Parse(eval(obj.body))
+        parse = Parse(safe_json_loads(obj.body))
         parse.parse_http()
         return parse.testcase
 
@@ -229,7 +230,7 @@ class APISerializer(serializers.ModelSerializer):
 
     def get_relation_name(self, obj):
         relation_obj = models.Relation.objects.get(project_id=obj.project_id, type=1)
-        label = get_tree_relation_name(eval(relation_obj.tree), obj.relation)
+        label = get_tree_relation_name(safe_json_loads(relation_obj.tree), obj.relation)
         return label
 
     # def get_cases(self, obj):
@@ -260,7 +261,7 @@ class ConfigSerializer(serializers.ModelSerializer):
         depth = 1
 
     def get_body(self, obj):
-        parse = Parse(eval(obj.body), level="config")
+        parse = Parse(safe_json_loads(obj.body), level="config")
         parse.parse_http()
         return parse.testcase
 
@@ -370,7 +371,7 @@ class PeriodicTaskSerializer(serializers.ModelSerializer):
         kwargs = json.loads(obj.kwargs)
         if obj.enabled:
             kwargs["next_execute_time"] = get_cron_next_execute_time(kwargs["crontab"])
-        # ci_project_ids = eval(kwargs.get('ci_project_ids', '[]'))
+        # ci_project_ids = safe_json_loads(kwargs.get('ci_project_ids', '[]'))
         # kwargs['ci_project_ids'] = ','.join(map(lambda x: str(x), ci_project_ids))
         kwargs["ci_project_ids"] = kwargs.get("ci_project_ids", "")
         kwargs["ci_env"] = kwargs.get("ci_env", "请选择")
