@@ -16,6 +16,132 @@
 
 ![](https://cdn.jsdelivr.net/gh/lihuacai168/images/img/project_detail.png)
 
+# 📐 系统架构
+
+```mermaid
+graph TB
+    %% 用户层
+    subgraph "用户层"
+        User[👤 测试用户]
+        Browser[🌐 浏览器]
+        CI[🔄 CI/CD工具<br/>Jenkins/GitLab CI]
+    end
+
+    %% 前端层
+    subgraph "前端层"
+        Web[📱 Vue.js Web界面<br/>端口: 80]
+        Admin[⚙️ Django Admin<br/>端口: 8000]
+    end
+
+    %% 负载均衡
+    subgraph "负载均衡层"
+        WebNginx[🔀 Web Nginx<br/>静态资源服务]
+        AdminNginx[🔀 Admin Nginx<br/>管理接口代理]
+    end
+
+    %% 应用层
+    subgraph "应用服务层"
+        Django[🐍 Django REST API<br/>认证/授权/业务逻辑]
+        
+        subgraph "核心模块"
+            FastRunner[📋 FastRunner<br/>测试用例管理]
+            FastUser[👥 FastUser<br/>用户管理]
+            MockServer[🎭 Mock Server<br/>接口模拟]
+            System[🔧 System<br/>系统监控]
+        end
+    end
+
+    %% 任务调度层
+    subgraph "任务调度层"
+        CeleryBeat[⏰ Celery Beat<br/>定时任务调度]
+        CeleryWorker[⚡ Celery Worker<br/>异步任务执行]
+        HttpRunner[🏃 HttpRunner<br/>测试执行引擎]
+    end
+
+    %% 消息队列
+    subgraph "消息队列"
+        RabbitMQ[🐰 RabbitMQ<br/>消息代理<br/>端口: 5672/15672]
+    end
+
+    %% 数据层
+    subgraph "数据存储层"
+        Database[(🗄️ MariaDB/MySQL<br/>业务数据存储<br/>端口: 3306)]
+        Files[📁 本地文件<br/>日志/静态资源/报告]
+    end
+
+    %% 外部服务
+    subgraph "外部集成"
+        YAPI[📡 YAPI接口<br/>接口同步]
+        Swagger[📄 Swagger/Postman<br/>接口导入]
+        Notification[📢 通知服务<br/>飞书/钉钉/企业微信]
+        Email[📧 邮件服务<br/>SMTP]
+        Loki[📊 Grafana Loki<br/>日志聚合]
+    end
+
+    %% 连接关系
+    User --> Browser
+    User --> CI
+    Browser --> Web
+    Browser --> Admin
+    CI --> Django
+
+    Web --> WebNginx
+    Admin --> AdminNginx
+    WebNginx --> Django
+    AdminNginx --> Django
+
+    Django --> FastRunner
+    Django --> FastUser
+    Django --> MockServer
+    Django --> System
+    Django --> Database
+
+    Django --> CeleryBeat
+    CeleryBeat --> RabbitMQ
+    RabbitMQ --> CeleryWorker
+    CeleryWorker --> HttpRunner
+    HttpRunner --> Database
+    HttpRunner --> Files
+
+    Django --> YAPI
+    Django --> Swagger
+    CeleryWorker --> Notification
+    CeleryWorker --> Email
+    Django --> Loki
+
+    %% 样式
+    classDef frontend fill:#e1f5fe,stroke:#0277bd,stroke-width:2px
+    classDef backend fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px
+    classDef database fill:#e8f5e8,stroke:#2e7d32,stroke-width:2px
+    classDef queue fill:#fff3e0,stroke:#f57c00,stroke-width:2px
+    classDef external fill:#fce4ec,stroke:#c2185b,stroke-width:2px
+
+    class Web,Admin,WebNginx,AdminNginx frontend
+    class Django,FastRunner,FastUser,MockServer,System,CeleryBeat,CeleryWorker,HttpRunner backend
+    class Database,Files database
+    class RabbitMQ queue
+    class YAPI,Swagger,Notification,Email,Loki external
+```
+
+## 🏗️ 架构说明
+
+### 分层架构设计
+
+- **用户层**: 支持Web界面操作和CI/CD集成
+- **前端层**: Vue.js单页应用 + Django Admin管理界面
+- **负载均衡层**: Nginx反向代理，处理静态资源和API请求
+- **应用服务层**: Django REST框架，模块化设计
+- **任务调度层**: Celery分布式任务队列，支持定时和异步任务
+- **数据存储层**: MariaDB关系数据库 + 本地文件存储（日志、报告、静态资源）
+
+### 核心特性
+
+- **微服务化设计**: 模块间松耦合，便于扩展维护
+- **异步任务处理**: 大型测试任务异步执行，避免阻塞
+- **定时调度**: 支持cron表达式的定时任务
+- **容器化部署**: Docker Compose一键部署
+- **横向扩展**: 支持多Worker节点扩展
+
 # ⚠️ 注意
 > python版本需要>=3.9 
 > 
