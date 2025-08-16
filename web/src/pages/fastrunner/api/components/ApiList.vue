@@ -188,6 +188,27 @@
                   </span>
                 </el-dialog>
 
+                <el-dialog
+                    :title="dialogTitle"
+                    :visible.sync="dialogRelatedCasesVisible"
+                    width="50%"
+                >
+                    <div v-if="relatedCases.length > 0">
+                        <el-table :data="relatedCases" style="width: 100%">
+                            <el-table-column label="序号" width="80" type="index" :index="1">
+                            </el-table-column>
+                            <el-table-column prop="case_name" label="用例名称">
+                            </el-table-column>
+                        </el-table>
+                    </div>
+                    <div v-else>
+                        <el-empty description="暂无关联用例"></el-empty>
+                    </div>
+                    <span slot="footer" class="dialog-footer">
+                        <el-button @click="dialogRelatedCasesVisible = false">关 闭</el-button>
+                    </span>
+                </el-dialog>
+
 
                 <div style="position: fixed; bottom: 0; right:0; left: 460px; top: 160px">
                     <el-table
@@ -254,9 +275,10 @@
                                         <span class="block-summary-description text-ellipsis">{{ scope.row.name }}</span>
                                     </el-tooltip>
                                     <span v-if="scope.row.cases.length > 0"
-                                          class="block-method block_method_color block_method_cases"
-                                          :title="`API已被用例引用,共计: ${scope.row.cases.length} 次`">
-                                        被引用: {{ scope.row.cases.length }} 次
+                                          class="block-method block_method_color block_method_cases clickable"
+                                          :title="`API已被用例引用,共计: ${scope.row.cases.length} 次`"
+                                          @click="showRelatedCases(scope.row.cases, scope.row.name)">
+                                        关联用例: {{ scope.row.cases.length }}
                                     </span>
                                 </div>
                             </template>
@@ -392,7 +414,10 @@ export default {
             dialogTreeVisible: false,
             dialogTreeMoveAPIVisible: false,
             dialogTableVisible: false,
+            dialogRelatedCasesVisible: false,
+            dialogTitle: '关联用例',
             summary: {},
+            relatedCases: [],
             selectAPI: [],
             currentRow: '',
             currentPage: this.listCurrentPage,
@@ -770,6 +795,12 @@ export default {
         cellMouseLeave(row) {
             this.currentRow = '';
         },
+
+        showRelatedCases(cases, apiName) {
+            this.relatedCases = cases;
+            this.dialogTitle = `${apiName} - 关联用例`;
+            this.dialogRelatedCasesVisible = true;
+        },
     }
     ,
     mounted() {
@@ -837,6 +868,15 @@ export default {
 
 .block_url {
   max-width: 250px; /* 根据需要调整 */
+}
+
+.clickable {
+  cursor: pointer;
+  transition: opacity 0.3s;
+}
+
+.clickable:hover {
+  opacity: 0.8;
 }
 </style>
 
