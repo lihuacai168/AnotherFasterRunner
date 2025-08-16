@@ -191,18 +191,13 @@
                 <el-dialog
                     title="关联用例"
                     :visible.sync="dialogRelatedCasesVisible"
-                    width="60%"
+                    width="50%"
                 >
                     <div v-if="relatedCases.length > 0">
                         <el-table :data="relatedCases" style="width: 100%">
-                            <el-table-column prop="name" label="用例名称" width="300">
+                            <el-table-column label="序号" width="80" type="index" :index="1">
                             </el-table-column>
-                            <el-table-column prop="project_name" label="所属项目" width="200">
-                            </el-table-column>
-                            <el-table-column label="操作">
-                                <template slot-scope="scope">
-                                    <el-button type="text" @click="viewCase(scope.row)">查看用例</el-button>
-                                </template>
+                            <el-table-column prop="name" label="用例名称">
                             </el-table-column>
                         </el-table>
                     </div>
@@ -803,18 +798,6 @@ export default {
         showRelatedCases(cases) {
             this.relatedCases = cases;
             this.dialogRelatedCasesVisible = true;
-        },
-
-        viewCase(caseItem) {
-            this.$router.push({
-                name: 'AutoTest',
-                params: {
-                    id: caseItem.project_id
-                },
-                query: {
-                    case_id: caseItem.id
-                }
-            });
         },
     }
     ,
