@@ -11,6 +11,7 @@ from fastrunner.utils import loader, response
 from fastrunner.utils.decorator import request_log
 from fastrunner.utils.host import parse_host
 from fastrunner.utils.parser import Format
+from fastrunner.utils.safe_json_parser import safe_json_loads
 
 logger = logging.getLogger(__name__)
 
@@ -32,7 +33,7 @@ def run_api(request):
     config = None
     if name != "请选择":
         try:
-            config = eval(models.Config.objects.get(name=name, project__id=api.project).body)
+            config = safe_json_loads(models.Config.objects.get(name=name, project__id=api.project).body)
 
         except ObjectDoesNotExist:
             logger.error("指定配置文件不存在:{name}".format(name=name))
@@ -56,9 +57,11 @@ def run_api_pk(request, **kwargs):
     host = request.query_params["host"]
     api = models.API.objects.get(id=kwargs["pk"])
     name = request.query_params["config"]
-    config = None if name == "请选择" else eval(models.Config.objects.get(name=name, project=api.project).body)
+    config = None if name == "请选择" else safe_json_loads(
+        models.Config.objects.get(name=name, project=api.project).body
+    )
 
-    test_case = eval(api.body)
+    test_case = safe_json_loads(api.body)
     if host != "请选择":
         host = models.HostIP.objects.get(name=host, project=api.project).value.splitlines()
         test_case = parse_host(host, test_case)
@@ -75,8 +78,8 @@ def auto_run_api_pk(**kwargs):
     env = kwargs["config"]
     config_name = "rig_prod" if env == 1 else "rig_test"
     api = models.API.objects.get(id=id)
-    config = eval(models.Config.objects.get(name=config_name, project=api.project).body)
-    test_case = eval(api.body)
+    config = safe_json_loads(models.Config.objects.get(name=config_name, project=api.project).body)
+    test_case = safe_json_loads(api.body)
 
     summary = loader.debug_api(test_case, api.project.id, config=config)
     api_request = summary["details"][0]["records"][0]["meta_data"]["request"]
@@ -151,7 +154,9 @@ def run_api_tree(request):
     name = request.data["name"]
     config = request.data["config"]
 
-    config = None if config == "请选择" else eval(models.Config.objects.get(name=config, project__id=project).body)
+    config = None if config == "请选择" else safe_json_loads(
+        models.Config.objects.get(name=config, project__id=project).body
+    )
     test_case = []
 
     if host != "请选择":
@@ -162,7 +167,7 @@ def run_api_tree(request):
             models.API.objects.filter(project__id=project, relation=relation_id, delete=0).order_by("id").values("body")
         )
         for content in api:
-            api = eval(content["body"])
+            api = safe_json_loads(content["body"])
             test_case.append(parse_host(host, api))
 
     if back_async:
@@ -241,10 +246,10 @@ def run_testsuite_pk(request, **kwargs):
         host = models.HostIP.objects.get(name=host, project=project).value.splitlines()
 
     for content in test_list:
-        body = eval(content["body"])
+        body = safe_json_loads(content["body"])
 
         if "base_url" in body["request"].keys():
-            config = eval(models.Config.objects.get(name=body["name"], project__id=project).body)
+            config = safe_json_loads(models.Config.objects.get(name=body["name"], project__id=project).body)
             continue
 
         test_case.append(parse_host(host, body))
@@ -281,7 +286,7 @@ def run_suite_tree(request):
     config = None
     if config_id:
         # 前端有指定config，会覆盖用例本身的config
-        config = eval(models.Config.objects.get(id=config_id).body)
+        config = safe_json_loads(models.Config.objects.get(id=config_id).body)
 
     if host != "请选择":
         host = models.HostIP.objects.get(name=host, project=project).value.splitlines()
@@ -298,11 +303,11 @@ def run_suite_tree(request):
 
             testcase_list = []
             for content in test_list:
-                body = eval(content["body"])
+                body = safe_json_loads(content["body"])
                 if body["request"].get("url"):
                     testcase_list.append(parse_host(host, body))
                 elif config is None and body["request"].get("base_url"):
-                    config = eval(models.Config.objects.get(name=body["name"], project__id=project).body)
+                    config = safe_json_loads(models.Config.objects.get(name=body["name"], project__id=project).body)
             config_list.append(parse_host(host, config))
             test_sets.append(testcase_list)
             config = None
@@ -345,7 +350,7 @@ def run_multi_tests(request):
     for config in case_config_mapping_list:
         config_name = config["config_name"]
         if not config_body_mapping.get(config_name):
-            config_body_mapping[config_name] = eval(
+            config_body_mapping[config_name] = safe_json_loads(
                 models.Config.objects.get(name=config["config_name"], project__id=project).body
             )
     test_sets = []
@@ -358,7 +363,7 @@ def run_multi_tests(request):
         case_step_list = models.CaseStep.objects.filter(case__id=case_id).order_by("step").values("body")
         parsed_case_step_list = []
         for case_step in case_step_list:
-            body = eval(case_step["body"])
+            body = safe_json_loads(case_step["body"])
             if body["request"].get("url"):
                 parsed_case_step_list.append(body)
         config_body = config_body_mapping[config_name]
@@ -402,7 +407,7 @@ def run_test(request):
         host = models.HostIP.objects.get(name=host, project=project).value.splitlines()
 
     if config:
-        config = eval(models.Config.objects.get(project=project, name=config["name"]).body)
+        config = safe_json_loads(models.Config.objects.get(project=project, name=config["name"]).body)
 
     summary = loader.debug_api(
         parse_host(host, loader.load_test(body)),

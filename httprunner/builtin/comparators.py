@@ -12,6 +12,8 @@
 Built-in dependent functions used in YAML/JSON testcases.
 """
 
+import ast
+import operator
 import re
 
 import pydash
@@ -21,6 +23,50 @@ from httprunner.compat import basestring, builtin_str, integer_types
 """
 built-in comparators
 """
+
+
+# Safe expression evaluator to replace eval()
+def safe_eval_expression(expression_str):
+    """
+    Safely evaluate comparison expressions without using eval().
+    Supports ==, !=, <, >, <=, >=, in, not in
+    """
+    # Define allowed operators
+    ops = {
+        '==': operator.eq,
+        '!=': operator.ne,
+        '<': operator.lt,
+        '>': operator.gt,
+        '<=': operator.le,
+        '>=': operator.ge,
+        ' in ': lambda a, b: a in b,
+        ' not in ': lambda a, b: a not in b,
+    }
+    
+    # Try each operator
+    for op_str, op_func in ops.items():
+        if op_str in expression_str:
+            parts = expression_str.split(op_str, 1)
+            if len(parts) == 2:
+                left = parts[0].strip()
+                right = parts[1].strip()
+                
+                # Parse values
+                try:
+                    # Try to parse as literals
+                    left_val = ast.literal_eval(left)
+                except:
+                    left_val = left.strip("'\"")
+                
+                try:
+                    right_val = ast.literal_eval(right)
+                except:
+                    right_val = right.strip("'\"")
+                
+                # Apply operator
+                return op_func(left_val, right_val)
+    
+    raise ValueError(f"Unsupported expression: {expression_str}")
 
 
 def equals(check_value, expect_value):
@@ -118,7 +164,7 @@ def list_any_item_contains(check_value: list, jsonpath_expression_value):
             item=item, expression=expression, expect_value=expect_value, jsonpath=jsonpath
         )
         try:
-            if eval(parsed_expression) is True:
+            if safe_eval_expression(parsed_expression) is True:
                 break
         except Exception as e:
             raise e
@@ -134,7 +180,7 @@ def list_all_item_contains(check_value: list, jsonpath_expression_value):
             item=item, expression=expression, expect_value=expect_value, jsonpath=jsonpath
         )
         try:
-            if eval(parsed_expression) is False:
+            if safe_eval_expression(parsed_expression) is False:
                 raise AssertionError(f"{check_value} {expression} {expect_value}")
         except Exception as e:
             raise e

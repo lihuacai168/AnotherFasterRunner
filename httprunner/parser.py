@@ -411,14 +411,35 @@ def get_mapping_function(function_name, functions_mapping):
     except exceptions.FunctionNotFound:
         pass
 
-    try:
-        # check if builtin functions
-        item_func = eval(function_name)
-        if callable(item_func):
-            # is builtin function
-            return item_func
-    except (NameError, TypeError):
-        # is not builtin function
+    # Whitelist of allowed builtin functions for security
+    allowed_builtins = {
+        'len': len,
+        'str': str,
+        'int': int,
+        'float': float,
+        'bool': bool,
+        'list': list,
+        'dict': dict,
+        'tuple': tuple,
+        'set': set,
+        'abs': abs,
+        'round': round,
+        'min': min,
+        'max': max,
+        'sum': sum,
+        'sorted': sorted,
+        'reversed': reversed,
+        'enumerate': enumerate,
+        'zip': zip,
+        'range': range,
+        'any': any,
+        'all': all,
+    }
+    
+    if function_name in allowed_builtins:
+        return allowed_builtins[function_name]
+    else:
+        # is not allowed builtin function
         raise exceptions.FunctionNotFound("{} is not found.".format(function_name))
 
 

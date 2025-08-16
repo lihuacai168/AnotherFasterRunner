@@ -11,6 +11,7 @@ import requests
 from loguru import logger
 
 from fastrunner import models
+from fastrunner.utils.safe_json_parser import safe_json_loads
 from fastrunner.utils.tree import get_all_ycatid, get_tree_max_id, get_tree_ycatid_mapping
 
 logger = logging.getLogger(__name__)
@@ -764,7 +765,7 @@ class Yapi:
     def create_relation_id(self, project_id):
         category_id_name_mapping: dict = self.get_category_id_name_mapping()
         obj = models.Relation.objects.get(project_id=project_id, type=1)
-        eval_tree: list = eval(obj.tree)
+        eval_tree: list = safe_json_loads(obj.tree)
         yapi_catids: list = [yapi_catid for yapi_catid in get_all_ycatid(eval_tree, [])]
         if category_id_name_mapping is None:
             return
@@ -934,7 +935,7 @@ class Yapi:
         apis = [self.yapi2faster(api) for api in api_info if isinstance(api, dict) is True]
         proj = models.Project.objects.get(id=self.fast_project_id)
         obj = models.Relation.objects.get(project_id=self.fast_project_id, type=1)
-        eval_tree: list = eval(obj.tree)
+        eval_tree: list = safe_json_loads(obj.tree)
         tree_ycatid_mapping = get_tree_ycatid_mapping(eval_tree)
         parsed_api = []
         for api in apis:

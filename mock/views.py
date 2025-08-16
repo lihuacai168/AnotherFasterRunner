@@ -137,15 +137,68 @@ class RequestObject:
 
 
 def dynamic_load_module(module_name, code):
+    """
+    Create and load a dynamic module with security restrictions.
+    
+    WARNING: This function executes user-provided code which is inherently dangerous.
+    It should only be used in isolated environments or with heavily vetted code.
+    """
     # Create a new module with the given name
     module = types.ModuleType(module_name)
+    
+    # Create a restricted globals environment
+    restricted_globals = {
+        '__builtins__': {
+            # Allow only safe built-in functions
+            'len': len,
+            'range': range,
+            'enumerate': enumerate,
+            'str': str,
+            'int': int,
+            'float': float,
+            'bool': bool,
+            'list': list,
+            'dict': dict,
+            'tuple': tuple,
+            'set': set,
+            'print': print,
+            'isinstance': isinstance,
+            'hasattr': hasattr,
+            'getattr': getattr,
+            'setattr': setattr,
+            'abs': abs,
+            'round': round,
+            'min': min,
+            'max': max,
+            'sum': sum,
+            'sorted': sorted,
+            'reversed': reversed,
+            'zip': zip,
+            'any': any,
+            'all': all,
+            # Explicitly block dangerous functions
+            # No: eval, exec, compile, open, __import__, etc.
+        },
+        '__name__': module_name,
+        '__doc__': None,
+        # Allow imports of safe modules only
+        'json': json,
+        'datetime': datetime,
+        'uuid': uuid,
+        'types': types,
+    }
+    
     try:
-        # Execute the code in the module's context
-        exec(code, module.__dict__)
+        # Execute the code in the module's restricted context
+        exec(code, restricted_globals, module.__dict__)
         # Return the created module
         return module
     except SyntaxError as e:
         logger.error(f"SyntaxError during loading module {module_name}: {e}")
+        return None
+    except Exception as e:
+        logger.error(f"Error during loading module {module_name}: {e}")
+        return None
 
 
 def load_and_execute(module_name, code, method_name, request) -> Response:
