@@ -197,7 +197,7 @@
                         <el-table :data="relatedCases" style="width: 100%">
                             <el-table-column label="序号" width="80" type="index" :index="1">
                             </el-table-column>
-                            <el-table-column prop="name" label="用例名称">
+                            <el-table-column prop="case_name" label="用例名称">
                             </el-table-column>
                         </el-table>
                     </div>
