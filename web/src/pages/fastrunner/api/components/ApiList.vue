@@ -278,7 +278,7 @@
                                           class="block-method block_method_color block_method_cases clickable"
                                           :title="`API已被用例引用,共计: ${scope.row.cases.length} 次`"
                                           @click="showRelatedCases(scope.row.cases, scope.row.name)">
-                                        关联用例: {{ scope.row.cases.length }} 次
+                                        关联用例: {{ scope.row.cases.length }}
                                     </span>
                                 </div>
                             </template>
