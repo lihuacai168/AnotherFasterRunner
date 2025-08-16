@@ -117,32 +117,6 @@
                         </el-table-column>
 
                         <el-table-column
-                            width="70"
-                            label="CI项目"
-                        >
-                            <template slot-scope="scope">
-                                <div>
-                                    {{
-                                        scope.row.kwargs.ci_project_ids
-                                    }}
-                                </div>
-                            </template>
-                        </el-table-column>
-
-                        <el-table-column
-                            width="70"
-                            label="CI环境"
-                        >
-                            <template slot-scope="scope">
-                                <div>
-                                    {{
-                                        scope.row.kwargs.ci_env === '请选择' ? "" : scope.row.kwargs.ci_env
-                                    }}
-                                </div>
-                            </template>
-                        </el-table-column>
-
-                        <el-table-column
                             width="180"
                             label="运行配置"
                         >

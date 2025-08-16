@@ -4,20 +4,47 @@
             <el-main style="padding-top: 0">
                 <div style="margin-top: 10px;">
                     <el-col :span="12">
-                        <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px">
+                        <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="120px">
                             <el-form-item label="任务名称" prop="name">
                                 <el-input v-model="ruleForm.name" placeholder="请输入任务名称" clearable=""></el-input>
                             </el-form-item>
 
-                            <el-form-item label="时间配置" prop="crontab">
+                            <el-form-item prop="crontab" label-width="0">
+                                <span class="custom-label">
+                                    时间配置
+                                    <el-tooltip placement="top">
+                                        <div slot="content">
+                                            crontab表达式格式: 分钟 小时 日 月 星期<br/>
+                                            示例:<br/>
+                                            0 2 * * * - 每天2点执行<br/>
+                                            0 */6 * * * - 每6小时执行一次<br/>
+                                            0 9 * * 1-5 - 周一至周五9点执行<br/>
+                                            30 23 * * 0 - 每周日23:30执行
+                                        </div>
+                                        <i class="el-icon-question"></i>
+                                    </el-tooltip>
+                                </span>
                                 <el-input
                                     clearable
                                     v-model="ruleForm.crontab"
-                                    placeholder="请输入cortab表达式，例如 2 12 * * *"
+                                    placeholder="请输入crontab表达式，例如: 0 2 * * * (每天2点执行)"
+                                    style="width: 550px;"
                                 ></el-input>
                             </el-form-item>
 
-                            <el-form-item label="运行配置" prop="config">
+                            <el-form-item prop="config" label-width="0">
+                                <span class="custom-label">
+                                    运行配置
+                                    <el-tooltip placement="top">
+                                        <div slot="content">
+                                            指定任务运行的配置<br />
+                                            请选择：使用用例中的配置<br />
+                                            选择其他配置：当前选择配置覆盖用例中的配置
+                                        </div>
+                                        <i class="el-icon-question"></i>
+                                    </el-tooltip>
+                                </span>
+
                                 <el-select
                                     placeholder="请选择"
                                     size="small"
@@ -33,16 +60,9 @@
                                     >
                                     </el-option>
                                 </el-select>
-                                <el-tooltip placement="top">
-                                    <div slot="content">
-                                        指定任务运行的配置<br />请选择: 使用用例中的配置 <br />选择其他配置:
-                                        当前选择配置覆盖用例中的配置
-                                    </div>
-                                    <span class="el-icon-question"></span>
-                                </el-tooltip>
                             </el-form-item>
 
-                            <el-form-item label="CI环境" prop="ci_env">
+                            <el-form-item label="CI环境" prop="ci_env" v-show="false">
                                 <el-select
                                     placeholder="请选择"
                                     size="small"
@@ -59,7 +79,7 @@
                                 </el-tooltip>
                             </el-form-item>
 
-                            <el-form-item label="Gitlab项目id" prop="ci_project_ids">
+                            <el-form-item label="Gitlab项目id" prop="ci_project_ids" v-show="false">
                                 <el-input
                                     clearable
                                     v-model="ruleForm.ci_project_ids"
@@ -71,17 +91,20 @@
                                 <el-switch v-model="ruleForm.switch"></el-switch>
                             </el-form-item>
 
-                            <el-form-item label="运行模式" prop="is_parallel">
-                                <template>
-                                    <el-radio v-model="ruleForm.is_parallel" :label="false">串行</el-radio>
-                                    <el-radio v-model="ruleForm.is_parallel" :label="true">并行</el-radio>
+                            <el-form-item prop="is_parallel" label-width="0">
+                                <span class="custom-label">
+                                    运行模式
                                     <el-tooltip placement="top">
                                         <div slot="content">
                                             用例运行模式<br />任务中的用例默认是一个接着一个运行；并行时，同时执行用例,
                                             不分先后
                                         </div>
-                                        <span class="el-icon-question"></span>
+                                        <i class="el-icon-question"></i>
                                     </el-tooltip>
+                                </span>
+                                <template>
+                                    <el-radio v-model="ruleForm.is_parallel" :label="false">串行</el-radio>
+                                    <el-radio v-model="ruleForm.is_parallel" :label="true">并行</el-radio>
                                 </template>
                             </el-form-item>
 
@@ -282,7 +305,7 @@
 
 <script>
 import draggable from 'vuedraggable'
-import { isNumArray } from '../../validator'
+import { isNumArray, validateCrontab } from '../../validator'
 
 export default {
     name: 'AddTasks',
@@ -338,7 +361,10 @@ export default {
                     { required: true, message: '请输入任务名称', trigger: 'blur' },
                     { min: 1, max: 50, message: '长度在 1 到 50 个字符', trigger: 'blur' }
                 ],
-                crontab: [{ required: true, message: '请输入正确的crontab表达式', trigger: 'blur' }],
+                crontab: [
+                    { required: true, message: '请输入crontab表达式', trigger: 'blur' },
+                    { validator: validateCrontab, trigger: 'blur' }
+                ],
                 ci_project_ids: [
                     { required: false, message: '请输入正确的ci_project_ids', trigger: 'blur' },
                     { validator: isNumArray, trigger: 'blur' }
@@ -519,5 +545,23 @@ export default {
     border: none;
     outline: none;
     background: rgba(236, 248, 238, 0.4);
+}
+
+.custom-label {
+    display: inline-block;
+    width: 120px;
+    text-align: right;
+    font-size: 14px;
+    color: #606266;
+    line-height: 40px;
+    padding: 0 12px 0 0;
+    box-sizing: border-box;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.custom-label .el-icon-question {
+    color: #333;
+    cursor: pointer;
 }
 </style>
