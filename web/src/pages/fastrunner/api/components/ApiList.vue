@@ -189,7 +189,7 @@
                 </el-dialog>
 
                 <el-dialog
-                    title="关联用例"
+                    :title="dialogTitle"
                     :visible.sync="dialogRelatedCasesVisible"
                     width="50%"
                 >
@@ -277,7 +277,7 @@
                                     <span v-if="scope.row.cases.length > 0"
                                           class="block-method block_method_color block_method_cases clickable"
                                           :title="`API已被用例引用,共计: ${scope.row.cases.length} 次`"
-                                          @click="showRelatedCases(scope.row.cases)">
+                                          @click="showRelatedCases(scope.row.cases, scope.row.name)">
                                         关联用例: {{ scope.row.cases.length }} 次
                                     </span>
                                 </div>
@@ -415,6 +415,7 @@ export default {
             dialogTreeMoveAPIVisible: false,
             dialogTableVisible: false,
             dialogRelatedCasesVisible: false,
+            dialogTitle: '关联用例',
             summary: {},
             relatedCases: [],
             selectAPI: [],
@@ -795,8 +796,9 @@ export default {
             this.currentRow = '';
         },
 
-        showRelatedCases(cases) {
+        showRelatedCases(cases, apiName) {
             this.relatedCases = cases;
+            this.dialogTitle = `${apiName} - 关联用例`;
             this.dialogRelatedCasesVisible = true;
         },
     }
