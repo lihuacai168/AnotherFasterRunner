@@ -13,8 +13,19 @@
                                 <el-input
                                     clearable
                                     v-model="ruleForm.crontab"
-                                    placeholder="请输入cortab表达式，例如 2 12 * * *"
+                                    placeholder="请输入crontab表达式，例如: 0 2 * * * (每天2点执行)"
                                 ></el-input>
+                                <el-tooltip placement="top">
+                                    <div slot="content">
+                                        crontab表达式格式: 分钟 小时 日 月 星期<br/>
+                                        示例:<br/>
+                                        0 2 * * * - 每天2点执行<br/>
+                                        0 */6 * * * - 每6小时执行一次<br/>
+                                        0 9 * * 1-5 - 周一至周五9点执行<br/>
+                                        30 23 * * 0 - 每周日23:30执行
+                                    </div>
+                                    <span class="el-icon-question"></span>
+                                </el-tooltip>
                             </el-form-item>
 
                             <el-form-item label="运行配置" prop="config">
@@ -282,7 +293,7 @@
 
 <script>
 import draggable from 'vuedraggable'
-import { isNumArray } from '../../validator'
+import { isNumArray, validateCrontab } from '../../validator'
 
 export default {
     name: 'AddTasks',
@@ -338,7 +349,10 @@ export default {
                     { required: true, message: '请输入任务名称', trigger: 'blur' },
                     { min: 1, max: 50, message: '长度在 1 到 50 个字符', trigger: 'blur' }
                 ],
-                crontab: [{ required: true, message: '请输入正确的crontab表达式', trigger: 'blur' }],
+                crontab: [
+                    { required: true, message: '请输入crontab表达式', trigger: 'blur' },
+                    { validator: validateCrontab, trigger: 'blur' }
+                ],
                 ci_project_ids: [
                     { required: false, message: '请输入正确的ci_project_ids', trigger: 'blur' },
                     { validator: isNumArray, trigger: 'blur' }
