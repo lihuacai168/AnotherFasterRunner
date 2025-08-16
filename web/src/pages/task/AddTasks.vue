@@ -42,7 +42,7 @@
                                 </el-tooltip>
                             </el-form-item>
 
-                            <el-form-item label="CI环境" prop="ci_env">
+                            <el-form-item label="CI环境" prop="ci_env" v-show="false">
                                 <el-select
                                     placeholder="请选择"
                                     size="small"
@@ -59,7 +59,7 @@
                                 </el-tooltip>
                             </el-form-item>
 
-                            <el-form-item label="Gitlab项目id" prop="ci_project_ids">
+                            <el-form-item label="Gitlab项目id" prop="ci_project_ids" v-show="false">
                                 <el-input
                                     clearable
                                     v-model="ruleForm.ci_project_ids"
