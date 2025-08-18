@@ -1,16 +1,16 @@
-# !/usr/bin/python3
-# -*- coding: utf-8 -*-
-
-# @Author:梨花菜
-# @File: timer_task.py
-# @Time : 2018/12/29 13:44
-# @Email: lihuacai168@gmail.com
-# @Software: PyCharm
 import datetime
 
-from fastrunner import models
+from django.core.exceptions import ObjectDoesNotExist
+from django.db import DataError
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+
+from fastrunner import models, tasks
+from fastrunner.utils import loader, response
 from fastrunner.utils.ding_message import DingMessage
+from fastrunner.utils.host import parse_host
 from fastrunner.utils.loader import debug_api, save_summary
+from fastrunner.utils.safe_json_parser import safe_json_loads
 
 
 # 单个用例组
@@ -34,10 +34,10 @@ def auto_run_testsuite_pk(**kwargs):
     # 把用例加入列表
     testcase_list = []
     for content in test_list:
-        body = eval(content["body"])
+        body = safe_json_loads(content["body"])
 
         if "base_url" in body["request"].keys():
-            config = eval(models.Config.objects.get(name=body["name"], project__id=project_id).body)
+            config = safe_json_loads(models.Config.objects.get(name=body["name"], project__id=project_id).body)
             continue
         testcase_list.append(body)
 

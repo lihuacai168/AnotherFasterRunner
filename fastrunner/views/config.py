@@ -10,6 +10,7 @@ from fastrunner import models, serializers
 from fastrunner.utils import response
 from fastrunner.utils.decorator import request_log
 from fastrunner.utils.parser import Format
+from fastrunner.utils.safe_json_parser import safe_json_loads
 
 
 class ConfigView(GenericViewSet):
@@ -144,7 +145,7 @@ class ConfigView(GenericViewSet):
 
         config.id = None
         config.is_default = False
-        body = eval(config.body)
+        body = safe_json_loads(config.body)
         name = request.data["name"]
 
         body["name"] = name
