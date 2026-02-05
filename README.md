@@ -1,6 +1,14 @@
 [![LICENSE](https://img.shields.io/github/license/HttpRunner/FasterRunner.svg)](https://github.com/HttpRunner/FasterRunner/blob/master/LICENSE)
 # FasterRunner
 
+> **⚠️ 项目停止维护声明**
+> 
+> 本项目已停止维护，作者全身心投入到 Web3 搞钱去了。
+> 
+> - 博客（长期更新）：https://blog.huacai.one/
+> - 电报闲聊群：https://t.me/+E8NoxjsKaPZkZDI9
+> - Web3 交流群：https://t.me/hc_alpha_bot
+
 🚀 让接口测试更简单，让自动化更快速！
 
 - [X] 🚀 **落地实战** - 已在 5+ 个公司中落地实战，效果显著
