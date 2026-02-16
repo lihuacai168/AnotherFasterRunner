@@ -1,22 +1,20 @@
-# !/usr/bin/python3
-# -*- coding: utf-8 -*-
-
-# @Author: 花菜
-# @File: ci.py
-# @Time : 2021/5/25 15:51
-# @Email: lihuacai168@gmail.com
 import datetime
 import json
 import re
 import time
+import traceback
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
+import requests
 import xmltodict
 from django.conf import settings
-from django.http import HttpResponse
+from django.core.exceptions import ObjectDoesNotExist
+from django.shortcuts import HttpResponse
 from django.utils.decorators import method_decorator
 from django_celery_beat.models import PeriodicTask
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status
+from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 
@@ -26,6 +24,7 @@ from fastrunner.utils import lark_message, loader
 from fastrunner.utils.decorator import request_log
 from fastrunner.utils.host import parse_host
 from fastrunner.utils.loader import save_summary
+from fastrunner.utils.safe_json_parser import safe_json_loads, safe_literal_eval
 
 
 def summary2junit(summary: dict) -> dict:
@@ -116,7 +115,7 @@ class CIView(GenericViewSet):
             for pk_kwargs in pk_kwargs_list:
                 pk: int = pk_kwargs["pk"]
                 kwargs: dict = json.loads(pk_kwargs["kwargs"])
-                ci_project_ids: list = eval(kwargs.get("ci_project_ids") or "[]")
+                ci_project_ids: list = safe_literal_eval(kwargs.get("ci_project_ids") or "[]")
                 if isinstance(ci_project_ids, int):
                     ci_project_ids = [ci_project_ids]
 
@@ -159,7 +158,7 @@ class CIView(GenericViewSet):
                 # 如果task中存在重载配置，就覆盖用例中的配置
                 override_config = json.loads(task_obj.kwargs).get("config")
                 if override_config_body is None and override_config and override_config != "请选择":
-                    override_config_body = eval(
+                    override_config_body = safe_literal_eval(
                         models.Config.objects.get(name=override_config, project__id=project).body
                     )
 
@@ -173,12 +172,16 @@ class CIView(GenericViewSet):
                 else:
                     continue
                 # 反查出一个task中包含的所有用例
-                suite = list(models.Case.objects.filter(pk__in=eval(case_ids)).order_by("id").values("id", "name"))
+                suite = list(
+                    models.Case.objects.filter(pk__in=safe_literal_eval(case_ids))
+                    .order_by("id")
+                    .values("id", "name")
+                )
                 for case in suite:
                     case_step_list = models.CaseStep.objects.filter(case__id=case["id"]).order_by("step").values("body")
                     testcase_list = []
                     for case_step in case_step_list:
-                        body = eval(case_step["body"])
+                        body = safe_literal_eval(case_step["body"])
                         if body["request"].get("url"):
                             testcase_list.append(parse_host(host, body))
                         elif config is None and body["request"].get("base_url"):
@@ -187,7 +190,9 @@ class CIView(GenericViewSet):
                             if override_config_body:
                                 config = override_config_body
                             else:
-                                config = eval(models.Config.objects.get(name=body["name"], project__id=project).body)
+                                config = safe_literal_eval(
+                                    models.Config.objects.get(name=body["name"], project__id=project).body
+                                )
                     config_list.append(parse_host(host, config))
                     test_sets.append(testcase_list)
                     config = None

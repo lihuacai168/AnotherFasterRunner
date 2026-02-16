@@ -5,6 +5,7 @@ from django_celery_beat.models import PeriodicTask
 # Create your models here.
 from model_utils import Choices
 
+from fastrunner.utils.safe_json_parser import safe_literal_eval
 from fastuser.models import BaseTable
 
 
@@ -118,7 +119,7 @@ class Case(BaseTable):
     @property
     def tasks(self):
         task_objs = PeriodicTask.objects.filter(description=self.project.id).values("id", "name", "args")
-        return filter(lambda task: self.id in eval(task.pop("args")), task_objs)
+        return filter(lambda task: self.id in safe_literal_eval(task.pop("args")), task_objs)
 
 
 class CaseStep(BaseTable):

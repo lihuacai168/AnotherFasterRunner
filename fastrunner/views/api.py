@@ -15,6 +15,7 @@ from fastrunner import models, serializers
 from fastrunner.utils import response
 from fastrunner.utils.decorator import request_log
 from fastrunner.utils.parser import Format, Parse
+from fastrunner.utils.safe_json_parser import safe_json_loads
 
 
 class APITemplateViewSchema(AutoSchema):
@@ -176,7 +177,7 @@ class APITemplateView(GenericViewSet):
         pk = kwargs["pk"]
         name = request.data["name"]
         api = models.API.objects.get(id=pk)
-        body = eval(api.body)
+        body = safe_json_loads(api.body)
         body["name"] = name
         api.body = body
         api.id = None
@@ -264,7 +265,7 @@ class APITemplateView(GenericViewSet):
         except ObjectDoesNotExist:
             return Response(response.API_NOT_FOUND)
 
-        parse = Parse(eval(api.body))
+        parse = Parse(safe_json_loads(api.body))
         parse.parse_http()
 
         resp = {
